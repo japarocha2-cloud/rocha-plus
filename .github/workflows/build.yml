@@ -20,17 +20,45 @@ jobs:
         run: |-
           flutter create --platforms=android .
           rm -f test/widget_test.dart
+      - name: Enable release networking
+        run: |-
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("android/app/src/main/AndroidManifest.xml")
+          text = path.read_text()
+          permission = '<uses-permission android:name="android.permission.INTERNET" />'
+          if permission not in text:
+              marker = '<application'
+              text = text.replace(marker, f'    {permission}\n    {marker}', 1)
+              path.write_text(text)
+          PY
       - name: Get dependencies
         run: flutter pub get
       - name: Analyze
         run: flutter analyze
       - name: Test
         run: flutter test
-      - name: Build APK
+      - name: Build universal APK
         run: flutter build apk --release
-      - name: Upload APK
+      - name: Build optimized APKs
+        run: flutter build apk --release --split-per-abi
+      - name: Build Play Store bundle
+        run: flutter build appbundle --release
+      - name: Upload universal APK
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-android
+          name: rocha-plus-universal
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+      - name: Upload ARM64 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-arm64
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          if-no-files-found: error
+      - name: Upload Play Store AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-play-store
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
