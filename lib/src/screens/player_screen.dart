@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../theme/rocha_theme.dart';
@@ -14,6 +15,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
+  bool _controlsVisible = false;
+  bool _fullscreen = false;
   int _attempt = 0;
 
   @override
@@ -57,6 +60,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
+  void _showControls() {
+    setState(() => _controlsVisible = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && _controller?.value.isPlaying == true) {
+        setState(() => _controlsVisible = false);
+      }
+    });
+  }
+
+  Future<void> _toggleFullscreen() async {
+    setState(() => _fullscreen = !_fullscreen);
+    if (_fullscreen) {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } else {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    }
+  }
+
   void _togglePlayback() {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
@@ -73,6 +99,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       controller.removeListener(_onPlayerChanged);
       controller.dispose();
     }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
@@ -91,16 +119,47 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     aspectRatio: controller.value.aspectRatio > 0
                         ? controller.value.aspectRatio
                         : 16 / 9,
-                    child: Stack(alignment: Alignment.center, children: [
-                      VideoPlayer(controller),
-                      IconButton.filled(
-                        autofocus: true,
-                        tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
-                        iconSize: 42,
-                        onPressed: _togglePlayback,
-                        icon: Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                      ),
-                    ]),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _showControls,
+                      onDoubleTap: _toggleFullscreen,
+                      child: Stack(alignment: Alignment.center, children: [
+                        VideoPlayer(controller),
+                        AnimatedOpacity(
+                          opacity: _controlsVisible ? 1 : 0,
+                          duration: const Duration(milliseconds: 180),
+                          child: IgnorePointer(
+                            ignoring: !_controlsVisible,
+                            child: IconButton.filled(
+                              autofocus: true,
+                              tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
+                              iconSize: 42,
+                              onPressed: () {
+                                _togglePlayback();
+                                _showControls();
+                              },
+                              icon: Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 8,
+                          bottom: 8,
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: IgnorePointer(
+                              ignoring: !_controlsVisible,
+                              child: IconButton.filledTonal(
+                                tooltip: _fullscreen ? 'Sair da tela cheia' : 'Tela cheia',
+                                onPressed: _toggleFullscreen,
+                                icon: Icon(_fullscreen ? Icons.fullscreen_exit : Icons.fullscreen),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
                   ),
       ),
     );
