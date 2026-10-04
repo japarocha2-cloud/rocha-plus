@@ -17,8 +17,15 @@ class HomeScreen extends StatelessWidget {
   ];
 
   void openSection(BuildContext context, String title) {
-    if (title == 'TV ao Vivo') {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const LiveTvScreen()));
+    if (title == 'TV ao Vivo' || title == 'Favoritos') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LiveTvScreen(
+            initialGroup: title == 'Favoritos' ? 'Favoritos' : 'Todos',
+          ),
+        ),
+      );
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
