@@ -6,7 +6,8 @@ import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
-  const LiveTvScreen({super.key});
+  final String initialGroup;
+  const LiveTvScreen({super.key, this.initialGroup = 'Todos'});
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
 }
@@ -19,11 +20,12 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Set<String> favorites = {};
   bool loading = true;
   String? error;
-  String selectedGroup = 'Todos';
+  late String selectedGroup;
 
   @override
   void initState() {
     super.initState();
+    selectedGroup = widget.initialGroup;
     load();
   }
 
@@ -79,7 +81,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TV ao Vivo'),
+        title: Text(selectedGroup == 'Favoritos' ? 'Favoritos' : 'TV ao Vivo'),
         actions: [
           IconButton(
             tooltip: 'Atualizar canais',
