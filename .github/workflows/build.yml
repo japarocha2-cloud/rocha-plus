@@ -43,6 +43,15 @@ jobs:
                   1,
               )
 
+          cast_meta = '''<meta-data\n                android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"\n                android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />'''
+          if 'OPTIONS_PROVIDER_CLASS_NAME' not in text:
+              text = text.replace('<application', '<application', 1)
+              marker = '<meta-data android:name="io.flutter.embedding.android.NormalTheme"'
+              if marker in text:
+                  text = text.replace(marker, cast_meta + '\n            ' + marker, 1)
+              else:
+                  text = text.replace('</application>', '    ' + cast_meta + '\n    </application>', 1)
+
           path.write_text(text)
           PY
       - name: Get dependencies
