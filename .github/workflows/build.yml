@@ -20,17 +20,30 @@ jobs:
         run: |-
           flutter create --platforms=android .
           rm -f test/widget_test.dart
-      - name: Enable release networking
+      - name: Configure Android phone and TV
         run: |-
           python3 - <<'PY'
           from pathlib import Path
           path = Path("android/app/src/main/AndroidManifest.xml")
           text = path.read_text()
+
           permission = '<uses-permission android:name="android.permission.INTERNET" />'
+          features = (
+              '<uses-feature android:name="android.software.leanback" android:required="false" />\n'
+              '    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />'
+          )
           if permission not in text:
-              marker = '<application'
-              text = text.replace(marker, f'    {permission}\n    {marker}', 1)
-              path.write_text(text)
+              text = text.replace('<application', f'    {permission}\n    {features}\n    <application', 1)
+
+          if 'android.intent.category.LEANBACK_LAUNCHER' not in text:
+              launcher = '<category android:name="android.intent.category.LAUNCHER"/>'
+              text = text.replace(
+                  launcher,
+                  launcher + '\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>',
+                  1,
+              )
+
+          path.write_text(text)
           PY
       - name: Get dependencies
         run: flutter pub get
