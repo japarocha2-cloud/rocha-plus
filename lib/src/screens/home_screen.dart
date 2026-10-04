@@ -70,6 +70,7 @@ class HomeScreen extends StatelessWidget {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 40)),
       ]),
+      ),
     ),
   );
 }
@@ -111,23 +112,43 @@ class _Hero extends StatelessWidget {
   );
 }
 
-class _SectionCard extends StatelessWidget {
+class _SectionCard extends StatefulWidget {
   final String title;
   final IconData icon;
   final VoidCallback onTap;
   const _SectionCard({required this.title, required this.icon, required this.onTap});
 
   @override
-  Widget build(BuildContext context) => Card(
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
+  State<_SectionCard> createState() => _SectionCardState();
+}
+
+class _SectionCardState extends State<_SectionCard> {
+  bool focused = false;
+
+  @override
+  Widget build(BuildContext context) => AnimatedScale(
+    scale: focused ? 1.04 : 1,
+    duration: const Duration(milliseconds: 120),
+    child: Card(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: focused ? RochaColors.gold : Colors.transparent,
+          width: focused ? 2.5 : 0,
+        ),
+      ),
+      child: InkWell(
+      autofocus: widget.title == 'TV ao Vivo',
+      focusColor: RochaColors.wine,
+      onFocusChange: (value) => setState(() => focused = value),
+      onTap: widget.onTap,
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(icon, size: 38, color: RochaColors.gold),
+          Icon(widget.icon, size: 38, color: RochaColors.gold),
           const Spacer(),
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(widget.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const Text('Abrir', style: TextStyle(color: Colors.white54)),
         ]),
       ),
