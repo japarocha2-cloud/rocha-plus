@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../live/channel.dart';
 import '../live/channel_repository.dart';
+import '../live/favorites_repository.dart';
 import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
 
@@ -12,8 +13,10 @@ class LiveTvScreen extends StatefulWidget {
 
 class _LiveTvScreenState extends State<LiveTvScreen> {
   final repository = ChannelRepository();
+  final favoritesRepository = FavoritesRepository();
   final search = TextEditingController();
   List<Channel> channels = const [];
+  Set<String> favorites = {};
   bool loading = true;
   String? error;
   String selectedGroup = 'Todos';
@@ -27,11 +30,27 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Future<void> load({bool forceRefresh = false}) async {
     setState(() { loading = true; error = null; });
     try {
-      final result = await repository.loadBrazilPublicDirectory(forceRefresh: forceRefresh);
-      if (mounted) setState(() { channels = result; loading = false; });
+      final results = await Future.wait([
+        repository.loadBrazilPublicDirectory(forceRefresh: forceRefresh),
+        favoritesRepository.load(),
+      ]);
+      if (mounted) {
+        setState(() {
+          channels = results[0] as List<Channel>;
+          favorites = results[1] as Set<String>;
+          loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() { error = 'Não foi possível carregar os canais.'; loading = false; });
     }
+  }
+
+  Future<void> toggleFavorite(Channel channel) async {
+    final next = {...favorites};
+    next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
+    setState(() => favorites = next);
+    await favoritesRepository.save(next);
   }
 
   @override
@@ -43,7 +62,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   Widget build(BuildContext context) {
     final groups = channels.map((c) => c.group).toSet().toList()..sort();
-    if (selectedGroup != 'Todos' && !groups.contains(selectedGroup)) {
+    if (selectedGroup != 'Todos' && selectedGroup != 'Favoritos' && !groups.contains(selectedGroup)) {
       selectedGroup = 'Todos';
     }
 
@@ -52,7 +71,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       final matchesSearch = q.isEmpty ||
           c.name.toLowerCase().contains(q) ||
           c.group.toLowerCase().contains(q);
-      final matchesGroup = selectedGroup == 'Todos' || c.group == selectedGroup;
+      final matchesGroup = selectedGroup == 'Todos' ||
+          (selectedGroup == 'Favoritos' && favorites.contains(c.url)) ||
+          c.group == selectedGroup;
       return matchesSearch && matchesGroup;
     }).toList(growable: false);
 
@@ -87,11 +108,10 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               scrollDirection: Axis.horizontal,
               children: [
-                _GroupChip(
-                  label: 'Todos',
-                  selected: selectedGroup == 'Todos',
-                  onSelected: () => setState(() => selectedGroup = 'Todos'),
-                ),
+                _GroupChip(label: 'Todos', selected: selectedGroup == 'Todos',
+                  onSelected: () => setState(() => selectedGroup = 'Todos')),
+                _GroupChip(label: 'Favoritos', selected: selectedGroup == 'Favoritos',
+                  onSelected: () => setState(() => selectedGroup = 'Favoritos')),
                 ...groups.map((group) => _GroupChip(
                   label: group,
                   selected: selectedGroup == group,
@@ -120,24 +140,24 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                           itemCount: visible.length,
                           itemBuilder: (_, i) {
                             final channel = visible[i];
+                            final isFavorite = favorites.contains(channel.url);
                             return Card(
                               child: ListTile(
                                 leading: channel.logo == null || channel.logo!.isEmpty
                                     ? const Icon(Icons.live_tv)
-                                    : Image.network(
-                                        channel.logo!,
-                                        width: 48,
-                                        height: 48,
+                                    : Image.network(channel.logo!, width: 48, height: 48,
                                         fit: BoxFit.contain,
-                                        errorBuilder: (_, __, ___) => const Icon(Icons.live_tv),
-                                      ),
+                                        errorBuilder: (_, __, ___) => const Icon(Icons.live_tv)),
                                 title: Text(channel.name),
                                 subtitle: Text(channel.group),
-                                trailing: const Icon(Icons.play_circle_fill, color: RochaColors.ruby),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel)),
+                                trailing: IconButton(
+                                  tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+                                  onPressed: () => toggleFavorite(channel),
+                                  icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      color: isFavorite ? RochaColors.ruby : Colors.white54),
                                 ),
+                                onTap: () => Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel))),
                               ),
                             );
                           },
@@ -153,59 +173,43 @@ class _GroupChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onSelected;
   const _GroupChip({required this.label, required this.selected, required this.onSelected});
-
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: ChoiceChip(
-          label: Text(label),
-          selected: selected,
-          onSelected: (_) => onSelected(),
-          selectedColor: RochaColors.wine,
-          side: BorderSide(color: selected ? RochaColors.ruby : Colors.white24),
-        ),
-      );
+    padding: const EdgeInsets.only(right: 8),
+    child: ChoiceChip(label: Text(label), selected: selected,
+      onSelected: (_) => onSelected(), selectedColor: RochaColors.wine,
+      side: BorderSide(color: selected ? RochaColors.ruby : Colors.white24)),
+  );
 }
 
 class _ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
   const _ErrorState({required this.message, required this.onRetry});
-
   @override
-  Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.cloud_off, size: 46, color: RochaColors.ruby),
-            const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              autofocus: true,
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Tentar novamente'),
-            ),
-          ]),
-        ),
-      );
+  Widget build(BuildContext context) => Center(child: Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(mainAxisSize: MainAxisSize.min, children: [
+      const Icon(Icons.cloud_off, size: 46, color: RochaColors.ruby),
+      const SizedBox(height: 12), Text(message, textAlign: TextAlign.center),
+      const SizedBox(height: 16),
+      FilledButton.icon(autofocus: true, onPressed: onRetry,
+        icon: const Icon(Icons.refresh), label: const Text('Tentar novamente')),
+    ]),
+  ));
 }
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
-
   @override
-  Widget build(BuildContext context) => const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.search_off, size: 46, color: Colors.white38),
-            SizedBox(height: 12),
-            Text('Nenhum canal encontrado.'),
-            SizedBox(height: 4),
-            Text('Tente outro nome ou categoria.', style: TextStyle(color: Colors.white54)),
-          ]),
-        ),
-      );
+  Widget build(BuildContext context) => const Center(child: Padding(
+    padding: EdgeInsets.all(24),
+    child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Icon(Icons.search_off, size: 46, color: Colors.white38),
+      SizedBox(height: 12), Text('Nenhum canal encontrado.'),
+      SizedBox(height: 4),
+      Text('Tente outro nome, categoria ou adicione favoritos.',
+        style: TextStyle(color: Colors.white54), textAlign: TextAlign.center),
+    ]),
+  ));
 }
