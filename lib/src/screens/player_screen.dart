@@ -228,60 +228,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         ),
                       )
                     : AspectRatio(
-                    aspectRatio: controller.value.aspectRatio > 0
-                        ? controller.value.aspectRatio
-                        : 16 / 9,
-                    child: _VideoSurface(
-                      controller: controller,
-                      controlsVisible: _controlsVisible,
-                      fullscreen: _fullscreen,
-                      onShowControls: _showControls,
-                      onTogglePlayback: _togglePlayback,
-                      onToggleFullscreen: _toggleFullscreen,
-                    ),
-                  ),
-                      behavior: HitTestBehavior.opaque,
-                      onTap: _showControls,
-                      onDoubleTap: _toggleFullscreen,
-                      child: Stack(alignment: Alignment.center, children: [
-                        VideoPlayer(controller),
-                        AnimatedOpacity(
-                          opacity: _controlsVisible ? 1 : 0,
-                          duration: const Duration(milliseconds: 180),
-                          child: IgnorePointer(
-                            ignoring: !_controlsVisible,
-                            child: IconButton.filled(
-                              autofocus: true,
-                              tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
-                              iconSize: 42,
-                              onPressed: () {
-                                _togglePlayback();
-                                _showControls();
-                              },
-                              icon: Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                            ),
-                          ),
+                        aspectRatio: controller.value.aspectRatio > 0
+                            ? controller.value.aspectRatio
+                            : 16 / 9,
+                        child: _VideoSurface(
+                          controller: controller,
+                          controlsVisible: _controlsVisible,
+                          fullscreen: _fullscreen,
+                          onShowControls: _showControls,
+                          onTogglePlayback: _togglePlayback,
+                          onToggleFullscreen: _toggleFullscreen,
                         ),
-                        Positioned(
-                          right: 8,
-                          bottom: 8,
-                          child: AnimatedOpacity(
-                            opacity: _controlsVisible ? 1 : 0,
-                            duration: const Duration(milliseconds: 180),
-                            child: IgnorePointer(
-                              ignoring: !_controlsVisible,
-                              child: IconButton.filledTonal(
-                                tooltip: _fullscreen ? 'Sair da tela cheia' : 'Tela cheia',
-                                onPressed: _toggleFullscreen,
-                                icon: Icon(_fullscreen ? Icons.fullscreen_exit : Icons.fullscreen),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ),
-      ),
+                      ),
+      )
     );
   }
 }
