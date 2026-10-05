@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../theme/rocha_theme.dart';
@@ -57,6 +58,77 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final controller = _controller;
     if (controller != null && controller.value.hasError && mounted && !_failed) {
       setState(() { _loading = false; _failed = true; });
+    }
+  }
+
+  Future<void> _openCastPicker() async {
+    await GoogleCastDiscoveryManager.instance.startDiscovery();
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: RochaColors.surface,
+      builder: (sheetContext) => SafeArea(
+        child: StreamBuilder<List<GoogleCastDevice>>(
+          stream: GoogleCastDiscoveryManager.instance.devicesStream,
+          builder: (context, snapshot) {
+            final devices = snapshot.data ?? const <GoogleCastDevice>[];
+            if (devices.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: RochaColors.ruby),
+                    SizedBox(height: 18),
+                    Text('Procurando TVs e Chromecasts na mesma rede Wi-Fi...'),
+                  ],
+                ),
+              );
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: devices.length,
+              itemBuilder: (_, index) {
+                final device = devices[index];
+                return ListTile(
+                  leading: const Icon(Icons.cast, color: RochaColors.gold),
+                  title: Text(device.friendlyName),
+                  onTap: () async {
+                    Navigator.pop(sheetContext);
+                    await _startCasting(device);
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _startCasting(GoogleCastDevice device) async {
+    try {
+      await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+      final media = GoogleCastMediaInformation(
+        contentId: widget.channel.url,
+        contentUrl: Uri.parse(widget.channel.url),
+        contentType: 'application/x-mpegURL',
+        streamType: CastMediaStreamType.live,
+        metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
+      );
+      await GoogleCastRemoteMediaClient.instance.loadMedia(media);
+      await _controller?.pause();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Canal enviado para a TV.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível iniciar o espelhamento.')),
+        );
+      }
     }
   }
 
