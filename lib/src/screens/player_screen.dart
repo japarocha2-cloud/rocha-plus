@@ -113,7 +113,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         contentId: widget.channel.url,
         contentUrl: Uri.parse(widget.channel.url),
         contentType: 'application/x-mpegURL',
-        streamType: CastMediaStreamType.LIVE,
+        streamType: CastMediaStreamType.live,
         metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
       );
       await GoogleCastRemoteMediaClient.instance.loadMedia(media);
