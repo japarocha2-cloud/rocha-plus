@@ -113,7 +113,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         contentId: widget.channel.url,
         contentUrl: Uri.parse(widget.channel.url),
         contentType: 'application/x-mpegURL',
-        streamType: CastMediaStreamType.live,
+        streamType: CastMediaStreamType.LIVE,
         metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
       );
       await GoogleCastRemoteMediaClient.instance.loadMedia(media);
@@ -181,17 +181,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final controller = _controller;
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(widget.channel.name),
-        actions: [
-          IconButton(
-            tooltip: 'Transmitir para TV',
-            onPressed: _openCastPicker,
-            icon: const Icon(Icons.cast),
-          ),
-        ],
-      ),
+      appBar: _fullscreen
+          ? null
+          : AppBar(
+              backgroundColor: Colors.black,
+              title: Text(widget.channel.name),
+              actions: [
+                IconButton(
+                  tooltip: 'Transmitir para TV',
+                  onPressed: _openCastPicker,
+                  icon: const Icon(Icons.cast),
+                ),
+              ],
+            ),
       body: Center(
         child: _failed
             ? _FailureState(onRetry: _initialize)
