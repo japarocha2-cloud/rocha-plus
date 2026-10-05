@@ -106,27 +106,63 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  String _castContentType(Uri uri) {
+    final path = uri.path.toLowerCase();
+    if (path.endsWith('.m3u8') || path.endsWith('.m3u')) {
+      return 'application/x-mpegURL';
+    }
+    if (path.endsWith('.mpd')) return 'application/dash+xml';
+    if (path.endsWith('.webm')) return 'video/webm';
+    if (path.endsWith('.mp4') || path.endsWith('.m4v')) return 'video/mp4';
+    // The Rocha+ catalogue is primarily live HLS. URLs without a file
+    // extension are commonly HLS endpoints as well.
+    return 'application/x-mpegURL';
+  }
+
   Future<void> _startCasting(GoogleCastDevice device) async {
     try {
+      final uri = Uri.parse(widget.channel.url);
       await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+
       final media = GoogleCastMediaInformation(
         contentId: widget.channel.url,
-        contentUrl: Uri.parse(widget.channel.url),
-        contentType: 'application/x-mpegURL',
+        contentUrl: uri,
+        contentType: _castContentType(uri),
         streamType: CastMediaStreamType.live,
         metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
       );
-      await GoogleCastRemoteMediaClient.instance.loadMedia(media);
+
+      // Explicit autoplay matters for live streams on the Default Media
+      // Receiver. Calling play afterwards also covers receivers that accept
+      // the media load but remain in a paused/idle state.
+      await GoogleCastRemoteMediaClient.instance.loadMedia(
+        media,
+        autoPlay: true,
+        playPosition: Duration.zero,
+        playbackRate: 1.0,
+      );
+      await GoogleCastRemoteMediaClient.instance.play();
+
+      // Keep local playback alive until the receiver accepted the load/play
+      // request. This avoids a black screen on both devices when Cast fails.
       await _controller?.pause();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Canal enviado para a TV.')),
         );
       }
-    } catch (_) {
+    } catch (error) {
+      // If the receiver rejects the stream, resume playback on the phone.
+      await _controller?.play();
+      debugPrint('Rocha+ Cast error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível iniciar o espelhamento.')),
+          const SnackBar(
+            content: Text(
+              'A TV conectou, mas não conseguiu abrir este sinal. Tente outro canal.',
+            ),
+          ),
         );
       }
     }
