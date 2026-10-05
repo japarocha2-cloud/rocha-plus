@@ -1,5 +1,7 @@
 name: Build Rocha+
 
+# V2 validation: Fullscreen + Google Cast
+
 on:
   push:
     branches: [main]
