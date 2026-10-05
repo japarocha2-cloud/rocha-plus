@@ -244,7 +244,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 : _fullscreen
                     ? SizedBox.expand(
                         child: FittedBox(
-                          fit: BoxFit.contain,
+                          fit: BoxFit.cover,
                           child: SizedBox(
                             width: controller.value.size.width > 0
                                 ? controller.value.size.width
