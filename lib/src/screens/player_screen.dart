@@ -142,16 +142,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _toggleFullscreen() async {
-    setState(() => _fullscreen = !_fullscreen);
-    if (_fullscreen) {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    final enterFullscreen = !_fullscreen;
+    if (mounted) setState(() => _fullscreen = enterFullscreen);
+
+    if (enterFullscreen) {
+      // Lock the player to landscape and remove Android system chrome.
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ]);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     }
   }
 
@@ -199,11 +205,41 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ? _FailureState(onRetry: _initialize)
             : _loading || controller == null || !controller.value.isInitialized
                 ? const CircularProgressIndicator(color: RochaColors.ruby)
-                : AspectRatio(
+                : _fullscreen
+                    ? SizedBox.expand(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                            width: controller.value.size.width > 0
+                                ? controller.value.size.width
+                                : 1920,
+                            height: controller.value.size.height > 0
+                                ? controller.value.size.height
+                                : 1080,
+                            child: _VideoSurface(
+                              controller: controller,
+                              controlsVisible: _controlsVisible,
+                              fullscreen: _fullscreen,
+                              onShowControls: _showControls,
+                              onTogglePlayback: _togglePlayback,
+                              onToggleFullscreen: _toggleFullscreen,
+                            ),
+                          ),
+                        ),
+                      )
+                    : AspectRatio(
                     aspectRatio: controller.value.aspectRatio > 0
                         ? controller.value.aspectRatio
                         : 16 / 9,
-                    child: GestureDetector(
+                    child: _VideoSurface(
+                      controller: controller,
+                      controlsVisible: _controlsVisible,
+                      fullscreen: _fullscreen,
+                      onShowControls: _showControls,
+                      onTogglePlayback: _togglePlayback,
+                      onToggleFullscreen: _toggleFullscreen,
+                    ),
+                  ),
                       behavior: HitTestBehavior.opaque,
                       onTap: _showControls,
                       onDoubleTap: _toggleFullscreen,
@@ -248,6 +284,73 @@ class _PlayerScreenState extends State<PlayerScreen> {
       ),
     );
   }
+}
+
+class _VideoSurface extends StatelessWidget {
+  final VideoPlayerController controller;
+  final bool controlsVisible;
+  final bool fullscreen;
+  final VoidCallback onShowControls;
+  final VoidCallback onTogglePlayback;
+  final VoidCallback onToggleFullscreen;
+
+  const _VideoSurface({
+    required this.controller,
+    required this.controlsVisible,
+    required this.fullscreen,
+    required this.onShowControls,
+    required this.onTogglePlayback,
+    required this.onToggleFullscreen,
+  });
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onShowControls,
+        onDoubleTap: onToggleFullscreen,
+        child: Stack(
+          fit: StackFit.expand,
+          alignment: Alignment.center,
+          children: [
+            VideoPlayer(controller),
+            Center(
+              child: AnimatedOpacity(
+                opacity: controlsVisible ? 1 : 0,
+                duration: const Duration(milliseconds: 180),
+                child: IgnorePointer(
+                  ignoring: !controlsVisible,
+                  child: IconButton.filled(
+                    autofocus: true,
+                    tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
+                    iconSize: 42,
+                    onPressed: () {
+                      onTogglePlayback();
+                      onShowControls();
+                    },
+                    icon: Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 8,
+              bottom: 8,
+              child: AnimatedOpacity(
+                opacity: controlsVisible ? 1 : 0,
+                duration: const Duration(milliseconds: 180),
+                child: IgnorePointer(
+                  ignoring: !controlsVisible,
+                  child: IconButton.filledTonal(
+                    tooltip: fullscreen ? 'Sair da tela cheia' : 'Tela cheia',
+                    onPressed: onToggleFullscreen,
+                    icon: Icon(fullscreen ? Icons.fullscreen_exit : Icons.fullscreen),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 class _FailureState extends StatelessWidget {
