@@ -175,6 +175,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                       favorite:
                                           favorites.contains(channel.url),
                                       autofocus: tv && index == 0,
+                                      tv: tv,
                                       onFavorite: () =>
                                           toggleFavorite(channel),
                                       onTap: () => openChannel(channel),
@@ -318,6 +319,7 @@ class _ChannelCard extends StatefulWidget {
   final Channel channel;
   final bool favorite;
   final bool autofocus;
+  final bool tv;
   final VoidCallback onTap;
   final VoidCallback onFavorite;
 
@@ -325,6 +327,7 @@ class _ChannelCard extends StatefulWidget {
     required this.channel,
     required this.favorite,
     required this.autofocus,
+    required this.tv,
     required this.onTap,
     required this.onFavorite,
   });
@@ -371,12 +374,18 @@ class _ChannelCardState extends State<_ChannelCard> {
                 child: widget.channel.logo == null ||
                         widget.channel.logo!.isEmpty
                     ? const _FallbackArt()
-                    : Image.network(
-                        widget.channel.logo!,
-                        fit: BoxFit.cover,
-                        cacheWidth: 520,
-                        filterQuality: FilterQuality.medium,
-                        errorBuilder: (_, __, ___) => const _FallbackArt(),
+                    : ColoredBox(
+                        color: RochaColors.surfaceRaised,
+                        child: Padding(
+                          padding: const EdgeInsets.all(18),
+                          child: Image.network(
+                            widget.channel.logo!,
+                            fit: BoxFit.contain,
+                            cacheWidth: widget.tv ? 480 : 320,
+                            filterQuality: FilterQuality.medium,
+                            errorBuilder: (_, __, ___) => const _FallbackArt(),
+                          ),
+                        ),
                       ),
               ),
               const Positioned.fill(
