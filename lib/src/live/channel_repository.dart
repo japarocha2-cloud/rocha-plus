@@ -66,7 +66,9 @@ class ChannelRepository {
     if (name.contains('globo')) return 1;
     if (name.contains('record')) return 2;
     if (RegExp(r'(^|\s)band(\s|$)').hasMatch(name) ||
-        name.contains('bandnews')) return 3;
+        name.contains('bandnews')) {
+      return 3;
+    }
 
     // Other nationally known/public directory brands ahead of regional feeds.
     if (name.contains('tv brasil') ||
