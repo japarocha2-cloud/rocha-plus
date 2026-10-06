@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
@@ -42,6 +44,23 @@ void main() {
     expect(repository.sportsPriorityForTests(male), greaterThan(repository.sportsPriorityForTests(female)));
     expect(repository.sportsPriorityForTests(female), greaterThan(repository.sportsPriorityForTests(tennis)));
     expect(repository.sportsOnly([tennis, female, male]), [male, female, tennis]);
+  });
+
+  test('one remote catalog failure does not erase the healthy source', () async {
+    ChannelRepository.setClientForTests(MockClient((request) async {
+      if (request.url == ChannelRepository.developmentPlaylist) {
+        return http.Response('''
+#EXTM3U
+#EXTINF:-1 group-title="TV aberta",Canal Brasil Teste
+https://example.com/brasil.m3u8
+''', 200);
+      }
+      return http.Response('offline', 503);
+    }));
+
+    final channels = await ChannelRepository().loadBrazilPublicDirectory(forceRefresh: true);
+
+    expect(channels.any((channel) => channel.name == 'Canal Brasil Teste'), isTrue);
   });
 }
 
