@@ -10,11 +10,7 @@ class HomeScreen extends StatelessWidget {
     ('TV ao Vivo', Icons.live_tv_rounded),
     ('Esportes', Icons.sports_soccer_rounded),
     ('Notícias', Icons.newspaper_rounded),
-    ('Infantil', Icons.toys_rounded),
-    ('Filmes', Icons.movie_rounded),
-    ('Séries', Icons.tv_rounded),
-    ('Documentários', Icons.public_rounded),
-    ('Regionais', Icons.location_city_rounded),
+
     ('Favoritos', Icons.favorite_rounded),
   ];
 
@@ -346,7 +342,7 @@ class _SectionCardState extends State<_SectionCard> {
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 3),
                   const Text('Abrir',
-                      style: TextStyle(color: RochaColors.playGreen, fontSize: 12)),
+                      style: TextStyle(color: RochaColors.gold, fontSize: 12)),
                 ],
               ),
             ),
