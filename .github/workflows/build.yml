@@ -93,7 +93,10 @@ jobs:
           if 'MediaNotificationService' not in text:
               text = text.replace('</application>', '    ' + cast_service + '\n    </application>', 1)
 
-          text = text.replace('android:label="rocha_plus"', 'android:label="Rocha+"')
+          text = text.replace(
+              'android:label="rocha_plus"',
+              'android:label="Rocha+" android:banner="@drawable/rocha_tv_banner"',
+          )
           text = text.replace(
               'android:icon="@mipmap/ic_launcher"',
               'android:icon="@drawable/rocha_plus_icon" android:roundIcon="@drawable/rocha_plus_icon"',
@@ -106,6 +109,22 @@ jobs:
           drawable.mkdir(parents=True, exist_ok=True)
           drawable.joinpath("rocha_plus_icon.webp").write_bytes(
               launcher_icon.read_bytes()
+          )
+          drawable.joinpath("rocha_tv_banner.xml").write_text(
+              """<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#05040A" />
+            <corners android:radius="18dp" />
+            <stroke android:width="2dp" android:color="#243442" />
+        </shape>
+    </item>
+    <item android:left="92dp" android:right="92dp" android:top="22dp" android:bottom="22dp">
+        <bitmap android:src="@drawable/rocha_plus_icon" android:gravity="center" />
+    </item>
+</layer-list>
+"""
           )
 
           PY
@@ -160,6 +179,10 @@ jobs:
           for token in forbidden_tokens:
               if token in source_text:
                   raise SystemExit(f'Obsolete or unsafe command found: {token}')
+
+          android_manifest = (root / 'android/app/src/main/AndroidManifest.xml').read_text()
+          if 'android.intent.category.LEANBACK_LAUNCHER' not in android_manifest or 'android:banner="@drawable/rocha_tv_banner"' not in android_manifest:
+              raise SystemExit('Android TV launcher configuration is missing.')
 
           player = (root / 'lib/src/screens/player_screen.dart').read_text()
           if 'state == CastMediaPlayerState.playing' not in player:
