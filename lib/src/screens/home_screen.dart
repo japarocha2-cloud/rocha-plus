@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../live/channel.dart';
+import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
 import 'live_tv_screen.dart';
 
@@ -12,6 +14,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int mobileTab = 0;
+  late final Future<List<Channel>> _livePreview;
+
+  @override
+  void initState() {
+    super.initState();
+    _livePreview = ChannelRepository().loadBrazilPublicDirectory();
+  }
 
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
@@ -124,36 +133,47 @@ class _HomeScreenState extends State<HomeScreen> {
                         onSeeAll: () => openSection('TV ao Vivo'),
                       ),
                       SliverToBoxAdapter(
-                        child: _PreviewRail(
-                          tv: tv,
-                          items: const [
-                            _PreviewItem(
-                              'Todos os canais',
-                              Icons.live_tv_outlined,
-                              'Abrir TV ao vivo',
-                            ),
-                            _PreviewItem(
-                              'Notícias',
-                              Icons.newspaper_outlined,
-                              'Explorar canais',
-                            ),
-                            _PreviewItem(
-                              'Esportes',
-                              Icons.sports_soccer,
-                              'Explorar canais',
-                            ),
-                            _PreviewItem(
-                              'Cultura',
-                              Icons.account_balance_outlined,
-                              'Explorar canais',
-                            ),
-                            _PreviewItem(
-                              'Regionais',
-                              Icons.location_city_outlined,
-                              'Explorar canais',
-                            ),
-                          ],
-                          onTap: (_) => openSection('TV ao Vivo'),
+                        child: FutureBuilder<List<Channel>>(
+                          future: _livePreview,
+                          builder: (context, snapshot) {
+                            final channels = snapshot.data ?? const <Channel>[];
+                            final items = channels
+                                .take(6)
+                                .map(
+                                  (channel) => _PreviewItem(
+                                    channel.name,
+                                    Icons.live_tv_outlined,
+                                    channel.group,
+                                    logo: channel.logo,
+                                  ),
+                                )
+                                .toList(growable: false);
+
+                            if (items.isEmpty) {
+                              return _PreviewRail(
+                                tv: tv,
+                                items: const [
+                                  _PreviewItem(
+                                    'TV ao Vivo',
+                                    Icons.live_tv_outlined,
+                                    'Abrir canais',
+                                  ),
+                                  _PreviewItem(
+                                    'Favoritos',
+                                    Icons.favorite_border,
+                                    'Sua seleção',
+                                  ),
+                                ],
+                                onTap: (_) => openSection('TV ao Vivo'),
+                              );
+                            }
+
+                            return _PreviewRail(
+                              tv: tv,
+                              items: items,
+                              onTap: (_) => openSection('TV ao Vivo'),
+                            );
+                          },
                         ),
                       ),
                       _SectionTitle(
@@ -444,8 +464,14 @@ class _PreviewItem {
   final String title;
   final IconData icon;
   final String subtitle;
+  final String? logo;
 
-  const _PreviewItem(this.title, this.icon, this.subtitle);
+  const _PreviewItem(
+    this.title,
+    this.icon,
+    this.subtitle, {
+    this.logo,
+  });
 }
 
 class _PreviewRail extends StatelessWidget {
@@ -479,8 +505,8 @@ class _PreviewRail extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                DecoratedBox(
-                  decoration: const BoxDecoration(
+                const DecoratedBox(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -492,15 +518,38 @@ class _PreviewRail extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Icon(
-                    item.icon,
-                    size: tv ? 52 : 38,
-                    color: RochaColors.playGreen.withValues(alpha: .82),
+                if (item.logo != null && item.logo!.isNotEmpty)
+                  Positioned.fill(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        tv ? 24 : 18,
+                        tv ? 14 : 12,
+                        tv ? 24 : 18,
+                        tv ? 48 : 40,
+                      ),
+                      child: Image.network(
+                        item.logo!,
+                        fit: BoxFit.contain,
+                        cacheWidth: tv ? 360 : 240,
+                        filterQuality: FilterQuality.medium,
+                        errorBuilder: (_, __, ___) => Icon(
+                          item.icon,
+                          size: tv ? 52 : 38,
+                          color: RochaColors.playGreen.withValues(alpha: .82),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Icon(
+                      item.icon,
+                      size: tv ? 52 : 38,
+                      color: RochaColors.playGreen.withValues(alpha: .82),
+                    ),
                   ),
-                ),
                 Positioned(
                   left: 14,
                   right: 14,
