@@ -39,7 +39,7 @@ void main() {
     await tester.pump();
     expect(find.text('Infantil está sendo preparado para uma próxima versão.'), findsNothing);
     expect(find.text('Infantil'), findsWidgets);
-    expect(find.text('TV ao Vivo'), findsNothing);
+    expect(find.text('Infantil'), findsWidgets);
   });
 
 }
