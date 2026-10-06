@@ -57,6 +57,8 @@ required = {
     "Tela cheia": "controle de fullscreen",
     "Transmitir para TV": "controle de Cast",
     "VideoPlayerController.networkUrl": "player de rede",
+    "Conectando…": "estado real de conexão do player",
+    "reportPlaybackFailure": "quarentena de falhas do player",
 }
 for token, label in required.items():
     if token not in all_dart:
