@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../cast/cast_hls_proxy.dart';
+import 'cast_control_screen.dart';
 import '../live/channel.dart';
 import '../theme/rocha_theme.dart';
 
@@ -177,8 +178,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await _controller?.pause();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Canal enviado para a TV.')),
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CastControlScreen(
+              channel: widget.channel,
+              deviceName: device.friendlyName,
+            ),
+          ),
         );
       }
     } catch (error) {
