@@ -4,7 +4,7 @@ name: Build Rocha+
 
 on:
   push:
-    branches: [main]
+    branches: [main, v2-build-validation]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -15,11 +15,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
       - name: Generate Android scaffold
         run: |-
           flutter create --platforms=android .
@@ -31,12 +33,14 @@ jobs:
           text = text.replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 37")
           path.write_text(text)
           PY
-      - name: Configure Android phone and TV
+
+      - name: Configure Android phone, branding and mirroring
         run: |-
           python3 - <<'PY'
           from pathlib import Path
-          path = Path("android/app/src/main/AndroidManifest.xml")
-          text = path.read_text()
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text()
 
           permission = '<uses-permission android:name="android.permission.INTERNET" />'
           cast_permission = '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />'
@@ -57,86 +61,106 @@ jobs:
                   1,
               )
 
-          cast_meta = '''<meta-data\n                android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"\n                android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />'''
+          cast_meta = (
+              '<meta-data\n'
+              '                android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"\n'
+              '                android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />'
+          )
           if 'OPTIONS_PROVIDER_CLASS_NAME' not in text:
               text = text.replace('</application>', '    ' + cast_meta + '\n    </application>', 1)
 
-          cast_service = '''<service
-                android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
-                android:exported="false"
-                android:foregroundServiceType="mediaPlayback" />'''
+          cast_service = (
+              '<service\n'
+              '                android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"\n'
+              '                android:exported="false"\n'
+              '                android:foregroundServiceType="mediaPlayback" />'
+          )
           if 'MediaNotificationService' not in text:
               text = text.replace('</application>', '    ' + cast_service + '\n    </application>', 1)
 
-          # Apply Rocha+ branding after flutter create regenerates Android.
           text = text.replace('android:label="rocha_plus"', 'android:label="Rocha+"')
-          text = text.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/rocha_plus_icon" android:roundIcon="@drawable/rocha_plus_icon"')
-          path.write_text(text)
+          text = text.replace(
+              'android:icon="@mipmap/ic_launcher"',
+              'android:icon="@drawable/rocha_plus_icon" android:roundIcon="@drawable/rocha_plus_icon"',
+          )
+          manifest.write_text(text)
 
           drawable = Path("android/app/src/main/res/drawable")
           drawable.mkdir(parents=True, exist_ok=True)
-          Path("branding/rocha_plus_icon.xml").replace(drawable / "rocha_plus_icon.xml")
+          drawable.joinpath("rocha_plus_icon.xml").write_text(
+              Path("branding/rocha_plus_icon.xml").read_text()
+          )
 
           main_activity = Path("android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt")
-          main_activity.write_text("""package com.example.rocha_plus
+          kotlin = """package com.example.rocha_plus
 
-import android.content.Intent
-import android.provider.Settings
-import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
+          import android.content.Intent
+          import android.provider.Settings
+          import io.flutter.embedding.android.FlutterActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : FlutterActivity() {
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
-        MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            "rocha_plus/screen_mirror"
-        ).setMethodCallHandler { call, result ->
-            if (call.method == "openCastSettings") {
-                try {
-                    startActivity(Intent(Settings.ACTION_CAST_SETTINGS))
-                    result.success(null)
-                } catch (primary: Exception) {
-                    try {
-                        startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                        result.success(null)
-                    } catch (fallback: Exception) {
-                        result.error("MIRROR_UNAVAILABLE", fallback.message, null)
-                    }
-                }
-            } else {
-                result.notImplemented()
-            }
-        }
-    }
-}
-""")
+          class MainActivity : FlutterActivity() {
+              override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+                  super.configureFlutterEngine(flutterEngine)
+                  MethodChannel(
+                      flutterEngine.dartExecutor.binaryMessenger,
+                      "rocha_plus/screen_mirror"
+                  ).setMethodCallHandler { call, result ->
+                      if (call.method == "openCastSettings") {
+                          try {
+                              startActivity(Intent(Settings.ACTION_CAST_SETTINGS))
+                              result.success(null)
+                          } catch (primary: Exception) {
+                              try {
+                                  startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                                  result.success(null)
+                              } catch (fallback: Exception) {
+                                  result.error("MIRROR_UNAVAILABLE", fallback.message, null)
+                              }
+                          }
+                      } else {
+                          result.notImplemented()
+                      }
+                  }
+              }
+          }
+          """
+          main_activity.write_text(kotlin.replace("\n          ", "\n"))
           PY
+
       - name: Get dependencies
         run: flutter pub get
+
       - name: Analyze
         run: flutter analyze
+
       - name: Test
         run: flutter test
+
       - name: Build universal APK
         run: flutter build apk --release
+
       - name: Build optimized APKs
         run: flutter build apk --release --split-per-abi
+
       - name: Build Play Store bundle
         run: flutter build appbundle --release
+
       - name: Upload universal APK
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-universal
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
       - name: Upload ARM64 APK
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-arm64
           path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
           if-no-files-found: error
+
       - name: Upload Play Store AAB
         uses: actions/upload-artifact@v4
         with:
