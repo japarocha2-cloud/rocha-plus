@@ -145,12 +145,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
     await GoogleCastRemoteMediaClient.instance.play();
 
-    for (var i = 0; i < 16; i++) {
+    var sawLoadingState = false;
+    for (var i = 0; i < 28; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       if (state == CastMediaPlayerState.playing) {
         return;
+      }
+      if (state == CastMediaPlayerState.loading ||
+          state == CastMediaPlayerState.buffering) {
+        sawLoadingState = true;
       }
       if (state == CastMediaPlayerState.idle && status?.idleReason != null) {
         throw StateError('Receiver entrou em idle: ${status?.idleReason}');
@@ -158,7 +163,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
 
     throw TimeoutException(
-      'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
+      sawLoadingState
+          ? 'A TV iniciou o carregamento, mas o canal não entrou em reprodução.'
+          : 'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
     );
   }
 
@@ -717,6 +724,13 @@ class _VideoSurface extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             VideoPlayer(controller),
+            if (controller.value.isBuffering)
+              const Center(
+                child: CircularProgressIndicator(
+                  color: RochaColors.playGreen,
+                  strokeWidth: 3,
+                ),
+              ),
             Center(
               child: AnimatedOpacity(
                 opacity: controlsVisible ? 1 : 0,
