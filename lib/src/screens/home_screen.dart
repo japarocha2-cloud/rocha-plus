@@ -157,7 +157,12 @@ class _CosmicHero extends StatelessWidget {
         builder: (context, constraints) {
           final narrow = constraints.maxWidth < 600;
           final television = constraints.maxWidth >= 900;
-          return Container(
+          final contentWidth = television ? 1280.0 : double.infinity;
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: contentWidth),
+              child: Container(
             margin: const EdgeInsets.fromLTRB(14, 8, 14, 0),
             constraints: BoxConstraints(minHeight: narrow ? 360 : (television ? 390 : 330)),
             decoration: BoxDecoration(
@@ -240,6 +245,8 @@ class _CosmicHero extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+              ),
             ),
           );
         },
