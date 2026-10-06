@@ -2,6 +2,10 @@ name: Build Rocha+
 
 # V2 validation: player + Google Cast + branding
 
+concurrency:
+  group: rocha-plus-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, v2-build-validation]
