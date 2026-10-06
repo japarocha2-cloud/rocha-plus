@@ -144,9 +144,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
-      if (state == CastMediaPlayerState.playing ||
-          state == CastMediaPlayerState.buffering ||
-          state == CastMediaPlayerState.loading) {
+      if (state == CastMediaPlayerState.playing) {
         return;
       }
       if (state == CastMediaPlayerState.idle && status?.idleReason != null) {
@@ -154,7 +152,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
     }
 
-    throw TimeoutException('A TV não confirmou a reprodução do canal.');
+    throw TimeoutException(
+      'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
+    );
   }
 
   Future<void> _startCasting(GoogleCastDevice device) async {
