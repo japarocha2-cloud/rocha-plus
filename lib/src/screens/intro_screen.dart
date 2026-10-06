@@ -60,16 +60,30 @@ class _IntroScreenState extends State<IntroScreen>
           child: Stack(
             children: [
               Center(
-                child: ScaleTransition(
-                  scale: _scale,
-                  child: const RochaLogo(fontSize: 64),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final shortest = constraints.biggest.shortestSide;
+                    final logoSize = (shortest * 0.14).clamp(38.0, 64.0);
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: (shortest * 0.08).clamp(20.0, 48.0),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ScaleTransition(
+                          scale: _scale,
+                          child: RochaLogo(fontSize: logoSize),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-              const Positioned(
-                left: 0,
-                right: 0,
-                bottom: 42,
-                child: Text(
+              Positioned(
+                left: 24,
+                right: 24,
+                bottom: MediaQuery.paddingOf(context).bottom + 24,
+                child: const Text(
                   'O entretenimento ganhou um novo reino.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white54),
