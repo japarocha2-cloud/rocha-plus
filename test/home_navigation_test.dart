@@ -38,8 +38,7 @@ void main() {
     await tester.tap(find.text('Infantil'));
     await tester.pump();
     expect(find.text('Infantil está sendo preparado para uma próxima versão.'), findsNothing);
-    expect(find.text('Infantil'), findsWidgets);
-    expect(find.text('Infantil'), findsWidgets);
+    expect(find.widgetWithText(AppBar, 'Infantil'), findsOneWidget);
   });
 
 }
