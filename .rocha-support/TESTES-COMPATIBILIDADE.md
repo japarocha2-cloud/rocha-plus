@@ -22,3 +22,10 @@
 - falhas de stream exibem estado de erro e permitem recuperação;
 - nenhuma tela apresenta overflow relevante;
 - comportamento permanece consistente entre celular e TV.
+
+
+## Regressões obrigatórias de abertura
+- confirmar que a vinheta de abertura é reproduzida como intro real e não substituída pelo ícone do app;
+- confirmar que o ícone/launcher aprovado permanece separado da vinheta;
+- validar duração, transição para login/home e comportamento em celular e TV;
+- se o vídeo da vinheta estiver ausente do pacote, considerar a build reprovada para teste final de experiência.
