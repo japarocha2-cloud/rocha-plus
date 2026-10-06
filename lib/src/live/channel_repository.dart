@@ -11,6 +11,7 @@ class ChannelRepository {
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
 
   static List<Channel>? _memoryCache;
+  static List<Channel>? _lastKnownGoodCache;
   static final Set<String> _sessionFailedUrls = <String>{};
 
   void reportPlaybackFailure(String url) {
@@ -30,6 +31,7 @@ class ChannelRepository {
   static void resetSessionHealthForTests() {
     _sessionFailedUrls.clear();
     _memoryCache = null;
+    _lastKnownGoodCache = null;
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
@@ -39,6 +41,8 @@ class ChannelRepository {
     if (!forceRefresh && _memoryCache != null) {
       return _withoutSessionFailures(_memoryCache!);
     }
+
+    final fallback = _lastKnownGoodCache;
 
     final results = await Future.wait([
       _loadPlaylistSafely(developmentPlaylist),
@@ -69,9 +73,13 @@ class ChannelRepository {
     );
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
+      _lastKnownGoodCache = _memoryCache;
       return _memoryCache!;
     }
 
+    if (fallback != null && fallback.isNotEmpty) {
+      return _withoutSessionFailures(fallback);
+    }
     if (_memoryCache != null) return _withoutSessionFailures(_memoryCache!);
     throw Exception('Não foi possível carregar canais disponíveis.');
   }
