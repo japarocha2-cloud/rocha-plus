@@ -74,7 +74,7 @@ class _IntroScreenState extends State<IntroScreen>
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 260, maxHeight: 260),
                 child: Image.asset(
-                  'assets/rocha_plus_icon.png',
+                  'branding/rocha_plus_icon.webp',
                   fit: BoxFit.contain,
                   filterQuality: FilterQuality.high,
                   gaplessPlayback: true,
