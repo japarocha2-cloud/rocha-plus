@@ -204,7 +204,7 @@ class ChannelRepository {
       if (sample.contains('#EXT-X-STREAM-INF')) {
         final child = _firstMediaUri(sample, uri);
         if (child == null) return false;
-        return _validateMediaPlaylist(child);
+        return await _validateMediaPlaylist(child);
       }
 
       // Media playlist: exige pelo menos um segmento e verifica que esse
