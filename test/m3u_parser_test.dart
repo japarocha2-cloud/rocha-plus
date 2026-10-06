@@ -48,4 +48,14 @@ https://example.com/b.m3u8
     expect(channels.single.name, 'HTTPS');
     expect(channels.single.url, 'https://example.com/b.m3u8');
   });
+  test('sanitizes Undefined and technical compound groups', () {
+    const playlist = '''#EXTM3U
+#EXTINF:-1 group-title="Animation;Kids",Undefined Canal Criança
+https://example.com/kids.m3u8
+''';
+    final channels = M3uParser.parse(playlist);
+    expect(channels.single.name, 'Canal Criança');
+    expect(channels.single.group, 'Infantil');
+  });
+
 }
