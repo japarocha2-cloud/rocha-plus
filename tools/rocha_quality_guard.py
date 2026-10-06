@@ -54,6 +54,7 @@ all_dart = "\n".join(text for rel, text in dart_files if rel.parts and rel.parts
 required = {
     "Esportes": "rota/categoria Esportes",
     "Notícias": "rota/categoria Notícias",
+    "Infantil": "rota/categoria Infantil",
     "Tela cheia": "controle de fullscreen",
     "Transmitir para TV": "controle de Cast",
     "VideoPlayerController.networkUrl": "player de rede",
