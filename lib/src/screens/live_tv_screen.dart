@@ -63,7 +63,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final groups = channels.map((c) => c.group).toSet().toList()..sort();
+    const preferredGroups = ['TV aberta', 'News', 'Esportes', 'General'];
+    final available = channels.map((c) => c.group).toSet();
+    final groups = preferredGroups.where(available.contains).toList();
     if (selectedGroup != 'Todos' && selectedGroup != 'Favoritos' && !groups.contains(selectedGroup)) {
       selectedGroup = 'Todos';
     }
@@ -81,7 +83,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(selectedGroup == 'Favoritos' ? 'Favoritos' : 'TV ao Vivo'),
+        title: Text(
+          selectedGroup == 'Favoritos'
+              ? 'Favoritos'
+              : selectedGroup == 'Esportes'
+                  ? 'Esportes'
+                  : 'TV ao Vivo',
+        ),
         actions: [
           IconButton(
             tooltip: 'Atualizar canais',
