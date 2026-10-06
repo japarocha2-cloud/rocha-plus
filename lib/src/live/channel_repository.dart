@@ -136,7 +136,7 @@ class ChannelRepository {
       if (sample.contains('#EXT-X-STREAM-INF')) {
         final child = _firstMediaUri(sample, uri);
         if (child == null || child == uri) return false;
-        return _validateMediaPlaylist(child);
+        return await _validateMediaPlaylist(child);
       }
 
       if (!sample.contains('#EXTINF')) return false;
@@ -212,7 +212,7 @@ class ChannelRepository {
       if (sample.contains('#EXTINF')) {
         final segment = _firstMediaUri(sample, uri);
         if (segment == null) return false;
-        return _probeMedia(segment);
+        return await _probeMedia(segment);
       }
       return false;
     } on TimeoutException {
