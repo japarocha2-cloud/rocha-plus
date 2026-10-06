@@ -114,8 +114,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (path.endsWith('.mpd')) return 'application/dash+xml';
     if (path.endsWith('.webm')) return 'video/webm';
     if (path.endsWith('.mp4') || path.endsWith('.m4v')) return 'video/mp4';
-    // The Rocha+ catalogue is primarily live HLS. URLs without a file
-    // extension are commonly HLS endpoints as well.
+    // URLs without an extension in the Rocha+ live catalogue are normally HLS.
     return 'application/x-mpegURL';
   }
 
