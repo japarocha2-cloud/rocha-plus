@@ -21,6 +21,18 @@ class CastHlsProxy {
     return _proxyUri(source);
   }
 
+  Future<void> stop() async {
+    _targets.clear();
+    _client?.close(force: true);
+    _client = null;
+    final server = _server;
+    _server = null;
+    _host = null;
+    if (server != null) {
+      await server.close(force: true);
+    }
+  }
+
   Future<void> _ensureStarted() async {
     if (_server != null && _host != null) return;
 
