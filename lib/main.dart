@@ -14,8 +14,6 @@ Future<void> main() async {
     final options = GoogleCastOptionsAndroid(
       appId: castAppId,
       stopCastingOnAppTerminated: false,
-      suspendSessionsWhenBackgrounded: false,
-      physicalVolumeButtonsWillControlDeviceVolume: true,
     );
     GoogleCastContext.instance.setSharedInstanceWithOptions(options);
   }
