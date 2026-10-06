@@ -56,6 +56,36 @@ intro_source = (ROOT / "lib/src/screens/intro_screen.dart").read_text(
 if "VideoPlayerController.asset('assets/rocha_intro_v2.mp4')" not in intro_source:
     issues.append("intro_screen.dart: vinheta real não está conectada ao player")
 
+pubspec = (ROOT / "pubspec.yaml").read_text(encoding="utf-8", errors="ignore")
+if "- assets/rocha_intro_v2.mp4" not in pubspec:
+    issues.append("pubspec.yaml: vinheta real não está declarada como asset")
+
+player = (ROOT / "lib/src/screens/player_screen.dart").read_text(
+    encoding="utf-8", errors="ignore"
+)
+for token, label in (
+    ("CastMediaPlayerState.playing", "confirmação real de reprodução Cast"),
+    ("GoogleCastConnectState.connected", "validação de sessão Cast conectada"),
+    ("CastHlsProxy.instance.stop()", "liberação do relay Cast"),
+):
+    if token not in player:
+        issues.append(f"player_screen.dart: ausente {label}")
+
+manifest_path = ROOT / "android/app/src/main/AndroidManifest.xml"
+if manifest_path.exists():
+    manifest = manifest_path.read_text(encoding="utf-8", errors="ignore")
+    manifest_checks = (
+        ("android.intent.category.LEANBACK_LAUNCHER", "launcher de Android TV"),
+        ('android.software.leanback" android:required="false"', "feature Leanback opcional"),
+        ('android.hardware.touchscreen" android:required="false"', "touchscreen opcional para TV"),
+        ("OPTIONS_PROVIDER_CLASS_NAME", "configuração do Google Cast"),
+    )
+    for token, label in manifest_checks:
+        if token not in manifest:
+            issues.append(f"AndroidManifest.xml: ausente {label}")
+else:
+    issues.append("android/app/src/main/AndroidManifest.xml: manifesto Android ausente")
+
 print("Rocha+ Quality Guard")
 if issues:
     print("FALHA: regressões críticas encontradas:")
