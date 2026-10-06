@@ -129,9 +129,23 @@ class ChannelRepository {
       final response = await _client
           .send(request)
           .timeout(const Duration(seconds: 6));
-      final ok = response.statusCode >= 200 && response.statusCode < 400;
-      await response.stream.drain<void>();
-      return ok;
+      if (response.statusCode < 200 || response.statusCode >= 400) {
+        await response.stream.drain<void>();
+        return false;
+      }
+
+      // HTTP 200 sozinho não prova que um canal toca. Para HLS, validamos
+      // se a resposta realmente parece uma playlist e se ela anuncia mídia.
+      final bytes = await response.stream.take(4096).expand((chunk) => chunk).toList();
+      final contentType = response.headers['content-type']?.toLowerCase() ?? '';
+      final sample = utf8.decode(bytes, allowMalformed: true).trimLeft();
+      final looksLikeHls = contentType.contains('mpegurl') ||
+          channel.url.toLowerCase().contains('.m3u8') ||
+          sample.startsWith('#EXTM3U');
+      if (!looksLikeHls) return bytes.isNotEmpty;
+
+      return sample.startsWith('#EXTM3U') &&
+          (sample.contains('#EXTINF') || sample.contains('#EXT-X-STREAM-INF'));
     } on TimeoutException {
       return false;
     } catch (_) {
