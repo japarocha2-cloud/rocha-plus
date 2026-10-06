@@ -46,6 +46,7 @@ def changed_files():
 def audit_structure():
     required = [
         "branding/rocha_plus_icon.webp",
+        "assets/rocha_intro_v2.mp4",
         "lib/src/screens/home_screen.dart",
         "lib/src/screens/live_tv_screen.dart",
         "lib/src/screens/player_screen.dart",
@@ -181,6 +182,22 @@ def audit_scope():
             "O CI ainda recria o scaffold Android a cada build; funciona, mas reduz reprodutibilidade.",
         )
 
+def audit_intro():
+    intro = ROOT / "assets/rocha_intro_v2.mp4"
+    source = text("lib/src/screens/intro_screen.dart")
+    if not intro.exists():
+        add("critical", "intro", "Vinheta real de abertura ausente.")
+        return
+    data = intro.read_bytes()
+    if len(data) < 200000 or b"ftyp" not in data[:64]:
+        add("critical", "intro", "Arquivo da vinheta parece inválido ou excessivamente comprimido.")
+    else:
+        add("ok", "intro", "Vinheta real empacotada.", f"{len(data)} bytes")
+    if "VideoPlayerController.asset('assets/rocha_intro_v2.mp4')" not in source:
+        add("critical", "intro", "A tela de abertura não está conectada ao vídeo real.")
+    else:
+        add("ok", "intro", "Tela de abertura usa o vídeo real e mantém o ícone separado.")
+
 def audit_auth_state():
     login = text("lib/src/screens/login_screen.dart")
     if "serão conectados às credenciais oficiais" in login:
@@ -232,6 +249,7 @@ def main():
     audit_responsive_ui()
     audit_stream_stability()
     audit_scope()
+    audit_intro()
     audit_auth_state()
     return write_reports()
 
