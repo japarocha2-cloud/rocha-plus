@@ -46,7 +46,7 @@ for path in ROOT.rglob("*"):
         issues.append(f"{rel}: possível segredo fixo no código")
     # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml"}:
-        if re.search(r'["\\']http://(?!localhost|127\\.0\\.0\\.1)', text):
+        if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
             issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
 
 # Fiscaliza os contratos mínimos das telas principais.
