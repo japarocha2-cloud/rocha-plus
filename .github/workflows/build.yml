@@ -114,22 +114,22 @@ jobs:
           drawable.joinpath("rocha_plus_icon.webp").write_bytes(
               launcher_icon.read_bytes()
           )
-          drawable.joinpath("rocha_tv_banner.xml").write_text(
-              """<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#05040A" />
-            <corners android:radius="18dp" />
-            <stroke android:width="2dp" android:color="#243442" />
-        </shape>
-    </item>
-    <item android:left="92dp" android:right="92dp" android:top="22dp" android:bottom="22dp">
-        <bitmap android:src="@drawable/rocha_plus_icon" android:gravity="center" />
-    </item>
-</layer-list>
-"""
+          tv_banner = (
+              '<?xml version="1.0" encoding="utf-8"?>\n'
+              '<layer-list xmlns:android="http://schemas.android.com/apk/res/android">\n'
+              '    <item>\n'
+              '        <shape android:shape="rectangle">\n'
+              '            <solid android:color="#05040A" />\n'
+              '            <corners android:radius="18dp" />\n'
+              '            <stroke android:width="2dp" android:color="#243442" />\n'
+              '        </shape>\n'
+              '    </item>\n'
+              '    <item android:left="92dp" android:right="92dp" android:top="22dp" android:bottom="22dp">\n'
+              '        <bitmap android:src="@drawable/rocha_plus_icon" android:gravity="center" />\n'
+              '    </item>\n'
+              '</layer-list>\n'
           )
+          drawable.joinpath("rocha_tv_banner.xml").write_text(tv_banner)
 
           PY
 
