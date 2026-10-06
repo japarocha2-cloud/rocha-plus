@@ -34,7 +34,9 @@ class ChannelRepository {
     for (final channel in input) {
       final name = channel.name.trim();
       final url = channel.url.trim();
-      if (name.isEmpty || url.isEmpty) continue;
+      if (name.isEmpty || url.isEmpty) {
+        continue;
+      }
 
       final uri = Uri.tryParse(url);
       if (uri == null || !uri.hasScheme ||
@@ -47,13 +49,17 @@ class ChannelRepository {
           .replaceAll(RegExp(r'\s+'), ' ')
           .replaceAll(RegExp(r'\([^)]*\)'), '')
           .trim();
-      if (!seenUrls.add(url) || !seenNames.add(normalizedName)) continue;
+      if (!seenUrls.add(url) || !seenNames.add(normalizedName)) {
+        continue;
+      }
       cleaned.add(channel);
     }
 
     cleaned.sort((a, b) {
       final priority = _channelPriority(a.name).compareTo(_channelPriority(b.name));
-      if (priority != 0) return priority;
+      if (priority != 0) {
+        return priority;
+      }
       return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
     return cleaned;
@@ -62,9 +68,15 @@ class ChannelRepository {
   int _channelPriority(String rawName) {
     final name = rawName.toLowerCase();
     // Rocha+ requested order: SBT first, then Globo, Record and Band.
-    if (RegExp(r'(^|\s)sbt(\s|$)').hasMatch(name)) return 0;
-    if (name.contains('globo')) return 1;
-    if (name.contains('record')) return 2;
+    if (RegExp(r'(^|\s)sbt(\s|$)').hasMatch(name)) {
+      return 0;
+    }
+    if (name.contains('globo')) {
+      return 1;
+    }
+    if (name.contains('record')) {
+      return 2;
+    }
     if (RegExp(r'(^|\s)band(\s|$)').hasMatch(name) ||
         name.contains('bandnews')) {
       return 3;
