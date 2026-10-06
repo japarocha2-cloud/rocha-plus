@@ -129,6 +129,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
         contentType: _castContentType(uri),
         streamType: CastMediaStreamType.live,
         metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
+        // Most Rocha+ live HLS feeds use MPEG-2 TS video segments. Explicitly
+        // declaring this is important on Android Cast receivers: plugin 1.4.8
+        // now forwards the HLS segment hint to MediaInfo instead of leaving
+        // compatible streams stuck on the receiver loading screen.
+        hlsVideoSegmentFormat: _castContentType(uri) == 'application/x-mpegURL'
+            ? HlsVideoSegmentFormat.mpeg2Ts
+            : null,
       );
 
       // Explicit autoplay matters for live streams on the Default Media
