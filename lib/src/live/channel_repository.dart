@@ -104,6 +104,36 @@ class ChannelRepository {
     throw Exception('Não foi possível carregar canais disponíveis.');
   }
 
+  Future<bool> validateStreamForTests(String url) => _validateHls(Uri.parse(url));
+
+  Future<bool> _validateHls(Uri uri) async {
+    if (uri.scheme != 'https') return false;
+    try {
+      final response = await _client.get(uri).timeout(const Duration(seconds: 6));
+      if (response.statusCode != 200) return false;
+      final body = utf8.decode(response.bodyBytes);
+      if (!body.contains('#EXTM3U')) return false;
+      if (body.contains('#EXTINF')) return true;
+
+      final lines = body.split(RegExp(r'\\r?\\n'));
+      for (final rawLine in lines) {
+        final line = rawLine.trim();
+        if (line.isEmpty || line.startsWith('#')) continue;
+        final child = uri.resolve(line);
+        if (child.scheme != 'https') continue;
+        final childResponse =
+            await _client.get(child).timeout(const Duration(seconds: 6));
+        if (childResponse.statusCode == 200 &&
+            utf8.decode(childResponse.bodyBytes).contains('#EXTINF')) {
+          return true;
+        }
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<List<Channel>> _loadPlaylistSafely(Uri playlist) async {
     try {
       return await _loadPlaylist(playlist);
