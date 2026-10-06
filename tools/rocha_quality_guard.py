@@ -44,8 +44,10 @@ for path in ROOT.rglob("*"):
     # Segredos e transporte inseguro são bloqueadores de release.
     if re.search(r'(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["\'][^"\']{8,}', text):
         issues.append(f"{rel}: possível segredo fixo no código")
-    if "http://" in text and "localhost" not in text and "127.0.0.1" not in text:
-        issues.append(f"{rel}: URL HTTP insegura encontrada")
+    # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
+    if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml"}:
+        if re.search(r'["\\']http://(?!localhost|127\\.0\\.0\\.1)', text):
+            issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
 
 # Fiscaliza os contratos mínimos das telas principais.
 all_dart = "\n".join(text for _, text in dart_files)
