@@ -88,8 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: 'Ao vivo',
                     ),
                     NavigationDestination(
-                      icon: Icon(Icons.search),
-                      label: 'Buscar',
+                      icon: Icon(Icons.live_tv_outlined),
+                      selectedIcon: Icon(Icons.live_tv),
+                      label: 'Canais',
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.favorite_border),
@@ -239,9 +240,9 @@ class _ResponsiveHeader extends StatelessWidget {
               icon: const Icon(Icons.cast, color: RochaColors.playGreen),
             ),
             IconButton(
-              tooltip: 'Buscar',
-              onPressed: () {},
-              icon: const Icon(Icons.search),
+              tooltip: 'Abrir canais',
+              onPressed: () => onOpen('TV ao Vivo'),
+              icon: const Icon(Icons.live_tv_outlined),
             ),
           ],
         ),
@@ -251,11 +252,7 @@ class _ResponsiveHeader extends StatelessWidget {
     const nav = [
       ('Início', Icons.home_outlined),
       ('Ao vivo', Icons.sensors),
-      ('Filmes', Icons.movie_outlined),
-      ('Séries', Icons.tv_outlined),
-      ('Infantil', Icons.child_care_outlined),
       ('Favoritos', Icons.favorite_border),
-      ('Configurações', Icons.settings_outlined),
     ];
 
     return Padding(
@@ -398,12 +395,7 @@ class _Hero extends StatelessWidget {
                           icon: Icons.play_arrow_rounded,
                           label: 'Assistir agora',
                         ),
-                        if (tv)
-                          OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.info_outline),
-                            label: const Text('Mais detalhes'),
-                          ),
+
                       ],
                     ),
                   ],
