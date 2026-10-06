@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
 import 'login_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -10,36 +12,62 @@ class IntroScreen extends StatefulWidget {
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
-class _IntroScreenState extends State<IntroScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animation;
-  late final Animation<double> _fade;
-  late final Animation<double> _scale;
-  Timer? _finishTimer;
+class _IntroScreenState extends State<IntroScreen> {
+  VideoPlayerController? _controller;
+  Timer? _safetyTimer;
   bool _finishing = false;
+  bool _failed = false;
 
   @override
   void initState() {
     super.initState();
-    _animation = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1100),
-    );
-    _fade = CurvedAnimation(
-      parent: _animation,
-      curve: const Interval(0, .72, curve: Curves.easeOut),
-    );
-    _scale = Tween<double>(begin: .92, end: 1).animate(
-      CurvedAnimation(parent: _animation, curve: Curves.easeOutCubic),
-    );
-    _animation.forward();
-    _finishTimer = Timer(const Duration(milliseconds: 2200), _finish);
+    _startIntro();
+  }
+
+  Future<void> _startIntro() async {
+    final controller = VideoPlayerController.asset('assets/rocha_intro_v2.mp4');
+    _controller = controller;
+    controller.addListener(_onVideoStateChanged);
+
+    try {
+      await controller.initialize().timeout(const Duration(seconds: 4));
+      if (!mounted) return;
+      await controller.setLooping(false);
+      await controller.setVolume(1);
+      setState(() {});
+      await controller.play();
+
+      final duration = controller.value.duration;
+      _safetyTimer = Timer(
+        duration > Duration.zero
+            ? duration + const Duration(milliseconds: 450)
+            : const Duration(seconds: 6),
+        _finish,
+      );
+    } catch (error) {
+      debugPrint('Rocha+ intro error: $error');
+      if (!mounted) return;
+      setState(() => _failed = true);
+      _safetyTimer = Timer(const Duration(milliseconds: 1400), _finish);
+    }
+  }
+
+  void _onVideoStateChanged() {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized || _finishing) {
+      return;
+    }
+    final duration = controller.value.duration;
+    if (duration > Duration.zero &&
+        controller.value.position >= duration - const Duration(milliseconds: 120)) {
+      _finish();
+    }
   }
 
   void _finish() {
     if (!mounted || _finishing) return;
     _finishing = true;
-    _finishTimer?.cancel();
+    _safetyTimer?.cancel();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
         transitionDuration: const Duration(milliseconds: 260),
@@ -54,35 +82,37 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   void dispose() {
-    _finishTimer?.cancel();
-    _animation.dispose();
+    _safetyTimer?.cancel();
+    final controller = _controller;
+    if (controller != null) {
+      controller.removeListener(_onVideoStateChanged);
+      controller.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = _controller;
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _finish,
-        child: Center(
-          child: FadeTransition(
-            opacity: _fade,
-            child: ScaleTransition(
-              scale: _scale,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 260, maxHeight: 260),
-                child: Image.asset(
-                  'branding/rocha_plus_icon.webp',
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.high,
-                  gaplessPlayback: true,
-                  errorBuilder: (_, __, ___) => const RochaLogo(fontSize: 54),
-                ),
-              ),
-            ),
-          ),
+        child: SizedBox.expand(
+          child: _failed
+              ? const Center(child: RochaLogo(fontSize: 54))
+              : controller == null || !controller.value.isInitialized
+                  ? const ColoredBox(color: Colors.black)
+                  : FittedBox(
+                      fit: BoxFit.cover,
+                      clipBehavior: Clip.hardEdge,
+                      child: SizedBox(
+                        width: controller.value.size.width,
+                        height: controller.value.size.height,
+                        child: VideoPlayer(controller),
+                      ),
+                    ),
         ),
       ),
     );
