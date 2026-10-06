@@ -580,7 +580,6 @@ class _PlaybackControls extends StatelessWidget {
   const _PlaybackControls({
     required this.isPlaying,
     required this.busy,
-    required this.statusText,
     required this.onTogglePlayback,
     required this.onBack10,
     required this.onForward10,
@@ -735,6 +734,7 @@ class _ControlsTab extends StatelessWidget {
     required this.deviceName,
     required this.isPlaying,
     required this.busy,
+    required this.statusText,
     required this.onTogglePlayback,
     required this.onBack10,
     required this.onForward10,
