@@ -78,6 +78,7 @@ class _IntroScreenState extends State<IntroScreen>
                   fit: BoxFit.contain,
                   filterQuality: FilterQuality.high,
                   gaplessPlayback: true,
+                  errorBuilder: (_, __, ___) => const RochaLogo(fontSize: 54),
                 ),
               ),
             ),
