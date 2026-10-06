@@ -339,7 +339,7 @@ class _SectionCardState extends State<_SectionCard> {
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
-            autofocus: widget.title == 'TV ao Vivo',
+            autofocus: false,
             focusColor: RochaColors.cosmicPurple.withValues(alpha: .35),
             onFocusChange: (value) => setState(() => focused = value),
             onTap: widget.onTap,
