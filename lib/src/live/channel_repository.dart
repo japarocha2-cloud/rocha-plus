@@ -28,10 +28,13 @@ class ChannelRepository {
 
   bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
 
-  List<Channel> sportsOnly(Iterable<Channel> channels) => channels
-      .where((channel) => channel.group == 'Esportes')
-      .where((channel) => !_sessionFailedUrls.contains(channel.url))
-      .toList(growable: false);
+  List<Channel> sportsOnly(Iterable<Channel> channels) {
+    final filtered = channels
+        .where((channel) => channel.group == 'Esportes')
+        .where((channel) => !_sessionFailedUrls.contains(channel.url))
+        .toList(growable: false);
+    return _orderSportsFirst(filtered);
+  }
 
   static void resetSessionHealthForTests() {
     _sessionFailedUrls.clear();
