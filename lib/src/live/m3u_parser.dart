@@ -17,12 +17,42 @@ class M3uParser {
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
         if (uri != null && uri.scheme == 'https') {
-          channels.add(Channel(name: name, url: line, logo: logo, group: group));
+          channels.add(Channel(
+            name: _cleanName(name),
+            url: line,
+            logo: logo,
+            group: _cleanGroup(group),
+          ));
         }
         name = null; logo = null; group = 'Outros';
       }
     }
     return channels;
+  }
+
+  static String _cleanName(String value) {
+    final cleaned = value.replaceAll(RegExp(r'\bundefined\b', caseSensitive: false), '').trim();
+    return cleaned.isEmpty ? 'Canal' : cleaned;
+  }
+
+  static String _cleanGroup(String value) {
+    final parts = value
+        .split(';')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .toList(growable: false);
+    if (parts.isEmpty) return 'Outros';
+
+    final normalized = parts.first.toLowerCase();
+    if (normalized.contains('sport')) return 'Esportes';
+    if (normalized.contains('news')) return 'News';
+    if (normalized.contains('general')) return 'General';
+    if (normalized.contains('animation') ||
+        normalized.contains('kids') ||
+        normalized.contains('children')) {
+      return 'Infantil';
+    }
+    return parts.first;
   }
 
   static String? _attribute(String line, String key) =>
