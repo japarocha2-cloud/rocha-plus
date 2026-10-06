@@ -10,6 +10,7 @@ class HomeScreen extends StatelessWidget {
     ('TV ao Vivo', Icons.live_tv_rounded),
     ('Esportes', Icons.sports_soccer_rounded),
     ('Notícias', Icons.newspaper_rounded),
+    ('Infantil', Icons.toys_rounded),
 
     ('Favoritos', Icons.favorite_rounded),
   ];
@@ -19,14 +20,14 @@ class HomeScreen extends StatelessWidget {
       Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen()));
       return;
     }
-    if (title == 'TV ao Vivo' || title == 'Favoritos' || title == 'Esportes') {
+    if (title == 'TV ao Vivo' || title == 'Favoritos' || title == 'Esportes' || title == 'Infantil') {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => LiveTvScreen(
             initialGroup: title == 'Favoritos'
                 ? 'Favoritos'
-                : (title == 'Esportes' ? 'Esportes' : 'Todos'),
+                : (title == 'Esportes' ? 'Esportes' : (title == 'Infantil' ? 'Infantil' : 'Todos')),
           ),
         ),
       );
