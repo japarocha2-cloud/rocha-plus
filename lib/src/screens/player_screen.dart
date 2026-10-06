@@ -688,7 +688,7 @@ class _ChannelLogo extends StatelessWidget {
                 ),
               ),
       );
-
+}
 
 class _VideoSurface extends StatelessWidget {
   final VideoPlayerController controller;
