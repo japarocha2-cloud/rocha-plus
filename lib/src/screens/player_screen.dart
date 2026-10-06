@@ -156,10 +156,34 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  Future<void> _waitForCastSession() async {
+    if (GoogleCastSessionManager.instance.connectionState ==
+        GoogleCastConnectState.connected) {
+      return;
+    }
+
+    await GoogleCastSessionManager.instance.currentSessionStream
+        .firstWhere(
+          (session) =>
+              session?.connectionState == GoogleCastConnectState.connected,
+        )
+        .timeout(
+          const Duration(seconds: 8),
+          onTimeout: () => throw TimeoutException(
+            'A TV foi encontrada, mas a sessão Cast não ficou conectada.',
+          ),
+        );
+  }
+
   Future<void> _startCasting(GoogleCastDevice device) async {
     try {
       final uri = Uri.parse(widget.channel.url);
-      await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+      final started =
+          await GoogleCastSessionManager.instance.startSessionWithDevice(device);
+      if (!started) {
+        throw StateError('O Google Cast recusou o início da sessão.');
+      }
+      await _waitForCastSession();
 
       Object? directError;
       try {
@@ -187,6 +211,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
         );
       }
     } catch (error) {
+      try {
+        if (GoogleCastSessionManager.instance.connectionState !=
+            GoogleCastConnectState.disconnected) {
+          await GoogleCastSessionManager.instance.endSessionAndStopCasting();
+        }
+      } catch (_) {
+        // A falha original de transmissão é mais importante que a limpeza.
+      }
       await _controller?.play();
       debugPrint('Rocha+ Cast error: $error');
       if (mounted) {
