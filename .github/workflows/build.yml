@@ -16,6 +16,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Rocha+ Support audit
+        run: python3 tools/rocha_support.py
+
+      - name: Upload Rocha+ Support report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-support-report
+          path: |
+            rocha-support-report.md
+            rocha-support-report.json
+          if-no-files-found: warn
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
