@@ -91,15 +91,16 @@ class _CastControlScreenState extends State<CastControlScreen> {
           _ => 'Sem reprodução confirmada',
         };
 
-        return Scaffold(
-          backgroundColor: RochaColors.background,
-          body: SafeArea(
-            child: Column(
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final tv = constraints.maxWidth >= 900;
+            final content = Column(
               children: [
                 _TopBar(
                   onBack: () => Navigator.of(context).pop(),
                   onDisconnect: _disconnect,
                   isConnected: isConnected,
+                  tv: tv,
                 ),
                 _Tabs(
                   index: _tab,
@@ -137,8 +138,22 @@ class _CastControlScreenState extends State<CastControlScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
+            );
+
+            return Scaffold(
+              backgroundColor: RochaColors.background,
+              body: SafeArea(
+                child: tv
+                    ? Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1180),
+                          child: content,
+                        ),
+                      )
+                    : content,
+              ),
+            );
+          },
         );
       },
     );
@@ -150,11 +165,13 @@ class _TopBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onDisconnect;
   final bool isConnected;
+  final bool tv;
 
   const _TopBar({
     required this.onBack,
     required this.onDisconnect,
     required this.isConnected,
+    required this.tv,
   });
 
   @override
@@ -163,6 +180,7 @@ class _TopBar extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
+              autofocus: tv,
               tooltip: 'Voltar',
               onPressed: onBack,
               icon: const Icon(Icons.arrow_back, size: 30),
