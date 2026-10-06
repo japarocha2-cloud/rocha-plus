@@ -15,17 +15,6 @@ class ChannelRepository {
     if (!forceRefresh && _memoryCache != null) return _memoryCache!;
 
     final prefs = await SharedPreferences.getInstance();
-    if (!forceRefresh) {
-      final cachedSource = prefs.getString(_catalogCacheKey);
-      if (cachedSource != null && cachedSource.isNotEmpty) {
-        final cached = _cleanAndPrioritize(M3uParser.parse(cachedSource));
-        if (cached.isNotEmpty) {
-          _memoryCache = List.unmodifiable(cached);
-          return _memoryCache!;
-        }
-      }
-    }
-
     final cachedSource = prefs.getString(_catalogCacheKey);
 
     try {
@@ -61,8 +50,7 @@ class ChannelRepository {
 
   List<Channel> _cleanAndPrioritize(List<Channel> input) {
     final seenUrls = <String>{};
-    final seenNames = <String>{};
-    final cleaned = <Channel>[];
+    final bestByName = <String, Channel>{};
 
     for (final channel in input) {
       final name = channel.name.trim();
@@ -82,18 +70,24 @@ class ChannelRepository {
           lowerName == 'sbt cuiaba') {
         continue;
       }
+      if (!seenUrls.add(url)) {
+        continue;
+      }
 
       final normalizedName = name
           .toLowerCase()
           .replaceAll(RegExp(r'\s+'), ' ')
           .replaceAll(RegExp(r'\([^)]*\)'), '')
           .trim();
-      if (!seenUrls.add(url) || !seenNames.add(normalizedName)) {
-        continue;
+
+      final current = bestByName[normalizedName];
+      if (current == null ||
+          _playbackPreference(channel) < _playbackPreference(current)) {
+        bestByName[normalizedName] = channel;
       }
-      cleaned.add(channel);
     }
 
+    final cleaned = bestByName.values.toList(growable: false);
     cleaned.sort((a, b) {
       final priority = _channelPriority(a.name).compareTo(_channelPriority(b.name));
       if (priority != 0) {
@@ -102,6 +96,28 @@ class ChannelRepository {
       return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
     return cleaned;
+  }
+
+  int _playbackPreference(Channel channel) {
+    final name = channel.name.toLowerCase();
+    final path = Uri.tryParse(channel.url)?.path.toLowerCase() ?? '';
+
+    var score = 10;
+    if (path.endsWith('.m3u8')) score -= 4;
+
+    // On phones and Cast, a stable HD feed usually beats a fixed ultra-high
+    // bitrate feed. Keep 1080p/4K when it is the only available source.
+    if (name.contains('720p') || RegExp(r'(^|\W)hd($|\W)').hasMatch(name)) {
+      score -= 3;
+    }
+    if (name.contains('1080p') || name.contains('fhd')) score -= 1;
+    if (name.contains('2160p') || name.contains('4k') || name.contains('uhd')) {
+      score += 3;
+    }
+    if (name.contains('480p') || name.contains('360p') || name.contains('sd')) {
+      score += 2;
+    }
+    return score;
   }
 
   int _channelPriority(String rawName) {
