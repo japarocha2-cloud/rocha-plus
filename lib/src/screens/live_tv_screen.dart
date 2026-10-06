@@ -66,7 +66,15 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     const preferredGroups = ['TV aberta', 'News', 'Esportes', 'Infantil', 'General'];
     final available = channels.map((c) => c.group).toSet();
     final groups = preferredGroups.where(available.contains).toList();
-    if (selectedGroup != 'Todos' && selectedGroup != 'Favoritos' && !groups.contains(selectedGroup)) {
+    final requestedGroup = widget.initialGroup;
+    final keepRequestedEmptyGroup = channels.isNotEmpty &&
+        requestedGroup != 'Todos' &&
+        requestedGroup != 'Favoritos' &&
+        selectedGroup == requestedGroup;
+    if (selectedGroup != 'Todos' &&
+        selectedGroup != 'Favoritos' &&
+        !groups.contains(selectedGroup) &&
+        !keepRequestedEmptyGroup) {
       selectedGroup = 'Todos';
     }
 
