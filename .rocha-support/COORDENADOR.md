@@ -39,3 +39,12 @@ Quando a direção recebida for genérica, a coordenação escolhe o suporte ade
 - os três suportes trabalham em paralelo sempre que possível;
 - após qualquer mudança funcional, o Suporte 1 faz nova varredura;
 - mudanças visuais relevantes devem passar por conferência de Qualidade antes de serem consideradas concluídas.
+
+
+4. Suporte 4 — Testes/Compatibilidade
+   - valida comportamento real em celular, tablet, Android TV e Google TV;
+   - confere controle remoto, Cast, fullscreen, orientação, buffering, retry e estados de erro;
+   - atua após Qualidade e antes de considerar uma build pronta para teste físico.
+
+## Fluxo final de validação
+Programação/desempenho → Suporte 1 (Qualidade/Limpeza) → Analyze/Testes → Suporte 4 (Testes/Compatibilidade) → Build APK/AAB → teste físico quando necessário.
