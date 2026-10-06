@@ -14,6 +14,7 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  static const MethodChannel _screenMirrorChannel = MethodChannel('rocha_plus/screen_mirror');
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
@@ -59,6 +60,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final controller = _controller;
     if (controller != null && controller.value.hasError && mounted && !_failed) {
       setState(() { _loading = false; _failed = true; });
+    }
+  }
+
+  Future<void> _openScreenMirroring() async {
+    try {
+      await _screenMirrorChannel.invokeMethod<void>('openCastSettings');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Escolha sua TV no painel de espelhamento do Android.'),
+        ),
+      );
+    } catch (error) {
+      debugPrint('Rocha+ screen mirroring error: $error');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível abrir o espelhamento deste aparelho.'),
+        ),
+      );
     }
   }
 
@@ -238,7 +259,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
               title: Text(widget.channel.name),
               actions: [
                 IconButton(
-                  tooltip: 'Transmitir para TV',
+                  tooltip: 'Espelhar tela',
+                  onPressed: _openScreenMirroring,
+                  icon: const Icon(Icons.screen_share),
+                ),
+                IconButton(
+                  tooltip: 'Transmitir canal',
                   onPressed: _openCastPicker,
                   icon: const Icon(Icons.cast),
                 ),
