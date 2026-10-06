@@ -7,8 +7,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isAndroid) {
+    const configuredCastAppId = String.fromEnvironment('ROCHA_CAST_APP_ID');
+    final castAppId = configuredCastAppId.isEmpty
+        ? GoogleCastDiscoveryCriteria.kDefaultApplicationId
+        : configuredCastAppId;
     final options = GoogleCastOptionsAndroid(
-      appId: GoogleCastDiscoveryCriteria.kDefaultApplicationId,
+      appId: castAppId,
       stopCastingOnAppTerminated: false,
     );
     GoogleCastContext.instance.setSharedInstanceWithOptions(options);
