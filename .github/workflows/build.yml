@@ -62,6 +62,18 @@ jobs:
           if cast_permission not in text:
               text = text.replace('<application', f'    {cast_permission}\n    <application', 1)
 
+          leanback = '<uses-feature android:name="android.software.leanback" android:required="false" />'
+          touchscreen = '<uses-feature android:name="android.hardware.touchscreen" android:required="false" />'
+          if leanback not in text:
+              text = text.replace('<application', f'    {leanback}\n    {touchscreen}\n    <application', 1)
+
+          if 'android.intent.category.LEANBACK_LAUNCHER' not in text:
+              launcher = '<category android:name="android.intent.category.LAUNCHER"/>'
+              text = text.replace(
+                  launcher,
+                  launcher + '\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>',
+                  1,
+              )
 
           cast_meta = (
               '<meta-data\n'
@@ -163,11 +175,17 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Rocha+ Quality Guard
+        run: python3 tools/rocha_quality_guard.py
+
       - name: Analyze
         run: flutter analyze
 
       - name: Test
         run: flutter test
+
+      - name: Rocha+ Quality Guard (post-tests)
+        run: python3 tools/rocha_quality_guard.py
 
       - name: Build universal APK
         run: flutter build apk --release
