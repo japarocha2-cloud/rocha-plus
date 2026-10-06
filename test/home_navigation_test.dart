@@ -16,4 +16,17 @@ void main() {
 
     expect(find.text('Esportes entra na próxima etapa.'), findsNothing);
   });
+  testWidgets('unfinished destinations are not exposed as finished buttons', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+
+    expect(find.text('Filmes'), findsNothing);
+    expect(find.text('Séries'), findsNothing);
+    expect(find.text('Documentários'), findsNothing);
+    expect(find.text('Regionais'), findsNothing);
+    expect(find.text('Infantil'), findsNothing);
+  });
+
 }
