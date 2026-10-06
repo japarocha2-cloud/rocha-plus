@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
@@ -25,6 +24,13 @@ class ChannelRepository {
   }
 
   void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
+
+  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+
+  static void resetSessionHealthForTests() {
+    _sessionFailedUrls.clear();
+    _memoryCache = null;
+  }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
       channels.where((channel) => !_sessionFailedUrls.contains(channel.url)).toList(growable: false);
