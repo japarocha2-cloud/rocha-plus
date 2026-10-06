@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       _SectionTitle(
-                        title: 'Canais ao vivo',
+                        title: 'Acesso rápido',
                         tv: tv,
                         onSeeAll: () => openSection('TV ao Vivo'),
                       ),
@@ -117,29 +117,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           tv: tv,
                           items: const [
                             _PreviewItem(
-                              'Jornal Central',
-                              Icons.public,
+                              'Todos os canais',
+                              Icons.live_tv_outlined,
+                              'Abrir TV ao vivo',
+                            ),
+                            _PreviewItem(
                               'Notícias',
+                              Icons.newspaper_outlined,
+                              'Explorar canais',
                             ),
                             _PreviewItem(
-                              'Cinema+',
-                              Icons.movie_outlined,
-                              'Filmes',
-                            ),
-                            _PreviewItem(
-                              'Esporte 24',
-                              Icons.sports_soccer,
                               'Esportes',
+                              Icons.sports_soccer,
+                              'Explorar canais',
                             ),
                             _PreviewItem(
-                              'Mundo Docs',
-                              Icons.pets_outlined,
-                              'Documentários',
+                              'Cultura',
+                              Icons.account_balance_outlined,
+                              'Explorar canais',
                             ),
                             _PreviewItem(
-                              'Show Premium',
-                              Icons.music_note,
-                              'Música',
+                              'Regionais',
+                              Icons.location_city_outlined,
+                              'Explorar canais',
                             ),
                           ],
                           onTap: (_) => openSection('TV ao Vivo'),
@@ -497,8 +497,7 @@ class _PreviewRail extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _LiveBadge(),
-                      const SizedBox(height: 7),
+
                       Text(
                         item.title,
                         maxLines: 1,
@@ -716,30 +715,6 @@ class _GlowButton extends StatelessWidget {
             label,
             style: const TextStyle(fontWeight: FontWeight.w900),
           ),
-        ),
-      );
-}
-
-class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFFD91527),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.circle, size: 7, color: Colors.white),
-            SizedBox(width: 6),
-            Text(
-              'AO VIVO',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
-            ),
-          ],
         ),
       );
 }
