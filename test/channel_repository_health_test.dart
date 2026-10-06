@@ -41,6 +41,7 @@ void main() {
 
     expect(repository.sportsPriorityForTests(male), greaterThan(repository.sportsPriorityForTests(female)));
     expect(repository.sportsPriorityForTests(female), greaterThan(repository.sportsPriorityForTests(tennis)));
+    expect(repository.sportsOnly([tennis, female, male]), [male, female, tennis]);
   });
 }
 
