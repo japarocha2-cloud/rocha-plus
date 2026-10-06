@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
+  static const _catalogCacheKey = 'rocha_plus_channel_catalog_v1';
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
 
@@ -12,16 +14,34 @@ class ChannelRepository {
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async {
     if (!forceRefresh && _memoryCache != null) return _memoryCache!;
 
+    final prefs = await SharedPreferences.getInstance();
+    if (!forceRefresh) {
+      final cachedSource = prefs.getString(_catalogCacheKey);
+      if (cachedSource != null && cachedSource.isNotEmpty) {
+        final cached = _cleanAndPrioritize(M3uParser.parse(cachedSource));
+        if (cached.isNotEmpty) {
+          _memoryCache = List.unmodifiable(cached);
+          return _memoryCache!;
+        }
+      }
+    }
+
     final res = await http
         .get(developmentPlaylist)
-        .timeout(const Duration(seconds: 15));
+        .timeout(const Duration(seconds: 10));
 
     if (res.statusCode != 200) {
       throw Exception('Não foi possível carregar o catálogo.');
     }
 
-    final parsed = M3uParser.parse(utf8.decode(res.bodyBytes));
+    final source = utf8.decode(res.bodyBytes);
+    final parsed = M3uParser.parse(source);
     final cleaned = _cleanAndPrioritize(parsed);
+    if (cleaned.isEmpty) {
+      throw Exception('O catálogo recebido não contém canais válidos.');
+    }
+
+    await prefs.setString(_catalogCacheKey, source);
     _memoryCache = List.unmodifiable(cleaned);
     return _memoryCache!;
   }
