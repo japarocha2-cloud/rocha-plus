@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
           builder: (_) => LiveTvScreen(
             initialGroup: title == 'Favoritos'
                 ? 'Favoritos'
-                : (title == 'Esportes' ? 'Esportes' : (title == 'Infantil' ? 'Infantil' : 'Todos')),
+                : (title == 'Esportes' ? 'Esportes' : (title == 'Infantil' ? 'Infantil' : 'TV aberta')),
           ),
         ),
       );
