@@ -1,6 +1,6 @@
 name: Build Rocha+
 
-# V2 validation: Fullscreen + Google Cast
+# V2 validation: player + Google Cast + branding
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           path.write_text(text)
           PY
 
-      - name: Configure Android phone and branding
+      - name: Configure Android sender and branding
         run: |-
           python3 - <<'PY'
           from pathlib import Path
@@ -44,22 +44,11 @@ jobs:
 
           permission = '<uses-permission android:name="android.permission.INTERNET" />'
           cast_permission = '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />'
-          features = (
-              '<uses-feature android:name="android.software.leanback" android:required="false" />\n'
-              '    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />'
-          )
           if permission not in text:
-              text = text.replace('<application', f'    {permission}\n    {features}\n    <application', 1)
+              text = text.replace('<application', f'    {permission}\n    <application', 1)
           if cast_permission not in text:
               text = text.replace('<application', f'    {cast_permission}\n    <application', 1)
 
-          if 'android.intent.category.LEANBACK_LAUNCHER' not in text:
-              launcher = '<category android:name="android.intent.category.LAUNCHER"/>'
-              text = text.replace(
-                  launcher,
-                  launcher + '\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>',
-                  1,
-              )
 
           cast_meta = (
               '<meta-data\n'
@@ -87,8 +76,8 @@ jobs:
 
           drawable = Path("android/app/src/main/res/drawable")
           drawable.mkdir(parents=True, exist_ok=True)
-          drawable.joinpath("rocha_plus_icon.xml").write_text(
-              Path("branding/rocha_plus_icon.xml").read_text()
+          drawable.joinpath("rocha_plus_icon.png").write_bytes(
+              Path("assets/rocha_plus_icon.png").read_bytes()
           )
 
           PY
