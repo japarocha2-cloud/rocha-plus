@@ -36,7 +36,7 @@ https://example.com/live.m3u8
     expect(channels.single.group, 'Outros');
   });
 
-  test('supports http and https streams', () {
+  test('accepts https streams and rejects insecure http', () {
     const playlist = '''#EXTM3U
 #EXTINF:-1,HTTP
 http://example.com/a.m3u8
