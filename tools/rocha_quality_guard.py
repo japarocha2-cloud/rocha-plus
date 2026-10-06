@@ -50,7 +50,7 @@ for path in ROOT.rglob("*"):
             issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
 
 # Fiscaliza os contratos mínimos das telas principais.
-all_dart = "\n".join(text for _, text in dart_files)
+all_dart = "\n".join(text for rel, text in dart_files if rel.parts and rel.parts[0] == "lib")
 required = {
     "Esportes": "rota/categoria Esportes",
     "Notícias": "rota/categoria Notícias",
