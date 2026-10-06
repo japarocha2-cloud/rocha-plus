@@ -1,6 +1,6 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import '../theme/rocha_theme.dart';
 import 'login_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -12,70 +12,76 @@ class IntroScreen extends StatefulWidget {
 
 class _IntroScreenState extends State<IntroScreen>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+  late final AnimationController _animation;
+  late final Animation<double> _fade;
   late final Animation<double> _scale;
-  Timer? _timer;
+  Timer? _finishTimer;
+  bool _finishing = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _animation = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1100),
     );
-    _scale = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
-    _controller.forward();
-    _timer = Timer(const Duration(seconds: 4), _finish);
+    _fade = CurvedAnimation(
+      parent: _animation,
+      curve: const Interval(0, .72, curve: Curves.easeOut),
+    );
+    _scale = Tween<double>(begin: .92, end: 1).animate(
+      CurvedAnimation(parent: _animation, curve: Curves.easeOutCubic),
+    );
+    _animation.forward();
+    _finishTimer = Timer(const Duration(milliseconds: 2200), _finish);
   }
 
   void _finish() {
-    if (!mounted) return;
-    _timer?.cancel();
+    if (!mounted || _finishing) return;
+    _finishing = true;
+    _finishTimer?.cancel();
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      PageRouteBuilder<void>(
+        transitionDuration: const Duration(milliseconds: 260),
+        pageBuilder: (_, animation, __) => const LoginScreen(),
+        transitionsBuilder: (_, animation, __, child) => FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+      ),
     );
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _controller.dispose();
+    _finishTimer?.cancel();
+    _animation.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: InkWell(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: _finish,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              radius: 1.1,
-              colors: [RochaColors.wine, RochaColors.background],
+        child: Center(
+          child: FadeTransition(
+            opacity: _fade,
+            child: ScaleTransition(
+              scale: _scale,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 260, maxHeight: 260),
+                child: Image.asset(
+                  'branding/rocha_plus_icon.webp',
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
+                  errorBuilder: (_, __, ___) => const RochaLogo(fontSize: 54),
+                ),
+              ),
             ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: ScaleTransition(
-                  scale: _scale,
-                  child: const RochaLogo(fontSize: 64),
-                ),
-              ),
-              const Positioned(
-                left: 0,
-                right: 0,
-                bottom: 42,
-                child: Text(
-                  'O entretenimento ganhou um novo reino.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white54),
-                ),
-              ),
-            ],
           ),
         ),
       ),
@@ -93,14 +99,8 @@ class RochaLogo extends StatelessWidget {
       TextSpan(
         style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w900),
         children: const [
-          TextSpan(
-            text: 'Rocha',
-            style: TextStyle(color: RochaColors.silver),
-          ),
-          TextSpan(
-            text: '+',
-            style: TextStyle(color: RochaColors.gold),
-          ),
+          TextSpan(text: 'Rocha', style: TextStyle(color: Color(0xFFD6D6D8))),
+          TextSpan(text: '+', style: TextStyle(color: Color(0xFFF4D7A4))),
         ],
       ),
     );
