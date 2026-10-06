@@ -26,7 +26,18 @@ void main() {
     expect(find.text('Séries'), findsNothing);
     expect(find.text('Documentários'), findsNothing);
     expect(find.text('Regionais'), findsNothing);
-    expect(find.text('Infantil'), findsNothing);
+  });
+
+  testWidgets('Infantil remains an implemented navigation target', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+    await tester.scrollUntilVisible(find.text('Infantil'), 250);
+    expect(find.text('Infantil'), findsOneWidget);
+    await tester.tap(find.text('Infantil'));
+    await tester.pump();
+    expect(find.text('Infantil está sendo preparado para uma próxima versão.'), findsNothing);
   });
 
 }
