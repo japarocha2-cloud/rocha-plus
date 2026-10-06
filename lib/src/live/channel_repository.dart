@@ -41,8 +41,8 @@ class ChannelRepository {
     }
 
     final results = await Future.wait([
-      _loadPlaylist(developmentPlaylist),
-      _loadPlaylist(sportsPlaylist),
+      _loadPlaylistSafely(developmentPlaylist),
+      _loadPlaylistSafely(sportsPlaylist),
     ]);
 
     final brazil = results[0];
@@ -74,6 +74,14 @@ class ChannelRepository {
 
     if (_memoryCache != null) return _withoutSessionFailures(_memoryCache!);
     throw Exception('Não foi possível carregar canais disponíveis.');
+  }
+
+  Future<List<Channel>> _loadPlaylistSafely(Uri playlist) async {
+    try {
+      return await _loadPlaylist(playlist);
+    } catch (_) {
+      return const <Channel>[];
+    }
   }
 
   Future<List<Channel>> _loadPlaylist(Uri playlist) async {
