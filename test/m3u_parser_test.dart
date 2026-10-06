@@ -46,4 +46,14 @@ https://example.com/b.m3u8
     final channels = M3uParser.parse(playlist);
     expect(channels, hasLength(2));
   });
+
+  test('normalizes undefined group labels', () {
+    const playlist = '''#EXTM3U
+#EXTINF:-1 group-title="Undefined",Canal
+https://example.com/live.m3u8
+''';
+    final channels = M3uParser.parse(playlist);
+    expect(channels.single.group, 'TV aberta');
+  });
+
 }
