@@ -181,10 +181,17 @@ class CastHlsProxy {
       if (line.startsWith('#')) {
         return line.replaceAllMapped(uriAttribute, (match) {
           final resolved = base.resolve(match.group(1)!);
+          if (resolved.scheme != 'http' && resolved.scheme != 'https') {
+            return match.group(0)!;
+          }
           return 'URI="${_proxyUri(resolved)}"';
         });
       }
-      return _proxyUri(base.resolve(line.trim())).toString();
+      final resolved = base.resolve(line.trim());
+      if (resolved.scheme != 'http' && resolved.scheme != 'https') {
+        return line;
+      }
+      return _proxyUri(resolved).toString();
     }).join('\n');
   }
 }
