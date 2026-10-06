@@ -164,7 +164,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                   tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
                                   onPressed: () => toggleFavorite(channel),
                                   icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
-                                      color: isFavorite ? RochaColors.ruby : Colors.white54),
+                                      color: isFavorite ? RochaColors.gold : Colors.white54),
                                 ),
                                 onTap: () => Navigator.push(context,
                                   MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel))),
@@ -188,7 +188,7 @@ class _GroupChip extends StatelessWidget {
     padding: const EdgeInsets.only(right: 8),
     child: ChoiceChip(label: Text(label), selected: selected,
       onSelected: (_) => onSelected(), selectedColor: RochaColors.wine,
-      side: BorderSide(color: selected ? RochaColors.ruby : Colors.white24)),
+      side: BorderSide(color: selected ? RochaColors.gold : Colors.white24)),
   );
 }
 
