@@ -64,7 +64,7 @@ class _IntroScreenState extends State<IntroScreen> {
           child: !_ready
               ? const Center(child: CircularProgressIndicator())
               : FittedBox(
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   child: SizedBox(
                     width: _controller.value.size.width,
                     height: _controller.value.size.height,
