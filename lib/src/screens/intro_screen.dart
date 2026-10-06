@@ -1,6 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import '../theme/rocha_theme.dart';
+import 'package:video_player/video_player.dart';
 import 'login_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -10,27 +9,38 @@ class IntroScreen extends StatefulWidget {
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
-class _IntroScreenState extends State<IntroScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scale;
-  Timer? _timer;
+class _IntroScreenState extends State<IntroScreen> {
+  late final VideoPlayerController _controller;
+  bool _ready = false;
+  bool _finishing = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    );
-    _scale = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
-    _controller.forward();
-    _timer = Timer(const Duration(seconds: 4), _finish);
+    _controller = VideoPlayerController.asset('assets/rocha_intro.mp4')
+      ..initialize().then((_) {
+        if (!mounted) return;
+        _controller
+          ..setLooping(false)
+          ..addListener(_watchPlayback)
+          ..play();
+        setState(() => _ready = true);
+      }).catchError((_) => _finish());
+  }
+
+  void _watchPlayback() {
+    if (!_controller.value.isInitialized || _finishing) return;
+    final duration = _controller.value.duration;
+    final position = _controller.value.position;
+    if (duration > Duration.zero &&
+        position >= duration - const Duration(milliseconds: 120)) {
+      _finish();
+    }
   }
 
   void _finish() {
-    if (!mounted) return;
-    _timer?.cancel();
+    if (!mounted || _finishing) return;
+    _finishing = true;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
@@ -38,7 +48,7 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _controller.removeListener(_watchPlayback);
     _controller.dispose();
     super.dispose();
   }
@@ -46,62 +56,22 @@ class _IntroScreenState extends State<IntroScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: InkWell(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: _finish,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              radius: 1.1,
-              colors: [RochaColors.wine, RochaColors.background],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: ScaleTransition(
-                  scale: _scale,
-                  child: const RochaLogo(fontSize: 64),
+        child: SizedBox.expand(
+          child: !_ready
+              ? const Center(child: CircularProgressIndicator())
+              : FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
                 ),
-              ),
-              const Positioned(
-                left: 0,
-                right: 0,
-                bottom: 42,
-                child: Text(
-                  'O entretenimento ganhou um novo reino.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white54),
-                ),
-              ),
-            ],
-          ),
         ),
-      ),
-    );
-  }
-}
-
-class RochaLogo extends StatelessWidget {
-  final double fontSize;
-  const RochaLogo({super.key, this.fontSize = 42});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w900),
-        children: const [
-          TextSpan(
-            text: 'Rocha',
-            style: TextStyle(color: RochaColors.silver),
-          ),
-          TextSpan(
-            text: '+',
-            style: TextStyle(color: RochaColors.gold),
-          ),
-        ],
       ),
     );
   }
