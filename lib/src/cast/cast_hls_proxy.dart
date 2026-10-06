@@ -28,16 +28,32 @@ class CastHlsProxy {
       type: InternetAddressType.IPv4,
       includeLoopback: false,
     );
-    final addresses = interfaces
-        .expand((interface) => interface.addresses)
-        .where((address) => !address.isLoopback)
-        .toList();
+    final ranked = <({int score, InternetAddress address})>[];
+    for (final interface in interfaces) {
+      for (final address in interface.addresses) {
+        if (address.isLoopback || address.address.startsWith('169.254.')) {
+          continue;
+        }
+        final name = interface.name.toLowerCase();
+        final value = address.address;
+        var score = 0;
+        if (name.contains('wlan') || name.contains('wifi')) score += 100;
+        if (value.startsWith('192.168.')) score += 50;
+        if (value.startsWith('10.')) score += 30;
+        if (RegExp(r'^172\.(1[6-9]|2\d|3[01])\.').hasMatch(value)) {
+          score += 30;
+        }
+        ranked.add((score: score, address: address));
+      }
+    }
+    ranked.sort((a, b) => b.score.compareTo(a.score));
+    final addresses = ranked.map((entry) => entry.address).toList();
     if (addresses.isEmpty) {
       throw StateError('Nenhum IPv4 local disponível para o Cast.');
     }
 
     _host = addresses.first.address;
-    _client = HttpClient();
+    _client = HttpClient()..connectionTimeout = const Duration(seconds: 6);
     _server = await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: true);
     _server!.listen(_handleRequest);
   }
@@ -67,6 +83,22 @@ class CastHlsProxy {
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
+    request.response.headers.set('Access-Control-Allow-Origin', '*');
+    request.response.headers.set(
+      'Access-Control-Allow-Methods',
+      'GET, HEAD, OPTIONS',
+    );
+    request.response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Range, Content-Type',
+    );
+
+    if (request.method == 'OPTIONS') {
+      request.response.statusCode = HttpStatus.noContent;
+      await request.response.close();
+      return;
+    }
+
     if (request.method != 'GET' && request.method != 'HEAD') {
       request.response.statusCode = HttpStatus.methodNotAllowed;
       await request.response.close();
