@@ -83,14 +83,24 @@ class CastHlsProxy {
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
-    request.response.headers.set('Access-Control-Allow-Origin', '*');
+    final origin = request.headers.value('Origin');
+    if (origin != null && origin.isNotEmpty) {
+      request.response.headers.set('Access-Control-Allow-Origin', origin);
+      request.response.headers.set('Vary', 'Origin');
+    } else {
+      request.response.headers.set('Access-Control-Allow-Origin', '*');
+    }
     request.response.headers.set(
       'Access-Control-Allow-Methods',
       'GET, HEAD, OPTIONS',
     );
     request.response.headers.set(
       'Access-Control-Allow-Headers',
-      'Range, Content-Type',
+      'Range, Content-Type, Accept-Encoding',
+    );
+    request.response.headers.set(
+      'Access-Control-Expose-Headers',
+      'Content-Length, Content-Range, Accept-Ranges',
     );
 
     if (request.method == 'OPTIONS') {
@@ -122,6 +132,11 @@ class CastHlsProxy {
         request.headers.value(HttpHeaders.userAgentHeader) ?? 'Mozilla/5.0 RochaPlus Cast',
       );
       upstream.headers.set(HttpHeaders.acceptHeader, '*/*');
+      final acceptEncoding =
+          request.headers.value(HttpHeaders.acceptEncodingHeader);
+      if (acceptEncoding != null && acceptEncoding.isNotEmpty) {
+        upstream.headers.set(HttpHeaders.acceptEncodingHeader, acceptEncoding);
+      }
 
       final response = await upstream.close();
       request.response.statusCode = response.statusCode;
