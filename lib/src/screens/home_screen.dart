@@ -53,8 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedIndex: mobileTab,
                   onDestinationSelected: (index) {
                     setState(() => mobileTab = index);
-                    if (index == 1) openSection('TV ao Vivo');
+                    if (index == 1 || index == 2) {
+                      openSection('TV ao Vivo');
+                    }
                     if (index == 3) openSection('Favoritos');
+                    if (index == 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'O perfil será ativado junto com o login oficial Google e Apple.',
+                          ),
+                        ),
+                      );
+                    }
                   },
                   destinations: const [
                     NavigationDestination(
