@@ -28,6 +28,11 @@ class ChannelRepository {
 
   bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
 
+  List<Channel> sportsOnly(Iterable<Channel> channels) => channels
+      .where((channel) => channel.group == 'Esportes')
+      .where((channel) => !_sessionFailedUrls.contains(channel.url))
+      .toList(growable: false);
+
   static void resetSessionHealthForTests() {
     _sessionFailedUrls.clear();
     _memoryCache = null;
@@ -110,6 +115,8 @@ class ChannelRepository {
     });
     return indexed.map((entry) => entry.value).toList(growable: false);
   }
+
+  int sportsPriorityForTests(Channel channel) => _sportsPriority(channel);
 
   int _sportsPriority(Channel channel) {
     if (channel.group != 'Esportes') return 0;
