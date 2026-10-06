@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
@@ -6,22 +7,93 @@ import 'm3u_parser.dart';
 class ChannelRepository {
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
+  static final Uri sportsPlaylist =
+      Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
 
   static List<Channel>? _memoryCache;
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async {
     if (!forceRefresh && _memoryCache != null) return _memoryCache!;
 
-    final res = await http
-        .get(developmentPlaylist)
-        .timeout(const Duration(seconds: 15));
+    final results = await Future.wait([
+      _loadPlaylist(developmentPlaylist),
+      _loadPlaylist(sportsPlaylist),
+    ]);
 
+    final brazil = results[0];
+    final sports = results[1]
+        .map((channel) => Channel(
+              name: channel.name,
+              url: channel.url,
+              logo: channel.logo,
+              group: 'Esportes',
+            ))
+        .toList(growable: false);
+
+    final merged = <String, Channel>{};
+    for (final channel in [...brazil, ...sports]) {
+      merged[channel.url] = channel;
+    }
+
+    // A varredura roda em lotes para não disparar centenas de conexões
+    // simultâneas. Canais sem resposta HTTP válida não entram no catálogo.
+    final online = await _keepReachable(merged.values.toList(growable: false));
+    if (online.isNotEmpty) {
+      _memoryCache = List.unmodifiable(online);
+    }
+
+    // Se houver uma falha geral de rede, preserva o último catálogo saudável.
+    if (_memoryCache != null) return _memoryCache!;
+    throw Exception('Não foi possível carregar canais disponíveis.');
+  }
+
+  Future<List<Channel>> _loadPlaylist(Uri playlist) async {
+    final res = await http.get(playlist).timeout(const Duration(seconds: 15));
     if (res.statusCode != 200) {
       throw Exception('Não foi possível carregar o catálogo.');
     }
+    return M3uParser.parse(utf8.decode(res.bodyBytes));
+  }
 
-    final parsed = M3uParser.parse(utf8.decode(res.bodyBytes));
-    _memoryCache = List.unmodifiable(parsed);
-    return _memoryCache!;
+  Future<List<Channel>> _keepReachable(List<Channel> channels) async {
+    const batchSize = 12;
+    final online = <Channel>[];
+
+    for (var start = 0; start < channels.length; start += batchSize) {
+      final end = (start + batchSize < channels.length)
+          ? start + batchSize
+          : channels.length;
+      final batch = channels.sublist(start, end);
+      final checks = await Future.wait(batch.map(_isReachable));
+      for (var i = 0; i < batch.length; i++) {
+        if (checks[i]) online.add(batch[i]);
+      }
+    }
+    return online;
+  }
+
+  Future<bool> _isReachable(Channel channel) async {
+    final uri = Uri.tryParse(channel.url);
+    if (uri == null || !(uri.scheme == 'http' || uri.scheme == 'https')) {
+      return false;
+    }
+
+    try {
+      // GET com Range funciona melhor que HEAD em servidores HLS/CDN
+      // que recusam HEAD mesmo quando o stream está ativo.
+      final request = http.Request('GET', uri)
+        ..headers['Range'] = 'bytes=0-1023'
+        ..headers['User-Agent'] = 'RochaPlus/0.1';
+      final response = await http.Client()
+          .send(request)
+          .timeout(const Duration(seconds: 6));
+      final ok = response.statusCode >= 200 && response.statusCode < 400;
+      await response.stream.drain<void>();
+      return ok;
+    } on TimeoutException {
+      return false;
+    } catch (_) {
+      return false;
+    }
   }
 }
