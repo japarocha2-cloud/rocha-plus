@@ -12,9 +12,27 @@ class ChannelRepository {
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
 
   static List<Channel>? _memoryCache;
+  static final Set<String> _sessionFailedUrls = <String>{};
+
+  void reportPlaybackFailure(String url) {
+    _sessionFailedUrls.add(url);
+    final cached = _memoryCache;
+    if (cached != null) {
+      _memoryCache = List.unmodifiable(
+        cached.where((channel) => !_sessionFailedUrls.contains(channel.url)),
+      );
+    }
+  }
+
+  void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
+
+  List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
+      channels.where((channel) => !_sessionFailedUrls.contains(channel.url)).toList(growable: false);
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async {
-    if (!forceRefresh && _memoryCache != null) return _memoryCache!;
+    if (!forceRefresh && _memoryCache != null) {
+      return _withoutSessionFailures(_memoryCache!);
+    }
 
     final results = await Future.wait([
       _loadPlaylist(developmentPlaylist),
@@ -36,16 +54,19 @@ class ChannelRepository {
       merged[channel.url] = channel;
     }
 
-    // A varredura roda em lotes para não disparar centenas de conexões
-    // simultâneas. Canais sem resposta HTTP válida não entram no catálogo.
-    final online = await _keepReachable(merged.values.toList(growable: false));
-    final ordered = _orderSportsFirst(online);
+    // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
+    // são carregadas; a validação profunda não bloqueia mais centenas de
+    // canais antes de a interface aparecer. Falhas reais do player entram
+    // em quarentena durante a sessão por reportPlaybackFailure().
+    final ordered = _orderSportsFirst(
+      _withoutSessionFailures(merged.values),
+    );
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
+      return _memoryCache!;
     }
 
-    // Se houver uma falha geral de rede, preserva o último catálogo saudável.
-    if (_memoryCache != null) return _memoryCache!;
+    if (_memoryCache != null) return _withoutSessionFailures(_memoryCache!);
     throw Exception('Não foi possível carregar canais disponíveis.');
   }
 
