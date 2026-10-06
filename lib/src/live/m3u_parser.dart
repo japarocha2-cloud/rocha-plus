@@ -13,7 +13,7 @@ class M3uParser {
       if (line.startsWith('#EXTINF:')) {
         name = line.contains(',') ? line.substring(line.indexOf(',') + 1).trim() : 'Canal';
         logo = _attribute(line, 'tvg-logo');
-        group = _attribute(line, 'group-title') ?? 'Outros';
+        group = _normalizedGroup(_attribute(line, 'group-title'));
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
         if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {
@@ -27,4 +27,16 @@ class M3uParser {
 
   static String? _attribute(String line, String key) =>
       RegExp('$key="([^"]*)"').firstMatch(line)?.group(1);
+
+  static String _normalizedGroup(String? raw) {
+    final value = raw?.trim() ?? '';
+    final lower = value.toLowerCase();
+    if (value.isEmpty ||
+        lower == 'undefined' ||
+        lower == 'null' ||
+        lower == 'n/a') {
+      return 'TV aberta';
+    }
+    return value;
+  }
 }
