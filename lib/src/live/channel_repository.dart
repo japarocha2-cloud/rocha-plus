@@ -43,7 +43,7 @@ class ChannelRepository {
     final results = await Future.wait([
       _loadPlaylistSafely(developmentPlaylist),
       _loadPlaylistSafely(sportsPlaylist),
-    ]);
+    ]).timeout(const Duration(seconds: 16), onTimeout: () => const [<Channel>[], <Channel>[]]);
 
     final brazil = results[0];
     final sports = results[1]
@@ -85,7 +85,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> _loadPlaylist(Uri playlist) async {
-    final res = await _client.get(playlist).timeout(const Duration(seconds: 15));
+    final res = await _client.get(playlist).timeout(const Duration(seconds: 8));
     if (res.statusCode != 200) {
       throw Exception('Não foi possível carregar o catálogo.');
     }
