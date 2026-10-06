@@ -72,6 +72,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
     final q = search.text.trim().toLowerCase();
     final visible = channels.where((c) {
+      final technicalGroup = c.group.contains(';');
+      if (technicalGroup) return false;
       final matchesSearch = q.isEmpty ||
           c.name.toLowerCase().contains(q) ||
           c.group.toLowerCase().contains(q);
@@ -159,7 +161,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                         fit: BoxFit.contain,
                                         errorBuilder: (_, __, ___) => const Icon(Icons.live_tv)),
                                 title: Text(channel.name),
-                                subtitle: Text(channel.group),
+                                subtitle: channel.group == 'Outros' ? null : Text(channel.group),
                                 trailing: IconButton(
                                   tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
                                   onPressed: () => toggleFavorite(channel),
