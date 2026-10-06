@@ -119,6 +119,7 @@ jobs:
           root = Path('.')
           required = [
               root / 'branding/rocha_plus_icon.webp',
+              root / 'assets/rocha_intro_v2.mp4',
               root / 'lib/src/screens/player_screen.dart',
               root / 'lib/src/cast/cast_hls_proxy.dart',
           ]
@@ -169,7 +170,14 @@ jobs:
           if len(webp) < 1024 or webp[:4] != b'RIFF' or webp[8:12] != b'WEBP':
               raise SystemExit('Rocha+ branding WebP is invalid.')
 
-          print(f'Preflight OK: single Rocha+ branding WebP {len(webp)} bytes.')
+          intro = (root / 'assets/rocha_intro_v2.mp4').read_bytes()
+          if len(intro) < 200000 or b'ftyp' not in intro[:64]:
+              raise SystemExit('Intro video is invalid or unexpectedly tiny.')
+          intro_source = (root / 'lib/src/screens/intro_screen.dart').read_text()
+          if "VideoPlayerController.asset('assets/rocha_intro_v2.mp4')" not in intro_source:
+              raise SystemExit('Intro screen is not wired to the real cinematic video.')
+
+          print(f'Preflight OK: branding {len(webp)} bytes; intro {len(intro)} bytes.')
           PY
 
       - name: Get dependencies
