@@ -19,7 +19,6 @@ class CastControlScreen extends StatefulWidget {
 }
 
 class _CastControlScreenState extends State<CastControlScreen> {
-  bool _isPlaying = true;
   bool _busy = false;
   int _tab = 0;
 
@@ -27,12 +26,14 @@ class _CastControlScreenState extends State<CastControlScreen> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      if (_isPlaying) {
+      final isPlaying =
+          GoogleCastRemoteMediaClient.instance.mediaStatus?.playerState ==
+              CastMediaPlayerState.playing;
+      if (isPlaying) {
         await GoogleCastRemoteMediaClient.instance.pause();
       } else {
         await GoogleCastRemoteMediaClient.instance.play();
       }
-      if (mounted) setState(() => _isPlaying = !_isPlaying);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -71,59 +72,90 @@ class _CastControlScreenState extends State<CastControlScreen> {
   @override
   Widget build(BuildContext context) {
     final logo = widget.channel.logo;
-    return Scaffold(
-      backgroundColor: RochaColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _TopBar(
-              onBack: () => Navigator.of(context).pop(),
-              onDisconnect: _disconnect,
+    return StreamBuilder<GoggleCastMediaStatus?>(
+      stream: GoogleCastRemoteMediaClient.instance.mediaStatusStream,
+      initialData: GoogleCastRemoteMediaClient.instance.mediaStatus,
+      builder: (context, snapshot) {
+        final status = snapshot.data;
+        final state = status?.playerState;
+        final isPlaying = state == CastMediaPlayerState.playing;
+        final isConnected = state == CastMediaPlayerState.playing ||
+            state == CastMediaPlayerState.paused ||
+            state == CastMediaPlayerState.buffering ||
+            state == CastMediaPlayerState.loading;
+        final statusText = switch (state) {
+          CastMediaPlayerState.playing => 'Transmitindo agora',
+          CastMediaPlayerState.paused => 'Pausado na TV',
+          CastMediaPlayerState.buffering => 'Carregando na TV',
+          CastMediaPlayerState.loading => 'Abrindo na TV',
+          _ => 'Sem reprodução confirmada',
+        };
+
+        return Scaffold(
+          backgroundColor: RochaColors.background,
+          body: SafeArea(
+            child: Column(
+              children: [
+                _TopBar(
+                  onBack: () => Navigator.of(context).pop(),
+                  onDisconnect: _disconnect,
+                  isConnected: isConnected,
+                ),
+                _Tabs(
+                  index: _tab,
+                  onChanged: (value) => setState(() => _tab = value),
+                ),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    child: switch (_tab) {
+                      1 => _DetailsTab(channel: widget.channel),
+                      2 => _ControlsTab(
+                          deviceName: widget.deviceName,
+                          isPlaying: isPlaying,
+                          busy: _busy,
+                          statusText: statusText,
+                          onTogglePlayback: _togglePlayback,
+                          onBack10: () => _seekBy(-10),
+                          onForward10: () => _seekBy(10),
+                          onDisconnect: _disconnect,
+                        ),
+                      _ => _LiveTab(
+                          channel: widget.channel,
+                          deviceName: widget.deviceName,
+                          logo: logo,
+                          isPlaying: isPlaying,
+                          isConnected: isConnected,
+                          statusText: statusText,
+                          busy: _busy,
+                          onTogglePlayback: _togglePlayback,
+                          onBack10: () => _seekBy(-10),
+                          onForward10: () => _seekBy(10),
+                          onDisconnect: _disconnect,
+                        ),
+                    },
+                  ),
+                ),
+              ],
             ),
-            _Tabs(
-              index: _tab,
-              onChanged: (value) => setState(() => _tab = value),
-            ),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: switch (_tab) {
-                  1 => _DetailsTab(channel: widget.channel),
-                  2 => _ControlsTab(
-                      deviceName: widget.deviceName,
-                      isPlaying: _isPlaying,
-                      busy: _busy,
-                      onTogglePlayback: _togglePlayback,
-                      onBack10: () => _seekBy(-10),
-                      onForward10: () => _seekBy(10),
-                      onDisconnect: _disconnect,
-                    ),
-                  _ => _LiveTab(
-                      channel: widget.channel,
-                      deviceName: widget.deviceName,
-                      logo: logo,
-                      isPlaying: _isPlaying,
-                      busy: _busy,
-                      onTogglePlayback: _togglePlayback,
-                      onBack10: () => _seekBy(-10),
-                      onForward10: () => _seekBy(10),
-                      onDisconnect: _disconnect,
-                    ),
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
+
 }
 
 class _TopBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onDisconnect;
+  final bool isConnected;
 
-  const _TopBar({required this.onBack, required this.onDisconnect});
+  const _TopBar({
+    required this.onBack,
+    required this.onDisconnect,
+    required this.isConnected,
+  });
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -141,7 +173,10 @@ class _TopBar extends StatelessWidget {
             IconButton(
               tooltip: 'Transmitindo',
               onPressed: null,
-              icon: const Icon(Icons.cast_connected, color: RochaColors.playGreen),
+              icon: Icon(
+                isConnected ? Icons.cast_connected : Icons.cast,
+                color: isConnected ? RochaColors.playGreen : Colors.white38,
+              ),
             ),
             PopupMenuButton<String>(
               onSelected: (value) {
@@ -242,6 +277,8 @@ class _LiveTab extends StatelessWidget {
   final String deviceName;
   final String? logo;
   final bool isPlaying;
+  final bool isConnected;
+  final String statusText;
   final bool busy;
   final VoidCallback onTogglePlayback;
   final VoidCallback onBack10;
@@ -253,6 +290,8 @@ class _LiveTab extends StatelessWidget {
     required this.deviceName,
     required this.logo,
     required this.isPlaying,
+    required this.isConnected,
+    required this.statusText,
     required this.busy,
     required this.onTogglePlayback,
     required this.onBack10,
@@ -288,7 +327,7 @@ class _LiveTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const _ConnectedPill(),
+            _ConnectedPill(isConnected: isConnected, statusText: statusText),
             const SizedBox(height: 24),
             _ContentCard(channel: channel, logo: logo),
             const SizedBox(height: 24),
@@ -310,6 +349,7 @@ class _LiveTab extends StatelessWidget {
             const SizedBox(height: 24),
             _DeviceCard(
               deviceName: deviceName,
+              statusText: statusText,
               onDisconnect: onDisconnect,
             ),
           ],
@@ -408,25 +448,34 @@ class _TvHero extends StatelessWidget {
 }
 
 class _ConnectedPill extends StatelessWidget {
-  const _ConnectedPill();
+  final bool isConnected;
+  final String statusText;
+
+  const _ConnectedPill({
+    required this.isConnected,
+    required this.statusText,
+  });
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        decoration: BoxDecoration(
-          color: RochaColors.playGreen.withValues(alpha: .10),
-          border: Border.all(color: RochaColors.playGreen.withValues(alpha: .55)),
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.circle, size: 9, color: RochaColors.playGreen),
-            SizedBox(width: 8),
-            Text('Conectado', style: TextStyle(color: RochaColors.playGreen)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    final color = isConnected ? RochaColors.playGreen : Colors.orangeAccent;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .10),
+        border: Border.all(color: color.withValues(alpha: .55)),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.circle, size: 9, color: color),
+          const SizedBox(width: 8),
+          Text(statusText, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
 }
 
 class _ContentCard extends StatelessWidget {
@@ -531,6 +580,7 @@ class _PlaybackControls extends StatelessWidget {
   const _PlaybackControls({
     required this.isPlaying,
     required this.busy,
+    required this.statusText,
     required this.onTogglePlayback,
     required this.onBack10,
     required this.onForward10,
@@ -593,10 +643,12 @@ class _RoundAction extends StatelessWidget {
 
 class _DeviceCard extends StatelessWidget {
   final String deviceName;
+  final String statusText;
   final VoidCallback onDisconnect;
 
   const _DeviceCard({
     required this.deviceName,
+    required this.statusText,
     required this.onDisconnect,
   });
 
@@ -620,9 +672,9 @@ class _DeviceCard extends StatelessWidget {
                     deviceName,
                     style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                   ),
-                  const Text(
-                    'Transmitindo agora',
-                    style: TextStyle(color: RochaColors.playGreen),
+                  Text(
+                    statusText,
+                    style: const TextStyle(color: RochaColors.playGreen),
                   ),
                 ],
               ),
@@ -673,6 +725,7 @@ class _ControlsTab extends StatelessWidget {
   final String deviceName;
   final bool isPlaying;
   final bool busy;
+  final String statusText;
   final VoidCallback onTogglePlayback;
   final VoidCallback onBack10;
   final VoidCallback onForward10;
@@ -700,10 +753,10 @@ class _ControlsTab extends StatelessWidget {
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Controle remoto Rocha+',
+          Text(
+            statusText,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54),
+            style: const TextStyle(color: Colors.white54),
           ),
           const SizedBox(height: 38),
           _PlaybackControls(
