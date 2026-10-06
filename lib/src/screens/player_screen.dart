@@ -217,6 +217,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         );
         if (GoogleCastSessionManager.instance.connectionState !=
             GoogleCastConnectState.connected) {
+          await CastHlsProxy.instance.stop();
           await _controller?.play();
         }
       }
@@ -229,6 +230,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       } catch (_) {
         // A falha original de transmissão é mais importante que a limpeza.
       }
+      await CastHlsProxy.instance.stop();
       await _controller?.play();
       debugPrint('Rocha+ Cast error: $error');
       if (mounted) {
