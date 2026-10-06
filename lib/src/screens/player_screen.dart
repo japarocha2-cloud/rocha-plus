@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
+import '../cast/cast_hls_proxy.dart';
 import '../live/channel.dart';
 import '../theme/rocha_theme.dart';
 
@@ -123,9 +124,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
       final uri = Uri.parse(widget.channel.url);
       await GoogleCastSessionManager.instance.startSessionWithDevice(device);
 
+      final isHls = _castContentType(uri) == 'application/x-mpegURL';
+      final castUri = isHls ? await CastHlsProxy.instance.relay(uri) : uri;
+
       final media = GoogleCastMediaInformation(
-        contentId: widget.channel.url,
-        contentUrl: uri,
+        contentId: castUri.toString(),
+        contentUrl: castUri,
         contentType: _castContentType(uri),
         streamType: CastMediaStreamType.live,
         metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
@@ -133,9 +137,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         // declaring this is important on Android Cast receivers: plugin 1.4.8
         // now forwards the HLS segment hint to MediaInfo instead of leaving
         // compatible streams stuck on the receiver loading screen.
-        hlsVideoSegmentFormat: _castContentType(uri) == 'application/x-mpegURL'
-            ? HlsVideoSegmentFormat.mpeg2Ts
-            : null,
+        hlsVideoSegmentFormat: isHls ? HlsVideoSegmentFormat.mpeg2Ts : null,
       );
 
       // Explicit autoplay matters for live streams on the Default Media
