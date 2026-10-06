@@ -63,7 +63,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const preferredGroups = ['TV aberta', 'News', 'Esportes', 'General'];
+    const preferredGroups = ['TV aberta', 'News', 'Esportes', 'Infantil', 'General'];
     final available = channels.map((c) => c.group).toSet();
     final groups = preferredGroups.where(available.contains).toList();
     if (selectedGroup != 'Todos' && selectedGroup != 'Favoritos' && !groups.contains(selectedGroup)) {
@@ -90,7 +90,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               ? 'Favoritos'
               : selectedGroup == 'Esportes'
                   ? 'Esportes'
-                  : 'TV ao Vivo',
+                  : selectedGroup == 'Infantil'
+                      ? 'Infantil'
+                      : 'TV ao Vivo',
         ),
         actions: [
           IconButton(
