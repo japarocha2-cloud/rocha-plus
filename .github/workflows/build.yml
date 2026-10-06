@@ -61,6 +61,8 @@ jobs:
           PY
       - name: Get dependencies
         run: flutter pub get
+      - name: Rocha+ Quality Guard
+        run: python3 tools/rocha_quality_guard.py
       - name: Analyze
         run: flutter analyze
       - name: Test
