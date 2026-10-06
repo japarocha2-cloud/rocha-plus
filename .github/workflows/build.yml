@@ -74,12 +74,12 @@ jobs:
           )
           manifest.write_text(text)
 
-          source_icon = Path("assets/rocha_plus_icon.png")
+          launcher_icon = Path("branding/rocha_plus_icon.webp")
 
           drawable = Path("android/app/src/main/res/drawable")
           drawable.mkdir(parents=True, exist_ok=True)
-          drawable.joinpath("rocha_plus_icon.png").write_bytes(
-              source_icon.read_bytes()
+          drawable.joinpath("rocha_plus_icon.webp").write_bytes(
+              launcher_icon.read_bytes()
           )
 
           PY
