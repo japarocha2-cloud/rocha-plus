@@ -13,6 +13,7 @@ class _IntroScreenState extends State<IntroScreen> {
   late final VideoPlayerController _controller;
   bool _ready = false;
   bool _finishing = false;
+  bool _lowResolutionAsset = false;
 
   @override
   void initState() {
@@ -20,11 +21,21 @@ class _IntroScreenState extends State<IntroScreen> {
     _controller = VideoPlayerController.asset('assets/rocha_intro.mp4')
       ..initialize().then((_) {
         if (!mounted) return;
+        final size = _controller.value.size;
+        final lowResolution = size.width < 300 || size.height < 300;
         _controller
           ..setLooping(false)
-          ..addListener(_watchPlayback)
-          ..play();
-        setState(() => _ready = true);
+          ..addListener(_watchPlayback);
+        if (!lowResolution) {
+          _controller.play();
+        }
+        setState(() {
+          _ready = true;
+          _lowResolutionAsset = lowResolution;
+        });
+        if (lowResolution) {
+          Future<void>.delayed(const Duration(milliseconds: 1400), _finish);
+        }
       }).catchError((_) => _finish());
   }
 
@@ -63,14 +74,16 @@ class _IntroScreenState extends State<IntroScreen> {
         child: SizedBox.expand(
           child: !_ready
               ? const Center(child: CircularProgressIndicator())
-              : FittedBox(
-                  fit: BoxFit.contain,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
-                  ),
-                ),
+              : _lowResolutionAsset
+                  ? const _CleanIntroFallback()
+                  : FittedBox(
+                      fit: BoxFit.contain,
+                      child: SizedBox(
+                        width: _controller.value.size.width,
+                        height: _controller.value.size.height,
+                        child: VideoPlayer(_controller),
+                      ),
+                    ),
         ),
       ),
     );
@@ -94,4 +107,24 @@ class RochaLogo extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _CleanIntroFallback extends StatelessWidget {
+  const _CleanIntroFallback();
+
+  @override
+  Widget build(BuildContext context) => const ColoredBox(
+        color: Colors.black,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.play_circle_fill, size: 82, color: Color(0xFF16F34A)),
+              SizedBox(height: 18),
+              RochaLogo(fontSize: 54),
+            ],
+          ),
+        ),
+      );
 }
