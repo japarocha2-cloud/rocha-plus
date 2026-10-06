@@ -19,6 +19,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _failed = false;
   bool _controlsVisible = false;
   bool _fullscreen = false;
+  bool _playbackConfirmed = false;
   int _attempt = 0;
   final ChannelRepository _channelRepository = ChannelRepository();
 
@@ -34,7 +35,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _controller = null;
     await old?.dispose();
 
-    if (mounted) setState(() { _loading = true; _failed = false; });
+    if (mounted) setState(() { _loading = true; _failed = false; _playbackConfirmed = false; });
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.channel.url),
@@ -54,7 +55,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       // A qualidade continua sendo a original/adaptativa oferecida pelo HLS.
       await controller.play();
       _channelRepository.reportPlaybackSuccess(widget.channel.url);
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() { _loading = false; _playbackConfirmed = true; });
     } catch (_) {
       _channelRepository.reportPlaybackFailure(widget.channel.url);
       await controller.dispose();
@@ -203,7 +204,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ? null
           : AppBar(
               backgroundColor: Colors.black,
-              title: Text(widget.channel.name),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.channel.name),
+                  Text(
+                    _playbackConfirmed ? 'Reproduzindo' : 'Conectando…',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _playbackConfirmed ? RochaColors.playGreen : Colors.white54,
+                    ),
+                  ),
+                ],
+              ),
               actions: [
                 IconButton(
                   tooltip: 'Transmitir para TV',
