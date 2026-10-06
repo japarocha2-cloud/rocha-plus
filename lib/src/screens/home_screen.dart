@@ -26,12 +26,12 @@ class HomeScreen extends StatelessWidget {
       );
       return;
     }
-    if (title == 'TV ao Vivo' || title == 'Favoritos') {
+    if (title == 'TV ao Vivo' || title == 'Favoritos' || title == 'Esportes') {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => LiveTvScreen(
-            initialGroup: title == 'Favoritos' ? 'Favoritos' : 'Todos',
+            initialGroup: title == 'Favoritos' ? 'Favoritos' : (title == 'Esportes' ? 'Esportes' : 'Todos'),
           ),
         ),
       );
