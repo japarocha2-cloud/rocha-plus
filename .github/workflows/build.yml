@@ -84,6 +84,90 @@ jobs:
 
           PY
 
+      - name: Preflight source sweep
+        run: |-
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          import zlib
+
+          root = Path('.')
+          required = [
+              root / 'assets/rocha_plus_icon.png',
+              root / 'branding/rocha_plus_icon.webp',
+              root / 'lib/src/screens/player_screen.dart',
+              root / 'lib/src/cast/cast_hls_proxy.dart',
+              root / 'receiver/index.html',
+          ]
+          for path in required:
+              if not path.exists() or path.stat().st_size == 0:
+                  raise SystemExit(f'Missing or empty required file: {path}')
+
+          forbidden_paths = [
+              root / 'assets/rocha_intro.mp4',
+              root / 'branding/rocha_plus_icon.xml',
+          ]
+          for path in forbidden_paths:
+              if path.exists():
+                  raise SystemExit(f'Obsolete file returned: {path}')
+
+          source_text = '\n'.join(
+              path.read_text(errors='ignore')
+              for path in root.rglob('*')
+              if path.is_file() and path.suffix in {'.dart', '.yml', '.yaml', '.kt', '.kts', '.xml'}
+          )
+          forbidden_tokens = [
+              'rocha_plus/screen_mirror',
+              'ACTION_CAST_SETTINGS',
+              'ACTION_WIRELESS_SETTINGS',
+              'HlsVideoSegmentFormat.mpeg2Ts',
+          ]
+          for token in forbidden_tokens:
+              if token in source_text:
+                  raise SystemExit(f'Obsolete or unsafe command found: {token}')
+
+          player = (root / 'lib/src/screens/player_screen.dart').read_text()
+          if 'state == CastMediaPlayerState.playing' not in player:
+              raise SystemExit('Cast success no longer requires real PLAYING state.')
+          if 'GoogleCastConnectState.connected' not in player:
+              raise SystemExit('Cast session connection validation is missing.')
+
+          png = (root / 'assets/rocha_plus_icon.png').read_bytes()
+          if not png.startswith(b'\x89PNG\r\n\x1a\n'):
+              raise SystemExit('Startup icon is not a PNG.')
+          pos = 8
+          width = height = None
+          saw_iend = False
+          while pos + 12 <= len(png):
+              length = struct.unpack('>I', png[pos:pos+4])[0]
+              kind = png[pos+4:pos+8]
+              end = pos + 12 + length
+              if end > len(png):
+                  raise SystemExit('Startup PNG is truncated.')
+              data = png[pos+8:pos+8+length]
+              expected_crc = struct.unpack('>I', png[pos+8+length:pos+12+length])[0]
+              actual_crc = zlib.crc32(kind)
+              actual_crc = zlib.crc32(data, actual_crc) & 0xffffffff
+              if actual_crc != expected_crc:
+                  raise SystemExit(f'Invalid PNG CRC in chunk {kind!r}.')
+              if kind == b'IHDR':
+                  width, height = struct.unpack('>II', data[:8])
+              if kind == b'IEND':
+                  saw_iend = True
+                  break
+              pos = end
+          if not saw_iend or width is None or height is None:
+              raise SystemExit('Startup PNG structure is incomplete.')
+          if width < 256 or height < 256:
+              raise SystemExit(f'Startup icon resolution too low: {width}x{height}')
+
+          webp = (root / 'branding/rocha_plus_icon.webp').read_bytes()
+          if len(webp) < 1024 or webp[:4] != b'RIFF' or webp[8:12] != b'WEBP':
+              raise SystemExit('Android launcher WebP is invalid.')
+
+          print(f'Preflight OK: startup PNG {width}x{height}, launcher WebP {len(webp)} bytes.')
+          PY
+
       - name: Get dependencies
         run: flutter pub get
 
