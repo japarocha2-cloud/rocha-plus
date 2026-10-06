@@ -44,6 +44,8 @@ http://example.com/a.m3u8
 https://example.com/b.m3u8
 ''';
     final channels = M3uParser.parse(playlist);
-    expect(channels, hasLength(2));
+    expect(channels, hasLength(1));
+    expect(channels.single.name, 'HTTPS');
+    expect(channels.single.url, 'https://example.com/b.m3u8');
   });
 }
