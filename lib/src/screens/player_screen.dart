@@ -129,7 +129,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       contentType: _castContentType(uri),
       streamType: CastMediaStreamType.live,
       metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
-      hlsVideoSegmentFormat: isHls ? HlsVideoSegmentFormat.mpeg2Ts : null,
     );
 
     await GoogleCastRemoteMediaClient.instance.loadMedia(
@@ -140,7 +139,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
     await GoogleCastRemoteMediaClient.instance.play();
 
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 16; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
@@ -168,7 +167,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       } catch (error) {
         directError = error;
         final isHls = _castContentType(uri) == 'application/x-mpegURL';
-        if (!isHls) rethrow;
+        if (!isHls || !device.isOnLocalNetwork) rethrow;
 
         final relayUri = await CastHlsProxy.instance.relay(uri);
         await _loadAndConfirmCast(relayUri);
