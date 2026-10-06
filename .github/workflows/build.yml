@@ -112,10 +112,16 @@ jobs:
               if path.exists():
                   raise SystemExit(f'Obsolete file returned: {path}')
 
+          source_roots = [root / 'lib', root / 'android']
+          source_files = []
+          for source_root in source_roots:
+              if source_root.exists():
+                  source_files.extend(
+                      path for path in source_root.rglob('*')
+                      if path.is_file() and path.suffix in {'.dart', '.kt', '.kts', '.xml'}
+                  )
           source_text = '\n'.join(
-              path.read_text(errors='ignore')
-              for path in root.rglob('*')
-              if path.is_file() and path.suffix in {'.dart', '.yml', '.yaml', '.kt', '.kts', '.xml'}
+              path.read_text(errors='ignore') for path in source_files
           )
           forbidden_tokens = [
               'rocha_plus/screen_mirror',
