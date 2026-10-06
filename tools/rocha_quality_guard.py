@@ -23,6 +23,8 @@ for path in ROOT.rglob("*"):
         continue
     if any(part in ignore_parts for part in path.parts):
         continue
+    if ".rocha-support" in path.parts:
+        continue
     if path.suffix.lower() not in TEXT_EXTS:
         continue
 
