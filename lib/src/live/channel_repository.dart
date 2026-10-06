@@ -39,8 +39,14 @@ class ChannelRepository {
       }
 
       final uri = Uri.tryParse(url);
-      if (uri == null || !uri.hasScheme ||
-          (uri.scheme != 'http' && uri.scheme != 'https')) {
+      if (uri == null || !uri.hasScheme || uri.scheme != 'https') {
+        continue;
+      }
+
+      final lowerName = name.toLowerCase();
+      if (lowerName.contains('[geo-blocked]') ||
+          lowerName.contains('[not 24/7]') ||
+          lowerName == 'sbt cuiaba') {
         continue;
       }
 
