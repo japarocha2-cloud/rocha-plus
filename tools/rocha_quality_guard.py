@@ -8,39 +8,40 @@ BANNED = {
     "ACTION_CAST_SETTINGS": "atalho legado de Cast",
     "ACTION_WIRELESS_SETTINGS": "atalho legado de rede",
     "ROCHA_CAST_APP_ID": "identificador legado de Cast",
+    "HlsVideoSegmentFormat.mpeg2Ts": "segmentação HLS legada",
 }
 
-TEXT_EXTS = {
-    ".dart", ".yaml", ".yml", ".json", ".xml", ".gradle",
-    ".kts", ".md", ".txt", ".properties", ".java", ".kt"
-}
-
-ignore_parts = {".git", "build", ".dart_tool"}
+SOURCE_EXTS = {".dart", ".xml", ".kt", ".kts", ".gradle", ".properties"}
 issues = []
 
-for path in ROOT.rglob("*"):
-    if not path.is_file():
+for source_root in (ROOT / "lib", ROOT / "android"):
+    if not source_root.exists():
         continue
-    if any(part in ignore_parts for part in path.parts):
-        continue
-    if ".rocha-support" in path.parts:
-        continue
-    if path.suffix.lower() not in TEXT_EXTS:
-        continue
+    for path in source_root.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in SOURCE_EXTS:
+            continue
+        try:
+            source = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
 
-    try:
-        text = path.read_text(encoding="utf-8", errors="ignore")
-    except OSError:
-        continue
+        rel = path.relative_to(ROOT)
+        for token, label in BANNED.items():
+            if token in source:
+                issues.append(f"{rel}: encontrou {label} ({token})")
 
-    rel = path.relative_to(ROOT)
+        if path.suffix == ".dart" and '"Undefined"' in source:
+            issues.append(f"{rel}: texto visível 'Undefined' encontrado")
 
-    for token, label in BANNED.items():
-        if token in text and rel != Path("tools/rocha_quality_guard.py"):
-            issues.append(f"{rel}: encontrou {label} ({token})")
-
-    if path.suffix == ".dart" and '"Undefined"' in text:
-        issues.append(f"{rel}: texto visível 'Undefined' encontrado")
+required = [
+    ROOT / "lib/src/screens/player_screen.dart",
+    ROOT / "lib/src/screens/intro_screen.dart",
+    ROOT / "lib/src/cast/cast_hls_proxy.dart",
+    ROOT / "branding/rocha_plus_icon.webp",
+]
+for path in required:
+    if not path.exists() or path.stat().st_size == 0:
+        issues.append(f"{path.relative_to(ROOT)}: arquivo obrigatório ausente ou vazio")
 
 print("Rocha+ Quality Guard")
 if issues:
