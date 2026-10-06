@@ -33,7 +33,7 @@ https://example.com/ok.m3u8
 https://example.com/live.m3u8
 ''';
     final channels = M3uParser.parse(playlist);
-    expect(channels.single.group, 'Outros');
+    expect(channels.single.group, 'TV aberta');
   });
 
   test('supports http and https streams', () {
