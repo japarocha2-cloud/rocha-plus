@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
+import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _controlsVisible = false;
   bool _fullscreen = false;
   int _attempt = 0;
+  final ChannelRepository _channelRepository = ChannelRepository();
 
   @override
   void initState() {
@@ -51,8 +53,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
       // Dispara a reprodução imediatamente após a preparação do decoder.
       // A qualidade continua sendo a original/adaptativa oferecida pelo HLS.
       await controller.play();
+      _channelRepository.reportPlaybackSuccess(widget.channel.url);
       if (mounted) setState(() => _loading = false);
     } catch (_) {
+      _channelRepository.reportPlaybackFailure(widget.channel.url);
       await controller.dispose();
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
@@ -64,6 +68,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void _onPlayerChanged() {
     final controller = _controller;
     if (controller != null && controller.value.hasError && mounted && !_failed) {
+      _channelRepository.reportPlaybackFailure(widget.channel.url);
       setState(() { _loading = false; _failed = true; });
     }
   }
