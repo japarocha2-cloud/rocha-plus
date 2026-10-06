@@ -21,6 +21,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _failed = false;
   bool _controlsVisible = false;
   bool _fullscreen = false;
+  bool _automaticRecoveryUsed = false;
+  Timer? _bufferingTimer;
   int _attempt = 0;
 
   @override
@@ -30,6 +32,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _initialize() async {
+    _bufferingTimer?.cancel();
+    _bufferingTimer = null;
     final attempt = ++_attempt;
     final old = _controller;
     _controller = null;
@@ -59,9 +63,41 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void _onPlayerChanged() {
     final controller = _controller;
-    if (controller != null && controller.value.hasError && mounted && !_failed) {
-      setState(() { _loading = false; _failed = true; });
+    if (controller == null || !mounted) return;
+
+    if (controller.value.hasError && !_failed) {
+      _bufferingTimer?.cancel();
+      _bufferingTimer = null;
+      setState(() {
+        _loading = false;
+        _failed = true;
+      });
+      return;
     }
+
+    if (controller.value.isBuffering) {
+      _bufferingTimer ??= Timer(const Duration(seconds: 12), () {
+        final active = _controller;
+        if (!mounted ||
+            active != controller ||
+            !controller.value.isBuffering ||
+            _automaticRecoveryUsed) {
+          return;
+        }
+
+        _automaticRecoveryUsed = true;
+        debugPrint('Rocha+ player: recuperação automática após buffering prolongado.');
+        _initialize();
+      });
+    } else {
+      _bufferingTimer?.cancel();
+      _bufferingTimer = null;
+    }
+  }
+
+  Future<void> _manualRetry() async {
+    _automaticRecoveryUsed = false;
+    await _initialize();
   }
 
   Future<void> _openCastPicker() async {
@@ -292,6 +328,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _bufferingTimer?.cancel();
+    _bufferingTimer = null;
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);
@@ -311,7 +349,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         backgroundColor: Colors.black,
         body: Center(
           child: _failed
-              ? _FailureState(onRetry: _initialize)
+              ? _FailureState(onRetry: _manualRetry)
               : _loading ||
                       controller == null ||
                       !controller.value.isInitialized
@@ -403,7 +441,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
             loading: _loading,
             failed: _failed,
             controlsVisible: _controlsVisible,
-            onRetry: _initialize,
+            onRetry: _manualRetry,
             onCast: _openCastPicker,
             onShowControls: _showControls,
             onTogglePlayback: _togglePlayback,
