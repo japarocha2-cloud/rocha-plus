@@ -153,9 +153,10 @@ class _CosmicHero extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           final narrow = constraints.maxWidth < 600;
+          final television = constraints.maxWidth >= 900;
           return Container(
             margin: const EdgeInsets.fromLTRB(14, 8, 14, 0),
-            constraints: BoxConstraints(minHeight: narrow ? 360 : 330),
+            constraints: BoxConstraints(minHeight: narrow ? 360 : (television ? 390 : 330)),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26),
               border: Border.all(color: RochaColors.gold.withValues(alpha: .28)),
@@ -182,8 +183,8 @@ class _CosmicHero extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned(
-                  right: narrow ? -55 : 40,
-                  top: narrow ? 24 : 35,
+                  right: narrow ? -55 : (television ? 90 : 40),
+                  top: narrow ? 24 : (television ? 55 : 35),
                   child: const _CrownedPlanet(),
                 ),
                 Padding(
@@ -207,7 +208,7 @@ class _CosmicHero extends StatelessWidget {
                         Text(
                           'ENTRETENIMENTO\nSEM LIMITES',
                           style: TextStyle(
-                            fontSize: narrow ? 30 : 42,
+                            fontSize: narrow ? 30 : (television ? 52 : 42),
                             height: .98,
                             fontWeight: FontWeight.w900,
                             color: RochaColors.silver,
