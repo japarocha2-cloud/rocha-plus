@@ -148,6 +148,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                 leading: channel.logo == null || channel.logo!.isEmpty
                                     ? const Icon(Icons.live_tv)
                                     : Image.network(channel.logo!, width: 48, height: 48,
+                                        cacheWidth: 96,
+                                        filterQuality: FilterQuality.low,
                                         fit: BoxFit.contain,
                                         errorBuilder: (_, __, ___) => const Icon(Icons.live_tv)),
                                 title: Text(channel.name),
