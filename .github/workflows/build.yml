@@ -36,10 +36,8 @@ jobs:
 
       - name: Configure Android sender and branding
         run: |-
-          python3 -m pip install --quiet pillow
           python3 - <<'PY'
           from pathlib import Path
-          from PIL import Image
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           text = manifest.read_text()
@@ -76,19 +74,7 @@ jobs:
           )
           manifest.write_text(text)
 
-          # Re-encode the source icon into a plain Android-safe PNG. Some
-          # generated PNG metadata can make AAPT2 abort even when Flutter can
-          # decode the same image.
           source_icon = Path("assets/rocha_plus_icon.png")
-          clean_icon = source_icon.with_name("rocha_plus_icon_clean.png")
-          with Image.open(source_icon) as image:
-              image = image.convert("RGB")
-              image.thumbnail((512, 512), Image.Resampling.LANCZOS)
-              image.save(clean_icon, format="PNG", optimize=False, compress_level=6)
-
-          # Use the same clean bytes for Flutter startup branding and launcher.
-          source_icon.write_bytes(clean_icon.read_bytes())
-          clean_icon.unlink()
 
           drawable = Path("android/app/src/main/res/drawable")
           drawable.mkdir(parents=True, exist_ok=True)
