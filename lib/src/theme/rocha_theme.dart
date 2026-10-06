@@ -5,7 +5,8 @@ class RochaColors {
   static const background = Color(0xFF05040A);
   static const surface = Color(0xFF111018);
   static const wine = Color(0xFF24113D);
-  static const ruby = Color(0xFF16F34A);
+  // Compatibilidade temporária com widgets antigos. Não usar como cor geral.
+  static const ruby = cosmicPurple;
   static const gold = Color(0xFFFFC43D);
   static const silver = Color(0xFFF2F2F4);
 
@@ -21,7 +22,7 @@ class RochaTheme {
         useMaterial3: true,
         scaffoldBackgroundColor: RochaColors.background,
         colorScheme: const ColorScheme.dark(
-          primary: RochaColors.playGreen,
+          primary: RochaColors.cosmicPurple,
           secondary: RochaColors.gold,
           surface: RochaColors.surface,
         ),
