@@ -68,7 +68,14 @@ jobs:
           if 'MediaNotificationService' not in text:
               text = text.replace('</application>', '    ' + cast_service + '\n    </application>', 1)
 
+          # Apply Rocha+ branding after flutter create regenerates Android.
+          text = text.replace('android:label="rocha_plus"', 'android:label="Rocha+"')
+          text = text.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/rocha_plus_icon" android:roundIcon="@drawable/rocha_plus_icon"')
           path.write_text(text)
+
+          drawable = Path("android/app/src/main/res/drawable")
+          drawable.mkdir(parents=True, exist_ok=True)
+          Path("branding/rocha_plus_icon.xml").replace(drawable / "rocha_plus_icon.xml")
           PY
       - name: Get dependencies
         run: flutter pub get
