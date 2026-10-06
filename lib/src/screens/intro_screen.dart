@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'login_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -9,58 +10,52 @@ class IntroScreen extends StatefulWidget {
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
-class _IntroScreenState extends State<IntroScreen> {
-  late final VideoPlayerController _controller;
-  bool _ready = false;
+class _IntroScreenState extends State<IntroScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animation;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
+  Timer? _finishTimer;
   bool _finishing = false;
-  bool _lowResolutionAsset = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/rocha_intro.mp4')
-      ..initialize().then((_) {
-        if (!mounted) return;
-        final size = _controller.value.size;
-        final lowResolution = size.width < 300 || size.height < 300;
-        _controller
-          ..setLooping(false)
-          ..addListener(_watchPlayback);
-        if (!lowResolution) {
-          _controller.play();
-        }
-        setState(() {
-          _ready = true;
-          _lowResolutionAsset = lowResolution;
-        });
-        if (lowResolution) {
-          Future<void>.delayed(const Duration(milliseconds: 1400), _finish);
-        }
-      }).catchError((_) => _finish());
-  }
-
-  void _watchPlayback() {
-    if (!_controller.value.isInitialized || _finishing) return;
-    final duration = _controller.value.duration;
-    final position = _controller.value.position;
-    if (duration > Duration.zero &&
-        position >= duration - const Duration(milliseconds: 120)) {
-      _finish();
-    }
+    _animation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+    _fade = CurvedAnimation(
+      parent: _animation,
+      curve: const Interval(0, .72, curve: Curves.easeOut),
+    );
+    _scale = Tween<double>(begin: .92, end: 1).animate(
+      CurvedAnimation(parent: _animation, curve: Curves.easeOutCubic),
+    );
+    _animation.forward();
+    _finishTimer = Timer(const Duration(milliseconds: 2200), _finish);
   }
 
   void _finish() {
     if (!mounted || _finishing) return;
     _finishing = true;
+    _finishTimer?.cancel();
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      PageRouteBuilder<void>(
+        transitionDuration: const Duration(milliseconds: 260),
+        pageBuilder: (_, animation, __) => const LoginScreen(),
+        transitionsBuilder: (_, animation, __, child) => FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+      ),
     );
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_watchPlayback);
-    _controller.dispose();
+    _finishTimer?.cancel();
+    _animation.dispose();
     super.dispose();
   }
 
@@ -71,25 +66,27 @@ class _IntroScreenState extends State<IntroScreen> {
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _finish,
-        child: SizedBox.expand(
-          child: !_ready
-              ? const Center(child: CircularProgressIndicator())
-              : _lowResolutionAsset
-                  ? const _CleanIntroFallback()
-                  : FittedBox(
-                      fit: BoxFit.contain,
-                      child: SizedBox(
-                        width: _controller.value.size.width,
-                        height: _controller.value.size.height,
-                        child: VideoPlayer(_controller),
-                      ),
-                    ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fade,
+            child: ScaleTransition(
+              scale: _scale,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 260, maxHeight: 260),
+                child: Image.asset(
+                  'assets/rocha_plus_icon.png',
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 }
-
 
 class RochaLogo extends StatelessWidget {
   final double fontSize;
@@ -107,24 +104,4 @@ class RochaLogo extends StatelessWidget {
       ),
     );
   }
-}
-
-
-class _CleanIntroFallback extends StatelessWidget {
-  const _CleanIntroFallback();
-
-  @override
-  Widget build(BuildContext context) => const ColoredBox(
-        color: Colors.black,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.play_circle_fill, size: 82, color: Color(0xFF16F34A)),
-              SizedBox(height: 18),
-              RochaLogo(fontSize: 54),
-            ],
-          ),
-        ),
-      );
 }
