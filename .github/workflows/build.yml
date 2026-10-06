@@ -67,6 +67,8 @@ jobs:
         run: flutter analyze
       - name: Test
         run: flutter test
+      - name: Rocha+ Quality Guard (post-tests)
+        run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK
         run: flutter build apk --release
       - name: Build optimized APKs
