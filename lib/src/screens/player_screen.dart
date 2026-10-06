@@ -66,11 +66,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _openCastPicker() async {
     await GoogleCastDiscoveryManager.instance.startDiscovery();
-    if (!mounted) return;
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: RochaColors.surface,
-      builder: (sheetContext) => SafeArea(
+    if (!mounted) {
+      await GoogleCastDiscoveryManager.instance.stopDiscovery();
+      return;
+    }
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: RochaColors.surface,
+        builder: (sheetContext) => SafeArea(
         child: StreamBuilder<List<GoogleCastDevice>>(
           stream: GoogleCastDiscoveryManager.instance.devicesStream,
           builder: (context, snapshot) {
@@ -105,8 +109,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
             );
           },
         ),
-      ),
-    );
+        ),
+      );
+    } finally {
+      await GoogleCastDiscoveryManager.instance.stopDiscovery();
+    }
   }
 
   String _castContentType(Uri uri) {
