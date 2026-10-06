@@ -97,7 +97,6 @@ jobs:
               root / 'branding/rocha_plus_icon.webp',
               root / 'lib/src/screens/player_screen.dart',
               root / 'lib/src/cast/cast_hls_proxy.dart',
-              root / 'receiver/index.html',
           ]
           for path in required:
               if not path.exists() or path.stat().st_size == 0:
@@ -106,6 +105,8 @@ jobs:
           forbidden_paths = [
               root / 'assets/rocha_intro.mp4',
               root / 'branding/rocha_plus_icon.xml',
+              root / 'branding/rocha_plus_icon.png',
+              root / 'receiver/index.html',
           ]
           for path in forbidden_paths:
               if path.exists():
@@ -121,6 +122,7 @@ jobs:
               'ACTION_CAST_SETTINGS',
               'ACTION_WIRELESS_SETTINGS',
               'HlsVideoSegmentFormat.mpeg2Ts',
+              'ROCHA_CAST_APP_ID',
           ]
           for token in forbidden_tokens:
               if token in source_text:
