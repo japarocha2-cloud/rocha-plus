@@ -1,26 +1,20 @@
 # Rocha+
 
-Base inicial do aplicativo **Rocha+**, construída em Flutter.
+Aplicativo Flutter focado em TV ao vivo pública ou devidamente autorizada.
 
-## Fluxo V1
+## Fluxo atual
 
-Abertura → Login → Home → TV ao vivo / catálogo.
+Abertura leve → entrada → catálogo de TV ao vivo → player → transmissão Google Cast.
 
-## Já incluído
+## Componentes ativos
 
-- identidade visual preta, rubi, dourada e prata;
-- abertura animada provisória;
-- tela preparada para login Google e Apple;
-- home responsiva para celular e TV;
-- categorias principais do Rocha+.
+- identidade visual Rocha+;
+- abertura animada usando o ícone atual;
+- catálogo remoto com cache local;
+- busca, categorias e favoritos;
+- player local com fullscreen;
+- Google Cast com validação de sessão e confirmação de reprodução real;
+- relay HLS local usado somente como fallback;
+- build Android com verificações de código legado e assets.
 
-## Próximas etapas
-
-1. catálogo remoto de canais;
-2. parser M3U/M3U8;
-3. player HLS;
-4. favoritos e busca;
-5. autenticação Google/Apple real;
-6. substituir a abertura provisória pela vinheta oficial.
-
-Somente transmissões públicas ou devidamente autorizadas devem ser incorporadas ao catálogo.
+O projeto deve manter apenas caminhos ativos. Arquivos antigos de branding, introduções substituídas e implementações de transmissão abandonadas não devem permanecer no repositório.
