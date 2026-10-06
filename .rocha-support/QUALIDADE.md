@@ -19,3 +19,11 @@
 - ACTION_WIRELESS_SETTINGS
 - ROCHA_CAST_APP_ID
 - texto Undefined em categoria visível ao usuário
+
+
+## Política de remoção
+- código, arquivo, asset, dependência ou configuração comprovadamente sem uso deve ser removido;
+- antes de apagar, verificar referências, imports, rotas, assets declarados e uso em build;
+- se houver dúvida real de dependência, registrar como candidato e não apagar às cegas;
+- após a remoção, executar novamente Quality Guard, flutter analyze e testes;
+- a limpeza não deve alterar comportamento funcional aprovado.
