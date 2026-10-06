@@ -114,9 +114,63 @@ class ChannelRepository {
     return score;
   }
 
+
+  Uri? _firstMediaUri(String playlist, Uri base) {
+    for (final raw in const LineSplitter().convert(playlist)) {
+      final line = raw.trim();
+      if (line.isEmpty || line.startsWith('#')) continue;
+      final resolved = base.resolve(line);
+      if (resolved.scheme == 'https') return resolved;
+    }
+    return null;
+  }
+
+  Future<bool> _validateMediaPlaylist(Uri uri) async {
+    try {
+      final response = await _client.get(uri).timeout(const Duration(seconds: 6));
+      if (response.statusCode < 200 || response.statusCode >= 400) return false;
+      final sample = utf8.decode(response.bodyBytes, allowMalformed: true).trimLeft();
+      if (!sample.startsWith('#EXTM3U')) return false;
+
+      // Alguns masters possuem mais de um nível antes da playlist de mídia.
+      if (sample.contains('#EXT-X-STREAM-INF')) {
+        final child = _firstMediaUri(sample, uri);
+        if (child == null || child == uri) return false;
+        return _validateMediaPlaylist(child);
+      }
+
+      if (!sample.contains('#EXTINF')) return false;
+      final segment = _firstMediaUri(sample, uri);
+      return segment != null && await _probeMedia(segment);
+    } on TimeoutException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _probeMedia(Uri uri) async {
+    try {
+      final request = http.Request('GET', uri)
+        ..headers['Range'] = 'bytes=0-2047'
+        ..headers['User-Agent'] = 'RochaPlus/0.1';
+      final response = await _client.send(request).timeout(const Duration(seconds: 6));
+      if (response.statusCode < 200 || response.statusCode >= 400) {
+        await response.stream.drain<void>();
+        return false;
+      }
+      final bytes = await response.stream.take(2048).expand((chunk) => chunk).toList();
+      return bytes.isNotEmpty;
+    } on TimeoutException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<bool> _isReachable(Channel channel) async {
     final uri = Uri.tryParse(channel.url);
-    if (uri == null || !(uri.scheme == 'http' || uri.scheme == 'https')) {
+    if (uri == null || uri.scheme != 'https') {
       return false;
     }
 
@@ -144,8 +198,23 @@ class ChannelRepository {
           sample.startsWith('#EXTM3U');
       if (!looksLikeHls) return bytes.isNotEmpty;
 
-      return sample.startsWith('#EXTM3U') &&
-          (sample.contains('#EXTINF') || sample.contains('#EXT-X-STREAM-INF'));
+      if (!sample.startsWith('#EXTM3U')) return false;
+
+      // Master HLS: valida também uma variante real, não apenas o índice.
+      if (sample.contains('#EXT-X-STREAM-INF')) {
+        final child = _firstMediaUri(sample, uri);
+        if (child == null) return false;
+        return _validateMediaPlaylist(child);
+      }
+
+      // Media playlist: exige pelo menos um segmento e verifica que esse
+      // segmento realmente responde antes de liberar o canal no catálogo.
+      if (sample.contains('#EXTINF')) {
+        final segment = _firstMediaUri(sample, uri);
+        if (segment == null) return false;
+        return _probeMedia(segment);
+      }
+      return false;
     } on TimeoutException {
       return false;
     } catch (_) {
