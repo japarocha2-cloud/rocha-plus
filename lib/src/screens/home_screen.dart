@@ -170,13 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       ),
-                      _SectionTitle(
-                        title: 'Continue assistindo',
-                        tv: tv,
-                      ),
-                      SliverToBoxAdapter(
-                        child: _ContinueRail(tv: tv),
-                      ),
                       const SliverToBoxAdapter(child: SizedBox(height: 36)),
                     ],
                   ),
@@ -523,70 +516,6 @@ class _PreviewRail extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _ContinueRail extends StatelessWidget {
-  final bool tv;
-  const _ContinueRail({required this.tv});
-
-  @override
-  Widget build(BuildContext context) {
-    const items = [
-      ('Operação Vigilante', Icons.local_police_outlined, .36),
-      ('Reinos Eternos', Icons.auto_awesome, .58),
-      ('Patrulha dos Amigos', Icons.pets_outlined, .74),
-    ];
-
-    return SizedBox(
-      height: tv ? 175 : 145,
-      child: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: tv ? 36 : 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        separatorBuilder: (_, __) => SizedBox(width: tv ? 16 : 10),
-        itemBuilder: (_, index) {
-          final item = items[index];
-          return _FocusableCard(
-            width: tv ? 360 : 235,
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.all(tv ? 18 : 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    item.$2,
-                    size: tv ? 46 : 34,
-                    color: RochaColors.gold,
-                  ),
-                  const Spacer(),
-                  Text(
-                    item.$1,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: tv ? 20 : 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(99),
-                    child: LinearProgressIndicator(
-                      minHeight: 5,
-                      value: item.$3,
-                      backgroundColor: Colors.white12,
-                      color: RochaColors.playGreen,
-                    ),
-                  ),
-                ],
-              ),
             ),
           );
         },
