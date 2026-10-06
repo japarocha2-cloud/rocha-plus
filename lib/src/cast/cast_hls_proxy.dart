@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 /// Local HLS relay used only for public/authorized streams when the Cast
 /// receiver cannot fetch the origin directly (for example because of CORS or
@@ -12,6 +13,8 @@ class CastHlsProxy {
   HttpServer? _server;
   HttpClient? _client;
   String? _host;
+  final Random _random = Random.secure();
+  final Map<String, Uri> _targets = <String, Uri>{};
 
   Future<Uri> relay(Uri source) async {
     await _ensureStarted();
@@ -45,31 +48,35 @@ class CastHlsProxy {
     if (server == null || host == null) {
       throw StateError('Relay do Cast não iniciado.');
     }
+
+    final bytes = List<int>.generate(18, (_) => _random.nextInt(256));
+    final token = base64UrlEncode(bytes).replaceAll('=', '');
+    _targets[token] = target;
+
+    if (_targets.length > 2048) {
+      _targets.remove(_targets.keys.first);
+    }
+
     return Uri(
       scheme: 'http',
       host: host,
       port: server.port,
       path: '/relay',
-      queryParameters: {'url': target.toString()},
+      queryParameters: {'t': token},
     );
   }
 
   Future<void> _handleRequest(HttpRequest request) async {
-    request.response.headers
-      ..set('Access-Control-Allow-Origin', '*')
-      ..set('Access-Control-Allow-Headers', '*')
-      ..set('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-
-    if (request.method == 'OPTIONS') {
-      request.response.statusCode = HttpStatus.noContent;
+    if (request.method != 'GET' && request.method != 'HEAD') {
+      request.response.statusCode = HttpStatus.methodNotAllowed;
       await request.response.close();
       return;
     }
 
-    final raw = request.uri.queryParameters['url'];
-    final target = raw == null ? null : Uri.tryParse(raw);
+    final token = request.uri.queryParameters['t'];
+    final target = token == null ? null : _targets[token];
     if (target == null || (target.scheme != 'http' && target.scheme != 'https')) {
-      request.response.statusCode = HttpStatus.badRequest;
+      request.response.statusCode = HttpStatus.notFound;
       await request.response.close();
       return;
     }
