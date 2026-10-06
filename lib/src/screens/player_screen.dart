@@ -34,15 +34,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     if (mounted) setState(() { _loading = true; _failed = false; });
 
-    final controller = VideoPlayerController.networkUrl(Uri.parse(widget.channel.url));
+    final controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.channel.url),
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: false),
+    );
     _controller = controller;
     try {
-      await controller.initialize().timeout(const Duration(seconds: 15));
+      // O player recebe diretamente o master HLS da fonte. Não fazemos
+      // transcodificação nem redução de resolução no aparelho.
+      await controller.initialize().timeout(const Duration(seconds: 12));
       if (!mounted || attempt != _attempt) {
         await controller.dispose();
         return;
       }
       controller.addListener(_onPlayerChanged);
+      // Dispara a reprodução imediatamente após a preparação do decoder.
+      // A qualidade continua sendo a original/adaptativa oferecida pelo HLS.
       await controller.play();
       if (mounted) setState(() => _loading = false);
     } catch (_) {
