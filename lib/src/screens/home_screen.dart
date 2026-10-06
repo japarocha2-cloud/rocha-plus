@@ -42,7 +42,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: RochaColors.background,
         body: SafeArea(
-          child: CustomScrollView(
+          child: FocusTraversalGroup(
+            policy: ReadingOrderTraversalPolicy(),
+            child: CustomScrollView(
             slivers: [
               SliverAppBar(
                 pinned: true,
@@ -95,6 +97,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 40)),
             ],
+          ),
           ),
         ),
       );
@@ -224,7 +227,9 @@ class _CosmicHero extends StatelessWidget {
                           onPressed: onWatch,
                           icon: const Icon(Icons.play_arrow_rounded),
                           label: const Text('ASSISTIR AGORA'),
+                          autofocus: !narrow,
                           style: FilledButton.styleFrom(
+                            minimumSize: Size(narrow ? 0 : 190, narrow ? 48 : 56),
                             backgroundColor: RochaColors.playGreen,
                             foregroundColor: Colors.black,
                             textStyle: const TextStyle(fontWeight: FontWeight.w900),
