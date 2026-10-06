@@ -5,6 +5,7 @@ import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
+  static final http.Client _client = http.Client();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -49,7 +50,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> _loadPlaylist(Uri playlist) async {
-    final res = await http.get(playlist).timeout(const Duration(seconds: 15));
+    final res = await _client.get(playlist).timeout(const Duration(seconds: 15));
     if (res.statusCode != 200) {
       throw Exception('Não foi possível carregar o catálogo.');
     }
@@ -125,7 +126,7 @@ class ChannelRepository {
       final request = http.Request('GET', uri)
         ..headers['Range'] = 'bytes=0-1023'
         ..headers['User-Agent'] = 'RochaPlus/0.1';
-      final response = await http.Client()
+      final response = await _client
           .send(request)
           .timeout(const Duration(seconds: 6));
       final ok = response.statusCode >= 200 && response.statusCode < 400;
