@@ -298,65 +298,397 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: _fullscreen
-          ? null
-          : AppBar(
-              backgroundColor: Colors.black,
-              title: Text(widget.channel.name),
-              actions: [
-                IconButton(
-                  tooltip: 'Transmitir para TV',
-                  onPressed: _openCastPicker,
-                  icon: const Icon(Icons.cast),
-                ),
-              ],
-            ),
-      body: Center(
-        child: _failed
-            ? _FailureState(onRetry: _initialize)
-            : _loading || controller == null || !controller.value.isInitialized
-                ? const CircularProgressIndicator(color: RochaColors.ruby)
-                : _fullscreen
-                    ? SizedBox.expand(
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: SizedBox(
-                            width: controller.value.size.width > 0
-                                ? controller.value.size.width
-                                : 1920,
-                            height: controller.value.size.height > 0
-                                ? controller.value.size.height
-                                : 1080,
-                            child: _VideoSurface(
-                              controller: controller,
-                              controlsVisible: _controlsVisible,
-                              fullscreen: _fullscreen,
-                              onShowControls: _showControls,
-                              onTogglePlayback: _togglePlayback,
-                              onToggleFullscreen: _toggleFullscreen,
-                            ),
+
+    if (_fullscreen) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: _failed
+              ? _FailureState(onRetry: _initialize)
+              : _loading ||
+                      controller == null ||
+                      !controller.value.isInitialized
+                  ? const CircularProgressIndicator(
+                      color: RochaColors.playGreen,
+                    )
+                  : SizedBox.expand(
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: controller.value.size.width > 0
+                              ? controller.value.size.width
+                              : 1920,
+                          height: controller.value.size.height > 0
+                              ? controller.value.size.height
+                              : 1080,
+                          child: _VideoSurface(
+                            controller: controller,
+                            controlsVisible: _controlsVisible,
+                            fullscreen: true,
+                            onShowControls: _showControls,
+                            onTogglePlayback: _togglePlayback,
+                            onToggleFullscreen: _toggleFullscreen,
                           ),
                         ),
-                      )
-                    : AspectRatio(
-                        aspectRatio: controller.value.aspectRatio > 0
-                            ? controller.value.aspectRatio
-                            : 16 / 9,
-                        child: _VideoSurface(
-                          controller: controller,
-                          controlsVisible: _controlsVisible,
-                          fullscreen: _fullscreen,
-                          onShowControls: _showControls,
-                          onTogglePlayback: _togglePlayback,
-                          onToggleFullscreen: _toggleFullscreen,
-                        ),
                       ),
-      )
+                    ),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tv = constraints.maxWidth >= 900;
+        return Scaffold(
+          backgroundColor: RochaColors.background,
+          appBar: AppBar(
+            titleSpacing: tv ? 24 : 4,
+            leading: IconButton(
+              autofocus: tv,
+              tooltip: 'Voltar',
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+            ),
+            title: Text(
+              widget.channel.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: tv ? 24 : 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            actions: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0x33D91527),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: const Color(0xFFD91527)),
+                ),
+                child: const Center(
+                  child: Text(
+                    'AO VIVO',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              IconButton(
+                tooltip: 'Transmitir para TV',
+                onPressed: _openCastPicker,
+                icon: const Icon(
+                  Icons.cast,
+                  color: RochaColors.playGreen,
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+          ),
+          body: _PlayerBody(
+            tv: tv,
+            channel: widget.channel,
+            controller: controller,
+            loading: _loading,
+            failed: _failed,
+            controlsVisible: _controlsVisible,
+            onRetry: _initialize,
+            onCast: _openCastPicker,
+            onShowControls: _showControls,
+            onTogglePlayback: _togglePlayback,
+            onToggleFullscreen: _toggleFullscreen,
+          ),
+        );
+      },
     );
   }
 }
+
+class _PlayerBody extends StatelessWidget {
+  final bool tv;
+  final Channel channel;
+  final VideoPlayerController? controller;
+  final bool loading;
+  final bool failed;
+  final bool controlsVisible;
+  final VoidCallback onRetry;
+  final VoidCallback onCast;
+  final VoidCallback onShowControls;
+  final VoidCallback onTogglePlayback;
+  final VoidCallback onToggleFullscreen;
+
+  const _PlayerBody({
+    required this.tv,
+    required this.channel,
+    required this.controller,
+    required this.loading,
+    required this.failed,
+    required this.controlsVisible,
+    required this.onRetry,
+    required this.onCast,
+    required this.onShowControls,
+    required this.onTogglePlayback,
+    required this.onToggleFullscreen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final player = _PlayerFrame(
+      controller: controller,
+      loading: loading,
+      failed: failed,
+      controlsVisible: controlsVisible,
+      onRetry: onRetry,
+      onShowControls: onShowControls,
+      onTogglePlayback: onTogglePlayback,
+      onToggleFullscreen: onToggleFullscreen,
+    );
+
+    if (tv) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(32, 20, 32, 28),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              flex: 7,
+              child: Center(child: player),
+            ),
+            const SizedBox(width: 24),
+            SizedBox(
+              width: 340,
+              child: _ChannelPanel(
+                channel: channel,
+                tv: true,
+                onCast: onCast,
+                onFullscreen: onToggleFullscreen,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 28),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+          child: player,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+          child: _ChannelPanel(
+            channel: channel,
+            tv: false,
+            onCast: onCast,
+            onFullscreen: onToggleFullscreen,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlayerFrame extends StatelessWidget {
+  final VideoPlayerController? controller;
+  final bool loading;
+  final bool failed;
+  final bool controlsVisible;
+  final VoidCallback onRetry;
+  final VoidCallback onShowControls;
+  final VoidCallback onTogglePlayback;
+  final VoidCallback onToggleFullscreen;
+
+  const _PlayerFrame({
+    required this.controller,
+    required this.loading,
+    required this.failed,
+    required this.controlsVisible,
+    required this.onRetry,
+    required this.onShowControls,
+    required this.onTogglePlayback,
+    required this.onToggleFullscreen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = controller;
+    final ratio =
+        c != null && c.value.isInitialized && c.value.aspectRatio > 0
+            ? c.value.aspectRatio
+            : 16 / 9;
+
+    return AspectRatio(
+      aspectRatio: ratio,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            border: Border.all(color: RochaColors.border),
+          ),
+          child: failed
+              ? Center(child: _FailureState(onRetry: onRetry))
+              : loading || c == null || !c.value.isInitialized
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: RochaColors.playGreen,
+                      ),
+                    )
+                  : _VideoSurface(
+                      controller: c,
+                      controlsVisible: controlsVisible,
+                      fullscreen: false,
+                      onShowControls: onShowControls,
+                      onTogglePlayback: onTogglePlayback,
+                      onToggleFullscreen: onToggleFullscreen,
+                    ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChannelPanel extends StatelessWidget {
+  final Channel channel;
+  final bool tv;
+  final VoidCallback onCast;
+  final VoidCallback onFullscreen;
+
+  const _ChannelPanel({
+    required this.channel,
+    required this.tv,
+    required this.onCast,
+    required this.onFullscreen,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: EdgeInsets.all(tv ? 22 : 18),
+        decoration: BoxDecoration(
+          color: RochaColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: RochaColors.border),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x2216F34A),
+              blurRadius: 26,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: tv ? MainAxisSize.max : MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _ChannelLogo(channel: channel, size: tv ? 76 : 62),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        channel.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: tv ? 24 : 19,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        channel.group,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: RochaColors.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: tv ? 22 : 16),
+            const Row(
+              children: [
+                Icon(
+                  Icons.circle,
+                  size: 9,
+                  color: RochaColors.playGreen,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Sinal ao vivo',
+                  style: TextStyle(
+                    color: RochaColors.playGreen,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+            if (tv) const Spacer() else const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                autofocus: tv,
+                onPressed: onCast,
+                icon: const Icon(Icons.cast),
+                label: const Text('Transmitir para TV'),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onFullscreen,
+                icon: const Icon(Icons.fullscreen),
+                label: const Text('Tela cheia'),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _ChannelLogo extends StatelessWidget {
+  final Channel channel;
+  final double size;
+
+  const _ChannelLogo({
+    required this.channel,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: size,
+        height: size,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: RochaColors.surfaceRaised,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: RochaColors.border),
+        ),
+        child: channel.logo == null || channel.logo!.isEmpty
+            ? const Icon(Icons.live_tv, color: RochaColors.playGreen)
+            : Image.network(
+                channel.logo!,
+                fit: BoxFit.contain,
+                cacheWidth: 180,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.live_tv,
+                  color: RochaColors.playGreen,
+                ),
+              ),
+      );
+
 
 class _VideoSurface extends StatelessWidget {
   final VideoPlayerController controller;
