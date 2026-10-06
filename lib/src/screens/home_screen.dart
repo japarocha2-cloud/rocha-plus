@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/rocha_theme.dart';
 import 'live_tv_screen.dart';
+import 'news_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,7 @@ class HomeScreen extends StatelessWidget {
     ('Filmes', Icons.movie_outlined),
     ('Séries', Icons.tv_outlined),
     ('Esportes', Icons.sports_soccer),
+    ('Notícias', Icons.newspaper_outlined),
     ('Infantil', Icons.toys_outlined),
     ('Documentários', Icons.public),
     ('Regionais', Icons.location_city),
@@ -17,6 +19,13 @@ class HomeScreen extends StatelessWidget {
   ];
 
   void openSection(BuildContext context, String title) {
+    if (title == 'Notícias') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const NewsScreen()),
+      );
+      return;
+    }
     if (title == 'TV ao Vivo' || title == 'Favoritos') {
       Navigator.push(
         context,
