@@ -54,7 +54,7 @@ class _IntroScreenState extends State<IntroScreen>
           decoration: const BoxDecoration(
             gradient: RadialGradient(
               radius: 1.1,
-              colors: [RochaColors.wine, RochaColors.background],
+              colors: [RochaColors.cosmicPurple, RochaColors.background],
             ),
           ),
           child: Stack(
@@ -63,13 +63,13 @@ class _IntroScreenState extends State<IntroScreen>
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final shortest = constraints.biggest.shortestSide;
-                    final logoSize = (shortest * 0.14).clamp(38.0, 64.0);
+                    final logoSize = (shortest * 0.13).clamp(36.0, 62.0);
                     return Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: (shortest * 0.08).clamp(20.0, 48.0),
+                        horizontal: (shortest * 0.12).clamp(28.0, 72.0),
                       ),
                       child: FittedBox(
-                        fit: BoxFit.scaleDown,
+                        fit: BoxFit.contain,
                         child: ScaleTransition(
                           scale: _scale,
                           child: RochaLogo(fontSize: logoSize),
