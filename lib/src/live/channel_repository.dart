@@ -26,24 +26,37 @@ class ChannelRepository {
       }
     }
 
-    final res = await http
-        .get(developmentPlaylist)
-        .timeout(const Duration(seconds: 10));
+    final cachedSource = prefs.getString(_catalogCacheKey);
 
-    if (res.statusCode != 200) {
-      throw Exception('Não foi possível carregar o catálogo.');
+    try {
+      final res = await http
+          .get(developmentPlaylist)
+          .timeout(const Duration(seconds: 10));
+
+      if (res.statusCode != 200) {
+        throw Exception('Não foi possível carregar o catálogo.');
+      }
+
+      final source = utf8.decode(res.bodyBytes);
+      final parsed = M3uParser.parse(source);
+      final cleaned = _cleanAndPrioritize(parsed);
+      if (cleaned.isEmpty) {
+        throw Exception('O catálogo recebido não contém canais válidos.');
+      }
+
+      await prefs.setString(_catalogCacheKey, source);
+      _memoryCache = List.unmodifiable(cleaned);
+      return _memoryCache!;
+    } catch (_) {
+      if (cachedSource != null && cachedSource.isNotEmpty) {
+        final cached = _cleanAndPrioritize(M3uParser.parse(cachedSource));
+        if (cached.isNotEmpty) {
+          _memoryCache = List.unmodifiable(cached);
+          return _memoryCache!;
+        }
+      }
+      rethrow;
     }
-
-    final source = utf8.decode(res.bodyBytes);
-    final parsed = M3uParser.parse(source);
-    final cleaned = _cleanAndPrioritize(parsed);
-    if (cleaned.isEmpty) {
-      throw Exception('O catálogo recebido não contém canais válidos.');
-    }
-
-    await prefs.setString(_catalogCacheKey, source);
-    _memoryCache = List.unmodifiable(cleaned);
-    return _memoryCache!;
   }
 
   List<Channel> _cleanAndPrioritize(List<Channel> input) {
