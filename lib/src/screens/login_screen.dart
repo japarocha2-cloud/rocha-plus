@@ -39,16 +39,14 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 42),
-                  _LoginButton(
+                  const _LoginButton(
                     icon: Icons.g_mobiledata,
-                    label: 'Continuar com Google',
-                    onPressed: () => _enter(context),
+                    label: 'Google • em preparação',
                   ),
                   const SizedBox(height: 14),
-                  _LoginButton(
+                  const _LoginButton(
                     icon: Icons.apple,
-                    label: 'Continuar com Apple',
-                    onPressed: () => _enter(context),
+                    label: 'Apple • em preparação',
                   ),
                   const SizedBox(height: 18),
                   TextButton(
@@ -74,12 +72,9 @@ class LoginScreen extends StatelessWidget {
 class _LoginButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback onPressed;
-
   const _LoginButton({
     required this.icon,
     required this.label,
-    required this.onPressed,
   });
 
   @override
@@ -88,7 +83,7 @@ class _LoginButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: FilledButton.tonalIcon(
-        onPressed: onPressed,
+        onPressed: null,
         icon: Icon(icon),
         label: Text(label),
       ),
