@@ -4,7 +4,7 @@ import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
-  static final http.Client _client = http.Client();
+  static http.Client _client = http.Client();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -34,6 +34,18 @@ class ChannelRepository {
         .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
+  }
+
+  static void setClientForTests(http.Client client) {
+    _client.close();
+    _client = client;
+    resetSessionHealthForTests();
+  }
+
+  static void restoreDefaultClientForTests() {
+    _client.close();
+    _client = http.Client();
+    resetSessionHealthForTests();
   }
 
   static void resetSessionHealthForTests() {
