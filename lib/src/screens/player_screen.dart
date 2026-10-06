@@ -122,7 +122,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _loadAndConfirmCast(Uri uri) async {
-    final isHls = _castContentType(uri) == 'application/x-mpegURL';
     final media = GoogleCastMediaInformation(
       contentId: uri.toString(),
       contentUrl: uri,
