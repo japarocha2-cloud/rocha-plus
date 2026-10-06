@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
@@ -141,40 +142,60 @@ class _PlayerScreenState extends State<PlayerScreen> {
     return 'application/x-mpegURL';
   }
 
+  Future<void> _loadAndConfirmCast(Uri uri) async {
+    final isHls = _castContentType(uri) == 'application/x-mpegURL';
+    final media = GoogleCastMediaInformation(
+      contentId: uri.toString(),
+      contentUrl: uri,
+      contentType: _castContentType(uri),
+      streamType: CastMediaStreamType.live,
+      metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
+      hlsVideoSegmentFormat: isHls ? HlsVideoSegmentFormat.mpeg2Ts : null,
+    );
+
+    await GoogleCastRemoteMediaClient.instance.loadMedia(
+      media,
+      autoPlay: true,
+      playPosition: Duration.zero,
+      playbackRate: 1.0,
+    );
+    await GoogleCastRemoteMediaClient.instance.play();
+
+    for (var i = 0; i < 20; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
+      final state = status?.playerState;
+      if (state == CastMediaPlayerState.playing ||
+          state == CastMediaPlayerState.buffering ||
+          state == CastMediaPlayerState.loading) {
+        return;
+      }
+      if (state == CastMediaPlayerState.idle && status?.idleReason != null) {
+        throw StateError('Receiver entrou em idle: ${status?.idleReason}');
+      }
+    }
+
+    throw TimeoutException('A TV não confirmou a reprodução do canal.');
+  }
+
   Future<void> _startCasting(GoogleCastDevice device) async {
     try {
       final uri = Uri.parse(widget.channel.url);
       await GoogleCastSessionManager.instance.startSessionWithDevice(device);
 
-      final isHls = _castContentType(uri) == 'application/x-mpegURL';
-      final castUri = isHls ? await CastHlsProxy.instance.relay(uri) : uri;
+      Object? directError;
+      try {
+        await _loadAndConfirmCast(uri);
+      } catch (error) {
+        directError = error;
+        final isHls = _castContentType(uri) == 'application/x-mpegURL';
+        if (!isHls) rethrow;
 
-      final media = GoogleCastMediaInformation(
-        contentId: castUri.toString(),
-        contentUrl: castUri,
-        contentType: _castContentType(uri),
-        streamType: CastMediaStreamType.live,
-        metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
-        // Most Rocha+ live HLS feeds use MPEG-2 TS video segments. Explicitly
-        // declaring this is important on Android Cast receivers: plugin 1.4.8
-        // now forwards the HLS segment hint to MediaInfo instead of leaving
-        // compatible streams stuck on the receiver loading screen.
-        hlsVideoSegmentFormat: isHls ? HlsVideoSegmentFormat.mpeg2Ts : null,
-      );
+        final relayUri = await CastHlsProxy.instance.relay(uri);
+        await _loadAndConfirmCast(relayUri);
+      }
 
-      // Explicit autoplay matters for live streams on the Default Media
-      // Receiver. Calling play afterwards also covers receivers that accept
-      // the media load but remain in a paused/idle state.
-      await GoogleCastRemoteMediaClient.instance.loadMedia(
-        media,
-        autoPlay: true,
-        playPosition: Duration.zero,
-        playbackRate: 1.0,
-      );
-      await GoogleCastRemoteMediaClient.instance.play();
-
-      // Keep local playback alive until the receiver accepted the load/play
-      // request. This avoids a black screen on both devices when Cast fails.
+      debugPrint('Rocha+ Cast confirmado. Falha direta anterior: $directError');
       await _controller?.pause();
 
       if (mounted) {
@@ -188,14 +209,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
         );
       }
     } catch (error) {
-      // If the receiver rejects the stream, resume playback on the phone.
       await _controller?.play();
       debugPrint('Rocha+ Cast error: $error');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'A TV conectou, mas não conseguiu abrir este sinal. Tente outro canal.',
+              'A TV foi encontrada, mas não confirmou a reprodução deste canal.',
             ),
           ),
         );
