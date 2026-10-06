@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../cast/cast_hls_proxy.dart';
