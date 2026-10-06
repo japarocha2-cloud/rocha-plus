@@ -208,6 +208,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
           ),
         );
+        if (GoogleCastSessionManager.instance.connectionState !=
+            GoogleCastConnectState.connected) {
+          await _controller?.play();
+        }
       }
     } catch (error) {
       try {
