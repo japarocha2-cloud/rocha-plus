@@ -76,3 +76,22 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 }
+
+
+class RochaLogo extends StatelessWidget {
+  final double fontSize;
+  const RochaLogo({super.key, this.fontSize = 42});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w900),
+        children: const [
+          TextSpan(text: 'Rocha', style: TextStyle(color: Color(0xFFD6D6D8))),
+          TextSpan(text: '+', style: TextStyle(color: Color(0xFFF4D7A4))),
+        ],
+      ),
+    );
+  }
+}
