@@ -10,7 +10,7 @@ https://example.com/live.m3u8
     final channels = M3uParser.parse(playlist);
     expect(channels, hasLength(1));
     expect(channels.first.name, 'Canal Teste');
-    expect(channels.first.group, 'TV Aberta');
+    expect(channels.first.group, 'TV aberta');
     expect(channels.first.logo, 'https://example.com/logo.png');
     expect(channels.first.url, 'https://example.com/live.m3u8');
   });
@@ -58,4 +58,19 @@ https://example.com/kids.m3u8
     expect(channels.single.group, 'Infantil');
   });
 
+  test('compound groups use meaningful children and news tags', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 group-title="General;Kids",Kids\nhttps://example.com/kids\n'
+        '#EXTINF:-1 group-title="General;News",News\nhttps://example.com/news\n'
+        '#EXTINF:-1 group-title="Adult;Animation",Mixed\nhttps://example.com/mixed\n');
+    expect(channels.map((c) => c.group), ['Infantil', 'Notícias', 'Geral']);
+  });
+  test('rejects empty hosts and credentials and strips insecure logos', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1,Bad\nhttps:\n'
+        '#EXTINF:-1,Credential\nhttps://user:pass@example.com/live\n'
+        '#EXTINF:-1 tvg-logo="http://example.com/logo.png",Good\nhttps://example.com/live\n');
+    expect(channels, hasLength(1));
+    expect(channels.single.logo, isNull);
+  });
 }

@@ -16,11 +16,11 @@ class M3uParser {
         group = _attribute(line, 'group-title') ?? 'Outros';
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
-        if (uri != null && uri.scheme == 'https') {
+        if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty && uri.userInfo.isEmpty) {
           channels.add(Channel(
             name: _cleanName(name),
             url: line,
-            logo: logo,
+            logo: _safeLogo(logo),
             group: _cleanGroup(group),
           ));
         }
@@ -43,16 +43,23 @@ class M3uParser {
         .toList(growable: false);
     if (parts.isEmpty) return 'Outros';
 
-    final normalized = parts.first.toLowerCase();
-    if (normalized.contains('sport')) return 'Esportes';
-    if (normalized.contains('news')) return 'Notícias';
-    if (normalized.contains('animation') ||
-        normalized.contains('kids') ||
-        normalized.contains('children')) {
+    final normalized = parts.map((part) => part.toLowerCase()).toList();
+    bool has(String token) => normalized.any((part) => part.contains(token));
+    if (has('adult')) return 'Geral';
+    if (has('kids') || has('children') || has('infantil') || has('animation')) {
       return 'Infantil';
     }
-    if (normalized.contains('general')) return 'Geral';
+    if (has('sport') || has('esporte')) return 'Esportes';
+    if (has('news') || has('notícias') || has('noticias')) return 'Notícias';
+    if (has('tv aberta')) return 'TV aberta';
+    if (has('general') || has('geral')) return 'Geral';
     return parts.first;
+  }
+
+  static String? _safeLogo(String? value) {
+    final uri = value == null ? null : Uri.tryParse(value);
+    return uri != null && uri.scheme == 'https' &&
+        uri.host.isNotEmpty && uri.userInfo.isEmpty ? value : null;
   }
 
   static String? _attribute(String line, String key) =>
