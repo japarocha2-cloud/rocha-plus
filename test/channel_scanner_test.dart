@@ -17,7 +17,7 @@ void main() {
       final code = int.parse(request.url.path.substring(1));
       return http.Response('', code);
     }));
-    final channels = [200, 405, 501, 503, 200, 200].asMap().entries.map(
+    final channels = [200, 405, 501, 503, 302, 200].asMap().entries.map(
       (entry) => Channel(name: 'Canal ${entry.key}',
           url: 'https://example.com/${entry.value}', group: 'Geral')).toList();
     final results = await scanner.scan(channels);
@@ -25,6 +25,7 @@ void main() {
     expect(results['https://example.com/200'], ChannelReachability.reachable);
     expect(results['https://example.com/405'], ChannelReachability.unverified);
     expect(results['https://example.com/503'], ChannelReachability.unavailable);
+    expect(results['https://example.com/302'], ChannelReachability.unverified);
   });
   test('invalid URL is rejected and network failure remains unverified', () async {
     var calls = 0;

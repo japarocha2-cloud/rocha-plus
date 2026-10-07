@@ -21,10 +21,13 @@ class ChannelScanner {
           continue;
         }
         try {
-          final response = await client.head(uri).timeout(const Duration(seconds: 5));
-          results[channel.url] = response.statusCode >= 200 && response.statusCode < 400
+          final request = http.Request('HEAD', uri)..followRedirects = false;
+          final response = await client.send(request).timeout(const Duration(seconds: 5));
+          await response.stream.listen((_) {}).cancel();
+          results[channel.url] = response.statusCode >= 200 && response.statusCode < 300
               ? ChannelReachability.reachable
-              : response.statusCode == 405 || response.statusCode == 501
+              : (response.statusCode >= 300 && response.statusCode < 400) ||
+                      response.statusCode == 405 || response.statusCode == 501
                   ? ChannelReachability.unverified
                   : ChannelReachability.unavailable;
         } catch (_) {

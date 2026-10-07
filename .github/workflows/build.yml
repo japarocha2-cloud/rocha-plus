@@ -15,6 +15,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.6'
           cache: true
       - name: Generate Android scaffold
         run: |-
@@ -28,44 +29,9 @@ jobs:
           path.write_text(text)
           PY
       - name: Configure Android phone and TV
-        run: |-
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path("android/app/src/main/AndroidManifest.xml")
-          text = path.read_text()
-
-          permission = '<uses-permission android:name="android.permission.INTERNET" />'
-          cast_permission = '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />'
-          features = (
-              '<uses-feature android:name="android.software.leanback" android:required="false" />\n'
-              '    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />'
-          )
-          if permission not in text:
-              text = text.replace('<application', f'    {permission}\n    {features}\n    <application', 1)
-          if cast_permission not in text:
-              text = text.replace('<application', f'    {cast_permission}\n    <application', 1)
-
-          if 'android.intent.category.LEANBACK_LAUNCHER' not in text:
-              launcher = '<category android:name="android.intent.category.LAUNCHER"/>'
-              text = text.replace(
-                  launcher,
-                  launcher + '\n                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>',
-                  1,
-              )
-
-          cast_meta = '''<meta-data\n                android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"\n                android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />'''
-          if 'OPTIONS_PROVIDER_CLASS_NAME' not in text:
-              text = text.replace('</application>', '    ' + cast_meta + '\n    </application>', 1)
-
-          cast_service = '''<service
-                android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
-                android:exported="false"
-                android:foregroundServiceType="mediaPlayback" />'''
-          if 'MediaNotificationService' not in text:
-              text = text.replace('</application>', '    ' + cast_service + '\n    </application>', 1)
-
-          path.write_text(text)
-          PY
+        run: python3 tools/configure_android.py
+      - name: Test Android configuration
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Get dependencies
         run: flutter pub get
       - name: Rocha+ Quality Guard
@@ -77,11 +43,19 @@ jobs:
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK
-        run: flutter build apk --release
+        run: flutter build apk --release --build-number=${{ github.run_number }}
       - name: Build optimized APKs
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --build-number=${{ github.run_number }} --split-per-abi
       - name: Build Play Store bundle
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+      - name: Verify release evidence
+        run: python3 tools/release_evidence.py
+      - name: Upload release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-release-evidence
+          path: build/qa/release-evidence.json
+          if-no-files-found: error
       - name: Upload universal APK
         uses: actions/upload-artifact@v4
         with:

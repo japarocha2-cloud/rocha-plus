@@ -10,6 +10,8 @@ import '../theme/rocha_theme.dart';
 import '../widgets/player_viewport.dart';
 import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
+import '../cast/cast_readiness.dart';
+import '../cast/cast_playback_evidence.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -22,6 +24,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
+  bool _casting = false;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -32,6 +35,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _portraitOnExit ??= MediaQuery.sizeOf(context).width < 600;
   }
   bool _playbackConfirmed = false;
+  bool _isPlaying = false;
+  bool _isBuffering = false;
   int _attempt = 0;
   final _evidence = PlaybackEvidence();
   final ChannelRepository _channelRepository = ChannelRepository();
@@ -46,9 +51,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final attempt = ++_attempt;
     final old = _controller;
     _controller = null;
+    old?.removeListener(_onPlayerChanged);
     await old?.dispose();
+    if (!mounted || attempt != _attempt) return;
 
-    if (mounted) setState(() { _loading = true; _failed = false; _playbackConfirmed = false; });
+    setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.channel.url),
@@ -91,15 +98,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
       setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
       return;
     }
-    if (_evidence.observe(position: value.position, isPlaying: value.isPlaying,
-        isBuffering: value.isBuffering, hasError: value.hasError)) {
+    final confirmed = _evidence.observe(position: value.position,
+        isPlaying: value.isPlaying, isBuffering: value.isBuffering, hasError: value.hasError);
+    if (confirmed) {
       _channelRepository.reportPlaybackSuccess(widget.channel.url);
-      setState(() => _playbackConfirmed = true);
+    }
+    if (confirmed || _isPlaying != value.isPlaying || _isBuffering != value.isBuffering) {
+      setState(() {
+        if (confirmed) _playbackConfirmed = true;
+        _isPlaying = value.isPlaying;
+        _isBuffering = value.isBuffering;
+      });
     }
   }
 
   Future<void> _openCastPicker() async {
+    final ready = await CastReadiness.ready;
     if (!mounted) return;
+    if (!ready) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Google Cast indisponível neste aparelho.'),
+      ));
+      return;
+    }
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: RochaColors.surface,
@@ -140,17 +161,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
       autoPlay: true,
       playPosition: Duration.zero,
       playbackRate: 1.0,
-    );
-    await GoogleCastRemoteMediaClient.instance.play();
+    ).timeout(const Duration(seconds: 8));
+    await GoogleCastRemoteMediaClient.instance.play().timeout(const Duration(seconds: 5));
 
     for (var i = 0; i < 16; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
-      if (state == CastMediaPlayerState.playing) {
+      final info = status?.mediaInformation;
+      final matches = CastPlaybackEvidence.matches(uri.toString(), info?.contentId, info?.contentUrl);
+      if (CastPlaybackEvidence.confirms(
+          requested: uri.toString(), contentId: info?.contentId,
+          contentUrl: info?.contentUrl, playing: state == CastMediaPlayerState.playing)) {
         return;
       }
-      if (state == CastMediaPlayerState.idle && status?.idleReason != null) {
+      if (matches && state == CastMediaPlayerState.idle && status?.idleReason != null) {
         throw StateError('Receiver entrou em idle: ${status?.idleReason}');
       }
     }
@@ -180,9 +205,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _startCasting(GoogleCastDevice device) async {
+    if (_casting) return;
+    setState(() => _casting = true);
     try {
       final started = await GoogleCastSessionManager.instance
-          .startSessionWithDevice(device);
+          .startSessionWithDevice(device).timeout(const Duration(seconds: 8));
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
       await _loadAndConfirmCast(Uri.parse(widget.channel.url));
@@ -203,6 +230,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
           const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),
         );
       }
+    } finally {
+      if (mounted) setState(() => _casting = false);
     }
   }
 
@@ -274,9 +303,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.channel.name),
+                  Text(widget.channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
-                    _playbackConfirmed ? 'Reproduzindo' : 'Conectando…',
+                    _playbackConfirmed
+                        ? (_isBuffering ? 'Carregando…' : _isPlaying ? 'Reproduzindo' : 'Pausado')
+                        : 'Conectando…',
                     style: TextStyle(
                       fontSize: 12,
                       color: _playbackConfirmed ? RochaColors.playGreen : Colors.white54,
@@ -287,7 +318,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               actions: [
                 IconButton(
                   tooltip: 'Transmitir para TV',
-                  onPressed: _openCastPicker,
+                  onPressed: _casting ? null : _openCastPicker,
                   icon: const Icon(Icons.cast),
                 ),
               ],
