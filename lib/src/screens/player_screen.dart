@@ -7,6 +7,7 @@ import '../live/channel.dart';
 import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
+import '../widgets/player_viewport.dart';
 import '../cast/cast_device_picker.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -22,6 +23,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _failed = false;
   bool _controlsVisible = false;
   bool _fullscreen = false;
+  bool? _portraitOnExit;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _portraitOnExit ??= MediaQuery.sizeOf(context).width < 600;
+  }
   bool _playbackConfirmed = false;
   int _attempt = 0;
   final _evidence = PlaybackEvidence();
@@ -218,9 +226,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       ]);
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
+      await SystemChrome.setPreferredOrientations(
+        _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
+      );
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
   }
@@ -242,14 +250,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
       controller.dispose();
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    SystemChrome.setPreferredOrientations(
+      _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
+    );
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    return Scaffold(
+    return PopScope(
+      canPop: !_fullscreen,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _fullscreen) _toggleFullscreen();
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       appBar: _fullscreen
           ? null
@@ -283,24 +298,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ? const CircularProgressIndicator(color: RochaColors.ruby)
                 : _fullscreen
                     ? SizedBox.expand(
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: SizedBox(
-                            width: controller.value.size.width > 0
-                                ? controller.value.size.width
-                                : 1920,
-                            height: controller.value.size.height > 0
-                                ? controller.value.size.height
-                                : 1080,
-                            child: _VideoSurface(
-                              controller: controller,
-                              controlsVisible: _controlsVisible,
-                              fullscreen: _fullscreen,
-                              onShowControls: _showControls,
-                              onTogglePlayback: _togglePlayback,
-                              onToggleFullscreen: _toggleFullscreen,
-                            ),
-                          ),
+                        child: _VideoSurface(
+                          controller: controller,
+                          controlsVisible: _controlsVisible,
+                          fullscreen: _fullscreen,
+                          onShowControls: _showControls,
+                          onTogglePlayback: _togglePlayback,
+                          onToggleFullscreen: _toggleFullscreen,
                         ),
                       )
                     : AspectRatio(
@@ -316,7 +320,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           onToggleFullscreen: _toggleFullscreen,
                         ),
                       ),
-      )
+      ),
+      ),
     );
   }
 }
@@ -343,11 +348,10 @@ class _VideoSurface extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onShowControls,
         onDoubleTap: onToggleFullscreen,
-        child: Stack(
-          fit: StackFit.expand,
-          alignment: Alignment.center,
-          children: [
-            VideoPlayer(controller),
+        child: PlayerViewport(
+          aspectRatio: controller.value.aspectRatio,
+          video: VideoPlayer(controller),
+          overlays: [
             Center(
               child: AnimatedOpacity(
                 opacity: controlsVisible ? 1 : 0,
