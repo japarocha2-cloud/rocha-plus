@@ -4,7 +4,7 @@ import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
-  static final http.Client _client = http.Client();
+  static http.Client _client = http.Client();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -58,6 +58,18 @@ class ChannelRepository {
         .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
+  }
+
+  static void setClientForTests(http.Client client) {
+    _client.close();
+    _client = client;
+    resetSessionHealthForTests();
+  }
+
+  static void restoreDefaultClientForTests() {
+    _client.close();
+    _client = http.Client();
+    resetSessionHealthForTests();
   }
 
   static void resetSessionHealthForTests() {
@@ -117,6 +129,36 @@ class ChannelRepository {
     }
     if (_memoryCache != null) return _withoutSessionFailures(_memoryCache!);
     throw Exception('Não foi possível carregar canais disponíveis.');
+  }
+
+  Future<bool> validateStreamForTests(String url) => _validateHls(Uri.parse(url));
+
+  Future<bool> _validateHls(Uri uri) async {
+    if (uri.scheme != 'https') return false;
+    try {
+      final response = await _client.get(uri).timeout(const Duration(seconds: 6));
+      if (response.statusCode != 200) return false;
+      final body = utf8.decode(response.bodyBytes);
+      if (!body.contains('#EXTM3U')) return false;
+      if (body.contains('#EXTINF')) return true;
+
+      final lines = body.split(RegExp(r'\\r?\\n'));
+      for (final rawLine in lines) {
+        final line = rawLine.trim();
+        if (line.isEmpty || line.startsWith('#')) continue;
+        final child = uri.resolve(line);
+        if (child.scheme != 'https') continue;
+        final childResponse =
+            await _client.get(child).timeout(const Duration(seconds: 6));
+        if (childResponse.statusCode == 200 &&
+            utf8.decode(childResponse.bodyBytes).contains('#EXTINF')) {
+          return true;
+        }
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<List<Channel>> _loadPlaylistSafely(Uri playlist) async {

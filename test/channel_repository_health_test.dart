@@ -1,9 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
 
 void main() {
   setUp(ChannelRepository.resetSessionHealthForTests);
+  tearDown(ChannelRepository.restoreDefaultClientForTests);
 
   test('player failure quarantines a stream for the current session', () {
     final repository = ChannelRepository();
@@ -66,5 +69,42 @@ void main() {
     expect(repository.sportsPriorityForTests(female), greaterThan(repository.sportsPriorityForTests(tennis)));
     expect(repository.sportsOnly([tennis, female, male]), [male, female, tennis]);
   });
-}
 
+  test('one dead catalog does not erase a healthy catalog', () async {
+    ChannelRepository.setClientForTests(MockClient((request) async {
+      if (request.url == ChannelRepository.developmentPlaylist) {
+        return http.Response('''#EXTM3U\n#EXTINF:-1 group-title="News",Canal Teste\nhttps://example.com/live.m3u8''', 200);
+      }
+      return http.Response('offline', 503);
+    }));
+
+    final channels = await ChannelRepository().loadBrazilPublicDirectory(forceRefresh: true);
+    expect(channels.any((channel) => channel.name == 'Canal Teste'), isTrue);
+  });
+  test('HLS validator accepts media playlist and rejects dead stream', () async {
+    ChannelRepository.setClientForTests(MockClient((request) async {
+      if (request.url.host == 'ok.example.com') {
+        return http.Response('#EXTM3U\n#EXTINF:6,\nsegment.ts', 200);
+      }
+      return http.Response('offline', 503);
+    }));
+
+    final repository = ChannelRepository();
+    expect(await repository.validateStreamForTests('https://ok.example.com/live.m3u8'), isTrue);
+    expect(await repository.validateStreamForTests('https://dead.example.com/live.m3u8'), isFalse);
+  });
+
+  test('HLS validator follows an HTTPS master playlist child', () async {
+    ChannelRepository.setClientForTests(MockClient((request) async {
+      if (request.url.path.endsWith('master.m3u8')) {
+        return http.Response('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=800000\nchild.m3u8', 200);
+      }
+      return http.Response('#EXTM3U\n#EXTINF:6,\nsegment.ts', 200);
+    }));
+
+    expect(
+      await ChannelRepository().validateStreamForTests('https://ok.example.com/master.m3u8'),
+      isTrue,
+    );
+  });
+}
