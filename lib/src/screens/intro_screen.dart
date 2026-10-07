@@ -1,100 +1,96 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../theme/rocha_theme.dart';
 import 'login_screen.dart';
 
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({super.key});
-
+  final VideoPlayerController Function()? controllerFactory;
+  final VoidCallback? onFinished;
+  const IntroScreen({super.key, this.controllerFactory, this.onFinished});
   @override
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
-class _IntroScreenState extends State<IntroScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scale;
-  Timer? _timer;
-
+class _IntroScreenState extends State<IntroScreen> {
+  late final VideoPlayerController _controller;
+  Timer? _guard;
+  bool _finished = false;
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    );
-    _scale = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
-    _controller.forward();
-    _timer = Timer(const Duration(seconds: 4), _finish);
+    _controller = widget.controllerFactory?.call() ??
+      VideoPlayerController.asset('branding/intro-rocha-plus.mp4');
+    _controller.addListener(_changed);
+    _start();
   }
-
+  Future<void> _start() async {
+    try {
+      await _controller.initialize().timeout(const Duration(seconds: 8));
+      if (!mounted || _finished) return;
+      await _controller.setLooping(false);
+      await _controller.setVolume(1);
+      if (!mounted || _finished) return;
+      _guard = Timer(_controller.value.duration + const Duration(seconds: 3), _finish);
+      await _controller.play();
+      if (mounted && !_finished) setState(() {});
+    } catch (_) {
+      _finish();
+    }
+  }
+  void _changed() {
+    if (!mounted || _finished) return;
+    final value = _controller.value;
+    if (value.hasError ||
+        (value.isInitialized && value.duration > Duration.zero &&
+          value.position >= value.duration)) {
+      _finish();
+      return;
+    }
+    setState(() {});
+  }
   void _finish() {
-    if (!mounted) return;
-    _timer?.cancel();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    if (!mounted || _finished) return;
+    setState(() => _finished = true);
+    _guard?.cancel();
+    unawaited(_controller.pause().catchError((Object _) {}));
+    if (widget.onFinished != null) {
+      widget.onFinished!();
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginScreen()));
+    }
   }
-
   @override
   void dispose() {
-    _timer?.cancel();
+    _guard?.cancel();
+    _controller.removeListener(_changed);
     _controller.dispose();
     super.dispose();
   }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: InkWell(
-        onTap: _finish,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              radius: 1.1,
-              colors: [RochaColors.cosmicPurple, RochaColors.background],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final shortest = constraints.biggest.shortestSide;
-                    final logoSize = (shortest * 0.13).clamp(36.0, 62.0);
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: (shortest * 0.12).clamp(28.0, 72.0),
-                      ),
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: ScaleTransition(
-                          scale: _scale,
-                          child: RochaLogo(fontSize: logoSize),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                left: 24,
-                right: 24,
-                bottom: MediaQuery.paddingOf(context).bottom + 24,
-                child: const Text(
-                  'O entretenimento ganhou um novo reino.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white54),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: Colors.black,
+    body: Stack(children: [
+      Positioned.fill(child: _finished ? const SizedBox.shrink() : _controller.value.isInitialized ?
+        IntroVideoFrame(size: _controller.value.size, child: VideoPlayer(_controller)) :
+        const Center(child: CircularProgressIndicator(color: RochaColors.gold))),
+      Positioned(right: 16, bottom: 16,
+        child: SafeArea(child: TextButton(
+          autofocus: true, onPressed: _finish, child: const Text('Pular')))),
+    ]),
+  );
+}
+
+/// Contains the complete source frame: no cover, crop, stretch or added zoom.
+class IntroVideoFrame extends StatelessWidget {
+  final Size size;
+  final Widget child;
+  const IntroVideoFrame({super.key, required this.size, required this.child});
+  @override
+  Widget build(BuildContext context) => Center(child: FittedBox(
+    fit: BoxFit.contain,
+    child: SizedBox(width: size.width, height: size.height, child: child)));
 }
 
 class RochaLogo extends StatelessWidget {
