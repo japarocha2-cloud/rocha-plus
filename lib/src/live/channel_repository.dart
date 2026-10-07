@@ -18,6 +18,16 @@ class ChannelRepository {
   // em teste físico: eles não voltam quando o diretório remoto é atualizado.
   static const Set<String> _blockedChannelNames = <String>{
     '1001 noites',
+    '30a golf kingdom (720p)',
+    'pluto tv esportes',
+    'canal do inter (720p) [not 24/7]',
+    'band sports (1080p)',
+    'times brasil (720p)',
+    'tv thathi (720p) [not 24/7]',
+    'tv sul de minas (720p)',
+    'tv meio (720p)',
+    'tv difusora leste (1080p)',
+    'tv encontro das aguas',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
