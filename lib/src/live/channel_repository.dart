@@ -4,7 +4,7 @@ import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
-  static final http.Client _client = http.Client();
+  static http.Client _client = http.Client();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -64,6 +64,11 @@ class ChannelRepository {
     _sessionFailedUrls.clear();
     _memoryCache = null;
     _lastKnownGoodCache = null;
+  }
+
+  static void setClientForTests(http.Client client) {
+    _client = client;
+    resetSessionHealthForTests();
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
