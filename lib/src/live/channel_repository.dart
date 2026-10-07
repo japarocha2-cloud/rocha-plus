@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
+import 'channel_identity.dart';
+import 'channel_blocks.dart';
+import 'channel_scanner.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
@@ -12,6 +15,20 @@ class ChannelRepository {
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
+
+  static Set<String> _userBlockedNames = {};
+  final ChannelBlocks _blocks = ChannelBlocks();
+
+  Future<void> blockChannel(Channel channel) async {
+    await _blocks.block(channel.name);
+    _userBlockedNames = await _blocks.load();
+  }
+
+  Future<void> restoreUserBlockedChannels() async {
+    await _blocks.clear();
+    _userBlockedNames = {};
+    _memoryCache = null;
+  }
 
   static List<Channel>? _memoryCache;
   static List<Channel>? _lastKnownGoodCache;
@@ -34,8 +51,9 @@ class ChannelRepository {
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
-    final normalized = channel.name.trim().toLowerCase();
-    return _blockedChannelNames.contains(normalized);
+    final normalized = channelIdentity(channel.name);
+    return _userBlockedNames.contains(normalized) ||
+        _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
   }
 
   void reportPlaybackFailure(String url) {
@@ -52,18 +70,25 @@ class ChannelRepository {
 
   bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
 
+  Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
+      ChannelScanner(_client).scan(channels);
+
+  bool isBlocked(Channel channel) => _isPermanentlyBlocked(channel);
+
   bool isPermanentlyBlockedForTests(Channel channel) =>
       _isPermanentlyBlocked(channel);
 
   List<Channel> sportsOnly(Iterable<Channel> channels) {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
+        .where((channel) => !_isPermanentlyBlocked(channel))
         .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
 
   static void resetSessionHealthForTests() {
+    _userBlockedNames = {};
     _sessionFailedUrls.clear();
     _memoryCache = null;
     _lastKnownGoodCache = null;
@@ -81,6 +106,7 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
+    _userBlockedNames = await _blocks.load();
     if (!forceRefresh && _memoryCache != null) {
       return _withoutSessionFailures(_memoryCache!);
     }

@@ -66,5 +66,12 @@ void main() {
     expect(repository.sportsPriorityForTests(female), greaterThan(repository.sportsPriorityForTests(tennis)));
     expect(repository.sportsOnly([tennis, female, male]), [male, female, tennis]);
   });
+  test('physical block applies to sports and survives resolution suffix changes', () {
+    final repo = ChannelRepository();
+    const blocked = Channel(name: 'Band Sports (720p)',
+        url: 'https://example.com/new.m3u8', group: 'Esportes');
+    expect(repo.isBlocked(blocked), isTrue);
+    expect(repo.sportsOnly([blocked]), isEmpty);
+  });
 }
 

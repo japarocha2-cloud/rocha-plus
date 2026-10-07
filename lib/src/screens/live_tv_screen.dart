@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import '../live/channel.dart';
 import '../live/channel_repository.dart';
+import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
 import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
-  const LiveTvScreen({super.key, this.initialGroup = 'Todos'});
+  final ChannelRepository? repository;
+  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository});
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
 }
 
 class _LiveTvScreenState extends State<LiveTvScreen> {
-  final repository = ChannelRepository();
+  late final ChannelRepository repository;
+  bool scanning = false;
+  Map<String, ChannelReachability> reachability = {};
   final favoritesRepository = FavoritesRepository();
   final search = TextEditingController();
   List<Channel> channels = const [];
@@ -25,6 +29,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   void initState() {
     super.initState();
+    repository = widget.repository ?? ChannelRepository();
     selectedGroup = widget.initialGroup;
     load();
   }
@@ -45,6 +50,34 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       }
     } catch (_) {
       if (mounted) setState(() { error = 'Não foi possível carregar os canais.'; loading = false; });
+    }
+  }
+
+  Future<void> scan(List<Channel> visible) async {
+    setState(() => scanning = true);
+    final sample = visible.take(40).toList();
+    try {
+      final results = await repository.scanChannels(sample);
+      if (!mounted) return;
+      setState(() => reachability.addAll(results));
+      final accessible = results.values.where((v) => v == ChannelReachability.reachable).length;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(
+        '${results.length} endereços verificados; $accessible acessíveis. Teste a reprodução no Player.',
+      )));
+    } finally {
+      if (mounted) setState(() => scanning = false);
+    }
+  }
+
+  Future<void> hideChannel(Channel channel) async {
+    try {
+      await repository.blockChannel(channel);
+      if (!mounted) return;
+      setState(() => channels = channels.where((c) => !repository.isBlocked(c)).toList());
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível salvar o bloqueio.')),
+      );
     }
   }
 
@@ -81,7 +114,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     final q = search.text.trim().toLowerCase();
     final visible = channels.where((c) {
       final technicalGroup = c.group.contains(';');
-      if (technicalGroup) return false;
+      if (technicalGroup || repository.isQuarantined(c.url) || repository.isBlocked(c)) return false;
       final matchesSearch = q.isEmpty ||
           c.name.toLowerCase().contains(q) ||
           c.group.toLowerCase().contains(q);
@@ -100,9 +133,31 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                   ? 'Esportes'
                   : selectedGroup == 'Infantil'
                       ? 'Infantil'
-                      : 'TV ao Vivo',
+                      : selectedGroup == 'Notícias' ? 'Notícias' : 'TV ao Vivo',
         ),
         actions: [
+          IconButton(
+            tooltip: 'Verificar disponibilidade de até 40 canais',
+            onPressed: loading || scanning || visible.isEmpty ? null : () => scan(visible),
+            icon: scanning ? const SizedBox(width: 20, height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.fact_check_outlined),
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Opções dos canais',
+            onSelected: (_) async {
+              try {
+                await repository.restoreUserBlockedChannels();
+                if (mounted) await load(forceRefresh: true);
+              } catch (_) {
+                if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Não foi possível restaurar os canais.')),
+                );
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'restore', child: Text('Restaurar canais ocultos')),
+            ],
+          ),
           IconButton(
             tooltip: 'Atualizar canais',
             onPressed: loading ? null : () => load(forceRefresh: true),
@@ -171,15 +226,31 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                         fit: BoxFit.contain,
                                         errorBuilder: (_, __, ___) => const Icon(Icons.live_tv)),
                                 title: Text(channel.name),
-                                subtitle: channel.group == 'Outros' ? null : Text(channel.group),
-                                trailing: IconButton(
+                                subtitle: Text(
+                                  reachability[channel.url] == ChannelReachability.unavailable
+                                      ? 'Endereço indisponível na última verificação'
+                                      : channel.group,
+                                ),
+                                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                                IconButton(
                                   tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
                                   onPressed: () => toggleFavorite(channel),
                                   icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
                                       color: isFavorite ? RochaColors.gold : Colors.white54),
                                 ),
-                                onTap: () => Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel))),
+                                PopupMenuButton<String>(
+                                  tooltip: 'Opções de ${channel.name}',
+                                  onSelected: (_) => hideChannel(channel),
+                                  itemBuilder: (_) => const [
+                                    PopupMenuItem(value: 'hide', child: Text('Ocultar canal neste aparelho')),
+                                  ],
+                                ),
+                                ]),
+                                onTap: () async {
+                                  await Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel)));
+                                  if (mounted) setState(() {});
+                                },
                               ),
                             );
                           },

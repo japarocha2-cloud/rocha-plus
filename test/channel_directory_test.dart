@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 
 void main() {
-  setUp(ChannelRepository.resetSessionHealthForTests);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ChannelRepository.resetSessionHealthForTests();
+  });
   test('concurrent catalog loads share requests and preserve source quality URL', () async {
     var calls = 0;
     final gate = Completer<void>();
