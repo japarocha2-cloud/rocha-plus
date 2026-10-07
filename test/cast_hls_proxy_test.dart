@@ -50,7 +50,10 @@ void main() {
     final unknown = master.replace(queryParameters: {'id': 'invalid'});
     expect((await (await client.getUrl(unknown)).close()).statusCode, 404);
     await proxy.close();
-    await expectLater(client.getUrl(master), throwsA(isA<SocketException>()));
+    final freshClient = HttpClient();
+    addTearDown(() => freshClient.close(force: true));
+    await expectLater(freshClient.getUrl(master).then((request) => request.close()),
+        throwsA(isA<IOException>()));
   });
 
   test('relay refuses insecure sources, credentials and private DNS destinations', () async {
