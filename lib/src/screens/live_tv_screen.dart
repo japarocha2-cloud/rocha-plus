@@ -229,6 +229,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                               final channel = visible[i];
                               return RochaChannelCard(
                                 channel: channel, favorite: favorites.contains(channel.url),
+                                availability: reachability[channel.url] == ChannelReachability.unavailable
+                                    ? 'Endereço indisponível na última verificação' : null,
                                 onFavorite: () => toggleFavorite(channel),
                                 onHide: () => hideChannel(channel),
                                 onOpen: () async {

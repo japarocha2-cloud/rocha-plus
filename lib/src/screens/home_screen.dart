@@ -37,10 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
       final result = await Future.wait([
         repository.loadBrazilPublicDirectory(), favoritesRepository.load(),
       ]);
-      if (mounted) setState(() {
+      if (mounted) { setState(() {
         channels = result[0] as List<Channel>; favorites = result[1] as Set<String>;
         loading = false; failed = false;
-      });
+      }); }
     } catch (_) {
       if (mounted) setState(() { loading = false; failed = true; });
     }
@@ -234,7 +234,7 @@ class _OfficialHero extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: wide ? SizedBox(height: 320, child: Row(children: [
         Expanded(flex: 4, child: copy),
-        const Expanded(flex: 6, child: RochaArtwork()),
+        const Expanded(flex: 6, child: RochaArtwork(fit: BoxFit.contain)),
       ])) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(height: 210, child: RochaArtwork()),
         copy,

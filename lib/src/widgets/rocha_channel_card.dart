@@ -8,8 +8,9 @@ class RochaChannelCard extends StatefulWidget {
   final VoidCallback onOpen;
   final VoidCallback onFavorite;
   final VoidCallback? onHide;
+  final String? availability;
   const RochaChannelCard({super.key, required this.channel, required this.onOpen,
-    required this.onFavorite, this.favorite = false, this.onHide});
+    required this.onFavorite, this.favorite = false, this.onHide, this.availability});
   @override
   State<RochaChannelCard> createState() => _RochaChannelCardState();
 }
@@ -61,7 +62,7 @@ class _RochaChannelCardState extends State<RochaChannelCard> {
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             const SizedBox(height: 5),
             Row(children: [
-              Expanded(child: Text(widget.channel.group, maxLines: 1,
+              Expanded(child: Text(widget.availability ?? widget.channel.group, maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(color: Colors.white54, fontSize: 12))),
               if (widget.onHide != null) SizedBox(width: 30, height: 30,
