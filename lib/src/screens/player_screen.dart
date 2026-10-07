@@ -8,6 +8,7 @@ import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/player_viewport.dart';
+import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -344,7 +345,10 @@ class _VideoSurface extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
+  Widget build(BuildContext context) => PlayerControlsFocus(
+        controlsVisible: controlsVisible,
+        onShowControls: onShowControls,
+        child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onShowControls,
         onDoubleTap: onToggleFullscreen,
@@ -388,6 +392,7 @@ class _VideoSurface extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       );
 }

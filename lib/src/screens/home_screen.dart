@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                 title: const RochaBrand(compact: true),
                 actions: [
                   IconButton(
-                    tooltip: 'Transmitir',
+                    tooltip: 'Abrir canais para transmitir',
                     onPressed: () => openSection(context, 'TV ao Vivo'),
                     icon: const Icon(Icons.cast_rounded, color: RochaColors.gold),
                   ),
@@ -63,7 +63,8 @@ class HomeScreen extends StatelessWidget {
               const SliverPadding(
                 padding: EdgeInsets.fromLTRB(20, 28, 20, 14),
                 sliver: SliverToBoxAdapter(
-                  child: Row(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Icon(Icons.auto_awesome, color: RochaColors.gold, size: 19),
                       SizedBox(width: 9),

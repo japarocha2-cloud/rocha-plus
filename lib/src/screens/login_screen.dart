@@ -23,12 +23,18 @@ class LoginScreen extends StatelessWidget {
             colors: [RochaColors.wine, RochaColors.background],
           ),
         ),
-        child: Center(
+        child: SafeArea(
+          child: LayoutBuilder(builder: (context, constraints) =>
+            SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 430),
             child: Padding(
               padding: const EdgeInsets.all(28),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const RochaLogo(fontSize: 58),
@@ -55,11 +61,15 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   const Text(
-                    'Google e Apple serão conectados às credenciais oficiais antes da publicação.',
+                    'Login com Google e Apple estará disponível em uma próxima versão.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white38, fontSize: 12),
                   ),
                 ],
+              ),
+            ),
+          ),
+                ),
               ),
             ),
           ),
