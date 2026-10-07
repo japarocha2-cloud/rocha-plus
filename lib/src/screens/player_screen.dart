@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
@@ -5,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
+import '../cast/cast_device_picker.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -75,71 +77,108 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _openCastPicker() async {
-    await GoogleCastDiscoveryManager.instance.startDiscovery();
     if (!mounted) return;
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: RochaColors.surface,
       builder: (sheetContext) => SafeArea(
-        child: StreamBuilder<List<GoogleCastDevice>>(
-          stream: GoogleCastDiscoveryManager.instance.devicesStream,
-          builder: (context, snapshot) {
-            final devices = snapshot.data ?? const <GoogleCastDevice>[];
-            if (devices.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.all(28),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: RochaColors.ruby),
-                    SizedBox(height: 18),
-                    Text('Procurando TVs e Chromecasts na mesma rede Wi-Fi...'),
-                  ],
-                ),
-              );
-            }
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: devices.length,
-              itemBuilder: (_, index) {
-                final device = devices[index];
-                return ListTile(
-                  leading: const Icon(Icons.cast, color: RochaColors.gold),
-                  title: Text(device.friendlyName),
-                  onTap: () async {
-                    Navigator.pop(sheetContext);
-                    await _startCasting(device);
-                  },
-                );
-              },
-            );
+        child: CastDevicePicker(
+          onSelected: (device) async {
+            Navigator.pop(sheetContext);
+            await _startCasting(device);
           },
         ),
       ),
     );
   }
 
+  String _castContentType(Uri uri) {
+    final path = uri.path.toLowerCase();
+    if (path.endsWith('.m3u8') || path.endsWith('.m3u')) {
+      return 'application/x-mpegURL';
+    }
+    if (path.endsWith('.mpd')) return 'application/dash+xml';
+    if (path.endsWith('.webm')) return 'video/webm';
+    if (path.endsWith('.mp4') || path.endsWith('.m4v')) return 'video/mp4';
+    // URLs without an extension in the Rocha+ live catalogue are normally HLS.
+    return 'application/x-mpegURL';
+  }
+
+  Future<void> _loadAndConfirmCast(Uri uri) async {
+    final media = GoogleCastMediaInformation(
+      contentId: uri.toString(),
+      contentUrl: uri,
+      contentType: _castContentType(uri),
+      streamType: CastMediaStreamType.live,
+      metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
+    );
+
+    await GoogleCastRemoteMediaClient.instance.loadMedia(
+      media,
+      autoPlay: true,
+      playPosition: Duration.zero,
+      playbackRate: 1.0,
+    );
+    await GoogleCastRemoteMediaClient.instance.play();
+
+    for (var i = 0; i < 16; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
+      final state = status?.playerState;
+      if (state == CastMediaPlayerState.playing) {
+        return;
+      }
+      if (state == CastMediaPlayerState.idle && status?.idleReason != null) {
+        throw StateError('Receiver entrou em idle: ${status?.idleReason}');
+      }
+    }
+
+    throw TimeoutException(
+      'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
+    );
+  }
+
+  Future<void> _waitForCastSession() async {
+    if (GoogleCastSessionManager.instance.connectionState ==
+        GoogleCastConnectState.connected) {
+      return;
+    }
+
+    await GoogleCastSessionManager.instance.currentSessionStream
+        .firstWhere(
+          (session) =>
+              session?.connectionState == GoogleCastConnectState.connected,
+        )
+        .timeout(
+          const Duration(seconds: 8),
+          onTimeout: () => throw TimeoutException(
+            'A TV foi encontrada, mas a sessão Cast não ficou conectada.',
+          ),
+        );
+  }
+
   Future<void> _startCasting(GoogleCastDevice device) async {
     try {
-      await GoogleCastSessionManager.instance.startSessionWithDevice(device);
-      final media = GoogleCastMediaInformation(
-        contentId: widget.channel.url,
-        contentUrl: Uri.parse(widget.channel.url),
-        contentType: 'application/x-mpegURL',
-        streamType: CastMediaStreamType.live,
-        metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
-      );
-      await GoogleCastRemoteMediaClient.instance.loadMedia(media);
+      final started = await GoogleCastSessionManager.instance
+          .startSessionWithDevice(device);
+      if (!started) throw StateError('Sessão Cast recusada.');
+      await _waitForCastSession();
+      await _loadAndConfirmCast(Uri.parse(widget.channel.url));
       await _controller?.pause();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Canal enviado para a TV.')),
+          const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
       }
     } catch (_) {
+      try {
+        await GoogleCastSessionManager.instance.endSessionAndStopCasting();
+      } catch (_) {
+        // Preserve the original playback failure.
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível iniciar o espelhamento.')),
+          const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),
         );
       }
     }
