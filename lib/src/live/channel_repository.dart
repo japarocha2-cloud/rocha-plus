@@ -14,6 +14,17 @@ class ChannelRepository {
   static List<Channel>? _lastKnownGoodCache;
   static final Set<String> _sessionFailedUrls = <String>{};
 
+  // Bloqueio persistente por nome. Use esta camada para canais reprovados
+  // em teste físico: eles não voltam quando o diretório remoto é atualizado.
+  static const Set<String> _blockedChannelNames = <String>{
+    '1001 noites',
+  };
+
+  bool _isPermanentlyBlocked(Channel channel) {
+    final normalized = channel.name.trim().toLowerCase();
+    return _blockedChannelNames.contains(normalized);
+  }
+
   void reportPlaybackFailure(String url) {
     _sessionFailedUrls.add(url);
     final cached = _memoryCache;
@@ -43,7 +54,10 @@ class ChannelRepository {
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
-      channels.where((channel) => !_sessionFailedUrls.contains(channel.url)).toList(growable: false);
+      channels
+          .where((channel) => !_sessionFailedUrls.contains(channel.url))
+          .where((channel) => !_isPermanentlyBlocked(channel))
+          .toList(growable: false);
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async {
     if (!forceRefresh && _memoryCache != null) {
