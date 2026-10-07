@@ -4,7 +4,10 @@ import 'channel.dart';
 import 'm3u_parser.dart';
 
 class ChannelRepository {
-  static final http.Client _client = http.Client();
+  static final http.Client _defaultClient = http.Client();
+  final http.Client _client;
+  Future<List<Channel>>? _pendingLoad;
+  ChannelRepository({http.Client? client}) : _client = client ?? _defaultClient;
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -72,7 +75,12 @@ class ChannelRepository {
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
-  Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async {
+  Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) {
+    return _pendingLoad ??= _loadDirectory(forceRefresh: forceRefresh)
+        .whenComplete(() => _pendingLoad = null);
+  }
+
+  Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
     if (!forceRefresh && _memoryCache != null) {
       return _withoutSessionFailures(_memoryCache!);
     }

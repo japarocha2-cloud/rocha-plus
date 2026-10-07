@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
+import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
 import '../cast/cast_device_picker.dart';
@@ -23,6 +24,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _fullscreen = false;
   bool _playbackConfirmed = false;
   int _attempt = 0;
+  final _evidence = PlaybackEvidence();
   final ChannelRepository _channelRepository = ChannelRepository();
 
   @override
@@ -52,13 +54,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
         await controller.dispose();
         return;
       }
+      _evidence.reset(controller.value.position);
       controller.addListener(_onPlayerChanged);
       // Dispara a reprodução imediatamente após a preparação do decoder.
       // A qualidade continua sendo a original/adaptativa oferecida pelo HLS.
       await controller.play();
-      _channelRepository.reportPlaybackSuccess(widget.channel.url);
-      if (mounted) setState(() { _loading = false; _playbackConfirmed = true; });
+      if (!mounted || attempt != _attempt) return;
+      setState(() => _loading = false);
+      _onPlayerChanged();
     } catch (_) {
+      if (!mounted || attempt != _attempt) return;
       _channelRepository.reportPlaybackFailure(widget.channel.url);
       await controller.dispose();
       if (_controller == controller) _controller = null;
@@ -70,9 +75,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void _onPlayerChanged() {
     final controller = _controller;
-    if (controller != null && controller.value.hasError && mounted && !_failed) {
+    if (controller == null || !mounted || _failed) return;
+    final value = controller.value;
+    if (value.hasError) {
       _channelRepository.reportPlaybackFailure(widget.channel.url);
-      setState(() { _loading = false; _failed = true; });
+      setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
+      return;
+    }
+    if (_evidence.observe(position: value.position, isPlaying: value.isPlaying,
+        isBuffering: value.isBuffering, hasError: value.hasError)) {
+      _channelRepository.reportPlaybackSuccess(widget.channel.url);
+      setState(() => _playbackConfirmed = true);
     }
   }
 
