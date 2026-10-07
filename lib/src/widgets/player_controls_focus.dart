@@ -11,7 +11,8 @@ class PlayerControlsFocus extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Focus(
-    autofocus: true,
+    canRequestFocus: false,
+    skipTraversal: true,
     onKeyEvent: (_, event) {
       const keys = [
         LogicalKeyboardKey.enter, LogicalKeyboardKey.select,
