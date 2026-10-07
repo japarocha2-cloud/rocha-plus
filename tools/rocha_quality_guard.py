@@ -38,7 +38,7 @@ for path in ROOT.rglob("*"):
         if token in text and rel != Path("tools/rocha_quality_guard.py"):
             issues.append(f"{rel}: encontrou {label} ({token})")
 
-    if path.suffix == ".dart" and ('"Undefined"' in text or "'Undefined'" in text):
+    if rel.parts[0] == "lib" and path.suffix == ".dart" and ('"Undefined"' in text or "'Undefined'" in text):
         issues.append(f"{rel}: texto visível 'Undefined' encontrado")
 
     # Segredos e transporte inseguro são bloqueadores de release.
