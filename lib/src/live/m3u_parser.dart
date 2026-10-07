@@ -45,13 +45,13 @@ class M3uParser {
 
     final normalized = parts.first.toLowerCase();
     if (normalized.contains('sport')) return 'Esportes';
-    if (normalized.contains('news')) return 'News';
-    if (normalized.contains('general')) return 'General';
+    if (normalized.contains('news')) return 'Notícias';
     if (normalized.contains('animation') ||
         normalized.contains('kids') ||
         normalized.contains('children')) {
       return 'Infantil';
     }
+    if (normalized.contains('general')) return 'Geral';
     return parts.first;
   }
 
