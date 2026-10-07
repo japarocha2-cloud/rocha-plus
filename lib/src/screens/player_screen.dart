@@ -13,6 +13,7 @@ import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
 import '../cast/cast_playback_evidence.dart';
 import '../cast/cast_hls_proxy.dart';
+import 'cast_control_screen.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -227,6 +228,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => CastControlScreen(
+          channel: widget.channel, deviceName: device.friendlyName,
+          confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId)));
+        if (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.disconnected) {
+          await CastHlsProxy.instance.close();
+          await _controller?.play();
+        }
       }
     } catch (_) {
       await CastHlsProxy.instance.close();

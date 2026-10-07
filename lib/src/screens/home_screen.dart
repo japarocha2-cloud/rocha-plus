@@ -1,354 +1,292 @@
 import 'package:flutter/material.dart';
 import '../theme/rocha_theme.dart';
+import '../widgets/rocha_artwork.dart';
+import '../widgets/rocha_channel_card.dart';
+import '../live/channel.dart';
+import '../live/channel_repository.dart';
+import '../live/favorites_repository.dart';
 import 'live_tv_screen.dart';
 import 'news_screen.dart';
+import 'player_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
+class HomeScreen extends StatefulWidget {
+  final ChannelRepository? repository;
+  const HomeScreen({super.key, this.repository});
   static const sections = [
-    ('TV ao Vivo', Icons.live_tv_rounded),
-    ('Esportes', Icons.sports_soccer_rounded),
-    ('Notícias', Icons.newspaper_rounded),
-    ('Infantil', Icons.toys_rounded),
-
-    ('Favoritos', Icons.favorite_rounded),
+    ('TV ao Vivo', Icons.live_tv_outlined),
+    ('Esportes', Icons.sports_soccer_outlined),
+    ('Notícias', Icons.newspaper_outlined),
+    ('Infantil', Icons.toys_outlined),
+    ('Favoritos', Icons.favorite_border),
   ];
-
-  void openSection(BuildContext context, String title) {
-    if (title == 'Notícias') {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen()));
-      return;
-    }
-    if (title == 'TV ao Vivo' || title == 'Favoritos' || title == 'Esportes' || title == 'Infantil') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => LiveTvScreen(
-            initialGroup: title == 'Favoritos'
-                ? 'Favoritos'
-                : (title == 'Esportes' ? 'Esportes' : (title == 'Infantil' ? 'Infantil' : 'TV aberta')),
-          ),
-        ),
-      );
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$title está sendo preparado para uma próxima versão.')),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: RochaColors.background,
-        body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: RochaColors.background.withValues(alpha: .96),
-                title: const RochaBrand(compact: true),
-                actions: [
-                  IconButton(
-                    tooltip: 'Abrir canais para transmitir',
-                    onPressed: () => openSection(context, 'TV ao Vivo'),
-                    icon: const Icon(Icons.cast_rounded, color: RochaColors.gold),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-              ),
-              SliverToBoxAdapter(
-                child: _CosmicHero(onWatch: () => openSection(context, 'TV ao Vivo')),
-              ),
-              const SliverPadding(
-                padding: EdgeInsets.fromLTRB(20, 28, 20, 14),
-                sliver: SliverToBoxAdapter(
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Icon(Icons.auto_awesome, color: RochaColors.gold, size: 19),
-                      SizedBox(width: 9),
-                      Text('Explore o Rocha+',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-                    ],
-                  ),
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final repository = widget.repository ?? ChannelRepository();
+  final favoritesRepository = FavoritesRepository();
+  List<Channel> channels = [];
+  Set<String> favorites = {};
+  bool loading = true;
+  bool failed = false;
+  @override
+  void initState() { super.initState(); _load(); }
+  Future<void> _load() async {
+    try {
+      final result = await Future.wait([
+        repository.loadBrazilPublicDirectory(), favoritesRepository.load(),
+      ]);
+      if (mounted) setState(() {
+        channels = result[0] as List<Channel>; favorites = result[1] as Set<String>;
+        loading = false; failed = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() { loading = false; failed = true; });
+    }
+  }
+  Future<void> _favorite(Channel channel) async {
+    final next = {...favorites};
+    next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
+    try {
+      await favoritesRepository.save(next);
+      if (mounted) setState(() => favorites = next);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível salvar o favorito.')));
+    }
+  }
+  Future<void> _open(String title) async {
+    final group = switch (title) {
+      'Favoritos' => 'Favoritos', 'Esportes' => 'Esportes',
+      'Infantil' => 'Infantil', _ => 'TV aberta',
+    };
+    await Navigator.push(context, MaterialPageRoute(builder: (_) =>
+      title == 'Notícias' ? const NewsScreen() :
+        LiveTvScreen(initialGroup: group, repository: widget.repository)));
+    if (mounted) _load();
+  }
+  Widget _menu({bool drawer = false}) => Container(
+    key: const ValueKey('official-sidebar'),
+    width: 218,
+    decoration: const BoxDecoration(
+      color: Color(0xFF07060C),
+      border: Border(right: BorderSide(color: Color(0xFF272032)))),
+    child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
+      const SizedBox(height: 174, child: RochaArtwork(
+        region: Rect.fromLTRB(.014, .01, .15, .254), fit: BoxFit.contain)),
+      _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
+        onTap: () { if (drawer) Navigator.pop(context); }),
+      ...HomeScreen.sections.map((item) => _NavItem(
+        label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1, icon: item.$2,
+        onTap: () { if (drawer) Navigator.pop(context); _open(item.$1); })),
+    ]),
+  );
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
+    final wide = constraints.maxWidth >= 900;
+    final live = channels.where((c) => c.group == 'TV aberta' &&
+      !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
+    final saved = channels.where((c) => favorites.contains(c.url) &&
+      !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
+    return Scaffold(
+      drawer: wide ? null : Drawer(backgroundColor: RochaColors.background,
+        child: SafeArea(child: _menu(drawer: true))),
+      body: SafeArea(child: Row(children: [
+        if (wide) _menu(),
+        Expanded(child: CustomScrollView(key: const ValueKey('home-scroll'), slivers: [
+          SliverToBoxAdapter(child: Padding(
+            padding: EdgeInsets.fromLTRB(wide ? 28 : 12, 12, wide ? 28 : 12, 8),
+            child: Row(children: [
+              if (!wide) Builder(builder: (context) => IconButton(
+                tooltip: 'Abrir menu', onPressed: () => Scaffold.of(context).openDrawer(),
+                icon: const Icon(Icons.menu))),
+              Expanded(child: InkWell(
+                key: const ValueKey('home-search'),
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => LiveTvScreen(repository: widget.repository))),
+                child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF15101F), borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF766A86))),
+                  child: const Row(children: [
+                    Icon(Icons.search, color: Colors.white70), SizedBox(width: 10),
+                    Expanded(child: Text('Buscar canais…',
+                      style: TextStyle(color: Colors.white70))),
+                  ]),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverGrid.builder(
-                  itemCount: sections.length,
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 240,
-                    mainAxisExtent: 132,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemBuilder: (_, index) {
-                    final item = sections[index];
-                    return _SectionCard(
-                      title: item.$1,
-                      icon: item.$2,
-                      onTap: () => openSection(context, item.$1),
-                    );
-                  },
-                ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 40)),
-            ],
-          ),
-        ),
-      );
+              )),
+              IconButton(tooltip: 'Abrir canais para transmitir',
+                onPressed: () => _open('TV ao Vivo'),
+                icon: const Icon(Icons.cast, color: RochaColors.gold)),
+            ]),
+          )),
+          SliverToBoxAdapter(child: _OfficialHero(wide: wide,
+            onWatch: () => _open('TV ao Vivo'))),
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
+            child: Row(children: [
+              const Expanded(child: Text('Explore o Rocha+', style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w800))),
+              TextButton(onPressed: () => _open('TV ao Vivo'), child: const Text('Ver todos')),
+            ]),
+          )),
+          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
+            sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 220, mainAxisExtent: 120,
+                crossAxisSpacing: 12, mainAxisSpacing: 12),
+              itemBuilder: (_, index) {
+                final item = HomeScreen.sections[index];
+                return _CategoryCard(key: ValueKey('category-${item.$1}'),
+                  label: item.$1, icon: item.$2, onTap: () => _open(item.$1));
+              })),
+          if (saved.isNotEmpty) SliverToBoxAdapter(child:
+            _row('Minha Lista', saved, () => _open('Favoritos'))),
+          SliverToBoxAdapter(child: _row('Canais ao vivo', live, () => _open('TV ao Vivo'))),
+          if (loading) const SliverToBoxAdapter(child: Padding(
+            padding: EdgeInsets.all(28),
+            child: Center(child: CircularProgressIndicator()))),
+          if (failed) SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(24),
+            child: OutlinedButton.icon(onPressed: _load, icon: const Icon(Icons.refresh),
+              label: const Text('Carregar canais')))),
+          if (!loading && !failed && live.isEmpty) const SliverToBoxAdapter(
+            child: Padding(padding: EdgeInsets.all(24),
+              child: Text('Nenhum canal aberto disponível no catálogo neste momento.',
+                style: TextStyle(color: Colors.white54)))),
+          const SliverToBoxAdapter(child: SizedBox(height: 28)),
+        ])),
+      ])),
+    );
+  });
+  Widget _row(String title, List<Channel> items, VoidCallback onAll) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(padding: const EdgeInsets.fromLTRB(22, 20, 22, 10),
+        child: Row(children: [
+          Expanded(child: Text(title, style: const TextStyle(
+            fontSize: 20, fontWeight: FontWeight.w800))),
+          TextButton(onPressed: onAll, child: const Text('Ver todos')),
+        ])),
+      if (items.isNotEmpty) SizedBox(height: 230, child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 22), scrollDirection: Axis.horizontal,
+        itemCount: items.length, separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (_, i) => SizedBox(width: 180, child: RochaChannelCard(
+          channel: items[i], favorite: favorites.contains(items[i].url),
+          onFavorite: () => _favorite(items[i]),
+          onOpen: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerScreen(channel: items[i])));
+            if (mounted) _load();
+          })),
+      )),
+    ],
+  );
 }
 
 class RochaBrand extends StatelessWidget {
   final bool compact;
   const RochaBrand({super.key, this.compact = false});
-
-  @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: compact ? 32 : 46,
-            height: compact ? 32 : 46,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const RadialGradient(
-                colors: [RochaColors.cosmicPurple, RochaColors.rock],
-              ),
-              border: Border.all(color: RochaColors.gold.withValues(alpha: .8)),
-              boxShadow: [
-                BoxShadow(
-                  color: RochaColors.cosmicPurple.withValues(alpha: .45),
-                  blurRadius: 18,
-                ),
-              ],
-            ),
-            child: Icon(Icons.play_arrow_rounded,
-                color: RochaColors.playGreen, size: compact ? 22 : 30),
-          ),
-          const SizedBox(width: 10),
-          Text.rich(
-            TextSpan(
-              style: TextStyle(
-                fontSize: compact ? 24 : 38,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .4,
-              ),
-              children: const [
-                TextSpan(text: 'ROCHA', style: TextStyle(color: RochaColors.silver)),
-                TextSpan(text: '+', style: TextStyle(color: RochaColors.gold)),
-              ],
-            ),
-          ),
-        ],
-      );
-}
-
-class _CosmicHero extends StatelessWidget {
-  final VoidCallback onWatch;
-  const _CosmicHero({required this.onWatch});
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) {
-          final narrow = constraints.maxWidth < 600;
-          return Container(
-            margin: const EdgeInsets.fromLTRB(14, 8, 14, 0),
-            constraints: BoxConstraints(minHeight: narrow ? 360 : 330),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              border: Border.all(color: RochaColors.gold.withValues(alpha: .28)),
-              gradient: const LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Color(0xFF32105C),
-                  RochaColors.cosmicPurple,
-                  Color(0xFF0B0712),
-                  RochaColors.background,
-                ],
-                stops: [0, .32, .7, 1],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: RochaColors.cosmicPurple.withValues(alpha: .28),
-                  blurRadius: 34,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                Positioned(
-                  right: narrow ? -55 : 40,
-                  top: narrow ? 24 : 35,
-                  child: const _CrownedPlanet(),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(26, narrow ? 185 : 42, 26, 30),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 560),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'ROCHA+ ORIGINAL',
-                          style: TextStyle(
-                            color: RochaColors.gold,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 2.2,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 9),
-                        Text(
-                          'ENTRETENIMENTO\nSEM LIMITES',
-                          style: TextStyle(
-                            fontSize: narrow ? 30 : 42,
-                            height: .98,
-                            fontWeight: FontWeight.w900,
-                            color: RochaColors.silver,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'TV e transmissões públicas ou autorizadas em uma experiência feita para celular e televisão.',
-                          style: TextStyle(color: Colors.white70, height: 1.35),
-                        ),
-                        const SizedBox(height: 20),
-                        FilledButton.icon(
-                          onPressed: onWatch,
-                          icon: const Icon(Icons.play_arrow_rounded),
-                          label: const Text('ASSISTIR AGORA'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: RochaColors.playGreen,
-                            foregroundColor: Colors.black,
-                            textStyle: const TextStyle(fontWeight: FontWeight.w900),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-}
-
-class _CrownedPlanet extends StatelessWidget {
-  const _CrownedPlanet();
-
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 220,
-        height: 180,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Transform.rotate(
-              angle: -.22,
-              child: Container(
-                width: 205,
-                height: 58,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: RochaColors.gold, width: 3),
-                ),
-              ),
-            ),
-            Container(
-              width: 118,
-              height: 118,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const RadialGradient(
-                  center: Alignment(-.35, -.45),
-                  colors: [Color(0xFF4B4752), RochaColors.rock, Color(0xFF09090C)],
-                ),
-                border: Border.all(color: Colors.white24),
-                boxShadow: [
-                  BoxShadow(
-                    color: RochaColors.cosmicPurple.withValues(alpha: .75),
-                    blurRadius: 32,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.play_arrow_rounded,
-                  color: RochaColors.playGreen, size: 64),
-            ),
-            const Positioned(
-              top: 0,
-              child: Icon(Icons.workspace_premium_rounded,
-                  color: RochaColors.gold, size: 54),
-            ),
-          ],
-        ),
-      );
+    width: compact ? 150 : 230, height: compact ? 50 : 76,
+    child: const RochaArtwork(region: Rect.fromLTRB(.225, .15, .525, .241), fit: BoxFit.contain));
 }
 
-class _SectionCard extends StatefulWidget {
-  final String title;
+class _OfficialHero extends StatelessWidget {
+  final bool wide;
+  final VoidCallback onWatch;
+  const _OfficialHero({required this.wide, required this.onWatch});
+  @override
+  Widget build(BuildContext context) {
+    final copy = Padding(padding: EdgeInsets.all(wide ? 34 : 22),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, children: [
+          const RochaBrand(),
+          const SizedBox(height: 10),
+          const Text('ENTRETENIMENTO\nSEM LIMITES', style: TextStyle(
+            fontSize: 16, height: 1.5, letterSpacing: 3, color: RochaColors.silver)),
+          const SizedBox(height: 24),
+          Container(decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [BoxShadow(color: Color(0x55FFC43D), blurRadius: 22)]),
+            child: OutlinedButton.icon(
+              autofocus: true, onPressed: onWatch,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: RochaColors.gold, backgroundColor: const Color(0xCC050405),
+                side: const BorderSide(color: RochaColors.gold, width: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('ASSISTIR AGORA', style: TextStyle(fontWeight: FontWeight.w900))),
+          ),
+        ],
+      ),
+    );
+    return Container(
+      key: const ValueKey('official-hero'),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(colors: [
+          Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
+      clipBehavior: Clip.antiAlias,
+      child: wide ? SizedBox(height: 320, child: Row(children: [
+        Expanded(flex: 4, child: copy),
+        const Expanded(flex: 6, child: RochaArtwork()),
+      ])) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        const SizedBox(height: 210, child: RochaArtwork()),
+        copy,
+      ]),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final String label;
   final IconData icon;
   final VoidCallback onTap;
-  const _SectionCard({required this.title, required this.icon, required this.onTap});
-
+  final bool selected;
+  const _NavItem({required this.label, required this.icon,
+    required this.onTap, this.selected = false});
   @override
-  State<_SectionCard> createState() => _SectionCardState();
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    child: Container(decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
+      child: ListTile(leading: Icon(icon, color: Colors.white70),
+        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        onTap: onTap)),
+  );
 }
 
-class _SectionCardState extends State<_SectionCard> {
-  bool focused = false;
-
+class _CategoryCard extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  const _CategoryCard({super.key, required this.label, required this.icon, required this.onTap});
   @override
-  Widget build(BuildContext context) => AnimatedScale(
-        scale: focused ? 1.035 : 1,
-        duration: const Duration(milliseconds: 120),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF191421), RochaColors.surface],
-            ),
-            border: Border.all(
-              color: focused
-                  ? RochaColors.gold
-                  : RochaColors.cosmicPurple.withValues(alpha: .5),
-              width: focused ? 1.8 : 1,
-            ),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(18),
-            autofocus: widget.title == 'TV ao Vivo',
-            focusColor: RochaColors.cosmicPurple.withValues(alpha: .35),
-            onFocusChange: (value) => setState(() => focused = value),
-            onTap: widget.onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(17),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(widget.icon, size: 32, color: RochaColors.gold),
-                  const Spacer(),
-                  Text(widget.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 3),
-                  const Text('Abrir',
-                      style: TextStyle(color: RochaColors.gold, fontSize: 12)),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+  State<_CategoryCard> createState() => _CategoryCardState();
+}
+class _CategoryCardState extends State<_CategoryCard> {
+  bool focused = false;
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 130),
+    decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),
+      gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
+      border: Border.all(color: focused ? RochaColors.gold : const Color(0xFF4A286A),
+        width: focused ? 2 : 1),
+      boxShadow: focused ? const [BoxShadow(color: Color(0x555A20A8), blurRadius: 18)] : []),
+    child: InkWell(onTap: widget.onTap, borderRadius: BorderRadius.circular(14),
+      onFocusChange: (v) => setState(() => focused = v),
+      child: Padding(padding: const EdgeInsets.all(15), child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Icon(widget.icon, color: RochaColors.gold, size: 28),
+          const Spacer(),
+          Text(widget.label, maxLines: 1, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+        ]))),
+  );
 }

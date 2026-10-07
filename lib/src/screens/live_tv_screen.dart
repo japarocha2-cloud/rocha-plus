@@ -5,6 +5,7 @@ import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
 import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
+import '../widgets/rocha_channel_card.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
@@ -215,49 +216,29 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                   ? _ErrorState(message: error!, onRetry: () => load(forceRefresh: true))
                   : visible.isEmpty
                       ? const _EmptyState()
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: visible.length,
-                          itemBuilder: (_, i) {
-                            final channel = visible[i];
-                            final isFavorite = favorites.contains(channel.url);
-                            return Card(
-                              child: ListTile(
-                                leading: channel.logo == null || channel.logo!.isEmpty
-                                    ? const Icon(Icons.live_tv)
-                                    : Image.network(channel.logo!, width: 48, height: 48,
-                                        fit: BoxFit.contain,
-                                        errorBuilder: (_, __, ___) => const Icon(Icons.live_tv)),
-                                title: Text(channel.name),
-                                subtitle: Text(
-                                  reachability[channel.url] == ChannelReachability.unavailable
-                                      ? 'Endereço indisponível na última verificação'
-                                      : channel.group,
-                                ),
-                                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                                IconButton(
-                                  tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
-                                  onPressed: () => toggleFavorite(channel),
-                                  icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
-                                      color: isFavorite ? RochaColors.gold : Colors.white54),
-                                ),
-                                PopupMenuButton<String>(
-                                  tooltip: 'Opções de ${channel.name}',
-                                  onSelected: (_) => hideChannel(channel),
-                                  itemBuilder: (_) => const [
-                                    PopupMenuItem(value: 'hide', child: Text('Ocultar canal neste aparelho')),
-                                  ],
-                                ),
-                                ]),
-                                onTap: () async {
-                                  await Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) => PlayerScreen(channel: channel)));
+                      : LayoutBuilder(builder: (context, constraints) {
+                          final columns = (constraints.maxWidth / 230).floor().clamp(2, 7);
+                          return GridView.builder(
+                            key: const ValueKey('channel-grid'),
+                            padding: const EdgeInsets.all(16),
+                            itemCount: visible.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: columns, childAspectRatio: .70,
+                              crossAxisSpacing: 12, mainAxisSpacing: 12),
+                            itemBuilder: (_, i) {
+                              final channel = visible[i];
+                              return RochaChannelCard(
+                                channel: channel, favorite: favorites.contains(channel.url),
+                                onFavorite: () => toggleFavorite(channel),
+                                onHide: () => hideChannel(channel),
+                                onOpen: () async {
+                                  await Navigator.push(context, MaterialPageRoute(
+                                    builder: (_) => PlayerScreen(channel: channel)));
                                   if (mounted) setState(() {});
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                                });
+                            },
+                          );
+                        }),
         ),
       ]),
     );

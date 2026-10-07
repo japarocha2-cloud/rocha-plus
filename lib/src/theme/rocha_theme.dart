@@ -26,6 +26,13 @@ class RochaTheme {
           secondary: RochaColors.gold,
           surface: RochaColors.surface,
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true, fillColor: const Color(0xFF0C1018),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18),
+            borderSide: const BorderSide(color: Color(0xFF332A42))),
+        ),
+        textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(
+          foregroundColor: RochaColors.silver)),
         cardTheme: const CardThemeData(
           color: RochaColors.surface,
           elevation: 0,

@@ -20,7 +20,7 @@ void main() {
       await tester.pumpWidget(app(const HomeScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
-      await tester.scrollUntilVisible(find.text('Infantil'), 200);
+      await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 200);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(app(const LoginScreen()));
       await tester.pump();
