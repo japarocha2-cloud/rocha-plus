@@ -39,6 +39,9 @@ class ChannelRepository {
 
   bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
 
+  bool isPermanentlyBlockedForTests(Channel channel) =>
+      _isPermanentlyBlocked(channel);
+
   List<Channel> sportsOnly(Iterable<Channel> channels) {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
