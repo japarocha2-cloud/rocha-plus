@@ -13,11 +13,11 @@ class PlayerControlsFocus extends StatelessWidget {
   Widget build(BuildContext context) => Focus(
     autofocus: true,
     onKeyEvent: (_, event) {
-      const keys = {
+      const keys = [
         LogicalKeyboardKey.enter, LogicalKeyboardKey.select,
         LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown,
         LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight,
-      };
+      ];
       if (!controlsVisible && event is KeyDownEvent && keys.contains(event.logicalKey)) {
         onShowControls();
         return KeyEventResult.handled;
