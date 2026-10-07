@@ -54,6 +54,8 @@ void main() {
       if (size.width == 430 || size.width == 1920) {
         await capture(tester, 'home-${size.width.toInt()}');
       }
+      expect(find.byKey(const ValueKey('tv-galaxy-background')),
+        size.width >= 900 ? findsOneWidget : findsNothing);
       expect(find.byKey(const ValueKey('official-sidebar')),
         size.width >= 900 ? findsOneWidget : findsNothing);
       await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 180,

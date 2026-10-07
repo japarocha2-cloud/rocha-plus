@@ -232,10 +232,19 @@ class _OfficialHero extends StatelessWidget {
         gradient: const LinearGradient(colors: [
           Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
       clipBehavior: Clip.antiAlias,
-      child: LayoutBuilder(builder: (context, constraints) => constraints.maxWidth >= 1000 ? SizedBox(height: 360, child: Row(children: [
-        Expanded(flex: 4, child: copy),
-        const Expanded(flex: 6, child: RochaArtwork(fit: BoxFit.contain)),
-      ])) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      child: LayoutBuilder(builder: (context, constraints) => wide ? Stack(children: [
+        Positioned.fill(child: Image.asset('branding/home-tv-galaxy.png',
+          key: const ValueKey('tv-galaxy-background'),
+          fit: BoxFit.cover, alignment: Alignment.centerRight)),
+        const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Color(0xBB050409), Color(0x44050409), Color(0x00050409)],
+            stops: [0, .45, 1])))),
+        ConstrainedBox(constraints: const BoxConstraints(minHeight: 360),
+          child: Align(alignment: Alignment.centerLeft,
+            child: SizedBox(width: (constraints.maxWidth * .48).clamp(340, 600),
+              child: copy))),
+      ]) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const SizedBox(height: 240, child: RochaArtwork(fit: BoxFit.contain)),
         copy,
       ])),
