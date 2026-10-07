@@ -75,9 +75,11 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       if (!mounted) return;
       setState(() => channels = channels.where((c) => !repository.isBlocked(c)).toList());
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível salvar o bloqueio.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível salvar o bloqueio.')),
+        );
+      }
     }
   }
 
@@ -149,9 +151,11 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 await repository.restoreUserBlockedChannels();
                 if (mounted) await load(forceRefresh: true);
               } catch (_) {
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Não foi possível restaurar os canais.')),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('Não foi possível restaurar os canais.')),
+                  );
+                }
               }
             },
             itemBuilder: (_) => const [
