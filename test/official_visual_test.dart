@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,19 @@ import 'package:rocha_plus/src/screens/live_tv_screen.dart';
 import 'package:rocha_plus/src/theme/rocha_theme.dart';
 
 void main() {
+  setUpAll(() async {
+    final root = Platform.environment['FLUTTER_ROOT'];
+    for (final entry in {
+      'Roboto': '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+      if (root != null) 'MaterialIcons': '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+    }.entries) {
+      final file = File(entry.value);
+      if (await file.exists()) {
+        final loader = FontLoader(entry.key)..addFont(file.readAsBytes().then((b) => ByteData.sublistView(b)));
+        await loader.load();
+      }
+    }
+  });
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
@@ -50,6 +64,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('SBT Nacional'), findsOneWidget);
       expect(find.byKey(const ValueKey('channel-grid')), findsOneWidget);
+      if (size.width == 430 || size.width == 1920) {
+        await capture(tester, 'grid-${size.width.toInt()}');
+      }
       expect(tester.takeException(), isNull);
 
       var toggles = 0;

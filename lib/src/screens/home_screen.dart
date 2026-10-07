@@ -232,13 +232,13 @@ class _OfficialHero extends StatelessWidget {
         gradient: const LinearGradient(colors: [
           Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
       clipBehavior: Clip.antiAlias,
-      child: wide ? SizedBox(height: 320, child: Row(children: [
+      child: LayoutBuilder(builder: (context, constraints) => constraints.maxWidth >= 1000 ? SizedBox(height: 360, child: Row(children: [
         Expanded(flex: 4, child: copy),
         const Expanded(flex: 6, child: RochaArtwork(fit: BoxFit.contain)),
       ])) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const SizedBox(height: 210, child: RochaArtwork()),
+        const SizedBox(height: 240, child: RochaArtwork(fit: BoxFit.contain)),
         copy,
-      ]),
+      ])),
     );
   }
 }
@@ -256,9 +256,9 @@ class _NavItem extends StatelessWidget {
     child: Container(decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
-      child: ListTile(leading: Icon(icon, color: Colors.white70),
+      child: Material(type: MaterialType.transparency, child: ListTile(leading: Icon(icon, color: Colors.white70),
         title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-        onTap: onTap)),
+        onTap: onTap))),
   );
 }
 
