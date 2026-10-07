@@ -20,7 +20,7 @@ class _RochaArtworkState extends State<RochaArtwork> {
   void initState() {
     super.initState();
     _listener = ImageStreamListener((info, _) {
-      if (mounted) setState(() { _info?.dispose(); _info = info; });
+      if (mounted) { setState(() { _info?.dispose(); _info = info; }); }
       else { info.dispose(); }
     }, onError: (Object _, StackTrace? __) {});
   }

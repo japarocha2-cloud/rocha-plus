@@ -105,12 +105,12 @@ Future<void> capture(WidgetTester tester, String label) async {
     image.dispose();
     // CI evidence is encoded so it can be inspected without a Flutter SDK on the host.
     // ignore: avoid_print
-    print('ROCHA_SNAPSHOT_START ${label}');
+    print('ROCHA_SNAPSHOT_START $label');
     for (var i = 0; i < encoded.length; i += 160) {
       // ignore: avoid_print
       print(encoded.substring(i, (i + 160).clamp(0, encoded.length)));
     }
     // ignore: avoid_print
-    print('ROCHA_SNAPSHOT_END ${label}');
+    print('ROCHA_SNAPSHOT_END $label');
   });
 }

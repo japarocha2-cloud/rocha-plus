@@ -52,8 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
       await favoritesRepository.save(next);
       if (mounted) setState(() => favorites = next);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível salvar o favorito.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível salvar o favorito.')));
+      }
     }
   }
   Future<void> _open(String title) async {
@@ -64,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Navigator.push(context, MaterialPageRoute(builder: (_) =>
       title == 'Notícias' ? const NewsScreen() :
         LiveTvScreen(initialGroup: group, repository: widget.repository)));
-    if (mounted) _load();
+    if (mounted) { _load(); }
   }
   Widget _menu({bool drawer = false}) => Container(
     key: const ValueKey('official-sidebar'),

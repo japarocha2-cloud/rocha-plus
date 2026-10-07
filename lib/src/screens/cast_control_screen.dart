@@ -21,8 +21,10 @@ class _CastControlScreenState extends State<CastControlScreen> {
     setState(() => busy = true);
     try { await action(); }
     catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível enviar o comando para a TV.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível enviar o comando para a TV.')));
+      }
     } finally { if (mounted) setState(() => busy = false); }
   }
   @override
@@ -49,12 +51,12 @@ class _CastControlScreenState extends State<CastControlScreen> {
         status: label, connected: connected, playing: playing, busy: busy,
         onBack: () => Navigator.pop(context),
         onToggle: () => _action(() async {
-          if (playing) await GoogleCastRemoteMediaClient.instance.pause();
+          if (playing) { await GoogleCastRemoteMediaClient.instance.pause(); }
           else { await GoogleCastRemoteMediaClient.instance.play(); }
         }),
         onDisconnect: () => _action(() async {
           await GoogleCastSessionManager.instance.endSessionAndStopCasting();
-          if (mounted) Navigator.pop(context);
+          if (context.mounted) { Navigator.pop(context); }
         }),
       );
     },
@@ -170,7 +172,7 @@ class _CastControlViewState extends State<CastControlView> {
                 style: OutlinedButton.styleFrom(foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18))),
             ]))),
-      )),
+      ))),
     ])),
   );
 }
