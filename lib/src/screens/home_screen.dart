@@ -75,8 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
     child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
-      const SizedBox(height: 174, child: RochaArtwork(
-        region: Rect.fromLTRB(.014, .01, .15, .254), fit: BoxFit.contain)),
+      const SizedBox(height: 174, child: Center(child: RochaBrand())),
       _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
         onTap: () { if (drawer) Navigator.pop(context); }),
       ...HomeScreen.sections.map((item) => _NavItem(
@@ -191,7 +190,8 @@ class RochaBrand extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     width: compact ? 150 : 230, height: compact ? 50 : 76,
-    child: const RochaArtwork(region: Rect.fromLTRB(.225, .15, .525, .241), fit: BoxFit.contain));
+    child: const RochaArtwork(room: true,
+      region: Rect.fromLTRB(.38, .038, .62, .099), fit: BoxFit.contain));
 }
 
 class _OfficialHero extends StatelessWidget {
