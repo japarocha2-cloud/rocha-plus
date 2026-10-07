@@ -21,8 +21,6 @@ class FakeIntroController extends VideoPlayerController {
   Future<void> play() async { value = value.copyWith(isPlaying: true); }
   @override
   Future<void> pause() async { value = value.copyWith(isPlaying: false); }
-  @override
-  Future<void> dispose() async {}
 }
 
 void main() {
