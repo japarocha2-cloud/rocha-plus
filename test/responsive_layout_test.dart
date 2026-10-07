@@ -20,7 +20,9 @@ void main() {
       await tester.pumpWidget(app(const HomeScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
-      await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 200);
+      await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 200,
+        scrollable: find.descendant(of: find.byKey(const ValueKey('home-scroll')),
+          matching: find.byType(Scrollable)).first);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(app(const LoginScreen()));
       await tester.pump();

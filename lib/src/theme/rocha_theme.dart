@@ -33,6 +33,12 @@ class RochaTheme {
         ),
         textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(
           foregroundColor: RochaColors.silver)),
+        chipTheme: const ChipThemeData(
+          labelStyle: TextStyle(color: RochaColors.silver),
+          secondaryLabelStyle: TextStyle(color: RochaColors.gold),
+          checkmarkColor: RochaColors.gold,
+          selectedColor: RochaColors.wine,
+        ),
         cardTheme: const CardThemeData(
           color: RochaColors.surface,
           elevation: 0,

@@ -111,7 +111,7 @@ class _CastControlViewState extends State<CastControlView> {
             child: Column(children: [
               if (tab == 0) const AspectRatio(aspectRatio: 16 / 9,
                 child: ClipRRect(borderRadius: BorderRadius.all(Radius.circular(18)),
-                  child: RochaArtwork(room: true, region: Rect.fromLTRB(0, .155, 1, .44)))),
+                  child: RochaArtwork(room: true, region: Rect.fromLTRB(0, .155, 1, .418)))),
               const SizedBox(height: 18),
               Icon(Icons.tv_outlined, color: widget.connected ? RochaColors.playGreen :
                   Colors.white38, size: 44),
