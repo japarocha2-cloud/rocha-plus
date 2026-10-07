@@ -12,6 +12,7 @@ import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
 import '../cast/cast_playback_evidence.dart';
+import '../cast/cast_hls_proxy.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -164,7 +165,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     ).timeout(const Duration(seconds: 8));
     await GoogleCastRemoteMediaClient.instance.play().timeout(const Duration(seconds: 5));
 
-    for (var i = 0; i < 16; i++) {
+    for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
@@ -212,7 +213,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
           .startSessionWithDevice(device).timeout(const Duration(seconds: 8));
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
-      await _loadAndConfirmCast(Uri.parse(widget.channel.url));
+      await CastHlsProxy.instance.close();
+      final uri = Uri.parse(widget.channel.url);
+      try {
+        await _loadAndConfirmCast(uri);
+      } catch (_) {
+        if (_castContentType(uri) != 'application/x-mpegURL' || !device.isOnLocalNetwork) rethrow;
+        final relayUri = await CastHlsProxy.instance.relay(uri);
+        await _loadAndConfirmCast(relayUri);
+      }
       await _controller?.pause();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -220,6 +229,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         );
       }
     } catch (_) {
+      await CastHlsProxy.instance.close();
       try {
         await GoogleCastSessionManager.instance.endSessionAndStopCasting();
       } catch (_) {

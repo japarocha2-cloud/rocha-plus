@@ -7,8 +7,13 @@ Comparação Cast: build #147, commit 46f08066da7b203eefef1ac84b641e4309200b3d.
 A descoberta básica e a inicialização eram semelhantes; a causa da regressão física
 de descoberta permanece sem confirmação. O #147 tinha validação de sessão,
 confirmação de reprodução e relay HLS local, removidos da base #289.
-Este candidato solicita busca ativa no seletor, recupera confirmação e encerra buscas corretamente. O relay local
-não foi reintroduzido; canais incompatíveis com o receiver podem continuar falhando.
+Este candidato solicita busca ativa no seletor, recupera confirmação e encerra buscas corretamente. O relay local HLS foi recuperado após as falhas físicas relatadas no #303:
+primeiro tenta o sinal diretamente; em falha HLS na mesma rede, tenta pelo celular.
+O servidor liga somente durante essa tentativa, em interface privada IPv4, com
+links aleatórios por recurso e fontes HTTPS públicas, inclusive redirecionamentos.
+Preserva variantes, segmentos e chaves, sem transcodificar. Codec incompatível,
+DRM ou falta de autorização continuam sem solução automática. O celular precisa
+permanecer ligado e na mesma rede; não há serviço de relay garantido em segundo plano.
 
 ## Etapas implementadas e validação automatizada
 - Cast: solicitação de busca ativa da versão 1.5.0, dispositivos existentes, evento inicial, busca vazia, erro, repetição,
@@ -73,3 +78,17 @@ não foi reintroduzido; canais incompatíveis com o receiver podem continuar fal
 Nunca registrar etapa física como aprovada apenas porque CI passou.
 
 Referência técnica para busca ativa: [changelog do plugin, seção 1.5.0](https://github.com/felnanuke2/flutter_google_cast/blob/master/CHANGELOG.md).
+
+## Retorno físico do #303 e correções seguintes
+O usuário enviou nove imagens e informou áudio excelente em um canal testado com
+sucesso na TV. Outros canais falharam no Cast, incluindo imagem posterior de Rede
+Globo (1080p) reproduzindo no celular com falha de confirmação na TV. Não há aprovação
+geral de Cast, estabilidade, orientação ou persistência física.
+TV ao Vivo exibiu zero canais: o filtro TV aberta não existia no diretório remoto.
+Identidades conhecidas de canais abertos agora são classificadas por tvg-id/nome,
+sem roubar tags Infantil, Notícias ou Esportes. Testes reproduzem General/Undefined.
+Prioridade regional recuperada de Rocha+ APK 18h: Amambai/MS, TV Morena/Globo,
+SBT MS, Record MS e Band MS. A classificação está preparada; as quatro variantes
+regionais não aparecem com esses nomes no catálogo atual. A grade regional completa
+permanece pendente de fontes públicas/autorizadas, sem substituir por canais nacionais
+renomeados nem remover canais durante a conferência.
