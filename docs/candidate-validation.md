@@ -7,11 +7,11 @@ Comparação Cast: build #147, commit 46f08066da7b203eefef1ac84b641e4309200b3d.
 A descoberta básica e a inicialização eram semelhantes; a causa da regressão física
 de descoberta permanece sem confirmação. O #147 tinha validação de sessão,
 confirmação de reprodução e relay HLS local, removidos da base #289.
-Este candidato recupera confirmação e encerra buscas corretamente. O relay local
+Este candidato solicita busca ativa no seletor, recupera confirmação e encerra buscas corretamente. O relay local
 não foi reintroduzido; canais incompatíveis com o receiver podem continuar falhando.
 
 ## Etapas implementadas e validação automatizada
-- Cast: dispositivos existentes, evento inicial, busca vazia, erro, repetição,
+- Cast: solicitação de busca ativa da versão 1.5.0, dispositivos existentes, evento inicial, busca vazia, erro, repetição,
   encerramento da busca; conexão e mídia específica precisam confirmar PLAYING.
 - Player: sucesso exige posição avançando fora de buffering; retry e erro limpam
   evidência. Não há transcodificação ou redução de resolução.
@@ -71,3 +71,5 @@ não foi reintroduzido; canais incompatíveis com o receiver podem continuar fal
    guardar preferências antes se houver necessidade de desinstalar a versão anterior.
 
 Nunca registrar etapa física como aprovada apenas porque CI passou.
+
+Referência técnica para busca ativa: [changelog do plugin, seção 1.5.0](https://github.com/felnanuke2/flutter_google_cast/blob/master/CHANGELOG.md).

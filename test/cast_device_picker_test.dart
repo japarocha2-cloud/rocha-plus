@@ -17,7 +17,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: CastDevicePicker(
       initialDevices: [device],
       devicesStream: const Stream.empty(),
-      startDiscovery: () async {},
+      startDiscovery: (activeScan) async { expect(activeScan, isTrue); },
       stopDiscovery: () async { stopped = true; },
       onSelected: (value) => selected = value,
     ))));
@@ -34,7 +34,10 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: CastDevicePicker(
       initialDevices: const [],
       devicesStream: stream.stream,
-      startDiscovery: () async { stream.add([TestDevice()]); },
+      startDiscovery: (activeScan) async {
+        expect(activeScan, isTrue);
+        stream.add([TestDevice()]);
+      },
       stopDiscovery: () async {},
       onSelected: (_) {},
     ))));
@@ -49,7 +52,8 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: CastDevicePicker(
       initialDevices: const [],
       devicesStream: const Stream.empty(),
-      startDiscovery: () async {
+      startDiscovery: (activeScan) async {
+        expect(activeScan, isTrue);
         attempts++;
         if (attempts > 1) throw StateError('native unavailable');
       },

@@ -7,7 +7,7 @@ class CastDevicePicker extends StatefulWidget {
   final ValueChanged<GoogleCastDevice> onSelected;
   final Stream<List<GoogleCastDevice>>? devicesStream;
   final List<GoogleCastDevice>? initialDevices;
-  final Future<void> Function()? startDiscovery;
+  final Future<void> Function(bool activeScan)? startDiscovery;
   final Future<void> Function()? stopDiscovery;
   const CastDevicePicker({
     super.key, required this.onSelected, this.devicesStream,
@@ -47,8 +47,12 @@ class _CastDevicePickerState extends State<CastDevicePicker> {
       if (mounted) setState(() => _searching = false);
     });
     try {
-      await (widget.startDiscovery ??
-          GoogleCastDiscoveryManager.instance.startDiscovery)();
+      final start = widget.startDiscovery;
+      if (start != null) {
+        await start(true);
+      } else {
+        await GoogleCastDiscoveryManager.instance.startDiscovery(activeScan: true);
+      }
     } catch (_) {
       if (mounted) setState(() { _error = true; _searching = false; });
     }
