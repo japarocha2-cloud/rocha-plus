@@ -14,7 +14,7 @@ void main() {
   testWidgets('channel hiding persists and restore brings it back', (tester) async {
     final repo = ChannelRepository(client: MockClient((request) async =>
       http.Response('#EXTM3U\n#EXTINF:-1 group-title="Kids",Canal Criança\n'
-          'https://example.com/kids.m3u8\n', 200)));
+          'https://example.com/kids.m3u8\n', 200, headers: {'content-type': 'text/plain; charset=utf-8'})));
     await tester.pumpWidget(MaterialApp(home: LiveTvScreen(repository: repo)));
     await tester.pumpAndSettle();
     expect(find.text('Canal Criança'), findsOneWidget);
