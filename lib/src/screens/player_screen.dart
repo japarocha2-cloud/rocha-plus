@@ -168,7 +168,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     } else {
       await SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
       ]);
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
