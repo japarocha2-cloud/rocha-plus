@@ -35,14 +35,14 @@ class M3uParser {
 
   static String _cleanName(String value) {
     var cleaned = value
-        .replaceAll(RegExp(r'\\bundefined\\b', caseSensitive: false), '')
+        .replaceAll(RegExp(r'\bundefined\b', caseSensitive: false), '')
         .trim();
 
     // Some upstream playlists leak HTTP/User-Agent or EXTINF attributes into
     // the display title. Keep the human channel name instead of exposing
     // browser metadata such as Chrome/Safari and group-title on Cast/Home.
     final leakedAttribute = RegExp(
-      r'\\s+(?:tvg-[\\w-]+|group-title|user-agent|http-referrer|referrer)="',
+      r'\s+(?:tvg-[\w-]+|group-title|user-agent|http-referrer|referrer)="',
       caseSensitive: false,
     ).firstMatch(cleaned);
     if (leakedAttribute != null) {
@@ -50,7 +50,7 @@ class M3uParser {
     }
 
     final browserPrefix = RegExp(
-      r'^.*?\\b(?:Mozilla/\\d|Chrome/\\d|Safari/\\d|AppleWebKit/\\d)',
+      r'^.*?\b(?:Mozilla/\d|Chrome/\d|Safari/\d|AppleWebKit/\d)',
       caseSensitive: false,
     ).firstMatch(cleaned);
     if (browserPrefix != null) {
@@ -60,7 +60,7 @@ class M3uParser {
       }
     }
 
-    cleaned = cleaned.replaceFirst(RegExp(r'^[,;\\s]+'), '').trim();
+    cleaned = cleaned.replaceFirst(RegExp(r'^[,;\s]+'), '').trim();
     return cleaned.isEmpty ? 'Canal' : cleaned;
   }
 
