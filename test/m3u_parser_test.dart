@@ -73,4 +73,25 @@ https://example.com/kids.m3u8
     expect(channels, hasLength(1));
     expect(channels.single.logo, isNull);
   });
+
+  test('recognizes open TV even when upstream uses General or Undefined', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 tvg-id="RedeGlobo.br@SD" group-title="Undefined",Rede Globo (1080p)\nhttps://example.com/globo\n'
+        '#EXTINF:-1 tvg-id="SBTNacional.br@SD" group-title="Undefined",SBT Nacional (1080p)\nhttps://example.com/sbt\n'
+        '#EXTINF:-1 group-title="General",TV Morena (720p)\nhttps://example.com/morena\n'
+        '#EXTINF:-1 group-title="General",Record MS\nhttps://example.com/record\n'
+        '#EXTINF:-1 group-title="General",Band MS\nhttps://example.com/band\n'
+        '#EXTINF:-1 group-title="General",SBT MS\nhttps://example.com/sbtms\n');
+    expect(channels, hasLength(6));
+    expect(channels.every((c) => c.group == 'TV aberta'), isTrue);
+  });
+
+  test('open TV identities do not steal specialist or unrelated channels', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 tvg-id="SBTKids.br@SD" group-title="Kids",SBT Kids\nhttps://example.com/kids\n'
+        '#EXTINF:-1 tvg-id="RecordNews.br@SD" group-title="News",Record News\nhttps://example.com/news\n'
+        '#EXTINF:-1 tvg-id="BandSports.br@SD" group-title="Sports",Band Sports\nhttps://example.com/sports\n'
+        '#EXTINF:-1 group-title="General",Canal Generalista Desconhecido\nhttps://example.com/general\n');
+    expect(channels.map((c) => c.group), ['Infantil', 'Notícias', 'Esportes', 'Geral']);
+  });
 }

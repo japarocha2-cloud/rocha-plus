@@ -1,4 +1,5 @@
 import 'channel.dart';
+import 'open_tv_channels.dart';
 
 class M3uParser {
   static List<Channel> parse(String source) {
@@ -6,6 +7,7 @@ class M3uParser {
     final channels = <Channel>[];
     String? name;
     String? logo;
+    String? tvgId;
     String group = 'Outros';
 
     for (final raw in lines) {
@@ -13,6 +15,7 @@ class M3uParser {
       if (line.startsWith('#EXTINF:')) {
         name = line.contains(',') ? line.substring(line.indexOf(',') + 1).trim() : 'Canal';
         logo = _attribute(line, 'tvg-logo');
+        tvgId = _attribute(line, 'tvg-id');
         group = _attribute(line, 'group-title') ?? 'Outros';
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
@@ -21,10 +24,10 @@ class M3uParser {
             name: _cleanName(name),
             url: line,
             logo: _safeLogo(logo),
-            group: _cleanGroup(group),
+            group: _cleanGroup(group, name: name, tvgId: tvgId),
           ));
         }
-        name = null; logo = null; group = 'Outros';
+        name = null; logo = null; tvgId = null; group = 'Outros';
       }
     }
     return channels;
@@ -35,13 +38,15 @@ class M3uParser {
     return cleaned.isEmpty ? 'Canal' : cleaned;
   }
 
-  static String _cleanGroup(String value) {
+  static String _cleanGroup(String value, {required String name, String? tvgId}) {
     final parts = value
         .split(';')
         .map((part) => part.trim())
         .where((part) => part.isNotEmpty)
         .toList(growable: false);
-    if (parts.isEmpty) return 'Outros';
+    if (parts.isEmpty) {
+      return OpenTvChannels.matches(name: name, tvgId: tvgId) ? 'TV aberta' : 'Outros';
+    }
 
     final normalized = parts.map((part) => part.toLowerCase()).toList();
     bool has(String token) => normalized.any((part) => part.contains(token));
@@ -51,7 +56,9 @@ class M3uParser {
     }
     if (has('sport') || has('esporte')) return 'Esportes';
     if (has('news') || has('notícias') || has('noticias')) return 'Notícias';
-    if (has('tv aberta')) return 'TV aberta';
+    if (has('tv aberta') || OpenTvChannels.matches(name: name, tvgId: tvgId)) {
+      return 'TV aberta';
+    }
     if (has('general') || has('geral')) return 'Geral';
     return parts.first;
   }
