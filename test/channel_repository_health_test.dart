@@ -33,6 +33,29 @@ void main() {
     expect(repository.sportsOnly([sport, news]), isEmpty);
   });
 
+  test('physical-test blocklist survives remote URL changes', () {
+    final repository = ChannelRepository();
+    const blockedA = Channel(
+      name: '1001 Noites',
+      url: 'https://example.com/old-feed.m3u8',
+      group: 'General',
+    );
+    const blockedB = Channel(
+      name: '  1001 NOITES  ',
+      url: 'https://example.com/new-feed.m3u8',
+      group: 'Geral',
+    );
+    const allowed = Channel(
+      name: 'N Sports',
+      url: 'https://example.com/nsports.m3u8',
+      group: 'Esportes',
+    );
+
+    expect(repository.isPermanentlyBlockedForTests(blockedA), isTrue);
+    expect(repository.isPermanentlyBlockedForTests(blockedB), isTrue);
+    expect(repository.isPermanentlyBlockedForTests(allowed), isFalse);
+  });
+
   test('male football ranks before female football and other sports', () {
     final repository = ChannelRepository();
     const male = Channel(name: 'Brasileirão Futebol', url: 'https://example.com/a.m3u8', group: 'Esportes');
