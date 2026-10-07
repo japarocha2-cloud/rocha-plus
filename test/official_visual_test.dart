@@ -49,6 +49,7 @@ void main() {
         final context = tester.element(find.byType(HomeScreen));
         await precacheImage(const AssetImage('branding/dashboard-reference.png'), context);
         await precacheImage(const AssetImage('branding/cast-reference.png'), context);
+        await precacheImage(const AssetImage('branding/home-tv-galaxy.png'), context);
       });
       await tester.pumpAndSettle();
       if (size.width == 430 || size.width == 1920) {
