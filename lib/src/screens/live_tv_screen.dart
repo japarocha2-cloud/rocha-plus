@@ -46,6 +46,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         setState(() {
           channels = results[0] as List<Channel>;
           favorites = results[1] as Set<String>;
+          if (forceRefresh) reachability.clear();
           loading = false;
         });
       }
@@ -101,7 +102,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Widget build(BuildContext context) {
     const preferredGroups = ['TV aberta', 'Esportes', 'Notícias', 'Infantil', 'Geral'];
     final available = channels.map((c) => c.group).toSet();
-    final groups = preferredGroups.where(available.contains).toList();
+    final extraGroups = available.difference(preferredGroups.toSet()).toList()..sort();
+    final groups = [...preferredGroups.where(available.contains), ...extraGroups];
     final requestedGroup = widget.initialGroup;
     final keepRequestedEmptyGroup = requestedGroup != 'Todos' &&
         requestedGroup != 'Favoritos' &&

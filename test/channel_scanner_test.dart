@@ -5,6 +5,24 @@ import 'package:rocha_plus/src/live/channel.dart';
 import 'package:rocha_plus/src/live/channel_scanner.dart';
 
 void main() {
+  test('credentials never reach the network and restricted responses remain unverified', () async {
+    var calls = 0;
+    final scanner = ChannelScanner(MockClient((request) async {
+      calls++;
+      return http.Response('', int.parse(request.url.path.substring(1)));
+    }));
+    final results = await scanner.scan([
+      const Channel(name: 'Credentials', url: 'https://user:pass@example.com/live'),
+      for (final status in [401, 403, 429])
+        Channel(name: 'Restricted', url: 'https://example.com/$status'),
+    ]);
+    expect(calls, 3);
+    expect(results['https://user:pass@example.com/live'], ChannelReachability.unavailable);
+    for (final status in [401, 403, 429]) {
+      expect(results['https://example.com/$status'], ChannelReachability.unverified);
+    }
+  });
+
   test('scanner limits concurrency and never equates unsupported HEAD to failure', () async {
     var active = 0;
     var peak = 0;

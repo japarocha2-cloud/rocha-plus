@@ -16,7 +16,7 @@ class ChannelScanner {
       while (next < channels.length) {
         final channel = channels[next++];
         final uri = Uri.tryParse(channel.url);
-        if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
+        if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty) {
           results[channel.url] = ChannelReachability.unavailable;
           continue;
         }
@@ -27,7 +27,8 @@ class ChannelScanner {
           results[channel.url] = response.statusCode >= 200 && response.statusCode < 300
               ? ChannelReachability.reachable
               : (response.statusCode >= 300 && response.statusCode < 400) ||
-                      response.statusCode == 405 || response.statusCode == 501
+                      response.statusCode == 405 || response.statusCode == 501 || response.statusCode == 401 ||
+                      response.statusCode == 403 || response.statusCode == 429
                   ? ChannelReachability.unverified
                   : ChannelReachability.unavailable;
         } catch (_) {

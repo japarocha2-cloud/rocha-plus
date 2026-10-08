@@ -10,6 +10,47 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
   });
+  test('partial refresh retains only the failed source from its own cache', () async {
+    var refresh = false;
+    final repo = ChannelRepository(client: MockClient((request) async {
+      if (request.url == ChannelRepository.sportsPlaylist) {
+        return refresh ? http.Response('', 503) : http.Response(
+            '#EXTM3U\n#EXTINF:-1,Football\nhttps://example.com/sport\n', 200);
+      }
+      return http.Response('#EXTM3U\n#EXTINF:-1,TV\n'
+          'https://example.com/${refresh ? 'new' : 'old'}\n', 200);
+    }));
+    await repo.loadBrazilPublicDirectory();
+    refresh = true;
+    final channels = await repo.loadBrazilPublicDirectory(forceRefresh: true);
+    expect(channels.map((c) => c.url), containsAll([
+      'https://example.com/sport', 'https://example.com/new']));
+    expect(channels.map((c) => c.url), isNot(contains('https://example.com/old')));
+  });
+
+  test('successful playback restores a quarantined cached channel without reload', () async {
+    var calls = 0;
+    final repo = ChannelRepository(client: MockClient((request) async {
+      calls++;
+      return http.Response('#EXTM3U\n#EXTINF:-1,Canal\nhttps://example.com/live\n', 200);
+    }));
+    await repo.loadBrazilPublicDirectory();
+    repo.reportPlaybackFailure('https://example.com/live');
+    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
+    repo.reportPlaybackSuccess('https://example.com/live');
+    expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
+    expect(calls, 2);
+  });
+
+  test('duplicate source URL retains Brazilian title and promotes sports group', () async {
+    final repo = ChannelRepository(client: MockClient((request) async =>
+        http.Response('#EXTM3U\n#EXTINF:-1,${request.url == ChannelRepository.sportsPlaylist ? 'Foreign name' : 'Nome brasileiro'}\n'
+            'https://example.com/live\n', 200)));
+    final channels = await repo.loadBrazilPublicDirectory();
+    expect(channels.single.name, 'Nome brasileiro');
+    expect(channels.single.group, 'Esportes');
+  });
+
   test('concurrent catalog loads share requests and preserve source quality URL', () async {
     var calls = 0;
     final gate = Completer<void>();
