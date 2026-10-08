@@ -6,7 +6,7 @@ Esta branch prepara autenticação Firebase Google/Apple no Android. Ela não de
 
 1. Ativar pessoalmente a verificação em duas etapas da conta Google: o console Firebase atualmente exige essa etapa para acesso.
 2. Criar um projeto Firebase para Rocha+ e ativar Authentication.
-3. Definir o identificador Android definitivo antes de registrar o app. A configuração Android atual gera `com.example.rocha_plus`; uma mudança de identificador requer atualizar também a atividade Kotlin e as ferramentas Android.
+3. O aplicativo Android foi registrado no Firebase `rocha-plus` com identificador `com.rochaplus.app`. A ferramenta Android ajusta applicationId/namespace e a atividade Kotlin para esse identificador.
 4. Registrar o app Android e os SHA-1/SHA-256 da assinatura utilizada. Ativar Google, definir o e-mail de suporte e obter o Client ID do tipo Web para Google Sign-In.
 5. Para Apple no Android: configurar Sign In with Apple na conta Apple Developer e ativar o provedor no Firebase. Credenciais privadas Apple permanecem no console, nunca no app ou repositório.
 

@@ -58,9 +58,11 @@ def configure(root):
     gradle = root / "android/app/build.gradle.kts"
     if gradle.exists():
         text = gradle.read_text(encoding="utf-8")
+        text = text.replace('com.example.rocha_plus', 'com.rochaplus.app')
         dependency = 'implementation("com.google.android.gms:play-services-cast-framework:21.5.0")'
         if dependency not in text:
-            gradle.write_text(text + "\n dependencies { " + dependency + " }\n", encoding="utf-8")
+            text += "\n dependencies { " + dependency + " }\n"
+        gradle.write_text(text, encoding="utf-8")
     activity = root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt"
     activity.parent.mkdir(parents=True, exist_ok=True)
     activity.write_text((root / "tools/MainActivity.kt").read_text(encoding="utf-8"), encoding="utf-8")
