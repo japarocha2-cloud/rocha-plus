@@ -34,15 +34,24 @@ void main() {
       expect(find.text('Explore o Rocha+'), findsWidgets);
       expect(tester.takeException(), isNull);
 
-      await tester.tap(find.byTooltip('Próximo destaque'));
+      // Rotates without input every six seconds, including the last-to-first loop.
+      await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
       expect(find.text('Espaço infantil'), findsOneWidget);
-      expect(tester.widget<IconButton>(find.ancestor(
-        of: find.byTooltip('Próximo destaque'),
-        matching: find.byType(IconButton)).first).onPressed, isNull);
-      expect(tester.takeException(), isNull);
 
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pumpAndSettle();
+      expect(find.text('Esportes ao vivo'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+
+      // Manual arrows continue working at every position and restart the interval.
       await tester.tap(find.byTooltip('Destaque anterior'));
+      await tester.pumpAndSettle();
+      expect(find.text('Esportes ao vivo'), findsOneWidget);
+      await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
       expect(tester.takeException(), isNull);
