@@ -1,3 +1,13 @@
+# Builds de teste após a Build #348
+
+A **Build #348** foi gerada automaticamente pelo GitHub Actions, sem `--dart-define-from-file`, e por isso não permite login. Os botões Google e Apple desativados são o comportamento esperado nessa build sem Firebase, **não um teste aprovado de autenticação**.
+
+Para avaliar apenas a apresentação do aplicativo, os workflows comuns agora incluem um artefato distinto chamado `rocha-plus-layout-preview-no-channels`. Abra a tela de login desse APK e selecione **Visualizar layout de teste**. A prévia exibe a Home com sua identidade e navegação visual, mas **não carrega canais, não reproduz vídeos e não permite Cast**. Não é uma versão beta funcional e não deve ser publicada na Play Store.
+
+O APK `rocha-plus-universal` continua exigindo login real e permanece bloqueado quando não há configuração Firebase. Para testar canais e espelhamento com login, é necessária uma execução manual de **Build Rocha+ → Run workflow → signed_login: true**, com os quatro Secrets GitHub exigidos pelo script `tools/prepare_signed_build.py` e o provedor Google configurado, incluindo SHA-1/SHA-256 da assinatura utilizada. Se faltar qualquer valor, a compilação assinada falhará de forma explícita. Não cole senhas, certificados privados ou tokens neste repositório ou chat.
+
+---
+
 # Login obrigatório: ativação pendente
 
 Esta branch prepara autenticação Firebase Google/Apple no Android. Ela não deve ser integrada ou distribuída como versão de uso até configurar um projeto real e validar login no aparelho. Sem configuração, o acesso aos canais fica bloqueado com uma mensagem de indisponibilidade.
