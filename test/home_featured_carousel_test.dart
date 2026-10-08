@@ -37,8 +37,9 @@ void main() {
       await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
       expect(find.text('Espaço infantil'), findsOneWidget);
-      expect(tester.widget<IconButton>(
-        find.byTooltip('Próximo destaque')).onPressed, isNull);
+      expect(tester.widget<IconButton>(find.ancestor(
+        of: find.byTooltip('Próximo destaque'),
+        matching: find.byType(IconButton)).first).onPressed, isNull);
       expect(tester.takeException(), isNull);
 
       await tester.tap(find.byTooltip('Destaque anterior'));
