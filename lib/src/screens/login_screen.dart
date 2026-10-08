@@ -7,7 +7,8 @@ import 'intro_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthController? controller;
-  const LoginScreen({super.key, this.controller});
+  final VoidCallback? onPreviewLayout;
+  const LoginScreen({super.key, this.controller, this.onPreviewLayout});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +56,19 @@ class LoginScreen extends StatelessWidget {
                     onPressed: controller?.supports(LoginProvider.apple) == true && !controller!.busy
                         ? () => unawaited(controller!.signIn(LoginProvider.apple)) : null,
                   ),
+                  if (onPreviewLayout != null) ...[
+                    const SizedBox(height: 20),
+                    OutlinedButton.icon(
+                      key: const ValueKey('layout-preview-button'),
+                      onPressed: onPreviewLayout,
+                      icon: const Icon(Icons.visibility_outlined),
+                      label: const Text('Visualizar layout de teste'),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('Prévia visual, sem canais, player ou espelhamento.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  ],
                   const SizedBox(height: 18),
                   if (controller?.busy == true) const CircularProgressIndicator(),
                   if (controller?.error != null)
