@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../live/channel.dart';
+import '../live/channel_search.dart';
 import '../live/channel_repository.dart';
 import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
@@ -113,13 +114,11 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       selectedGroup = 'Todos';
     }
 
-    final q = search.text.trim().toLowerCase();
+    final q = search.text;
     final visible = channels.where((c) {
       final technicalGroup = c.group.contains(';');
       if (technicalGroup || repository.isQuarantined(c.url) || repository.isBlocked(c)) return false;
-      final matchesSearch = q.isEmpty ||
-          c.name.toLowerCase().contains(q) ||
-          c.group.toLowerCase().contains(q);
+      final matchesSearch = channelMatchesSearch(c, q);
       final matchesGroup = selectedGroup == 'Todos' ||
           (selectedGroup == 'Favoritos' && favorites.contains(c.url)) ||
           c.group == selectedGroup;
