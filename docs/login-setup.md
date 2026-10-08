@@ -1,10 +1,26 @@
+# Como gerar o beta de login sem confundir com a prévia
+
+A partir desta alteração, **builds automáticas** (`push` e `pull_request`) geram **somente** o APK `rocha-plus-layout-preview-no-channels`. Esse APK serve para avaliar o visual e nunca reproduz canais. O GitHub não publicará mais um APK normal bloqueado com o nome `rocha-plus-universal` nas builds automáticas.
+
+Para gerar uma versão que tente login real:
+
+1. No GitHub, abra **Settings → Secrets and variables → Actions** e verifique **somente os nomes**, não os valores, dos quatro Repository secrets: `ROCHA_KEYSTORE_BASE64`, `ROCHA_KEYSTORE_PASSWORD`, `ROCHA_KEY_ALIAS`, `ROCHA_FIREBASE_CONFIG_JSON`. Este conector não permite confirmar se esses Secrets estão cadastrados. Não publique nem envie os valores.
+2. Verifique no Firebase Authentication se Google permanece ativado, se o Android `com.rochaplus.app` está registrado e se **SHA-1 e SHA-256 correspondem à mesma assinatura PKCS12** armazenada no GitHub. Ter SHA cadastrado não prova que coincide com a assinatura de um novo APK.
+3. Acesse **Actions → Build Rocha+ → Run workflow** na branch `main`. Deixe `signed_login=true` (padrão nas execuções manuais) e inicie a ação. Se faltar Secret ou configuração, a etapa **Prepare signed Firebase build** falhará de maneira explícita.
+4. Se a execução terminar verde, em **Artifacts** baixe `rocha-plus-beta-login-universal` para instalar no celular. O AAB `rocha-plus-beta-login-play-store-aab` destina-se a preparação da loja, não ao teste direto no aparelho.
+5. No celular faça o primeiro login com a conta Google escolhida. Verifique que a sessão é confirmada, que os canais abrem e que o Cast funciona na mesma rede. CI verde **não substitui teste físico**.
+
+Os dados `ROCHA_FIREBASE_CONFIG_JSON` são o objeto JSON de configurações **públicas** Firebase e OAuth usado pelo aplicativo, não credenciais de conta de serviço ou certificados privados. O próprio Secret não deve ser publicado. As chaves de assinatura e senhas devem permanecer privadas e estáveis.
+
+---
+
 # Builds de teste após a Build #348
 
 A **Build #348** foi gerada automaticamente pelo GitHub Actions, sem `--dart-define-from-file`, e por isso não permite login. Os botões Google e Apple desativados são o comportamento esperado nessa build sem Firebase, **não um teste aprovado de autenticação**.
 
 Para avaliar apenas a apresentação do aplicativo, os workflows comuns agora incluem um artefato distinto chamado `rocha-plus-layout-preview-no-channels`. Abra a tela de login desse APK e selecione **Visualizar layout de teste**. A prévia exibe a Home com sua identidade e navegação visual, mas **não carrega canais, não reproduz vídeos e não permite Cast**. Não é uma versão beta funcional e não deve ser publicada na Play Store.
 
-O APK `rocha-plus-universal` continua exigindo login real e permanece bloqueado quando não há configuração Firebase. Para testar canais e espelhamento com login, é necessária uma execução manual de **Build Rocha+ → Run workflow → signed_login: true**, com os quatro Secrets GitHub exigidos pelo script `tools/prepare_signed_build.py` e o provedor Google configurado, incluindo SHA-1/SHA-256 da assinatura utilizada. Se faltar qualquer valor, a compilação assinada falhará de forma explícita. Não cole senhas, certificados privados ou tokens neste repositório ou chat.
+O APK normal de builds automáticas não é mais apresentado como versão funcional. O artefato de produção beta somente aparece quando uma execução manual assinada é concluída com sucesso. Para testar canais e espelhamento com login, é necessária uma execução manual de **Build Rocha+ → Run workflow → signed_login: true**, com os quatro Secrets GitHub exigidos pelo script `tools/prepare_signed_build.py` e o provedor Google configurado, incluindo SHA-1/SHA-256 da assinatura utilizada. Se faltar qualquer valor, a compilação assinada falhará de forma explícita. Não cole senhas, certificados privados ou tokens neste repositório ou chat.
 
 ---
 

@@ -32,5 +32,24 @@ class SignedBuildTest(unittest.TestCase):
             self.assertNotIn('getByName("debug")', gradle.read_text())
             self.assertNotIn('fixture-password', gradle.read_text())
 
+    def test_automatic_builds_cannot_publish_locked_apk_as_full_beta(self):
+        workflow = (Path(__file__).resolve().parents[1] /
+                    '.github/workflows/build.yml').read_text(encoding='utf-8')
+        signed = "github.event_name == 'workflow_dispatch' && inputs.signed_login"
+        for step in ('Build universal APK', 'Build optimized APKs',
+                     'Build Play Store bundle', 'Verify release evidence',
+                     'Upload release evidence', 'Upload universal APK',
+                     'Upload ARM64 APK', 'Upload Play Store AAB'):
+            heading = f'- name: {step}'
+            self.assertIn(heading, workflow)
+            self.assertIn(f'if: {signed}', workflow[workflow.index(heading):][:170])
+        self.assertIn('name: rocha-plus-beta-login-universal', workflow)
+        self.assertIn('name: rocha-plus-beta-login-arm64', workflow)
+        self.assertIn('name: rocha-plus-beta-login-play-store-aab', workflow)
+        self.assertNotIn('name: rocha-plus-universal', workflow)
+        self.assertNotIn('name: rocha-plus-play-store', workflow)
+        self.assertIn('name: rocha-plus-layout-preview-no-channels', workflow)
+        self.assertIn('--dart-define=ROCHA_LAYOUT_PREVIEW=true', workflow)
+
 if __name__ == '__main__':
     unittest.main()
