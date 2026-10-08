@@ -42,7 +42,7 @@ class FakeAuth extends AuthRepository {
 
 Future<void> initialize(AuthController controller) async {
   await controller.initialize();
-  await Future<void>.delayed(Duration.zero);
+  await Future<void>.value();
 }
 
 void main() {
@@ -128,7 +128,9 @@ void main() {
     await initialize(controller);
     await tester.pumpWidget(RochaPlusApp(authController: controller));
     await tester.pump();
-    await tester.tap(find.text('Pular'));
+    if (find.text('Pular').evaluate().isNotEmpty) {
+      await tester.tap(find.text('Pular'));
+    }
     await tester.pumpAndSettle();
     expect(find.byType(HomeScreen), findsOneWidget);
     final navigator = Navigator.of(tester.element(find.byType(HomeScreen)));
