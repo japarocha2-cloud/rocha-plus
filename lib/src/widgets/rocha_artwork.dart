@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 /// Renders approved artwork from the supplied references without redrawing the brand.
 class RochaArtwork extends StatefulWidget {
   final bool room;
+  final String? assetPath;
   final Rect region;
   final BoxFit fit;
-  const RochaArtwork({super.key, this.room = false,
+  const RochaArtwork({super.key, this.room = false, this.assetPath,
     this.region = const Rect.fromLTRB(.53, 0, .885, .40), this.fit = BoxFit.cover});
   @override
   State<RochaArtwork> createState() => _RochaArtworkState();
@@ -29,11 +30,11 @@ class _RochaArtworkState extends State<RochaArtwork> {
   @override
   void didUpdateWidget(RochaArtwork oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.room != widget.room) _resolve();
+    if (oldWidget.room != widget.room || oldWidget.assetPath != widget.assetPath) _resolve();
   }
   void _resolve() {
-    final stream = AssetImage(widget.room
-        ? 'branding/cast-reference.png' : 'branding/dashboard-reference.png')
+    final stream = AssetImage(widget.assetPath ?? (widget.room
+        ? 'branding/cast-reference.png' : 'branding/dashboard-reference.png'))
         .resolve(createLocalImageConfiguration(context));
     if (_stream?.key == stream.key) return;
     _stream?.removeListener(_listener);
@@ -69,4 +70,13 @@ class _ArtworkPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ArtworkPainter old) =>
       old.image != image || old.region != region || old.fit != fit;
+}
+
+/// Approved wordmark with silver TV antennas on R and genuine alpha.
+class RochaWordmark extends StatelessWidget {
+  const RochaWordmark({super.key});
+  @override
+  Widget build(BuildContext context) => const RochaArtwork(
+    assetPath: 'branding/rocha-wordmark-antennas.webp',
+    region: Rect.fromLTRB(.03, .16, .98, .85), fit: BoxFit.contain);
 }

@@ -29,6 +29,23 @@ void main() {
       }
     }
   });
+  test('wordmark has alpha transparency and visible lettering', () async {
+    final data = await rootBundle.load('branding/rocha-wordmark-antennas.webp');
+    final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+    final frame = await codec.getNextFrame();
+    final rgba = await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    expect(rgba, isNotNull);
+    final bytes = rgba!.buffer.asUint8List();
+    expect(bytes[3], 0);
+    var visible = 0;
+    for (var i = 3; i < bytes.length; i += 4) {
+      if (bytes[i] > 0) visible++;
+    }
+    expect(visible, greaterThan(10000));
+    expect(visible, lessThan(frame.image.width * frame.image.height));
+    frame.image.dispose();
+    codec.dispose();
+  });
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
@@ -50,6 +67,7 @@ void main() {
         await precacheImage(const AssetImage('branding/dashboard-reference.png'), context);
         await precacheImage(const AssetImage('branding/cast-reference.png'), context);
         await precacheImage(const AssetImage('branding/home-tv-galaxy.png'), context);
+        await precacheImage(const AssetImage('branding/rocha-wordmark-antennas.webp'), context);
       });
       await tester.pumpAndSettle();
       if (size.width == 430 || size.width == 1920) {

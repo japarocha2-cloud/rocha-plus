@@ -190,8 +190,7 @@ class RochaBrand extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     width: compact ? 150 : 230, height: compact ? 50 : 76,
-    child: const RochaArtwork(room: true,
-      region: Rect.fromLTRB(.38, .038, .62, .099), fit: BoxFit.contain));
+    child: const RochaWordmark());
 }
 
 class _OfficialHero extends StatelessWidget {

@@ -89,8 +89,7 @@ class _CastControlViewState extends State<CastControlView> {
       Padding(padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(children: [
           IconButton(tooltip: 'Voltar', onPressed: widget.onBack, icon: const Icon(Icons.arrow_back)),
-          const Expanded(child: SizedBox(height: 62, child: RochaArtwork(room: true,
-            region: Rect.fromLTRB(.38, .038, .62, .099), fit: BoxFit.contain))),
+          const Expanded(child: SizedBox(height: 62, child: RochaWordmark())),
           Icon(widget.connected ? Icons.cast_connected : Icons.cast,
             color: widget.connected ? RochaColors.playGreen : Colors.white38),
           const SizedBox(width: 16),
