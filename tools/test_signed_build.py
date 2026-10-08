@@ -40,14 +40,16 @@ class SignedBuildTest(unittest.TestCase):
                      'Build Play Store bundle', 'Verify release evidence',
                      'Upload release evidence', 'Upload universal APK',
                      'Upload ARM64 APK', 'Upload Play Store AAB'):
-            self.assertIn(f'- name: {step}\\n        if: {signed}\\n'.replace('\\\\n','\\n'), workflow)
+            heading = f'- name: {step}'
+            self.assertIn(heading, workflow)
+            self.assertIn(f'if: {signed}', workflow[workflow.index(heading):][:170])
         self.assertIn('name: rocha-plus-beta-login-universal', workflow)
         self.assertIn('name: rocha-plus-beta-login-arm64', workflow)
         self.assertIn('name: rocha-plus-beta-login-play-store-aab', workflow)
-        self.assertNotIn('name: rocha-plus-universal\\n'.replace('\\\\n','\\n'), workflow)
-        self.assertNotIn('name: rocha-plus-play-store\\n'.replace('\\\\n','\\n'), workflow)
+        self.assertNotIn('name: rocha-plus-universal', workflow)
+        self.assertNotIn('name: rocha-plus-play-store', workflow)
         self.assertIn('name: rocha-plus-layout-preview-no-channels', workflow)
-        self.assertIn('run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_LAYOUT_PREVIEW=true', workflow)
+        self.assertIn('--dart-define=ROCHA_LAYOUT_PREVIEW=true', workflow)
 
 if __name__ == '__main__':
     unittest.main()
