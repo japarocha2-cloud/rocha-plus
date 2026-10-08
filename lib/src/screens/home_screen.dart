@@ -141,8 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.cast, color: RochaColors.gold)),
             ]),
           )),
-          SliverToBoxAdapter(child: _OfficialHero(wide: wide,
-            onWatch: () => _open('TV ao Vivo'))),
+          SliverToBoxAdapter(child: _HomeCardCarousel(wide: wide,
+            onOpen: _open)),
           SliverToBoxAdapter(child: Padding(
             padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
             child: Row(children: [
@@ -153,8 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
           )),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
             sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 220, mainAxisExtent: 120,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: wide ? 300 : 190, mainAxisExtent: wide ? 150 : 120,
                 crossAxisSpacing: 12, mainAxisSpacing: 12),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
@@ -211,62 +211,131 @@ class RochaBrand extends StatelessWidget {
     child: const RochaWordmark());
 }
 
-class _OfficialHero extends StatelessWidget {
+class _HomeCardCarousel extends StatefulWidget {
   final bool wide;
-  final VoidCallback onWatch;
-  const _OfficialHero({required this.wide, required this.onWatch});
+  final Future<void> Function(String title) onOpen;
+  const _HomeCardCarousel({required this.wide, required this.onOpen});
   @override
-  Widget build(BuildContext context) {
-    final copy = Padding(padding: EdgeInsets.all(wide ? 34 : 22),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, children: [
-          const RochaBrand(),
-          const SizedBox(height: 10),
-          const Text('ENTRETENIMENTO\nSEM LIMITES', style: TextStyle(
-            fontSize: 16, height: 1.5, letterSpacing: 3, color: RochaColors.silver)),
-          const SizedBox(height: 24),
-          Container(decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const [BoxShadow(color: Color(0x55FFC43D), blurRadius: 22)]),
-            child: OutlinedButton.icon(
-              autofocus: true, onPressed: onWatch,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: RochaColors.gold, backgroundColor: const Color(0xCC050405),
-                side: const BorderSide(color: RochaColors.gold, width: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('ASSISTIR AGORA', style: TextStyle(fontWeight: FontWeight.w900))),
-          ),
-        ],
-      ),
-    );
-    return Container(
-      key: const ValueKey('official-hero'),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(colors: [
-          Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
-      clipBehavior: Clip.antiAlias,
-      child: LayoutBuilder(builder: (context, constraints) => wide ? Stack(children: [
-        Positioned.fill(child: Image.asset('branding/home-tv-galaxy.png',
-          key: const ValueKey('tv-galaxy-background'),
-          fit: BoxFit.cover, alignment: Alignment.centerRight)),
-        const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Color(0xBB050409), Color(0x44050409), Color(0x00050409)],
-            stops: [0, .45, 1])))),
-        ConstrainedBox(constraints: const BoxConstraints(minHeight: 360),
-          child: Align(alignment: Alignment.centerLeft,
-            child: SizedBox(width: (constraints.maxWidth * .48).clamp(340, 600),
-              child: copy))),
-      ]) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const SizedBox(height: 240, child: RochaArtwork(fit: BoxFit.contain)),
-        copy,
-      ])),
+  State<_HomeCardCarousel> createState() => _HomeCardCarouselState();
+}
+
+class _HomeCardCarouselState extends State<_HomeCardCarousel> {
+  late final PageController controller;
+  int selected = 1;
+  static const cards = [
+    ('Esportes', Icons.sports_soccer_outlined, 'Esportes'),
+    ('TV ao Vivo', Icons.live_tv_outlined, 'TV ao Vivo'),
+    ('Infantil', Icons.toys_outlined, 'Infantil'),
+    ('Notícias', Icons.newspaper_outlined, 'Notícias'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(
+      initialPage: selected,
+      viewportFraction: widget.wide ? .56 : .70,
     );
   }
+
+  @override
+  void dispose() { controller.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    final height = widget.wide ? 300.0 : 300.0;
+    return Column(children: [
+      SizedBox(
+        key: const ValueKey('home-card-carousel'),
+        height: height,
+        child: PageView.builder(
+          controller: controller,
+          itemCount: cards.length,
+          onPageChanged: (index) => setState(() => selected = index),
+          itemBuilder: (context, index) {
+            final item = cards[index];
+            return AnimatedScale(
+              duration: const Duration(milliseconds: 180),
+              scale: selected == index ? 1 : (widget.wide ? .86 : .90),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: widget.wide ? 10 : 6, vertical: 10),
+                child: _HomeFeatureCard(
+                  selected: selected == index,
+                  label: item.$1,
+                  icon: item.$2,
+                  onTap: () => widget.onOpen(item.$3),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      Row(mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(cards.length, (index) => AnimatedContainer(
+          key: ValueKey('carousel-dot-$index'),
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: selected == index ? 20 : 7, height: 7,
+          decoration: BoxDecoration(
+            color: selected == index ? RochaColors.gold : Colors.white24,
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ))),
+    ]);
+  }
+}
+
+class _HomeFeatureCard extends StatefulWidget {
+  final bool selected;
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  const _HomeFeatureCard({required this.selected, required this.label,
+    required this.icon, required this.onTap});
+  @override
+  State<_HomeFeatureCard> createState() => _HomeFeatureCardState();
+}
+
+class _HomeFeatureCardState extends State<_HomeFeatureCard> {
+  bool focused = false;
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 150),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(18),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors: [Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)]),
+      border: Border.all(
+        color: widget.selected || focused ? RochaColors.gold : const Color(0xFF4A286A),
+        width: widget.selected || focused ? 2 : 1),
+      boxShadow: focused ? const [BoxShadow(color: Color(0x55FFC43D), blurRadius: 20)] : const [],
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      autofocus: widget.selected,
+      onFocusChange: (value) => setState(() => focused = value),
+      onTap: widget.onTap,
+      child: Stack(children: [
+        Positioned.fill(child: Opacity(
+          opacity: .42,
+          child: const RochaArtwork(fit: BoxFit.cover),
+        )),
+        const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [Colors.transparent, Color(0xE6050409)]),
+        ))),
+        Positioned(left: 20, right: 20, bottom: 22,
+          child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Icon(widget.icon, color: RochaColors.gold, size: 30),
+            const SizedBox(width: 12),
+            Expanded(child: Text(widget.label, style: const TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w900))),
+            const Icon(Icons.chevron_right, color: RochaColors.silver),
+          ])),
+      ]),
+    ),
+  );
 }
 
 class _NavItem extends StatelessWidget {
