@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
@@ -222,27 +223,59 @@ class _FeaturedCarousel extends StatefulWidget {
   State<_FeaturedCarousel> createState() => _FeaturedCarouselState();
 }
 
-class _FeaturedCarouselState extends State<_FeaturedCarousel> {
-  late PageController controller;
+class _FeaturedCarouselState extends State<_FeaturedCarousel>
+    with WidgetsBindingObserver {
+  static const autoAdvanceInterval = Duration(seconds: 6);
+  static const transitionDuration = Duration(milliseconds: 400);
+  static const initialPage = 3001; // Middle item (Home), with room for backward swipes.
+
+  late final PageController controller;
+  Timer? _autoTimer;
+  int currentPage = initialPage;
   int selected = 1;
+  bool _dragging = false;
+  bool _appActive = true;
 
   @override
   void initState() {
     super.initState();
-    controller = PageController(initialPage: 1, viewportFraction: .84);
+    WidgetsBinding.instance.addObserver(this);
+    controller = PageController(initialPage: initialPage, viewportFraction: .84);
+    _restartAuto();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appActive = state == AppLifecycleState.resumed;
+    if (_appActive) {
+      _restartAuto();
+    } else {
+      _autoTimer?.cancel();
+    }
+  }
+
+  void _restartAuto() {
+    _autoTimer?.cancel();
+    if (!_appActive || _dragging) return;
+    _autoTimer = Timer.periodic(autoAdvanceInterval, (_) {
+      if (!mounted || !controller.hasClients) return;
+      _move(1, automatic: true);
+    });
   }
 
   @override
   void dispose() {
+    _autoTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     controller.dispose();
     super.dispose();
   }
 
-  void _move(int direction) {
-    final target = selected + direction;
-    if (!controller.hasClients || target < 0 || target > 2) return;
-    controller.animateToPage(target,
-      duration: const Duration(milliseconds: 240), curve: Curves.easeOutCubic);
+  void _move(int direction, {bool automatic = false}) {
+    if (!controller.hasClients || _dragging) return;
+    if (!automatic) _restartAuto();
+    controller.animateToPage(currentPage + direction,
+      duration: transitionDuration, curve: Curves.easeInOutCubic);
   }
 
   @override
@@ -251,36 +284,52 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel> {
       widget.wide ? 24 : 14, 8), child: Row(children: [
       const Expanded(child: Text('Destaques', style: TextStyle(
         fontSize: 17, fontWeight: FontWeight.w800))),
-      IconButton(tooltip: 'Destaque anterior', onPressed: selected > 0
-          ? () => _move(-1) : null, icon: const Icon(Icons.chevron_left)),
-      IconButton(tooltip: 'Próximo destaque', onPressed: selected < 2
-          ? () => _move(1) : null, icon: const Icon(Icons.chevron_right)),
+      IconButton(tooltip: 'Destaque anterior',
+        onPressed: () => _move(-1), icon: const Icon(Icons.chevron_left)),
+      IconButton(tooltip: 'Próximo destaque',
+        onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
     ])),
-    SizedBox(height: widget.wide ? 304 : 308, child: PageView.builder(
-      key: const ValueKey('home-featured-carousel'),
-      controller: controller,
-      itemCount: 3,
-      onPageChanged: (value) => setState(() => selected = value),
-      itemBuilder: (context, index) => AnimatedPadding(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.fromLTRB(5, selected == index ? 0 : 20,
-          5, selected == index ? 0 : 20),
-        child: switch (index) {
-          0 => _FeatureCategory(
-            key: const ValueKey('feature-sports'),
-            icon: Icons.sports_soccer_outlined,
-            label: 'Esportes ao vivo',
-            onTap: () => widget.onOpen('Esportes')),
-          1 => _OfficialHero(wide: widget.wide,
-            onWatch: () => widget.onOpen('TV ao Vivo')),
-          _ => _FeatureCategory(
-            key: const ValueKey('feature-kids'),
-            icon: Icons.toys_outlined,
-            label: 'Espaço infantil',
-            onTap: () => widget.onOpen('Infantil')),
+    SizedBox(height: widget.wide ? 304 : 308,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollStartNotification &&
+              notification.dragDetails != null) {
+            _dragging = true;
+            _autoTimer?.cancel();
+          } else if (notification is ScrollEndNotification && _dragging) {
+            _dragging = false;
+            _restartAuto();
+          }
+          return false;
         },
-      ),
-    )),
+        child: PageView.builder(
+          key: const ValueKey('home-featured-carousel'),
+          controller: controller,
+          onPageChanged: (value) => setState(() {
+            currentPage = value;
+            selected = value % 3;
+          }),
+          itemBuilder: (context, page) => AnimatedPadding(
+            duration: const Duration(milliseconds: 180),
+            padding: EdgeInsets.fromLTRB(5, selected == page % 3 ? 0 : 20,
+              5, selected == page % 3 ? 0 : 20),
+            child: switch (page % 3) {
+              0 => _FeatureCategory(
+                key: const ValueKey('feature-sports'),
+                icon: Icons.sports_soccer_outlined,
+                label: 'Esportes ao vivo',
+                onTap: () => widget.onOpen('Esportes')),
+              1 => _OfficialHero(wide: widget.wide,
+                onWatch: () => widget.onOpen('TV ao Vivo')),
+              _ => _FeatureCategory(
+                key: const ValueKey('feature-kids'),
+                icon: Icons.toys_outlined,
+                label: 'Espaço infantil',
+                onTap: () => widget.onOpen('Infantil')),
+            },
+          ),
+        ),
+      )),
   ]);
 }
 
