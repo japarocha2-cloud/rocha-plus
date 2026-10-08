@@ -27,8 +27,9 @@ void main() {
       await tester.pumpWidget(app(const LoginScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
-      await tester.scrollUntilVisible(find.text('Explorar canais gratuitos'), 150);
-      expect(find.text('Explorar canais gratuitos'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('Entre na sua conta para acessar os canais.'), 150);
+      expect(find.text('Entre na sua conta para acessar os canais.'), findsOneWidget);
+      expect(find.text('Explorar canais gratuitos'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }

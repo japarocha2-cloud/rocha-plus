@@ -13,6 +13,9 @@ dependencies:
   flutter_chrome_cast: 1.5.0
   shared_preferences: ^2.5.3
   video_player: ^2.9.2
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:

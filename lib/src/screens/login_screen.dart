@@ -1,20 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../auth/auth_controller.dart';
+import '../auth/auth_repository.dart';
 import '../theme/rocha_theme.dart';
-import 'home_screen.dart';
 import 'intro_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  void _enter(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-    );
-  }
+  final AuthController? controller;
+  const LoginScreen({super.key, this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget content() => Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
@@ -45,23 +42,27 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 42),
-                  const _LoginButton(
+                  _LoginButton(
                     icon: Icons.g_mobiledata,
-                    label: 'Google • em preparação',
+                    label: 'Entrar com Google',
+                    onPressed: controller?.supports(LoginProvider.google) == true && !controller!.busy
+                        ? () => unawaited(controller!.signIn(LoginProvider.google)) : null,
                   ),
                   const SizedBox(height: 14),
-                  const _LoginButton(
+                  _LoginButton(
                     icon: Icons.apple,
-                    label: 'Apple • em preparação',
+                    label: 'Entrar com Apple',
+                    onPressed: controller?.supports(LoginProvider.apple) == true && !controller!.busy
+                        ? () => unawaited(controller!.signIn(LoginProvider.apple)) : null,
                   ),
                   const SizedBox(height: 18),
-                  TextButton(
-                    onPressed: () => _enter(context),
-                    child: const Text('Explorar canais gratuitos'),
-                  ),
+                  if (controller?.busy == true) const CircularProgressIndicator(),
+                  if (controller?.error != null)
+                    Text(controller!.error!, key: const ValueKey('login-error'),
+                      textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
                   const SizedBox(height: 18),
                   const Text(
-                    'Login com Google e Apple estará disponível em uma próxima versão.',
+                    'Entre na sua conta para acessar os canais.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white38, fontSize: 12),
                   ),
@@ -76,15 +77,19 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+    return controller == null ? content() :
+        AnimatedBuilder(animation: controller!, builder: (_, __) => content());
   }
 }
 
 class _LoginButton extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback? onPressed;
   const _LoginButton({
     required this.icon,
     required this.label,
+    this.onPressed,
   });
 
   @override
@@ -93,7 +98,7 @@ class _LoginButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: FilledButton.tonalIcon(
-        onPressed: null,
+        onPressed: onPressed,
         icon: Icon(icon),
         label: Text(label),
       ),
