@@ -11,7 +11,8 @@ import 'player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
-  const HomeScreen({super.key, this.repository});
+  final Future<void> Function()? onSignOut;
+  const HomeScreen({super.key, this.repository, this.onSignOut});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -30,6 +31,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Set<String> favorites = {};
   bool loading = true;
   bool failed = false;
+  bool signingOut = false;
+  Future<void> _signOut() async {
+    if (signingOut || widget.onSignOut == null) return;
+    setState(() => signingOut = true);
+    try {
+      await widget.onSignOut!();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível sair. Tente novamente.')));
+      }
+    } finally {
+      if (mounted) setState(() => signingOut = false);
+    }
+  }
   @override
   void initState() { super.initState(); _load(); }
   Future<void> _load() async {
@@ -75,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
     child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
+      if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' : 'Sair da conta', icon: Icons.logout,
+        onTap: _signOut),
       const SizedBox(height: 174, child: Center(child: RochaBrand())),
       _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
         onTap: () { if (drawer) Navigator.pop(context); }),

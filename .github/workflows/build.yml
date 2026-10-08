@@ -6,10 +6,21 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      signed_login:
+        description: Gerar APK assinada com login Firebase real
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   android:
     runs-on: ubuntu-latest
+    env:
+      ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
+      ROCHA_KEY_ALIAS: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEY_ALIAS || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +45,12 @@ jobs:
         run: python3 tools/configure_android.py
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Prepare signed Firebase build
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
       - name: Get dependencies
         run: flutter pub get
       - name: Rocha+ Quality Guard
@@ -45,11 +62,11 @@ jobs:
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Build optimized APKs
-        run: flutter build apk --release --build-number=${{ github.run_number }} --split-per-abi
+        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
       - name: Build Play Store bundle
-        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+        run: flutter build appbundle --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Verify release evidence
         run: python3 tools/release_evidence.py
       - name: Upload release evidence
@@ -76,3 +93,6 @@ jobs:
           name: rocha-plus-play-store
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+      - name: Remove private build inputs
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-private"

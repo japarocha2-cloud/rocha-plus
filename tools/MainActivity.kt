@@ -1,4 +1,4 @@
-package com.example.rocha_plus
+package com.rochaplus.app
 
 import android.view.KeyEvent
 import android.widget.Toast

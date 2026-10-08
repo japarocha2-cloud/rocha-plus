@@ -21,9 +21,17 @@ class AndroidConfigurationTest(unittest.TestCase):
             brand.write_bytes(b"fixture-brand")
             native = root / "tools/MainActivity.kt"
             native.parent.mkdir(exist_ok=True)
-            native.write_text("package com.example.rocha_plus\nclass MainActivity", encoding="utf-8")
+            native.write_text("package com.rochaplus.app\nclass MainActivity", encoding="utf-8")
+            gradle = root / "android/app/build.gradle.kts"
+            gradle.write_text('android { namespace = "com.example.rocha_plus"\n'
+                              'defaultConfig { applicationId = "com.example.rocha_plus" } }',
+                              encoding="utf-8")
             configure(root)
             configure(root)
+            configured_gradle = gradle.read_text(encoding="utf-8")
+            self.assertNotIn("com.example.rocha_plus", configured_gradle)
+            self.assertEqual(configured_gradle.count('"com.rochaplus.app"'), 2)
+            self.assertEqual(configured_gradle.count("play-services-cast-framework"), 1)
             self.assertEqual(
                 (root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt").read_text(),
                 native.read_text())
