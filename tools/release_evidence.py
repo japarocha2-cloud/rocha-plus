@@ -35,13 +35,20 @@ for relative in (
     }
 brand = root / "branding/rocha_plus_icon.webp"
 assert hashlib.sha1(b"blob " + str(brand.stat().st_size).encode() + b"\0" + brand.read_bytes()).hexdigest() == "587481a95f41f7811884dbd3e15ea987d0ae463e"
+
+signed_release = bool(os.environ.get("ROCHA_SIGNING_FILE"))
+firebase_release = bool(os.environ.get("ROCHA_FIREBASE_FILE"))
+if signed_release != firebase_release:
+    raise SystemExit("Release evidence inconsistent: signing and Firebase must be enabled together.")
+
 report = {
     "commit": os.environ["GITHUB_SHA"],
     "build_number": os.environ["GITHUB_RUN_NUMBER"],
     "permissions": permissions,
     "cleartext_allowed": False,
     "debuggable": False,
-    "signing": "development candidate; production signing not configured",
+    "signing": "production signing configured" if signed_release else "development candidate; production signing not configured",
+    "firebase_auth_configured": firebase_release,
     "physical_validation": "pending",
     "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
     "outputs": outputs,
