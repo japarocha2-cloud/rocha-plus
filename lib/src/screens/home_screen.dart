@@ -9,6 +9,7 @@ import '../live/favorites_repository.dart';
 import 'live_tv_screen.dart';
 import 'news_screen.dart';
 import 'player_screen.dart';
+import 'caze_tv_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
@@ -90,6 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
     if (widget.previewOnly) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Prévia do layout: canais, player e transmissão exigem login ativo.')));
+      return;
+    }
+    if (title == 'CazéTV') {
+      await Navigator.push(context, MaterialPageRoute(
+        builder: (_) => const CazeTvScreen()));
       return;
     }
     final group = switch (title) {
@@ -190,6 +196,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
                   label: item.$1, icon: item.$2, onTap: () => _open(item.$1));
               })),
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.fromLTRB(22, 14, 22, 4),
+            child: OutlinedButton.icon(
+              key: const ValueKey('cazetv-official-entry'),
+              onPressed: () => _open('CazéTV'),
+              icon: const Icon(Icons.sports_soccer_outlined),
+              label: const Text('CazéTV • player oficial'),
+            ),
+          )),
           if (saved.isNotEmpty) SliverToBoxAdapter(child:
             _row('Minha Lista', saved, () => _open('Favoritos'))),
           SliverToBoxAdapter(child: _row('Canais ao vivo', live, () => _open('TV ao Vivo'))),
