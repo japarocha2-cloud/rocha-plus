@@ -2,6 +2,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/live/m3u_parser.dart';
 
 void main() {
+  test('undefined category is displayed as Outros', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 group-title="Undefined",Canal\nhttps://example.com/live\n');
+    expect(channels.single.group, 'Outros');
+  });
+
+  test('empty title uses tvg-name and duplicate URLs keep the first entry', () {
+    final channels = M3uParser.parse('\uFEFF#EXTM3U\n'
+        '#EXTINF:-1 tvg-name="Canal correto",\nhttps://example.com/live\n'
+        '#EXTINF:-1,Duplicado\nhttps://example.com/live\n');
+    expect(channels.single.name, 'Canal correto');
+  });
+
+  test('display title cannot inject EXTINF metadata', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1,Canal group-title="Sports"\nhttps://example.com/live\n');
+    expect(channels.single.group, 'Outros');
+    expect(channels.single.name, 'Canal');
+  });
+
   test('commas in quoted browser metadata never contaminate channel names', () {
     const playlist = '''#EXTM3U
 #EXTINF:-1 tvg-name="Canal Infantil" user-agent="Mozilla/5.0 (Linux, Android) Chrome/149.0 Safari/537.36" group-title="Kids",Canal Infantil, Ao Vivo

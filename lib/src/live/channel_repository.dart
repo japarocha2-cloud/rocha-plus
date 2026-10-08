@@ -30,6 +30,7 @@ class ChannelRepository {
     _memoryCache = null;
   }
 
+  static final Map<Uri, List<Channel>> _sourceCache = {};
   static List<Channel>? _memoryCache;
   static List<Channel>? _lastKnownGoodCache;
   static final Set<String> _sessionFailedUrls = <String>{};
@@ -58,12 +59,6 @@ class ChannelRepository {
 
   void reportPlaybackFailure(String url) {
     _sessionFailedUrls.add(url);
-    final cached = _memoryCache;
-    if (cached != null) {
-      _memoryCache = List.unmodifiable(
-        cached.where((channel) => !_sessionFailedUrls.contains(channel.url)),
-      );
-    }
   }
 
   void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
@@ -89,6 +84,7 @@ class ChannelRepository {
 
   static void resetSessionHealthForTests() {
     _userBlockedNames = {};
+    _sourceCache.clear();
     _sessionFailedUrls.clear();
     _memoryCache = null;
     _lastKnownGoodCache = null;
@@ -130,7 +126,13 @@ class ChannelRepository {
 
     final merged = <String, Channel>{};
     for (final channel in [...brazil, ...sports]) {
-      merged[channel.url] = channel;
+      final previous = merged[channel.url];
+      merged[channel.url] = previous == null ? channel : Channel(
+        name: previous.name,
+        url: previous.url,
+        logo: previous.logo ?? channel.logo,
+        group: channel.group == 'Esportes' ? 'Esportes' : previous.group,
+      );
     }
 
     // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
@@ -138,12 +140,12 @@ class ChannelRepository {
     // canais antes de a interface aparecer. Falhas reais do player entram
     // em quarentena durante a sessão por reportPlaybackFailure().
     final ordered = _orderSportsFirst(
-      _withoutSessionFailures(merged.values),
+      merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
     );
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;
-      return _memoryCache!;
+      return _withoutSessionFailures(_memoryCache!);
     }
 
     if (fallback != null && fallback.isNotEmpty) {
@@ -155,9 +157,12 @@ class ChannelRepository {
 
   Future<List<Channel>> _loadPlaylistSafely(Uri playlist) async {
     try {
-      return await _loadPlaylist(playlist);
+      final channels = await _loadPlaylist(playlist);
+      if (channels.isEmpty) return _sourceCache[playlist] ?? const <Channel>[];
+      _sourceCache[playlist] = List.unmodifiable(channels);
+      return channels;
     } catch (_) {
-      return const <Channel>[];
+      return _sourceCache[playlist] ?? const <Channel>[];
     }
   }
 
@@ -185,7 +190,7 @@ class ChannelRepository {
   int _sportsPriority(Channel channel) {
     if (channel.group != 'Esportes') return 0;
 
-    final name = channel.name.toLowerCase();
+    final name = channelIdentity(channel.name);
 
     // Futebol vem antes dos demais esportes. Termos das competições
     // recebem peso extra quando aparecem no nome/metadado do canal.
@@ -198,17 +203,19 @@ class ChannelRepository {
       'feminino', 'feminina', 'women', 'womens', "women's", 'femenino'
     ];
 
-    final isFootball = footballTerms.any(name.contains);
+    final isFootball = !RegExp(r'\b(american football|futebol americano|nfl|rugby)\b').hasMatch(name) &&
+        footballTerms.any((term) => RegExp('\\b${RegExp.escape(term)}').hasMatch(name));
     final isWomen = womenTerms.any(name.contains);
 
     var score = 100; // outros esportes
     if (isFootball) score = isWomen ? 800 : 900;
-    if (name.contains('brasileir')) score += 90;
-    if (name.contains('champions')) score += 85;
-    if (name.contains('libertadores')) score += 60;
-    if (name.contains('sul-americana')) score += 50;
+    var competitionBonus = 0;
+    if (name.contains('brasileir')) competitionBonus += 90;
+    if (name.contains('champions')) competitionBonus += 85;
+    if (name.contains('libertadores')) competitionBonus += 60;
+    if (name.contains('sul-americana')) competitionBonus += 50;
 
-    return score;
+    return score + (isFootball ? (competitionBonus > 99 ? 99 : competitionBonus) : 0);
   }
 
 }

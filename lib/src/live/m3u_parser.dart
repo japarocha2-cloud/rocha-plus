@@ -5,13 +5,14 @@ class M3uParser {
   static List<Channel> parse(String source) {
     final lines = source.split(RegExp(r'\r?\n'));
     final channels = <Channel>[];
+    final seenUrls = <String>{};
     String? name;
     String? logo;
     String? tvgId;
     String group = 'Outros';
 
     for (final raw in lines) {
-      final line = raw.trim();
+      final line = raw.replaceFirst('\uFEFF', '').trim();
       if (line.startsWith('#EXTINF:')) {
         name = _displayName(line);
         logo = _attribute(line, 'tvg-logo');
@@ -19,7 +20,7 @@ class M3uParser {
         group = _attribute(line, 'group-title') ?? 'Outros';
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
-        if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty && uri.userInfo.isEmpty) {
+        if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty && uri.userInfo.isEmpty && seenUrls.add(line)) {
           channels.add(Channel(
             name: _cleanName(name),
             url: line,
@@ -40,7 +41,8 @@ class M3uParser {
     for (var i = 0; i < line.length; i++) {
       if (line[i] == '"') quoted = !quoted;
       if (line[i] == ',' && !quoted) {
-        return line.substring(i + 1).trim();
+        final title = line.substring(i + 1).trim();
+        return title.isEmpty ? (_attribute(line, 'tvg-name') ?? 'Canal') : title;
       }
     }
     return _attribute(line, 'tvg-name') ?? 'Canal';
@@ -99,6 +101,7 @@ class M3uParser {
       return 'TV aberta';
     }
     if (has('general') || has('geral')) return 'Geral';
+    if (normalized.every((part) => part == 'undefined')) return 'Outros';
     return parts.first;
   }
 
@@ -108,6 +111,17 @@ class M3uParser {
         uri.host.isNotEmpty && uri.userInfo.isEmpty ? value : null;
   }
 
-  static String? _attribute(String line, String key) =>
-      RegExp('$key="([^"]*)"').firstMatch(line)?.group(1);
+  static String? _attribute(String line, String key) {
+    var quoted = false;
+    var end = line.length;
+    for (var i = 0; i < line.length; i++) {
+      if (line[i] == '"') quoted = !quoted;
+      if (line[i] == ',' && !quoted) {
+        end = i;
+        break;
+      }
+    }
+    return RegExp('(?:^|\\s)${RegExp.escape(key)}="([^"]*)"',
+        caseSensitive: false).firstMatch(line.substring(0, end))?.group(1);
+  }
 }

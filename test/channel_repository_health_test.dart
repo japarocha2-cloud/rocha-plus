@@ -3,6 +3,15 @@ import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
 
 void main() {
+  test('competition bonuses preserve tiers and unrelated football names stay below soccer', () {
+    final repo = ChannelRepository();
+    const male = Channel(name: 'Futebol', url: 'https://example.com/a', group: 'Esportes');
+    const female = Channel(name: 'Futebol feminino Brasileirão Champions Libertadores',
+        url: 'https://example.com/b', group: 'Esportes');
+    const nfl = Channel(name: 'American Football NFL', url: 'https://example.com/c', group: 'Esportes');
+    expect(repo.sportsOnly([nfl, female, male]), [male, female, nfl]);
+  });
+
   setUp(ChannelRepository.resetSessionHealthForTests);
 
   test('player failure quarantines a stream for the current session', () {
