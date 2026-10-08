@@ -38,8 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await widget.onSignOut!();
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível sair. Tente novamente.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível sair. Tente novamente.')));
+      }
     } finally {
       if (mounted) setState(() => signingOut = false);
     }
