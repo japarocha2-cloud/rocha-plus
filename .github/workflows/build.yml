@@ -93,6 +93,17 @@ jobs:
           name: rocha-plus-play-store
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+      # Generated only for visual QA. No Firebase credentials or access to streams.
+      - name: Build visual-only layout preview APK
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
+        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_LAYOUT_PREVIEW=true
+      - name: Upload visual-only layout preview APK
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-layout-preview-no-channels
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
       - name: Remove private build inputs
         if: always()
         run: rm -rf -- "$RUNNER_TEMP/rocha-private"
