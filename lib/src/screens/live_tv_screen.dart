@@ -6,6 +6,7 @@ import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
 import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
+import 'caze_tv_screen.dart';
 import '../widgets/rocha_channel_card.dart';
 
 class LiveTvScreen extends StatefulWidget {
@@ -171,6 +172,16 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ],
       ),
       body: Column(children: [
+        if (selectedGroup == 'Esportes') Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: SizedBox(width: double.infinity, child: OutlinedButton.icon(
+            key: const ValueKey('sports-cazetv-entry'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(
+              builder: (_) => const CazeTvScreen())),
+            icon: const Icon(Icons.ondemand_video),
+            label: const Text('CazéTV • assistir pelo player oficial'),
+          )),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: TextField(
