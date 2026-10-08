@@ -13,7 +13,9 @@ import 'player_screen.dart';
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
   final Future<void> Function()? onSignOut;
-  const HomeScreen({super.key, this.repository, this.onSignOut});
+  final bool previewOnly;
+  const HomeScreen({super.key, this.repository, this.onSignOut,
+    this.previewOnly = false});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -48,8 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   @override
-  void initState() { super.initState(); _load(); }
+  void initState() {
+    super.initState();
+    if (widget.previewOnly) {
+      loading = false;
+    } else {
+      _load();
+    }
+  }
   Future<void> _load() async {
+    if (widget.previewOnly) return;
     try {
       final result = await Future.wait([
         repository.loadBrazilPublicDirectory(), favoritesRepository.load(),
@@ -63,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   Future<void> _favorite(Channel channel) async {
+    if (widget.previewOnly) return;
     final next = {...favorites};
     next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
     try {
@@ -76,6 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   Future<void> _open(String title) async {
+    if (widget.previewOnly) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Prévia do layout: canais, player e transmissão exigem login ativo.')));
+      return;
+    }
     final group = switch (title) {
       'Favoritos' => 'Favoritos', 'Esportes' => 'Esportes',
       'Infantil' => 'Infantil', _ => 'TV aberta',
@@ -92,7 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
     child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
-      if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' : 'Sair da conta', icon: Icons.logout,
+      if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' :
+        (widget.previewOnly ? 'Sair da prévia' : 'Sair da conta'), icon: Icons.logout,
         onTap: _signOut),
       const SizedBox(height: 174, child: Center(child: RochaBrand())),
       _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
@@ -124,8 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(child: InkWell(
                 key: const ValueKey('home-search'),
                 borderRadius: BorderRadius.circular(12),
-                onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => LiveTvScreen(repository: widget.repository))),
+                onTap: () {
+                  if (widget.previewOnly) {
+                    _open('TV ao Vivo');
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => LiveTvScreen(repository: widget.repository)));
+                  }
+                },
                 child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
                   decoration: BoxDecoration(
                     color: const Color(0xFF15101F), borderRadius: BorderRadius.circular(12),
@@ -142,6 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.cast, color: RochaColors.gold)),
             ]),
           )),
+          if (widget.previewOnly) const SliverToBoxAdapter(child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text('MODO DE PRÉVIA: somente layout. Canais e espelhamento desativados.',
+              key: ValueKey('home-preview-notice'),
+              style: TextStyle(color: RochaColors.gold, fontWeight: FontWeight.w700)))),
           SliverToBoxAdapter(child: _FeaturedCarousel(
             wide: wide, onOpen: (section) { _open(section); })),
           SliverToBoxAdapter(child: Padding(
@@ -171,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (failed) SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(24),
             child: OutlinedButton.icon(onPressed: _load, icon: const Icon(Icons.refresh),
               label: const Text('Carregar canais')))),
-          if (!loading && !failed && live.isEmpty) const SliverToBoxAdapter(
+          if (!widget.previewOnly && !loading && !failed && live.isEmpty) const SliverToBoxAdapter(
             child: Padding(padding: EdgeInsets.all(24),
               child: Text('Nenhum canal aberto disponível no catálogo neste momento.',
                 style: TextStyle(color: Colors.white54)))),
