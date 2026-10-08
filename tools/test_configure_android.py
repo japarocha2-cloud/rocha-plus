@@ -19,8 +19,14 @@ class AndroidConfigurationTest(unittest.TestCase):
             brand = root / "branding/rocha_plus_icon.webp"
             brand.parent.mkdir()
             brand.write_bytes(b"fixture-brand")
+            native = root / "tools/MainActivity.kt"
+            native.parent.mkdir(exist_ok=True)
+            native.write_text("package com.example.rocha_plus\nclass MainActivity", encoding="utf-8")
             configure(root)
             configure(root)
+            self.assertEqual(
+                (root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt").read_text(),
+                native.read_text())
             node = ET.parse(manifest).getroot()
             app = node.find("application")
             self.assertEqual(app.get(attr("usesCleartextTraffic")), "false")

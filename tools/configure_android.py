@@ -55,6 +55,15 @@ def configure(root):
                 ET.SubElement(intent, "category", {
                     attr("name"): "android.intent.category.LEANBACK_LAUNCHER"})
     tree.write(manifest, encoding="utf-8", xml_declaration=True)
+    gradle = root / "android/app/build.gradle.kts"
+    if gradle.exists():
+        text = gradle.read_text(encoding="utf-8")
+        dependency = 'implementation("com.google.android.gms:play-services-cast-framework:21.5.0")'
+        if dependency not in text:
+            gradle.write_text(text + "\n dependencies { " + dependency + " }\n", encoding="utf-8")
+    activity = root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt"
+    activity.parent.mkdir(parents=True, exist_ok=True)
+    activity.write_text((root / "tools/MainActivity.kt").read_text(encoding="utf-8"), encoding="utf-8")
     drawable = root / "android/app/src/main/res/drawable"
     drawable.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "branding/rocha_plus_icon.webp",

@@ -13,7 +13,7 @@ class M3uParser {
     for (final raw in lines) {
       final line = raw.trim();
       if (line.startsWith('#EXTINF:')) {
-        name = line.contains(',') ? line.substring(line.indexOf(',') + 1).trim() : 'Canal';
+        name = _displayName(line);
         logo = _attribute(line, 'tvg-logo');
         tvgId = _attribute(line, 'tvg-id');
         group = _attribute(line, 'group-title') ?? 'Outros';
@@ -31,6 +31,19 @@ class M3uParser {
       }
     }
     return channels;
+  }
+
+  // EXTINF attributes may contain commas inside quoted User-Agent strings.
+  // The display name begins only at the first comma outside quotes.
+  static String _displayName(String line) {
+    var quoted = false;
+    for (var i = 0; i < line.length; i++) {
+      if (line[i] == '"') quoted = !quoted;
+      if (line[i] == ',' && !quoted) {
+        return line.substring(i + 1).trim();
+      }
+    }
+    return _attribute(line, 'tvg-name') ?? 'Canal';
   }
 
   static String _cleanName(String value) {
