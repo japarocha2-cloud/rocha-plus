@@ -20,6 +20,10 @@ void main() {
       await tester.pumpWidget(app(const HomeScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
+      expect(find.byKey(const ValueKey('home-card-carousel')), findsOneWidget);
+      expect(find.byKey(const ValueKey('official-hero')), findsNothing);
+      expect(find.text('Explore o Rocha+'), findsOneWidget);
+      expect(find.byKey(const ValueKey('carousel-dot-1')), findsOneWidget);
       await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 200,
         scrollable: find.descendant(of: find.byKey(const ValueKey('home-scroll')),
           matching: find.byType(Scrollable)).first);
