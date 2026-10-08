@@ -14,12 +14,18 @@ class FirebaseAuthRepository implements AuthRepository {
   static const _appleEnabled = bool.fromEnvironment('ROCHA_APPLE_ENABLED');
   bool _googleReady = false;
 
+  // A layout-only preview may be offered by an explicitly marked build only
+  // when there is no real Firebase configuration at all.
+  static bool get isConfigured =>
+      [_project, _appId, _apiKey, _sender].every((value) => value.isNotEmpty);
+
+
   @override
   Future<void> initialize() async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
       throw const LoginFailure('O login desta versão está disponível apenas no Android.');
     }
-    if ([_project, _appId, _apiKey, _sender].any((value) => value.isEmpty)) {
+    if (!isConfigured) {
       throw const LoginFailure('O login ainda não foi ativado nesta versão. Aguarde a atualização.');
     }
     await Firebase.initializeApp(options: const FirebaseOptions(
