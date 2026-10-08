@@ -8,7 +8,10 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
-    await tester.scrollUntilVisible(find.text('Esportes'), 250);
+    await tester.scrollUntilVisible(find.text('Esportes'), 250,
+      scrollable: find.descendant(
+        of: find.byKey(const ValueKey('home-scroll')),
+        matching: find.byType(Scrollable)).first);
 
     expect(find.text('Esportes'), findsOneWidget);
     await tester.tap(find.text('Esportes'));
@@ -33,7 +36,10 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
-    await tester.scrollUntilVisible(find.text('Infantil'), 250);
+    await tester.scrollUntilVisible(find.text('Infantil'), 250,
+      scrollable: find.descendant(
+        of: find.byKey(const ValueKey('home-scroll')),
+        matching: find.byType(Scrollable)).first);
     expect(find.text('Infantil'), findsOneWidget);
     await tester.tap(find.text('Infantil'));
     await tester.pump();
