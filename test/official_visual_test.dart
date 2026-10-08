@@ -66,15 +66,15 @@ void main() {
         final context = tester.element(find.byType(HomeScreen));
         await precacheImage(const AssetImage('branding/dashboard-reference.png'), context);
         await precacheImage(const AssetImage('branding/cast-reference.png'), context);
-        await precacheImage(const AssetImage('branding/home-tv-galaxy.png'), context);
         await precacheImage(const AssetImage('branding/rocha-wordmark-antennas.webp'), context);
       });
       await tester.pumpAndSettle();
       if (size.width == 430 || size.width == 1920) {
         await capture(tester, 'home-${size.width.toInt()}');
       }
-      expect(find.byKey(const ValueKey('tv-galaxy-background')),
-        size.width >= 900 ? findsOneWidget : findsNothing);
+      expect(find.byKey(const ValueKey('home-card-carousel')), findsOneWidget);
+      expect(find.byKey(const ValueKey('official-hero')), findsNothing);
+      expect(find.text('Explore o Rocha+'), findsOneWidget);
       expect(find.byKey(const ValueKey('official-sidebar')),
         size.width >= 900 ? findsOneWidget : findsNothing);
       await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 180,
@@ -121,7 +121,7 @@ void main() {
     expect(toggles, 0);
     expect(find.text('Transmitindo para'), findsNothing);
   });
-  testWidgets('remote Enter activates the focused official watch button', (tester) async {
+  testWidgets('remote Enter activates the focused selected carousel card', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1920, 1080));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(MaterialApp(home: HomeScreen(repository: repo())));
