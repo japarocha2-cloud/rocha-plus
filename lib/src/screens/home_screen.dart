@@ -141,8 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.cast, color: RochaColors.gold)),
             ]),
           )),
-          SliverToBoxAdapter(child: _OfficialHero(wide: wide,
-            onWatch: () => _open('TV ao Vivo'))),
+          SliverToBoxAdapter(child: _FeaturedCarousel(
+            wide: wide, onOpen: (section) { _open(section); })),
           SliverToBoxAdapter(child: Padding(
             padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
             child: Row(children: [
@@ -211,62 +211,157 @@ class RochaBrand extends StatelessWidget {
     child: const RochaWordmark());
 }
 
+
+/// Navigation-only featured carousel: the approved artwork and palette stay intact.
+class _FeaturedCarousel extends StatefulWidget {
+  final bool wide;
+  final ValueChanged<String> onOpen;
+  const _FeaturedCarousel({required this.wide, required this.onOpen});
+
+  @override
+  State<_FeaturedCarousel> createState() => _FeaturedCarouselState();
+}
+
+class _FeaturedCarouselState extends State<_FeaturedCarousel> {
+  late PageController controller;
+  int selected = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(initialPage: 1, viewportFraction: .84);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _move(int direction) {
+    final target = selected + direction;
+    if (!controller.hasClients || target < 0 || target > 2) return;
+    controller.animateToPage(target,
+      duration: const Duration(milliseconds: 240), curve: Curves.easeOutCubic);
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(children: [
+    Padding(padding: EdgeInsets.fromLTRB(widget.wide ? 24 : 14, 0,
+      widget.wide ? 24 : 14, 8), child: Row(children: [
+      const Expanded(child: Text('Destaques', style: TextStyle(
+        fontSize: 17, fontWeight: FontWeight.w800))),
+      IconButton(tooltip: 'Destaque anterior', onPressed: selected > 0
+          ? () => _move(-1) : null, icon: const Icon(Icons.chevron_left)),
+      IconButton(tooltip: 'Próximo destaque', onPressed: selected < 2
+          ? () => _move(1) : null, icon: const Icon(Icons.chevron_right)),
+    ])),
+    SizedBox(height: widget.wide ? 304 : 308, child: PageView.builder(
+      key: const ValueKey('home-featured-carousel'),
+      controller: controller,
+      itemCount: 3,
+      onPageChanged: (value) => setState(() => selected = value),
+      itemBuilder: (context, index) => AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.fromLTRB(5, selected == index ? 0 : 20,
+          5, selected == index ? 0 : 20),
+        child: switch (index) {
+          0 => _FeatureCategory(
+            key: const ValueKey('feature-sports'),
+            icon: Icons.sports_soccer_outlined,
+            label: 'Esportes ao vivo',
+            onTap: () => widget.onOpen('Esportes')),
+          1 => _OfficialHero(wide: widget.wide,
+            onWatch: () => widget.onOpen('TV ao Vivo')),
+          _ => _FeatureCategory(
+            key: const ValueKey('feature-kids'),
+            icon: Icons.toys_outlined,
+            label: 'Espaço infantil',
+            onTap: () => widget.onOpen('Infantil')),
+        },
+      ),
+    )),
+  ]);
+}
+
+class _FeatureCategory extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _FeatureCategory({super.key, required this.icon,
+    required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(18),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
+      border: Border.all(color: const Color(0xFF4A286A))),
+    clipBehavior: Clip.antiAlias,
+    child: Material(type: MaterialType.transparency, child: InkWell(
+      onTap: onTap,
+      child: Center(child: Padding(padding: const EdgeInsets.all(14),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 42, color: RochaColors.gold),
+          const SizedBox(height: 14),
+          Text(label, textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+        ]))),
+    )),
+  );
+}
+
 class _OfficialHero extends StatelessWidget {
   final bool wide;
   final VoidCallback onWatch;
   const _OfficialHero({required this.wide, required this.onWatch});
+
   @override
-  Widget build(BuildContext context) {
-    final copy = Padding(padding: EdgeInsets.all(wide ? 34 : 22),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, children: [
-          const RochaBrand(),
-          const SizedBox(height: 10),
-          const Text('ENTRETENIMENTO\nSEM LIMITES', style: TextStyle(
-            fontSize: 16, height: 1.5, letterSpacing: 3, color: RochaColors.silver)),
-          const SizedBox(height: 24),
-          Container(decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const [BoxShadow(color: Color(0x55FFC43D), blurRadius: 22)]),
-            child: OutlinedButton.icon(
-              autofocus: true, onPressed: onWatch,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: RochaColors.gold, backgroundColor: const Color(0xCC050405),
-                side: const BorderSide(color: RochaColors.gold, width: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('ASSISTIR AGORA', style: TextStyle(fontWeight: FontWeight.w900))),
-          ),
-        ],
-      ),
-    );
-    return Container(
-      key: const ValueKey('official-hero'),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(colors: [
-          Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
-      clipBehavior: Clip.antiAlias,
-      child: LayoutBuilder(builder: (context, constraints) => wide ? Stack(children: [
-        Positioned.fill(child: Image.asset('branding/home-tv-galaxy.png',
+  Widget build(BuildContext context) => Container(
+    key: const ValueKey('official-hero'),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(18),
+      gradient: const LinearGradient(colors: [
+        Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
+    clipBehavior: Clip.antiAlias,
+    child: Stack(fit: StackFit.expand, children: [
+      if (wide)
+        Image.asset('branding/home-tv-galaxy.png',
           key: const ValueKey('tv-galaxy-background'),
-          fit: BoxFit.cover, alignment: Alignment.centerRight)),
-        const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Color(0xBB050409), Color(0x44050409), Color(0x00050409)],
-            stops: [0, .45, 1])))),
-        ConstrainedBox(constraints: const BoxConstraints(minHeight: 360),
-          child: Align(alignment: Alignment.centerLeft,
-            child: SizedBox(width: (constraints.maxWidth * .48).clamp(340, 600),
-              child: copy))),
-      ]) : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const SizedBox(height: 240, child: RochaArtwork(fit: BoxFit.contain)),
-        copy,
-      ])),
-    );
-  }
+          fit: BoxFit.cover, alignment: Alignment.centerRight)
+      else
+        const RochaArtwork(fit: BoxFit.cover),
+      const DecoratedBox(decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [
+          Color(0xDD050409), Color(0x99050409), Color(0x22050409)],
+          stops: [0, .6, 1]))),
+      Align(alignment: Alignment.centerLeft, child: Padding(
+        padding: EdgeInsets.all(wide ? 26 : 16),
+        child: Column(mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start, children: [
+          RochaBrand(compact: !wide),
+          SizedBox(height: wide ? 8 : 6),
+          Text('ENTRETENIMENTO\nSEM LIMITES', style: TextStyle(
+            fontSize: wide ? 14 : 12, height: 1.35,
+            letterSpacing: wide ? 2 : 1.3, color: RochaColors.silver)),
+          SizedBox(height: wide ? 14 : 12),
+          OutlinedButton.icon(
+            autofocus: true, onPressed: onWatch,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: RochaColors.gold,
+              backgroundColor: const Color(0xCC050405),
+              side: const BorderSide(color: RochaColors.gold, width: 2),
+              padding: EdgeInsets.symmetric(horizontal: wide ? 18 : 12, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            icon: const Icon(Icons.play_arrow),
+            label: const Text('ASSISTIR AGORA',
+              style: TextStyle(fontWeight: FontWeight.w900))),
+        ]),
+      )),
+    ]),
+  );
 }
 
 class _NavItem extends StatelessWidget {
