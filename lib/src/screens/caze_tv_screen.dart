@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../sports/caze_tv_source.dart';
+import '../sports/caze_tv_validation.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
 
@@ -26,6 +27,32 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
   WebViewController? _web;
   bool _loading = false;
   bool _error = false;
+  bool _validating = false;
+  Timer? _loadTimeout;
+
+  void _fail() {
+    _loadTimeout?.cancel();
+    if (mounted) {
+      setState(() { _loading = false; _validating = false; _error = true; });
+    }
+  }
+
+  Future<void> _prepareVideo() async {
+    if (_validating || CazeTvSource.officialVideoId == null) return;
+    setState(() { _validating = true; _loading = true; _error = false; });
+    final verified = await CazeTvValidation.verify(CazeTvSource.officialVideoId!);
+    if (!mounted) return;
+    setState(() => _validating = false);
+    if (!verified) { _fail(); return; }
+    _web ??= _createController();
+    await _loadVideo();
+  }
+
+  @override
+  void dispose() {
+    _loadTimeout?.cancel();
+    super.dispose();
+  }
 
   Future<void> _loadVideo() async {
     final url = CazeTvSource.embedUri;
@@ -37,46 +64,36 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
         _error = false;
       });
     }
+    _loadTimeout?.cancel();
+    _loadTimeout = Timer(const Duration(seconds: 20), _fail);
     try {
       await web.loadRequest(url, headers: const {
         'Referer': CazeTvSource.appHttpReferer,
       });
     } catch (_) {
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _error = true;
-        });
-      }
+      _fail();
     }
   }
 
   @override
   void initState() {
     super.initState();
-    if (CazeTvSource.embedUri == null) return;
-    _web = WebViewController()
+    unawaited(_prepareVideo());
+  }
+
+  WebViewController _createController() => WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
       ..setNavigationDelegate(NavigationDelegate(
         onPageStarted: (_) {
-          if (mounted) {
-            setState(() {
-              _loading = true;
-              _error = false;
-            });
-          }
+          if (mounted) setState(() => _loading = true);
         },
         onPageFinished: (_) {
+          _loadTimeout?.cancel();
           if (mounted) setState(() => _loading = false);
         },
         onWebResourceError: (error) {
-          if (error.isForMainFrame == true && mounted) {
-            setState(() {
-              _loading = false;
-              _error = true;
-            });
-          }
+          if (error.isForMainFrame == true) _fail();
         },
         onNavigationRequest: (request) {
           final uri = Uri.tryParse(request.url);
@@ -86,15 +103,12 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
           final host = uri.host.toLowerCase();
           if (host == 'youtube.com' || host.endsWith('.youtube.com') ||
               host == 'youtube-nocookie.com' ||
-              host.endsWith('.youtube-nocookie.com') ||
-              host == 'googlevideo.com' || host.endsWith('.googlevideo.com')) {
+              host.endsWith('.youtube-nocookie.com')) {
             return NavigationDecision.navigate;
           }
           return NavigationDecision.prevent;
         },
       ));
-    unawaited(_loadVideo());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +150,7 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
                           SizedBox(width: 8),
                           Flexible(
                             child: Text(
-                              'Player oficial incorporado ao Rocha+',
+                              'Reprodução pelo player oficial do YouTube',
                               style: TextStyle(
                                 color: Colors.white70, fontSize: 12),
                               textAlign: TextAlign.center,
@@ -154,8 +168,7 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
                         style: TextStyle(
                           fontSize: 12, color: Colors.white54),
                       ),
-                      SizedBox(height: wide ? 35 : 28),
-                      const _CazeContentPreview(),
+
                     ],
                   ),
                 ),
@@ -186,7 +199,10 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
           AspectRatio(
             aspectRatio: 16 / 9,
             child: controller == null
-                ? const _NoOfficialVideo()
+                ? _NoOfficialVideo(message: _validating
+                    ? 'Verificando fonte oficial...'
+                    : _error ? 'Vídeo oficial indisponível'
+                    : 'Nenhuma transmissão oficial configurada')
                 : WebViewWidget(controller: controller),
           ),
           if (_loading && !_error)
@@ -208,7 +224,7 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
             const Padding(
               padding: EdgeInsets.all(12),
               child: Text(
-                'Não foi possível carregar o player oficial. '
+                'Não foi possível validar ou carregar o vídeo oficial. '
                 'O vídeo pode não permitir incorporação.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white70)),
@@ -234,9 +250,10 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
             borderRadius: BorderRadius.circular(13)),
         ),
         icon: const Icon(Icons.play_arrow_rounded),
-        label: Text(available
-            ? 'Assistir pelo player oficial'
-            : 'Transmissão não configurada',
+        label: Text(_validating ? 'Verificando fonte oficial...'
+            : available ? 'Assistir pelo player oficial'
+            : CazeTvSource.officialVideoId == null
+                ? 'Transmissão não configurada' : 'Vídeo oficial indisponível',
           style: const TextStyle(fontWeight: FontWeight.w800)),
       ),
     );
@@ -277,7 +294,8 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
             alignment: Alignment.centerRight,
             child: OutlinedButton.icon(
               key: const ValueKey('cazetv-retry'),
-              onPressed: _web == null ? null : () => unawaited(_loadVideo()),
+              onPressed: CazeTvSource.officialVideoId == null || _validating
+                  ? null : () => unawaited(_prepareVideo()),
               style: OutlinedButton.styleFrom(
                 foregroundColor: RochaColors.silver,
                 side: const BorderSide(color: Color(0xFF77767B))),
@@ -325,9 +343,9 @@ class _CazeHero extends StatelessWidget {
         const Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('CazéTV',
+            Text('CazéTV • Oficial',
               key: ValueKey('cazetv-hero-title'),
-              style: TextStyle(fontSize: 27,
+              style: TextStyle(fontSize: 24,
                 fontWeight: FontWeight.w900, color: Colors.white)),
             SizedBox(height: 3),
             Text('ESPORTE E ENTRETENIMENTO',
@@ -344,7 +362,8 @@ class _CazeHero extends StatelessWidget {
 }
 
 class _NoOfficialVideo extends StatelessWidget {
-  const _NoOfficialVideo();
+  const _NoOfficialVideo({required this.message});
+  final String message;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -361,7 +380,7 @@ class _NoOfficialVideo extends StatelessWidget {
             Icon(Icons.live_tv_outlined,
               color: RochaColors.gold, size: compact ? 24 : 36),
             SizedBox(height: compact ? 3 : 8),
-            Text('Nenhuma transmissão oficial configurada',
+            Text(message,
               maxLines: 2, overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -381,61 +400,3 @@ class _NoOfficialVideo extends StatelessWidget {
   );
 }
 
-/// Navigation cards remain informative until the official catalog is wired.
-/// No fake feeds or dead buttons are presented as playable content.
-class _CazeContentPreview extends StatelessWidget {
-  const _CazeContentPreview();
-
-  @override
-  Widget build(BuildContext context) {
-    const categories = [
-      ('Ao vivo', Icons.live_tv_outlined),
-      ('Melhores momentos', Icons.sports_soccer),
-      ('Programas', Icons.mic_external_on_outlined),
-      ('Cortes', Icons.movie_outlined),
-    ];
-    return Column(
-      key: const ValueKey('cazetv-content-categories'),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Conteúdo da CazéTV',
-          style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 5),
-        const Text('Categorias previstas. '
-          'O catálogo oficial ainda não está integrado.',
-          style: TextStyle(fontSize: 12, color: Colors.white60)),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 110,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
-            itemBuilder: (_, index) {
-              final category = categories[index];
-              return Container(
-                width: 157,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF19191E),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF393330)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(category.$2, color: RochaColors.gold),
-                    Text(category.$1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 13)),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}

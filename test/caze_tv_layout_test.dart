@@ -24,7 +24,7 @@ void main() {
       findsOneWidget);
     expect(find.byKey(const ValueKey('cazetv-watch-official')),
       findsOneWidget);
-    expect(find.text('CazéTV'), findsOneWidget);
+    expect(find.text('CazéTV • Oficial'), findsOneWidget);
     final button = tester.widget<FilledButton>(
       find.byKey(const ValueKey('cazetv-watch-official')));
     if (CazeTvSource.officialVideoId == null) {
@@ -44,16 +44,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('TV-width layout includes non-interactive planned categories',
+  testWidgets('TV-width layout hides content without an official catalog',
       (tester) async {
     await showScreen(tester, const Size(1280, 720));
-    expect(find.byKey(const ValueKey('cazetv-content-categories')),
-      findsOneWidget);
-    expect(find.text('Conteúdo da CazéTV'), findsOneWidget);
-    expect(find.text('Ao vivo'), findsOneWidget);
-    expect(find.text('Melhores momentos'), findsOneWidget);
-    expect(find.text('Programas'), findsOneWidget);
-    expect(find.text('Cortes'), findsOneWidget);
+    expect(find.byKey(const ValueKey('cazetv-content-categories')), findsNothing);
+    expect(find.text('Conteúdo da CazéTV'), findsNothing);
+    expect(find.text('Categorias previstas.'), findsNothing);
     expect(find.byKey(const ValueKey('cazetv-retry')), findsOneWidget);
     if (CazeTvSource.officialVideoId == null) {
       final retry = tester.widget<OutlinedButton>(
