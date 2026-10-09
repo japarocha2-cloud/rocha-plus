@@ -173,6 +173,8 @@ class ChannelRepository {
     'Pluto TV Series Comedia',
     'Pluto TV KFOOD',
     'Tastemade Brasil (720p)',
+    // Falha no Moto G56, Education, 09/10/2026.
+    'Canal Saude',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
