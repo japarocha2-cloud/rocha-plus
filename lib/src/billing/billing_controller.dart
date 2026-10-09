@@ -12,7 +12,9 @@ class BillingController extends ChangeNotifier {
   static const endpoint = String.fromEnvironment('ROCHA_BILLING_ENDPOINT');
   final String uid;
   final bool beta;
-  BillingController(this.uid, {this.beta = RochaReleasePolicy.stage == RochaReleaseStage.beta});
+  final Future<Map<String, dynamic>> Function(String action, {String? token})? transport;
+  int _revision = 0;
+  BillingController(this.uid, {this.beta = RochaReleasePolicy.stage == RochaReleaseStage.beta, this.transport});
   StreamSubscription<List<PurchaseDetails>>? _purchases;
   Timer? _poll;
   Timer? _expiry;
@@ -30,6 +32,8 @@ class BillingController extends ChangeNotifier {
   bool get configured => Uri.tryParse(endpoint)?.scheme == 'https';
   void changed() { if (!_disposed) notifyListeners(); }
   Future<Map<String, dynamic>> request(String action, {String? token}) async {
+    if (_disposed) throw StateError('Billing disposed');
+    if (transport != null) return transport!(action, token: token);
     if (!configured || FirebaseAuth.instance.currentUser?.uid != uid) {
       throw StateError('Billing unavailable');
     }
@@ -98,8 +102,15 @@ class BillingController extends ChangeNotifier {
   }
   Future<void> refresh() async {
     if (beta || _disposed) return;
-    try { apply(await request('entitlement')); }
-    catch (_) { active = false; error = 'Não foi possível confirmar sua assinatura. Tente novamente.'; changed(); }
+    final revision = ++_revision;
+    try {
+      final result = await request('entitlement');
+      if (!_disposed && revision == _revision) { error = null; apply(result); }
+    } catch (_) {
+      if (!_disposed && revision == _revision) {
+        active = false; error = 'Não foi possível confirmar sua assinatura. Tente novamente.'; changed();
+      }
+    }
   }
   Future<void> run(Future<void> Function() action) async {
     if (busy || _disposed) return;
@@ -125,6 +136,7 @@ class BillingController extends ChangeNotifier {
     });
   }
   Future<void> handle(List<PurchaseDetails> items) async {
+    if (beta || _disposed) return;
     for (final purchase in items) {
       if (_disposed || purchase.productID != productId) continue;
       if (purchase.status == PurchaseStatus.pending) {
@@ -136,9 +148,11 @@ class BillingController extends ChangeNotifier {
       if (purchase.status == PurchaseStatus.error) {
         error = 'A Google Play não concluiu a compra.'; changed(); continue;
       }
+      final revision = ++_revision;
       try {
         final result = await request('verify',
           token: purchase.verificationData.serverVerificationData);
+        if (_disposed || revision != _revision) continue;
         apply(result);
         // Backend acknowledges only authenticated, bound, eligible test purchases.
         if (result['active'] == true && purchase.pendingCompletePurchase) {
@@ -146,13 +160,14 @@ class BillingController extends ChangeNotifier {
         }
         error = null; changed();
       } catch (_) {
+        if (_disposed || revision != _revision) continue;
         active = false; error = 'Compra ainda não validada. Use Restaurar compras.'; changed();
       }
     }
   }
   @override
   void dispose() {
-    _disposed = true; _poll?.cancel(); _expiry?.cancel();
+    _disposed = true; ++_revision; _poll?.cancel(); _expiry?.cancel();
     unawaited(_purchases?.cancel()); super.dispose();
   }
 }

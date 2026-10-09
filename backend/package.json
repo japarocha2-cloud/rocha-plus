@@ -7,11 +7,16 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test policy.test.js service.test.js"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0",
     "firebase-functions": "^6.0.0",
     "google-auth-library": "^9.15.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.0",
+    "firebase-tools": "^14.0.0"
   }
 }

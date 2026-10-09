@@ -66,3 +66,16 @@ CI original main 231bca553bdd2417ae33bab68fd324d783febdf1:
 Build Rocha+ 37853595491 e 37823568190 concluídos com sucesso.
 Testes deste PR: verificar links e resultados atuais no PR; não interpretar
 testes de política ou build como compra real comprovada.
+
+## Avanço de validação
+O backend guarda até 20 tokens privados por conta e seleciona o direito ativo
+consultando o estado atual de cada compra; a ordem da restauração não substitui
+uma compra válida por uma revogada/expirada. Erro transitório bloqueia; HTTP 410
+de token antigo não concede direito e não apaga outra compra ativa.
+O limite de 20 exige suporte/revisão antes de liberar comercialmente contas com
+histórico maior; não elimina histórico de propriedade para liberar replay.
+Requisições concorrentes do cliente descartam respostas antigas após resposta
+mais recente e após descarte da sessão.
+CI adicional cobre serviço HTTP com Publisher simulado, exportações Firebase,
+transações concorrentes e regras privadas no Firestore emulado em projeto demo.
+Nada disso substitui teste de compra na Play nem comprova Publisher/IAM/RTDN em produção.
