@@ -163,6 +163,16 @@ class ChannelRepository {
     'Detetives Medicos',
     'Pluto TV Aliens',
     'Pluto TV Animais',
+    'Pluto TV Investigacao',
+    'Pluto TV Negocio Fechado',
+    'Pluto TV Policial',
+    'MacGyver (United States)',
+    'Pluto TV Desenhos Classicos',
+    'Comedy Central Pluto TV BR',
+    'FailArmy Brazil',
+    'Pluto TV Series Comedia',
+    'Pluto TV KFOOD',
+    'Tastemade Brasil (720p)',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
