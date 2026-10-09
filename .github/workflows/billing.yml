@@ -19,6 +19,20 @@ jobs:
         run: node --test backend/policy.test.js backend/service.test.js
       - name: Install backend and emulator dependencies
         run: npm install --prefix backend --ignore-scripts
+      - name: Audit production dependencies
+        run: npm audit --prefix backend --omit=dev --audit-level=high
+      - name: Record full dependency audit
+        if: always()
+        working-directory: backend
+        run: npm audit --json > dependency-audit.json || true
+      - name: Upload dependency evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-dependency-evidence
+          path: |
+            backend/package-lock.json
+            backend/dependency-audit.json
       - name: Check actual Firebase exports without deployment
         env:
           GCLOUD_PROJECT: demo-rocha-billing
