@@ -33,8 +33,10 @@ class FavoritesSyncNotice extends StatelessWidget {
             if (confirmed != true) return;
             try { await repository.importLegacy(catalog); }
             catch (_) {
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('A importação não foi concluída. Confira a conexão e tente novamente.')));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('A importação não foi concluída. Confira a conexão e tente novamente.')));
+              }
             }
           }),
       ]));
