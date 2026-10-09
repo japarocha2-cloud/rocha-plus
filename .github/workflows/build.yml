@@ -11,6 +11,10 @@ on:
         description: Gerar beta com login real (requer 4 Secrets de assinatura/Firebase)
         type: boolean
         default: true
+      cazetv_video_id:
+        description: ID de video oficial CazeTV para candidato de teste (opcional; nao comprova reproducao)
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -19,6 +23,7 @@ jobs:
   android:
     runs-on: ubuntu-latest
     env:
+      CAZETV_YOUTUBE_VIDEO_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && inputs.cazetv_video_id || '' }}
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
       ROCHA_KEY_ALIAS: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEY_ALIAS || '' }}
     steps:
@@ -61,15 +66,18 @@ jobs:
         run: flutter test
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
+      - name: Validate configured official CazeTV source
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/validate_cazetv_source.py
       - name: Build universal APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --dart-define="CAZETV_YOUTUBE_VIDEO_ID=$CAZETV_YOUTUBE_VIDEO_ID"
       - name: Build optimized APKs
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
+        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --dart-define="CAZETV_YOUTUBE_VIDEO_ID=$CAZETV_YOUTUBE_VIDEO_ID" --split-per-abi
       - name: Build Play Store bundle
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build appbundle --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build appbundle --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --dart-define="CAZETV_YOUTUBE_VIDEO_ID=$CAZETV_YOUTUBE_VIDEO_ID"
       - name: Verify release evidence
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/release_evidence.py
@@ -79,6 +87,13 @@ jobs:
         with:
           name: rocha-plus-release-evidence
           path: build/qa/release-evidence.json
+          if-no-files-found: error
+      - name: Upload CazeTV source metadata evidence
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-cazetv-source-metadata
+          path: build/qa/cazetv-source.json
           if-no-files-found: error
       - name: Upload universal APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login

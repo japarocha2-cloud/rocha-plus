@@ -38,3 +38,21 @@ No stream extraction, retransmission, ad removal or custom Cast for YouTube.
 CI runs static analysis, unit/widget tests and a clearly named visual preview build.
 That artifact is not a functional CazéTV beta. Do not deliver it for playback testing.
 A signed functional build and physical playback evidence remain pending.
+
+## Signed candidate configuration
+
+Dispatch Build Rocha+ on feat/cazetv-official-embed with signed_login=true
+and optional cazetv_video_id. The supplied ID is passed consistently to APK,
+split APKs and AAB. A pre-build check rejects invalid IDs, unavailable metadata
+and publishers outside the official CazéTV channel. Empty ID preserves the
+existing signed-login workflow but leaves CazéTV unavailable.
+This requires the existing signing/Firebase secrets; never publish them.
+The source check writes build/qa/cazetv-source.json with playback_verified=false.
+A successful signed build remains a development candidate requiring device tests.
+
+Browser metadata check on 08/10/2026:
+https://www.youtube.com/watch?v=vbAYMEX6MVw
+“JOGO COMPLETO: CRUZEIRO X SÃO PAULO | FINAL DA COPINHA 2026”.
+YouTube displayed the verified @CazeTV publisher; oEmbed returned that exact
+author_url and official iframe HTML. This is an archived replay, not a current live.
+Playback progression was not confirmed. ID remains unset by default.
