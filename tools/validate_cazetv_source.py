@@ -6,6 +6,8 @@ from pathlib import Path
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 
+KNOWN_BLOCKED_IDS = {"vbAYMEX6MVw"}  # Rejected on Moto G56: owner blocks embedding.
+
 OFFICIAL_PATHS = {"/@cazetv", "/channel/UCZiYbVptd3PVPf4f6eR6UaQ"}
 
 def official_author(value):
@@ -28,6 +30,8 @@ def download(url):
 def validate(video_id, fetch=download):
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id):
         raise ValueError("Invalid YouTube video ID")
+    if video_id in KNOWN_BLOCKED_IDS:
+        raise ValueError("Owner blocks embedding; rejected by physical playback test")
     url = "https://www.youtube.com/watch?" + urlencode({"v": video_id})
     payload = fetch("https://www.youtube.com/oembed?" +
                     urlencode({"url": url, "format": "json"}))
