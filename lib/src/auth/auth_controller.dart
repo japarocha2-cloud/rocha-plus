@@ -78,6 +78,26 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  Future<bool> deleteAccount() async {
+    if (busy || !ready || account == null || _disposed) return false;
+    busy = true;
+    error = null;
+    notifyListeners();
+    try {
+      await repository.deleteAccount();
+      if (!_disposed) account = null;
+      return true;
+    } on LoginFailure catch (failure) {
+      if (!_disposed) error = failure.message;
+      return false;
+    } catch (_) {
+      if (!_disposed) error = 'Não foi possível excluir a conta. Tente novamente.';
+      return false;
+    } finally {
+      if (!_disposed) { busy = false; notifyListeners(); }
+    }
+  }
+
   @override
   void dispose() {
     _disposed = true;
