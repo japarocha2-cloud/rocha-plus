@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../theme/rocha_theme.dart';
+import '../sports/caze_tv_source.dart';
 
 /// Official YouTube embed only; no signal extraction or retransmission.
 class CazeTvScreen extends StatefulWidget {
@@ -8,15 +9,13 @@ class CazeTvScreen extends StatefulWidget {
 
   static const usesOfficialYouTubeEmbed = true;
   static const extractsMediaStream = false;
-  static bool isValidVideoId(String value) =>
-      RegExp(r'^[A-Za-z0-9_-]{11}\$').hasMatch(value);
+  static bool isValidVideoId(String value) => CazeTvSource.isValidVideoId(value);
 
   @override
   State<CazeTvScreen> createState() => _CazeTvScreenState();
 }
 
 class _CazeTvScreenState extends State<CazeTvScreen> {
-  static const _videoId = String.fromEnvironment('CAZETV_YOUTUBE_VIDEO_ID');
   WebViewController? _web;
   bool _loading = true;
   bool _error = false;
@@ -24,12 +23,8 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
   @override
   void initState() {
     super.initState();
-    if (!CazeTvScreen.isValidVideoId(_videoId)) return;
-    final url = Uri.https('www.youtube.com', '/embed/$_videoId', {
-      'playsinline': '1',
-      'controls': '1',
-      'rel': '0',
-    });
+    final url = CazeTvSource.embedUri;
+    if (url == null) return;
     _web = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
