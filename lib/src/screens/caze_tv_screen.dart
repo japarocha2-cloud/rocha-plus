@@ -349,13 +349,13 @@ class _NoOfficialVideo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.live_tv_outlined,
-            color: RochaColors.gold, size: 42),
-          SizedBox(height: 9),
+            color: RochaColors.gold, size: 32),
+          SizedBox(height: 5),
           Text('Nenhuma transmissão oficial configurada',
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.w700)),
