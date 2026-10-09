@@ -118,6 +118,13 @@ class ChannelRepository {
     'South Park: Colecao Stan',
     'Tokusato',
     'Turma da Monica (720p)',
+    // Reprovados na varredura Notícias: docs/moto-g56-noticias.md.
+    'BandNews (1080p)',
+    'BM&C News (720p)',
+    'BR8 TV',
+    'Pluto TV Record News (720p)',
+    'TV Brusque (720p)',
+    'TV Paraense (720p)',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
