@@ -2,6 +2,10 @@
 class CazeTvSource {
   const CazeTvSource._();
 
+  // YouTube requires the installed app ID as the WebView HTTP Referer.
+  // Keep this aligned with Android's applicationId (com.rochaplus.app).
+  static const appHttpReferer = 'https://com.rochaplus.app/';
+
   static const configuredVideoId =
       String.fromEnvironment('CAZETV_YOUTUBE_VIDEO_ID');
 
