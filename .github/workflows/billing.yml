@@ -1,0 +1,20 @@
+name: Billing backend tests
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Subscription policy and account binding
+        run: node --test backend/policy.test.js
+      - name: Syntax check backend
+        run: node --check backend/index.js
