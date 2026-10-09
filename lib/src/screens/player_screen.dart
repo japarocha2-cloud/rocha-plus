@@ -323,7 +323,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 children: [
                   Text(widget.channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
-                    _playbackConfirmed
+                    _failed ? 'Sinal indisponível' : _playbackConfirmed
                         ? (_isBuffering ? 'Carregando…' : _isPlaying ? 'Reproduzindo' : 'Pausado')
                         : 'Conectando…',
                     style: TextStyle(

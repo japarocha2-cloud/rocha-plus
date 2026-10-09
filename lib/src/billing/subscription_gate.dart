@@ -22,6 +22,7 @@ class SubscriptionGate extends StatefulWidget {
 class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBindingObserver {
   late final BillingController controller;
   bool previouslyAllowed = false;
+  GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
   @override
   void initState() {
     super.initState();
@@ -38,6 +39,9 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   }
   void checkAccess() {
     if (previouslyAllowed && !controller.allowed) unawaited(stopCast());
+    if (previouslyAllowed != controller.allowed) {
+      navigationKey = GlobalKey<NavigatorState>();
+    }
     previouslyAllowed = controller.allowed;
   }
   @override
@@ -54,9 +58,14 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   }
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: controller,
-    builder: (_, __) => Navigator(
+    builder: (_, __) => NavigatorPopHandler<Object?>(
+      onPopWithResult: (_) {
+        final navigator = navigationKey.currentState;
+        if (navigator != null) unawaited(navigator.maybePop());
+      },
+      child: Navigator(
       // Replace the complete route stack on loss of entitlement, disposing players.
-      key: ValueKey(controller.allowed),
+      key: navigationKey,
       onGenerateRoute: (_) => MaterialPageRoute(builder: (_) =>
         controller.allowed
           ? HomeScreen(favoritesRepository: widget.favoritesRepository,
@@ -65,5 +74,5 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
                 SubscriptionScreen(controller: controller)));
             })
           : SubscriptionScreen(controller: controller, onSignOut: widget.onSignOut)),
-    ));
+    )));
 }

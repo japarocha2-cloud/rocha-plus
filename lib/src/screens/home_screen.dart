@@ -108,7 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
       'Infantil' => 'Infantil', _ => 'TV aberta',
     };
     await Navigator.push(context, MaterialPageRoute(builder: (_) =>
-      title == 'Notícias' ? const NewsScreen() :
+      title == 'Notícias' ? NewsScreen(repository: widget.repository,
+        favoritesRepository: favoritesRepository) :
         LiveTvScreen(initialGroup: group, repository: widget.repository,
           favoritesRepository: favoritesRepository)));
     if (mounted) { _load(); }
