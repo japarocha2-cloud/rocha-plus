@@ -73,8 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível excluir a conta. Tente novamente.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível excluir a conta. Tente novamente.')));
+      }
     } finally {
       if (mounted) setState(() => signingOut = false);
     }
