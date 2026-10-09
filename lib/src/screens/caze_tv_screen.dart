@@ -347,27 +347,38 @@ class _NoOfficialVideo extends StatelessWidget {
   const _NoOfficialVideo();
 
   @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.live_tv_outlined,
-            color: RochaColors.gold, size: 32),
-          SizedBox(height: 5),
-          Text('Nenhuma transmissão oficial configurada',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w700)),
-          SizedBox(height: 5),
-          Text('A reprodução depende de um vídeo da CazéTV '
-            'que permita incorporação.',
-            style: TextStyle(fontSize: 12, color: Colors.white70),
-            textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxHeight < 190;
+      return Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 9 : 14,
+          vertical: compact ? 4 : 12,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.live_tv_outlined,
+              color: RochaColors.gold, size: compact ? 24 : 36),
+            SizedBox(height: compact ? 3 : 8),
+            Text('Nenhuma transmissão oficial configurada',
+              maxLines: 2, overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: compact ? 12 : 14,
+                fontWeight: FontWeight.w700)),
+            if (!compact) ...[
+              const SizedBox(height: 6),
+              const Text('A reprodução depende de um vídeo da CazéTV '
+                'que permita incorporação.',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+                textAlign: TextAlign.center),
+            ],
+          ],
+        ),
+      );
+    },
+  );
 }
 
 /// Navigation cards remain informative until the official catalog is wired.
