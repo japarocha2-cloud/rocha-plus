@@ -14,7 +14,7 @@ on:
       cazetv_video_id:
         description: ID de video oficial CazeTV para candidato de teste (opcional; nao comprova reproducao)
         type: string
-        default: ''
+        default: 'rLwn_v8PyZM'
 
 permissions:
   contents: read
