@@ -1,3 +1,4 @@
+import '../widgets/favorites_sync_notice.dart';
 import 'package:flutter/material.dart';
 import '../live/channel.dart';
 import '../live/channel_search.dart';
@@ -11,7 +12,8 @@ import '../widgets/rocha_channel_card.dart';
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
   final ChannelRepository? repository;
-  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository});
+  final FavoritesRepository? favoritesRepository;
+  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository, this.favoritesRepository});
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
 }
@@ -20,7 +22,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   late final ChannelRepository repository;
   bool scanning = false;
   Map<String, ChannelReachability> reachability = {};
-  final favoritesRepository = FavoritesRepository();
+  late final favoritesRepository = widget.favoritesRepository ?? FavoritesRepository();
   final search = TextEditingController();
   List<Channel> channels = const [];
   Set<String> favorites = {};
@@ -31,11 +33,15 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   void initState() {
     super.initState();
+    favoritesRepository.addListener(_favoritesChanged);
     repository = widget.repository ?? ChannelRepository();
     selectedGroup = widget.initialGroup;
     load();
   }
 
+  void _favoritesChanged() {
+    if (mounted) setState(() => favorites = favoritesRepository.values);
+  }
   Future<void> load({bool forceRefresh = false}) async {
     setState(() { loading = true; error = null; });
     try {
@@ -87,14 +93,19 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   Future<void> toggleFavorite(Channel channel) async {
-    final next = {...favorites};
-    next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
-    setState(() => favorites = next);
-    await favoritesRepository.save(next);
+    try {
+      await favoritesRepository.toggle(channel);
+      if (mounted) setState(() => favorites = favoritesRepository.values);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível salvar o favorito.')));
+    }
   }
 
   @override
   void dispose() {
+    favoritesRepository.removeListener(_favoritesChanged);
+    if (widget.favoritesRepository == null) favoritesRepository.dispose();
     search.dispose();
     super.dispose();
   }
@@ -117,12 +128,14 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     }
 
     final q = search.text;
-    final visible = channels.where((c) {
+    final candidates = selectedGroup == 'Favoritos'
+      ? favoritesRepository.savedChannels(channels) : channels;
+    final visible = candidates.where((c) {
       final technicalGroup = c.group.contains(';');
       if (technicalGroup || repository.isQuarantined(c.url) || repository.isBlocked(c)) return false;
       final matchesSearch = channelMatchesSearch(c, q);
       final matchesGroup = selectedGroup == 'Todos' ||
-          (selectedGroup == 'Favoritos' && favorites.contains(c.url)) ||
+          (selectedGroup == 'Favoritos' && favoritesRepository.contains(favorites, c)) ||
           c.group == selectedGroup;
       return matchesSearch && matchesGroup;
     }).toList(growable: false);
@@ -171,6 +184,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ],
       ),
       body: Column(children: [
+        FavoritesSyncNotice(repository: favoritesRepository, catalog: channels),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: TextField(
@@ -229,7 +243,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                             itemBuilder: (_, i) {
                               final channel = visible[i];
                               return RochaChannelCard(
-                                channel: channel, favorite: favorites.contains(channel.url),
+                                channel: channel, favorite: favoritesRepository.contains(favorites, channel),
                                 availability: reachability[channel.url] == ChannelReachability.unavailable
                                     ? 'Endereço indisponível na última verificação' : null,
                                 onFavorite: () => toggleFavorite(channel),

@@ -1,0 +1,26 @@
+name: Favorites security
+on:
+  pull_request:
+    branches: [main]
+    paths: ['favorites/**', '.github/workflows/favorites.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  firestore-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install emulator test tools
+        working-directory: favorites
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Test account isolation and favorites rules
+        working-directory: favorites
+        run: npm test
