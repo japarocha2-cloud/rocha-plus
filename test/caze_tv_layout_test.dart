@@ -36,6 +36,14 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('very narrow phone has no layout overflow',
+      (tester) async {
+    await showScreen(tester, const Size(320, 568));
+    expect(find.byKey(const ValueKey('cazetv-player-panel')),
+      findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('TV-width layout includes non-interactive planned categories',
       (tester) async {
     await showScreen(tester, const Size(1280, 720));
