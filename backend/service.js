@@ -23,17 +23,23 @@ export function createBillingService({ store, readPlay, acknowledge, verifyIdent
   async function current(uid) {
     const tokens = await store.tokens(uid);
     if (!tokens.length) return { active: false, state: 'NONE', expiresAt: null };
-    const results = [];
-    for (const token of tokens) {
+    // At most 20 tokens, queried together within the Publisher request timeout.
+    // Refreshing entitlement must not rewrite ownership on every poll.
+    const values = await Promise.all(tokens.map(async token => {
       if (await store.owner(token) !== uid) throw new Error('token-owned');
       try {
-        results.push(await verify(uid, token));
+        const { purchase, result } = await checked(uid, token);
+        if (result.active && purchase.acknowledgementState === 'ACKNOWLEDGEMENT_STATE_PENDING') {
+          await acknowledge(token);
+        }
+        return result;
       } catch (error) {
-        // Play returns 410 once an old token is no longer queryable. It cannot
-        // grant access; transient/auth/configuration errors must fail closed.
-        if (error.response?.status !== 410) throw error;
+        // A gone historic token cannot grant access. Other errors fail closed.
+        if (error.response?.status === 410) return null;
+        throw error;
       }
-    }
+    }));
+    const results = values.filter(Boolean);
     results.sort((a, b) => Number(b.active) - Number(a.active) ||
       (b.expiresAt ?? 0) - (a.expiresAt ?? 0));
     return results[0] ?? { active: false, state: 'NONE', expiresAt: null };
