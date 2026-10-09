@@ -11,7 +11,8 @@ class BillingController extends ChangeNotifier {
   static const productId = 'rocha_plus_monthly';
   static const endpoint = String.fromEnvironment('ROCHA_BILLING_ENDPOINT');
   final String uid;
-  BillingController(this.uid);
+  final bool beta;
+  BillingController(this.uid, {this.beta = RochaReleasePolicy.stage == RochaReleaseStage.beta});
   StreamSubscription<List<PurchaseDetails>>? _purchases;
   Timer? _poll;
   Timer? _expiry;
@@ -24,7 +25,6 @@ class BillingController extends ChangeNotifier {
   int? expiresAt;
   bool autoRenewing = false;
   List<GooglePlayProductDetails> offers = [];
-  bool get beta => RochaReleasePolicy.betaAccessIsFree;
   bool get allowed => beta || (active && expiresAt != null &&
       DateTime.now().millisecondsSinceEpoch < expiresAt!);
   bool get configured => Uri.tryParse(endpoint)?.scheme == 'https';

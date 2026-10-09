@@ -28,8 +28,12 @@ nem mudar RochaReleasePolicy.stage sem autorização explícita de lançamento.
 6. Renovação, cancelamento e revogação são consultados novamente na Play em cada
    acesso ao endpoint entitlement e a cada 30s no cliente, ao retornar ao app e na
    restauração. Erro de rede bloqueia modo comercial. ExpiryTime tem timer local.
-   Antes do lançamento adicionar RTDN autenticado, observabilidade e testes de
-   integração com emulador Firestore; o polling não é comprovação de entrega RTDN.
+   Configurar tópico Pub/Sub rocha-play-billing, conceder publisher somente à
+   identidade oficial de notificações da Play e configurar RTDN na Play Console.
+   Implantar billingNotifications com IAM do trigger, nunca endpoint público.
+   O handler reconsulta Play; não aceita estado informado pela notificação.
+   Antes do lançamento validar entrega/retries RTDN, observabilidade e testes de
+   integração com emulador Firestore; o polling não comprova entrega RTDN.
 
 ## Segurança e limites
 Firebase ID token verificado com revogação; UID não vem do corpo do cliente.

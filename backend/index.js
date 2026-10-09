@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { onMessagePublished } from 'firebase-functions/v2/pubsub';
 import { onRequest } from 'firebase-functions/v2/https';
 import { GoogleAuth } from 'google-auth-library';
 import { createHash } from 'node:crypto';
@@ -74,3 +75,21 @@ export const billing = onRequest({ maxInstances: 5, timeoutSeconds: 30 }, async 
     res.status(403).json({ error: 'verification-unavailable', active: false });
   }
 });
+
+export const billingNotifications = onMessagePublished(
+  { topic: 'rocha-play-billing', retry: true, timeoutSeconds: 30 },
+  async event => {
+    const notification = event.data.message.json;
+    if (notification.packageName !== packageName) return;
+    const token = notification.subscriptionNotification?.purchaseToken;
+    if (typeof token !== 'string' || token.length > 4096) return;
+    const owner = await db.doc('billingTokens/' + tokenKey(token)).get();
+    if (!owner.exists) return; // Client verification binds new purchases first.
+    // Pub/Sub IAM authenticates delivery. Notification state is never trusted.
+    // A retry queries current Play state; no event can manufacture entitlement.
+    const purchase = await readPlay(token);
+    assertOwner(purchase, owner.data().uid);
+    const result = entitlement(purchase);
+    if (!result.testPurchase) return;
+    await verify(owner.data().uid, token);
+  });
