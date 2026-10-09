@@ -41,5 +41,10 @@ export const billingNotifications = onMessagePublished(
     try { message = event.data.message.json; } catch (_) { return; }
     // IAM authenticates the Pub/Sub trigger. Invalid messages are discarded;
     // temporary Publisher/Firestore failures throw for retry.
-    await service.notification(message);
+    try { await service.notification(message); }
+    catch (_) {
+      // Raw Publisher exceptions include request URLs with purchase tokens.
+      // Throw only a safe retry signal to the Functions logger.
+      throw new Error('Billing notification refresh unavailable');
+    }
   });
