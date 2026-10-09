@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/live/channel.dart';
+import 'package:rocha_plus/src/live/account_favorites.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/favorite_entry.dart';
 import 'package:rocha_plus/src/live/favorites_repository.dart';
@@ -25,9 +26,28 @@ class SavedStore implements FavoritesStore {
   @override
   Future<void> remove(String id) async {}
 }
+class TrackedRepository extends FavoritesRepository {
+  bool wasDisposed = false;
+  @override
+  void dispose() { wasDisposed = true; super.dispose(); }
+}
 void main() {
   setUp(() { SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests(); });
+  testWidgets('changing account replaces and disposes previous favorites session', (tester) async {
+    final created = <TrackedRepository>[];
+    Widget account(String uid) => MaterialApp(home: AccountFavorites(uid: uid,
+      repositoryFactory: (_) {
+        final repo = TrackedRepository(); created.add(repo); return repo;
+      }, builder: (_) => Text(uid)));
+    await tester.pumpWidget(account('alice'));
+    await tester.pumpWidget(account('bob'));
+    expect(created.length, 2);
+    expect(created.first.wasDisposed, isTrue);
+    expect(created.last.wasDisposed, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    expect(created.last.wasDisposed, isTrue);
+  });
   testWidgets('Home highlights all saved channels above the carousel and shares account repository', (tester) async {
     await tester.binding.setSurfaceSize(const Size(430, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -45,7 +65,7 @@ void main() {
     expect(cards, findsWidgets);
     final row = find.ancestor(of: cards.first, matching: find.byType(ListView)).first;
     final delegate = (tester.widget<ListView>(row).childrenDelegate as SliverChildBuilderDelegate);
-    expect(delegate.childCount, 13);
+    expect(delegate.childCount, 25); // 13 cards plus 12 separators.
     expect(tester.getTopLeft(find.text('Meus favoritos')).dy,
       lessThan(tester.getTopLeft(find.text('Explore o Rocha+')).dy));
     await tester.tap(find.text('Ver todos').first); await tester.pumpAndSettle();

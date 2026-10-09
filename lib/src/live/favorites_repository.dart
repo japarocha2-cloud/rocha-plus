@@ -111,7 +111,7 @@ class FavoritesRepository extends ChangeNotifier {
       desired == null ? store!.remove(id) : store!.put(desired));
     unawaited(operation.then((_) {
       if (_disposed || _versions[id] != version) return;
-      if (desired == null) { _remote.remove(id); } else { _remote[id] = desired; }
+      if (desired == null) { _remote.remove(id); } else { _remote.putIfAbsent(id, () => desired); }
       _pending.remove(id); _notify();
     }).catchError((Object _) {
       if (_disposed || _versions[id] != version) return;
@@ -134,7 +134,9 @@ class FavoritesRepository extends ChangeNotifier {
     return saved.map((entry) => current[entry.id] ?? entry.channel).toList();
   }
   Future<void> importLegacy(List<Channel> catalog) async {
-    if (!cloud || !ready || isCurrentAccount?.call() == false) return;
+    if (_disposed || !cloud || !ready || isCurrentAccount?.call() == false) {
+      throw StateError('Favorites unavailable for this session');
+    }
     for (final channel in catalog.where((c) => legacyUrls.contains(c.url))) {
       final id = idFor(channel);
       if (_entries.containsKey(id)) continue;
