@@ -1,12 +1,24 @@
 /// Official CazéTV video identifier for YouTube's embedded player.
 class CazeTvSource {
   const CazeTvSource._();
+
   static const configuredVideoId =
       String.fromEnvironment('CAZETV_YOUTUBE_VIDEO_ID');
-  static bool isValidVideoId(String value) =>
-      RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(value);
+
+  static bool isValidVideoId(String value) {
+    if (value.length != 11) return false;
+    for (final unit in value.codeUnits) {
+      final digit = unit >= 48 && unit <= 57;
+      final upper = unit >= 65 && unit <= 90;
+      final lower = unit >= 97 && unit <= 122;
+      if (!(digit || upper || lower || unit == 45 || unit == 95)) return false;
+    }
+    return true;
+  }
+
   static String? get officialVideoId =>
       isValidVideoId(configuredVideoId) ? configuredVideoId : null;
+
   static Uri? get embedUri {
     final id = officialVideoId;
     if (id == null) return null;
