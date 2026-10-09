@@ -12,7 +12,9 @@ class CazeTvValidation {
     if (uri == null || uri.scheme != 'https' ||
         uri.host != 'www.youtube.com' ||
         uri.hasQuery || uri.hasFragment || uri.userInfo.isNotEmpty ||
-        uri.hasPort) return false;
+        uri.hasPort) {
+      return false;
+    }
     return uri.path.toLowerCase() == '/@cazetv' ||
         uri.path == '/channel/UCZiYbVptd3PVPf4f6eR6UaQ';
   }
