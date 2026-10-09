@@ -3,7 +3,7 @@
 Frozen main base: 231bca553bdd2417ae33bab68fd324d783febdf1.
 Work stays on feat/cazetv-official-embed / PR #13. Do not merge before device validation.
 
-The approved dark/gold screen has the title “CazéTV • Oficial”, a large 16:9
+The approved dark/gold screen has the title “CazéTV • Oficial”, a large
 official YouTube player, loading status and retry. No catalog is displayed
 until an official catalog is available.
 
@@ -11,10 +11,16 @@ CAZETV_YOUTUBE_VIDEO_ID remains unset by default. A candidate ID is checked
 against YouTube's HTTPS oEmbed metadata before loading. Only the official
 @CazeTV handle or channel UCZiYbVptd3PVPf4f6eR6UaQ is accepted.
 Missing/malformed metadata, network failures and other publishers fail closed.
-The returned HTML is never executed; the app constructs the official embed URL.
+The returned oEmbed HTML is never executed. Our own local wrapper loads only
+YouTube's official IFrame API, with the installed app ID as baseUrl/Referer and
+origin. Controls and ads stay visible, with autoplay disabled.
 Metadata validation is not proof of current embed permission, regional access,
-live status or successful playback. YouTube's own player shows playback errors.
-A 20-second page-load timeout enables retry; page completion does not mean playing.
+live status or successful playback. Official onReady/onStateChange/onError events
+update the screen; page completion never clears the player loading indicator.
+A 20-second player-readiness timeout enables retry. YouTube errors 2/5/100/101/150/153
+have clear messages. Retry clears status and ignores messages from the prior session.
+The playing label reflects API state 1; it does not certify physical video/audio.
+The player viewport is at least 200 pixels high on narrow phones.
 
 Source references:
 - https://www.youtube.com/@CazeTV

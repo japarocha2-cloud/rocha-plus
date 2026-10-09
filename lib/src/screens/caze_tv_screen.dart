@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../sports/caze_tv_source.dart';
+import '../sports/caze_tv_embed.dart';
+import '../sports/caze_tv_playback.dart';
 import '../sports/caze_tv_validation.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
@@ -29,6 +31,17 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
   bool _error = false;
   bool _validating = false;
   Timer? _loadTimeout;
+  final _playback = CazeTvPlayback();
+  int _session = 0;
+
+  void _onPlayerMessage(JavaScriptMessage message) {
+    if (!mounted || !_playback.accept(message.message, _session)) return;
+    _loadTimeout?.cancel();
+    setState(() {
+      _loading = _playback.buffering;
+      _error = _playback.errorCode != null;
+    });
+  }
 
   void _fail() {
     _loadTimeout?.cancel();
@@ -39,6 +52,9 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
 
   Future<void> _prepareVideo() async {
     if (_validating || CazeTvSource.officialVideoId == null) return;
+    _loadTimeout?.cancel();
+    _session++;
+    _playback.reset();
     setState(() { _validating = true; _loading = true; _error = false; });
     final verified = await CazeTvValidation.verify(CazeTvSource.officialVideoId!);
     if (!mounted) return;
@@ -55,9 +71,11 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
   }
 
   Future<void> _loadVideo() async {
-    final url = CazeTvSource.embedUri;
+    final id = CazeTvSource.officialVideoId;
     final web = _web;
-    if (url == null || web == null) return;
+    if (id == null || web == null || !mounted) return;
+    _session++;
+    _playback.reset();
     if (mounted) {
       setState(() {
         _loading = true;
@@ -67,9 +85,8 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
     _loadTimeout?.cancel();
     _loadTimeout = Timer(const Duration(seconds: 20), _fail);
     try {
-      await web.loadRequest(url, headers: const {
-        'Referer': CazeTvSource.appHttpReferer,
-      });
+      await web.loadHtmlString(CazeTvEmbed.html(id, _session),
+        baseUrl: CazeTvSource.appHttpReferer);
     } catch (_) {
       _fail();
     }
@@ -84,14 +101,9 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
   WebViewController _createController() => WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
+      ..addJavaScriptChannel('RochaYouTube', onMessageReceived: _onPlayerMessage)
       ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (_) {
-          if (mounted) setState(() => _loading = true);
-        },
-        onPageFinished: (_) {
-          _loadTimeout?.cancel();
-          if (mounted) setState(() => _loading = false);
-        },
+        // Page completion is not player readiness or successful playback.
         onWebResourceError: (error) {
           if (error.isForMainFrame == true) _fail();
         },
@@ -100,6 +112,10 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
           if (uri == null || uri.scheme != 'https') {
             return NavigationDecision.prevent;
           }
+          if (uri.origin == Uri.parse(CazeTvSource.appHttpReferer).origin) {
+            return NavigationDecision.navigate;
+          }
+          if (request.isMainFrame) return NavigationDecision.prevent;
           final host = uri.host.toLowerCase();
           if (host == 'youtube.com' || host.endsWith('.youtube.com') ||
               host == 'youtube-nocookie.com' ||
@@ -196,15 +212,16 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
+          LayoutBuilder(builder: (context, constraints) => SizedBox(
+            width: constraints.maxWidth,
+            height: (constraints.maxWidth * 9 / 16).clamp(200.0, double.infinity),
             child: controller == null
                 ? _NoOfficialVideo(message: _validating
                     ? 'Verificando fonte oficial...'
                     : _error ? 'Vídeo oficial indisponível'
                     : 'Nenhuma transmissão oficial configurada')
                 : WebViewWidget(controller: controller),
-          ),
+          )),
           if (_loading && !_error)
             const Padding(
               padding: EdgeInsets.all(10),
@@ -220,14 +237,24 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
                 ],
               ),
             ),
-          if (_error)
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                'Não foi possível validar ou carregar o vídeo oficial. '
-                'O vídeo pode não permitir incorporação.',
+          if (!_loading && !_error && _playback.ready)
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(_playback.label,
+                key: const ValueKey('cazetv-playback-status'),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70)),
+                style: const TextStyle(fontSize: 12, color: Colors.white70)),
+            ),
+          if (_error)
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                _playback.errorCode == null
+                    ? 'Não foi possível validar ou carregar o vídeo oficial. '
+                      'Confira a conexão e tente novamente.'
+                    : _playback.label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70)),
             ),
         ],
       ),
@@ -240,7 +267,8 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
       height: 54,
       child: FilledButton.icon(
         key: const ValueKey('cazetv-watch-official'),
-        onPressed: available ? () => unawaited(_loadVideo()) : null,
+        onPressed: available && !_validating
+            ? () => unawaited(_prepareVideo()) : null,
         style: FilledButton.styleFrom(
           foregroundColor: const Color(0xFF100D07),
           backgroundColor: RochaColors.gold,
