@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../widgets/favorites_sync_notice.dart';
 import 'package:flutter/material.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
@@ -14,9 +15,10 @@ class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
   final Future<void> Function()? onSignOut;
   final bool previewOnly;
+  final FavoritesRepository? favoritesRepository;
   final void Function(BuildContext)? onSubscription;
   const HomeScreen({super.key, this.repository, this.onSignOut,
-    this.previewOnly = false, this.onSubscription});
+    this.previewOnly = false, this.favoritesRepository, this.onSubscription});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -30,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final repository = widget.repository ?? ChannelRepository();
-  final favoritesRepository = FavoritesRepository();
+  late final favoritesRepository = widget.favoritesRepository ?? FavoritesRepository();
   List<Channel> channels = [];
   Set<String> favorites = {};
   bool loading = true;
@@ -53,11 +55,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    favoritesRepository.addListener(_favoritesChanged);
     if (widget.previewOnly) {
       loading = false;
     } else {
       _load();
     }
+  }
+  void _favoritesChanged() {
+    if (mounted) setState(() => favorites = favoritesRepository.values);
+  }
+  @override
+  void dispose() {
+    favoritesRepository.removeListener(_favoritesChanged);
+    if (widget.favoritesRepository == null) favoritesRepository.dispose();
+    super.dispose();
   }
   Future<void> _load() async {
     if (widget.previewOnly) return;
@@ -75,11 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Future<void> _favorite(Channel channel) async {
     if (widget.previewOnly) return;
-    final next = {...favorites};
-    next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
     try {
-      await favoritesRepository.save(next);
-      if (mounted) setState(() => favorites = next);
+      await favoritesRepository.toggle(channel);
+      if (mounted) setState(() => favorites = favoritesRepository.values);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     await Navigator.push(context, MaterialPageRoute(builder: (_) =>
       title == 'Notícias' ? const NewsScreen() :
-        LiveTvScreen(initialGroup: group, repository: widget.repository)));
+        LiveTvScreen(initialGroup: group, repository: widget.repository,
+          favoritesRepository: favoritesRepository)));
     if (mounted) { _load(); }
   }
   Widget _menu({bool drawer = false}) => Container(
@@ -127,8 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final wide = constraints.maxWidth >= 900;
     final live = channels.where((c) => c.group == 'TV aberta' &&
       !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
-    final saved = channels.where((c) => favorites.contains(c.url) &&
-      !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
+    final saved = favoritesRepository.savedChannels(channels).where((c) =>
+      !repository.isBlocked(c) && !repository.isQuarantined(c.url)).toList();
     return Scaffold(
       drawer: wide ? null : Drawer(backgroundColor: RochaColors.background,
         child: SafeArea(child: _menu(drawer: true))),
@@ -149,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _open('TV ao Vivo');
                   } else {
                     Navigator.push(context, MaterialPageRoute(
-                      builder: (_) => LiveTvScreen(repository: widget.repository)));
+                      builder: (_) => LiveTvScreen(repository: widget.repository, favoritesRepository: favoritesRepository)));
                   }
                 },
                 child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
@@ -173,6 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text('MODO DE PRÉVIA: somente layout. Canais e espelhamento desativados.',
               key: ValueKey('home-preview-notice'),
               style: TextStyle(color: RochaColors.gold, fontWeight: FontWeight.w700)))),
+          if (!widget.previewOnly) SliverToBoxAdapter(child:
+            FavoritesSyncNotice(repository: favoritesRepository, catalog: channels)),
+          if (saved.isNotEmpty) SliverToBoxAdapter(child:
+            _row('Meus favoritos', saved, () => _open('Favoritos'))),
           SliverToBoxAdapter(child: _FeaturedCarousel(
             wide: wide, onOpen: (section) { _open(section); })),
           SliverToBoxAdapter(child: Padding(
@@ -193,8 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
                   label: item.$1, icon: item.$2, onTap: () => _open(item.$1));
               })),
-          if (saved.isNotEmpty) SliverToBoxAdapter(child:
-            _row('Minha Lista', saved, () => _open('Favoritos'))),
+
           SliverToBoxAdapter(child: _row('Canais ao vivo', live, () => _open('TV ao Vivo'))),
           if (loading) const SliverToBoxAdapter(child: Padding(
             padding: EdgeInsets.all(28),
@@ -223,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 22), scrollDirection: Axis.horizontal,
         itemCount: items.length, separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (_, i) => SizedBox(width: 180, child: RochaChannelCard(
-          channel: items[i], favorite: favorites.contains(items[i].url),
+          channel: items[i], favorite: favoritesRepository.contains(favorites, items[i]),
           onFavorite: () => _favorite(items[i]),
           onOpen: () async {
             await Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerScreen(channel: items[i])));

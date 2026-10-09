@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import '../cast/cast_hls_proxy.dart';
 import '../screens/home_screen.dart';
+import '../live/favorites_repository.dart';
+import '../live/channel_repository.dart';
 import 'billing_controller.dart';
 import 'subscription_screen.dart';
 
 class SubscriptionGate extends StatefulWidget {
   final String uid;
+  final FavoritesRepository favoritesRepository;
+  final BillingController? billingController;
+  final ChannelRepository? channelRepository;
   final Future<void> Function() onSignOut;
-  const SubscriptionGate({super.key, required this.uid, required this.onSignOut});
+  const SubscriptionGate({super.key, required this.uid, required this.onSignOut,
+    required this.favoritesRepository, this.billingController, this.channelRepository});
   @override
   State<SubscriptionGate> createState() => _SubscriptionGateState();
 }
@@ -20,7 +26,8 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    controller = BillingController(widget.uid);
+    controller = widget.billingController ?? BillingController(widget.uid);
+    assert(controller.uid == widget.uid);
     previouslyAllowed = controller.allowed;
     controller.addListener(checkAccess);
     unawaited(controller.initialize());
@@ -41,7 +48,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     controller.removeListener(checkAccess);
-    controller.dispose();
+    if (widget.billingController == null) controller.dispose();
     unawaited(stopCast());
     super.dispose();
   }
@@ -52,7 +59,8 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
       key: ValueKey(controller.allowed),
       onGenerateRoute: (_) => MaterialPageRoute(builder: (_) =>
         controller.allowed
-          ? HomeScreen(onSignOut: widget.onSignOut, onSubscription: (context) {
+          ? HomeScreen(favoritesRepository: widget.favoritesRepository,
+              repository: widget.channelRepository, onSignOut: widget.onSignOut, onSubscription: (context) {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) =>
                 SubscriptionScreen(controller: controller)));
             })
