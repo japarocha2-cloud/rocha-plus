@@ -157,6 +157,12 @@ class ChannelRepository {
     'TV Gazin (720p)',
     'TV Grao Para (720p)',
     'TVitape (720p)',
+    // Falhas físicas adicionais; docs/moto-g56-outros-grupos.md.
+    'Pluto TV Turbo',
+    'Laboral TV (360p)',
+    'Detetives Medicos',
+    'Pluto TV Aliens',
+    'Pluto TV Animais',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
