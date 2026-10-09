@@ -7,7 +7,7 @@ import 'package:rocha_plus/src/screens/home_screen.dart';
 
 class EmptyDirectory extends ChannelRepository {
   @override
-  Future<List<Channel>> loadBrazilPublicDirectory() async => [];
+  Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) async => [];
 }
 
 void main() {
