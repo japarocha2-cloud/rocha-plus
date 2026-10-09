@@ -10,7 +10,22 @@ class CazeTvSource {
       String.fromEnvironment('CAZETV_YOUTUBE_VIDEO_ID');
 
   static bool isValidVideoId(String value) =>
-      RegExp(r'^[A-Za-z0-9_-]{11}\$').hasMatch(value);
+      RegExp(r'^[A-Za-z0-9_-]{11}(value);
+
+  static String? get officialVideoId =>
+      isValidVideoId(configuredVideoId) ? configuredVideoId : null;
+
+  static Uri? get embedUri {
+    final id = officialVideoId;
+    if (id == null) return null;
+    return Uri.https('www.youtube.com', '/embed/\$id', const {
+      'playsinline': '1',
+      'controls': '1',
+      'rel': '0',
+    });
+  }
+}
+).hasMatch(value);
 
   static String? get officialVideoId =>
       isValidVideoId(configuredVideoId) ? configuredVideoId : null;
