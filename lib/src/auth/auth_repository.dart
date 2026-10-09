@@ -18,4 +18,5 @@ abstract class AuthRepository {
   bool supports(LoginProvider provider);
   Future<void> signIn(LoginProvider provider);
   Future<void> signOut();
+  Future<void> deleteAccount();
 }
