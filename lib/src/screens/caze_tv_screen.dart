@@ -250,37 +250,40 @@ class _CazeTvScreenState extends State<CazeTvScreen> {
         border: Border.all(color: const Color(0xFF35363E)),
       ),
       padding: const EdgeInsets.all(16),
-      child: Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: 12,
-        spacing: 12,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.info_outline_rounded,
                 size: 28, color: Colors.white70),
               SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Problemas para carregar?',
-                    style: TextStyle(fontWeight: FontWeight.w700)),
-                  Text('Confira a conexão e tente novamente.',
-                    style: TextStyle(fontSize: 12, color: Colors.white60)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Problemas para carregar?',
+                      style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text('Confira a conexão e tente novamente.',
+                      softWrap: true,
+                      style: TextStyle(fontSize: 12, color: Colors.white60)),
+                  ],
+                ),
               ),
             ],
           ),
-          OutlinedButton.icon(
-            key: const ValueKey('cazetv-retry'),
-            onPressed: _web == null ? null : () => unawaited(_loadVideo()),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: RochaColors.silver,
-              side: const BorderSide(color: Color(0xFF77767B))),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Tentar novamente'),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              key: const ValueKey('cazetv-retry'),
+              onPressed: _web == null ? null : () => unawaited(_loadVideo()),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: RochaColors.silver,
+                side: const BorderSide(color: Color(0xFF77767B))),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Tentar novamente'),
+            ),
           ),
         ],
       ),
