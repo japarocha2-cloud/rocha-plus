@@ -58,16 +58,30 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   Future<void> scan(List<Channel> visible) async {
+    final pending = visible.where((c) => !reachability.containsKey(c.url)).toList();
     setState(() => scanning = true);
-    final sample = visible.take(40).toList();
     try {
-      final results = await repository.scanChannels(sample);
+      for (var offset = 0; offset < pending.length; offset += 40) {
+        if (!mounted) return;
+        final batch = pending.skip(offset).take(40).toList();
+        final results = await repository.scanChannels(batch);
+        if (!mounted) return;
+        setState(() => reachability.addAll(results));
+      }
       if (!mounted) return;
-      setState(() => reachability.addAll(results));
-      final accessible = results.values.where((v) => v == ChannelReachability.reachable).length;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(
-        '${results.length} endereços verificados; $accessible acessíveis. Teste a reprodução no Player.',
-      )));
+      final accessible = reachability.values.where((v) => v == ChannelReachability.reachable).length;
+      final unavailable = reachability.values.where((v) => v == ChannelReachability.unavailable).length;
+      final uncertain = reachability.length - accessible - unavailable;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 15),
+        content: Text('${reachability.length} verificados; $accessible acessíveis; '
+          '$unavailable indisponíveis; $uncertain inconclusivos. Teste a reprodução no Player.'),
+      ));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Verificação interrompida. Toque novamente para continuar.')));
+      }
     } finally {
       if (mounted) setState(() => scanning = false);
     }
@@ -141,7 +155,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: 'Verificar disponibilidade de até 40 canais',
+            tooltip: 'Verificar canais restantes em lotes de 40',
             onPressed: loading || scanning || visible.isEmpty ? null : () => scan(visible),
             icon: scanning ? const SizedBox(width: 20, height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.fact_check_outlined),
@@ -172,6 +186,18 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ],
       ),
       body: Column(children: [
+        if (reachability.isNotEmpty || scanning)
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              '${scanning ? "Verificando em lotes de 40" : "Verificação concluída ou interrompida"}: '
+              '${reachability.length} endereços; '
+              '${reachability.values.where((v) => v == ChannelReachability.reachable).length} acessíveis. '
+              'Acesso ao endereço não confirma reprodução.',
+              key: const ValueKey('channel-scan-progress'),
+              textAlign: TextAlign.center,
+            ),
+          ),
         if (selectedGroup == 'Esportes') Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
           child: SizedBox(width: double.infinity, child: OutlinedButton.icon(
