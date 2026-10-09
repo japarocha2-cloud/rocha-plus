@@ -11,7 +11,7 @@ import 'package:rocha_plus/src/live/favorites_repository.dart';
 import 'package:rocha_plus/src/screens/home_screen.dart';
 
 class TestBilling extends BillingController {
-  TestBilling({bool beta = false}) : super('alice', beta: beta);
+  TestBilling({super.beta = false}) : super('alice');
   @override
   Future<void> initialize() async {}
   @override

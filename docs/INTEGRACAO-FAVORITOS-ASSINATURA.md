@@ -10,8 +10,8 @@ verificado e direito ativo. Preço aprovado: R$ 4,90 mensal; 7 dias somente para
 novos assinantes elegíveis. Backend continua aceitando somente testPurchase.
 Nenhuma implantação, publicação do app ou cobrança real autorizada por este PR.
 
-Regras combinadas em backend/firestore.rules; emulator de favoritos usa essas
-mesmas regras. Cópia favorites/firestore.rules comparada por teste de igualdade.
+Regras combinadas em backend/firestore.rules; emulator de favoritos usa a cópia local
+favorites/firestore.rules, comparada com backend/firestore.rules por teste de igualdade.
 billingUsers/billingTokens negam leitura e gravação dos clientes. Favoritos próprios
 não dependem de assinatura ativa e não concedem acesso ao player.
 
