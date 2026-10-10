@@ -94,8 +94,11 @@ class M3uParser {
     // Animation alone is not evidence of suitability for children.
     // Keep the observed adult animation out even if upstream labels it Kids.
     final adultAnimation = RegExp(r'\bsouth[\s_-]*park\b', caseSensitive: false);
+    final identity = (tvgId ?? '').toLowerCase();
+    final adultAnimationIdentity = identity.startsWith('comedycentralsouthpark') ||
+        identity.startsWith('southpark');
     if (has('adult') || adultAnimation.hasMatch(_cleanName(name)) ||
-        (tvgId != null && adultAnimation.hasMatch(tvgId))) {
+        adultAnimationIdentity) {
       return 'Geral';
     }
     if (has('kids') || has('children') || has('infantil')) {

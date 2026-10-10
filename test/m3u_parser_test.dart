@@ -138,10 +138,11 @@ https://example.com/kids.m3u8
     final channels = M3uParser.parse('#EXTM3U\n'
         '#EXTINF:-1 group-title="Animation",Comedy Central South Park\nhttps://example.com/southpark\n'
         '#EXTINF:-1 group-title="Kids",SOUTH PARK (720p)\nhttps://example.com/wrongkids\n'
-        '#EXTINF:-1 tvg-id="SouthPark.br@HD" group-title="Children",Canal Renomeado\nhttps://example.com/renamed\n'
+        '#EXTINF:-1 tvg-id="ComedyCentralSouthPark.us@BR" group-title="Children",Canal Renomeado\nhttps://example.com/renamed\n'
+        '#EXTINF:-1 tvg-id="SouthParkColecaoCartman.us@BR" group-title="Kids",Coleção Renomeada\nhttps://example.com/collection\n'
         '#EXTINF:-1 group-title="Kids",SBT Kids\nhttps://example.com/sbtkids\n');
-    expect(channels.map((c) => c.group), ['Geral', 'Geral', 'Geral', 'Infantil']);
-    expect(channels, hasLength(4));
+    expect(channels.map((c) => c.group), ['Geral', 'Geral', 'Geral', 'Geral', 'Infantil']);
+    expect(channels, hasLength(5));
   });
 
 }
