@@ -36,7 +36,7 @@ Um plano **anual** é um período de cobrança de 12 meses; ele não deve ser an
 ## 6. Benefício do assinante fundador
 Clientes que aderirem durante o período fundador e atenderem aos critérios do regulamento específico poderão manter o preço de sua modalidade (R$ 5,00 mensal ou R$ 55,00 anual) nas renovações elegíveis, inclusive após a **eventual** inclusão de filmes e séries, se esta se concretizar.
 
-Os critérios, período de adesão, efeito de cancelamento, expiração, tentativa de cobrança malsucedida, troca de plano e recuperação de assinatura **precisam ser definidos e publicados antes da primeira venda**. Não garantir preço vitalício incondicional nem que uma expansão hipotética ocorrerá.
+A regra comercial escolhida é: **se o cliente solicitar o cancelamento e a assinatura vencer sem renovação, perde o benefício de fundador para contratações posteriores**. A pessoa mantém o acesso pelo período já pago, salvo hipóteses legalmente aplicáveis de reembolso ou revogação. Se reativar a renovação **antes do vencimento**, sem interrupção da assinatura, conserva o benefício. Após vencimento, eventual contratação será pelo preço vigente para novas adesões. A data de corte, as regras para falhas involuntárias de pagamento, trocas de plano e outros aspectos de elegibilidade **ainda precisam ser definidos e publicados antes da primeira venda**. Não prometer preço vitalício incondicional nem que a expansão hipotética ocorrerá.
 
 No momento da eventual expansão, a **tabela de referência para novos assinantes** em estudo é R$ 15,50 mensais ou R$ 170,50 anuais, com desconto equivalente a um mês na opção anual; esses valores poderão ser revistos antes de serem oferecidos.
 
