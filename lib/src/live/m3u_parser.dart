@@ -95,7 +95,9 @@ class M3uParser {
     // Keep the observed adult animation out even if upstream labels it Kids.
     final adultAnimation = RegExp(r'\bsouth[\s_-]*park\b', caseSensitive: false);
     if (has('adult') || adultAnimation.hasMatch(_cleanName(name)) ||
-        (tvgId != null && adultAnimation.hasMatch(tvgId))) return 'Geral';
+        (tvgId != null && adultAnimation.hasMatch(tvgId))) {
+      return 'Geral';
+    }
     if (has('kids') || has('children') || has('infantil')) {
       return 'Infantil';
     }
