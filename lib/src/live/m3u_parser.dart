@@ -91,8 +91,17 @@ class M3uParser {
 
     final normalized = parts.map((part) => part.toLowerCase()).toList();
     bool has(String token) => normalized.any((part) => part.contains(token));
-    if (has('adult')) return 'Geral';
-    if (has('kids') || has('children') || has('infantil') || has('animation')) {
+    // Animation alone is not evidence of suitability for children.
+    // Keep the observed adult animation out even if upstream labels it Kids.
+    final adultAnimation = RegExp(r'\bsouth[\s_-]*park\b', caseSensitive: false);
+    final identity = (tvgId ?? '').toLowerCase();
+    final adultAnimationIdentity = identity.startsWith('comedycentralsouthpark') ||
+        identity.startsWith('southpark');
+    if (has('adult') || adultAnimation.hasMatch(_cleanName(name)) ||
+        adultAnimationIdentity) {
+      return 'Geral';
+    }
+    if (has('kids') || has('children') || has('infantil')) {
       return 'Infantil';
     }
     if (has('sport') || has('esporte')) return 'Esportes';
@@ -100,6 +109,7 @@ class M3uParser {
     if (has('tv aberta') || OpenTvChannels.matches(name: name, tvgId: tvgId)) {
       return 'TV aberta';
     }
+    if (has('animation')) return 'Geral';
     if (has('general') || has('geral')) return 'Geral';
     if (normalized.every((part) => part == 'undefined')) return 'Outros';
     return parts.first;
