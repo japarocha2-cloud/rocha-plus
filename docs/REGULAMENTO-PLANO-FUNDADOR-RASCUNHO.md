@@ -20,7 +20,7 @@ Descontos anuais: fundador paga R$ 55,00 em vez de R$ 60,00 (economia de R$ 5,00
 2. **Momento de aquisição do direito:** [DECIDIR: compra paga validada pela Play OU assinatura com teste grátis iniciada antes da data de corte e convertida em pagamento após o teste]. O regulamento não pode deixar o cliente adivinhar.
 3. **Identificação:** comprovação no backend pela compra Google Play, conta vinculada e produto/base plan, com mecanismo auditável, sem depender apenas de checkbox, texto da interface ou declaração do usuário.
 4. **Duração do benefício:** preservação em renovações elegíveis enquanto persistirem as condições divulgadas e tecnicamente operáveis, sujeita a exigências legais; vedada promessa ambígua de "para sempre".
-5. **Cancelamento e expiração:** [DECIDIR se perde o desconto ao expirar e se haverá janela de recuperação por problemas de pagamento].
+5. **Cancelamento e expiração — DECISÃO COMERCIAL:** se o cliente cancelar a renovação e a assinatura chegar ao fim do período pago sem continuidade, **perde definitivamente o benefício de fundador para nova contratação futura**. O cancelamento não encurta o período já pago: o acesso permanece até o vencimento, salvo situações legalmente previstas (por exemplo, reembolso/revogação). Se desfizer o cancelamento **antes do vencimento**, mantendo a mesma assinatura ativa sem interrupção, conserva o benefício. Depois que ela expirar, eventual nova assinatura usará o preço disponível para novos clientes na data da contratação, mesmo que seja a mesma conta.
 6. **Troca de modalidade:** [DECIDIR o que acontece ao migrar mensal ↔ anual]. Evitar converter automaticamente sem informar valores e impacto no direito ao benefício.
 7. **Falha de pagamento, suspensão, período de carência e reativação:** [DEFINIR conforme Play e CDC].
 8. **Transferência de contas:** [DEFINIR]. Não permitir fraude com vínculos de token de compra.
@@ -29,11 +29,11 @@ Descontos anuais: fundador paga R$ 55,00 em vez de R$ 60,00 (economia de R$ 5,00
 ## O que NÃO é prometido
 - Inclusão de filmes ou séries em data específica, nem quantidade ou títulos determinados.
 - Direito automático a qualquer recurso que não tenha sido efetivamente lançado.
-- Valor fixo em situações de encerramento da assinatura e contratação de uma nova depois do período fundador, salvo regras expressas.
+- Recuperação do preço fundador após o vencimento de uma assinatura cancelada: nessa hipótese, o cliente que voltar adere à tabela vigente, sem preço legado.
 - Acesso comercial enquanto Play Console e backend estiverem em modo de testes.
 
 ## Apresentação proposta no aplicativo
-> "Quem assinar o Rocha+ no período fundador poderá manter seu valor original nas renovações elegíveis, mesmo se lançarmos filmes e séries no futuro. A expansão ainda não tem data definida. Confira o regulamento completo, inclusive regras sobre cancelamento, troca de plano e elegibilidade, antes de assinar."
+> "Quem assinar o Rocha+ no período fundador poderá manter seu valor original nas renovações elegíveis, mesmo se lançarmos filmes e séries no futuro. Se você cancelar e deixar sua assinatura vencer, perderá o preço de fundador ao voltar. Seu acesso já pago continua até o vencimento. Filmes e séries ainda não têm data definida. Consulte as condições completas antes de assinar."
 
 ## Implementação futura
 - Configurar base plans com períodos mensal e anual na Play Console.
