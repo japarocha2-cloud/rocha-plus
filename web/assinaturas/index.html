@@ -6,12 +6,12 @@
 <meta name="color-scheme" content="dark">
 <title>Rocha+ | Planos e fidelidade (prévia)</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#080811;color:#fff;--violet:#8748ff;--gold:#f9cc6c;--muted:#b7b1c9}
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#080811;color:#fff;--violet:#e23c52;--gold:#f9cc6c;--muted:#b7b1c9}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 90% 0%,#271445 0,transparent 36%),#080811;line-height:1.5}
+body{margin:0;background:radial-gradient(circle at 90% 0%,#3b1728 0,transparent 36%),#080811;line-height:1.5}
 main{max-width:1060px;margin:auto;padding:24px 17px 80px}
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:12px}
-.logo{font-size:30px;font-weight:850;letter-spacing:-1.5px}.logo span{color:#a467ff}
+.logo{font-size:30px;font-weight:850;letter-spacing:-1.5px}.logo span{color:#ff4158}
 .pill{border:1px solid #4a396c;background:#231938;border-radius:999px;padding:7px 11px;color:#d6bee9;font-size:12px}
 h1{font-size:clamp(32px,5vw,56px);letter-spacing:-1.8px;line-height:1.08;margin:0 0 12px}
 h1 em{font-style:normal;color:var(--gold)}
@@ -20,7 +20,7 @@ h1 em{font-style:normal;color:var(--gold)}
 .notice{border:1px solid #65481d;border-radius:14px;padding:12px 16px;background:#2b1d0a;color:#ffdf9f;margin:20px 0 28px;font-size:14px}
 h2{font-size:24px;margin:34px 0 16px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.card{background:linear-gradient(150deg,#1d1234,#10101d 72%);border:1px solid #40304f;border-radius:20px;padding:23px;box-shadow:0 10px 25px #05030840}
+.card{background:linear-gradient(150deg,#28131f,#10101d 72%);border:1px solid #40304f;border-radius:20px;padding:23px;box-shadow:0 10px 25px #05030840}
 .card.featured{border-color:#a77b42;box-shadow:inset 0 0 0 1px #a77b4250}
 .card h3{font-size:20px;margin:4px 0 8px}.price{font-size:clamp(33px,4vw,45px);font-weight:850;letter-spacing:-1.7px;margin:8px 0}.price small{font-size:14px;font-weight:450;letter-spacing:0;color:#cfc7de}
 .tag{display:inline-block;font-size:11px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;border:1px solid #ac883c;color:#f6d78d;border-radius:99px;padding:5px 9px;background:#35260d}
@@ -35,17 +35,19 @@ ul{padding-left:20px;margin-bottom:0}li{margin:8px 0;color:#d6d0e1}
 .compare tr:last-child td{border:0}
 .summary{padding:16px;background:#161124;border-radius:14px;border:1px solid #44345e;color:#ded6f0}
 label.choice{display:flex;align-items:start;gap:10px;margin-top:13px;color:#e8e0fa}
-label.choice input{accent-color:#9753ff;margin-top:4px;width:18px;height:18px;flex-shrink:0}
-select{width:100%;background:#211836;border:1px solid #6a4ba3;border-radius:12px;padding:12px;color:white;font:inherit}
-button{background:linear-gradient(110deg,#9b50ff,#6429df);border:0;border-radius:13px;padding:14px 18px;color:white;font:inherit;font-weight:750;cursor:pointer}
+label.choice input{accent-color:#e44058;margin-top:4px;width:18px;height:18px;flex-shrink:0}
+select{width:100%;background:#251522;border:1px solid #b44f61;border-radius:12px;padding:12px;color:white;font:inherit}
+button{background:linear-gradient(110deg,#eb4a64,#a62243);border:0;border-radius:13px;padding:14px 18px;color:white;font:inherit;font-weight:750;cursor:pointer}
 button:disabled{background:#363044;color:#9d95ad;cursor:not-allowed}
 .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
-.dialog{border:1px solid #665095;background:#191126;color:#f5f0ff;border-radius:18px;max-width:650px;width:calc(100% - 30px);padding:24px}
+.dialog{border:1px solid #a34b5c;background:#21141e;color:#f5f0ff;border-radius:18px;max-width:650px;width:calc(100% - 30px);padding:24px}
 .dialog::backdrop{background:#000a}.dialog h2{margin-top:0}.dialog p,.dialog li{color:#d6cee4}
-.link{background:none;color:#d4afff;border:0;text-decoration:underline;cursor:pointer;padding:5px}
+.link{background:none;color:#ffb1bd;border:0;text-decoration:underline;cursor:pointer;padding:5px}
 footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px;padding-top:20px}
 .status{min-height:24px;color:#ffd89f;font-size:13px}
 @media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:18px 14px 50px}.card{padding:18px}.compare th,.compare td{padding:9px 7px;font-size:12px}.logo{font-size:26px}}
+
+.doc-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.doc-links a{color:#ffd3dc;border:1px solid #853d4e;border-radius:10px;padding:9px 12px;text-decoration:none;background:#281822;font-size:13px;font-weight:650}.doc-links a:hover{text-decoration:underline}.doc-links a:focus-visible{outline:2px solid #f9cc6c;outline-offset:3px}
 </style>
 </head>
 <body>
@@ -86,11 +88,12 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <div id="selected" class="summary" style="margin-top:15px" aria-live="polite">R$ 5,00 por mês, renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.</div>
 <label class="choice"><input type="checkbox" id="accepted"> <span>Li e concordo com os <button type="button" class="link" data-doc="terms">Termos de Assinatura</button> e com o <button type="button" class="link" data-doc="founder">Regulamento do Plano Fundador</button>.</span></label>
 <p class="note">A <button type="button" class="link" data-doc="privacy">Política de Privacidade</button> deve ser apresentada ao usuário sem substituir as bases legais de tratamento de dados por consentimento genérico.</p>
-<div class="actions"><button id="simulate" disabled>Simular confirmação (sem pagamento)</button><span class="note">Não contrata nem cobra nada.</span></div>
+<div class="doc-links" aria-label="Documentos completos para revisão"><a href="./documentos.html#termos">Ver termos de assinatura ↗</a><a href="./documentos.html#fundador">Ver regras dos fundadores ↗</a><a href="./documentos.html#privacidade">Ver privacidade ↗</a></div>
+<p class="note">Documentos em versão preliminar, ainda sem aprovação jurídica ou publicação comercial.</p><div class="actions"><button id="simulate" disabled>Simular confirmação (sem pagamento)</button><span class="note">Não contrata nem cobra nada.</span></div>
 <p id="result" class="status" role="status"></p>
 </div>
 </section>
-<footer>Protótipo independente. Não está publicado nem conectado ao Google Play Billing. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
+<footer>Protótipo independente. Não está publicado nem conectado ao Google Play Billing. Documentos completos disponíveis nos links acima. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
 </main>
 <dialog id="docs" class="dialog"><h2 id="dialog-title">Documento</h2><div id="dialog-body"></div><button id="close" type="button">Fechar</button></dialog>
 <script>
