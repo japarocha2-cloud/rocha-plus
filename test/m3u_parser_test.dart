@@ -126,4 +126,22 @@ https://example.com/kids.m3u8
         '#EXTINF:-1 group-title="General",Canal Generalista Desconhecido\nhttps://example.com/general\n');
     expect(channels.map((c) => c.group), ['Infantil', 'Notícias', 'Esportes', 'Geral']);
   });
+  test('animation alone never implies a children category', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 group-title="Animation;Comedy",Canal Animado\nhttps://example.com/animation\n'
+        '#EXTINF:-1 group-title="Animation;Kids",Canal Infantil\nhttps://example.com/kids\n'
+        '#EXTINF:-1 group-title="Animation;News",Notícias Animadas\nhttps://example.com/news\n');
+    expect(channels.map((c) => c.group), ['Geral', 'Infantil', 'Notícias']);
+  });
+
+  test('South Park stays out of Kids regardless of upstream title or identity', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1 group-title="Animation",Comedy Central South Park\nhttps://example.com/southpark\n'
+        '#EXTINF:-1 group-title="Kids",SOUTH PARK (720p)\nhttps://example.com/wrongkids\n'
+        '#EXTINF:-1 tvg-id="SouthPark.br@HD" group-title="Children",Canal Renomeado\nhttps://example.com/renamed\n'
+        '#EXTINF:-1 group-title="Kids",SBT Kids\nhttps://example.com/sbtkids\n');
+    expect(channels.map((c) => c.group), ['Geral', 'Geral', 'Geral', 'Infantil']);
+    expect(channels, hasLength(4));
+  });
+
 }
