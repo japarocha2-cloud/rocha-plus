@@ -8,10 +8,10 @@ Reconhecer quem aderir ao Rocha+ durante a fase inicial de TV aberta. A intenç�
 ## Modalidades e valores de referência
 | Condição | Mensal | Anual |
 | --- | ---: | ---: |
-| Fundador no lançamento de TV aberta | **R$ 5,00/mês** | **R$ 55,00/ano** |
+| Fundador no lançamento de TV aberta | **R$ 4,90/mês** | **R$ 53,90/ano** |
 | Nova adesão após a eventual expansão para filmes e séries | **R$ 15,50/mês** | **R$ 170,50/ano** |
 
-Descontos anuais: fundador paga R$ 55,00 em vez de R$ 60,00 (economia de R$ 5,00, equivalente a uma mensalidade). Após expansão, novo cliente pagaria R$ 170,50 em vez de R$ 186,00 (economia de R$ 15,50, equivalente a uma mensalidade).
+Descontos anuais: fundador paga R$ 53,90 em vez de R$ 58,80 (economia de R$ 4,90, equivalente a uma mensalidade). Após expansão, novo cliente pagaria R$ 170,50 em vez de R$ 186,00 (economia de R$ 15,50, equivalente a uma mensalidade).
 
 **Nenhum valor futuro é compromisso de lançamento de filmes.** A expansão não tem data e depende de autorizações de conteúdo, infraestrutura e capital.
 
@@ -40,6 +40,6 @@ Descontos anuais: fundador paga R$ 55,00 em vez de R$ 60,00 (economia de R$ 5,00
 - Usar preservação de *legacy price cohorts* ao atualizar os preços para novos assinantes; não encerrar a coorte antiga indevidamente.
 - Persistir no backend metadados mínimos de elegibilidade e versão do regulamento; verificar entitlement na API Google Play.
 - Fazer testes com contas de licença para renovação, preço legado, cancelamento, retorno, troca e eventual trial.
-- Manter PR #16 em modo testes até autorização expressa. O código atual ainda trabalha com **R$ 4,90/mês**, divergente dos preços planejados mais recentes; conciliar antes de quaisquer cobranças.
+- Manter PR #16 em modo testes até autorização expressa. O mensal em testes de **R$ 4,90/mês** agora coincide com o planejamento; o anual **R$ 53,90/ano** ainda precisa ser configurado e validado antes de qualquer cobrança.
 
 Fonte técnica: https://developer.android.com/google/play/billing/price-changes
