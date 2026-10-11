@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#071527">
 <title>Rocha+ | Planos e fidelidade (prévia)</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#080811;color:#fff;--violet:#e23c52;--gold:#f9cc6c;--muted:#b7b1c9}
@@ -48,11 +50,54 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 @media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:18px 14px 50px}.card{padding:18px}.compare th,.compare td{padding:9px 7px;font-size:12px}.logo{font-size:26px}}
 
 .doc-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.doc-links a{color:#ffd3dc;border:1px solid #853d4e;border-radius:10px;padding:9px 12px;text-decoration:none;background:#281822;font-size:13px;font-weight:650}.doc-links a:hover{text-decoration:underline}.doc-links a:focus-visible{outline:2px solid #f9cc6c;outline-offset:3px}
+
+/* Fundo cósmico do Rocha+ existente no próprio repositório. A imagem é exclusiva do fundo;
+   cartões e textos usam azul-ciano, dourado e verde-água para contraste. */
+:root{--cosmos:#061528;--cyan:#2ce7ef;--gold:#ffd270;--mint:#8cf1c7;--ink:#d9eef4;--muted:#b9d2df;--violet:var(--cyan)}
+body{background:#061528;color:#f6fbff}
+body::before{
+ content:"";position:fixed;z-index:-2;inset:0;pointer-events:none;
+ background:linear-gradient(180deg,rgba(3,10,28,.45),rgba(4,13,31,.70) 45%,rgba(2,13,29,.86)),url("../../branding/home-tv-galaxy.png") center center/cover no-repeat;
+}
+body::after{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 80% 10%,rgba(0,223,242,.12),transparent 33%),radial-gradient(circle at 15% 85%,rgba(37,135,213,.16),transparent 42%)}
+main{position:relative}
+.logo span{color:var(--cyan)}
+.pill{background:rgba(4,24,41,.90);border-color:#317687;color:#c7faff}
+h1 em{color:var(--gold)}
+.lead,.sub{color:#e1edf5}
+.notice{background:rgba(56,42,9,.90);border-color:#c8a54f;color:#ffecbf}
+.card{background:linear-gradient(165deg,rgba(5,25,43,.94),rgba(6,15,34,.96));border:1px solid rgba(51,191,210,.56);box-shadow:0 10px 35px rgba(0,4,13,.44)}
+.card.featured{border-color:#e5bf68;box-shadow:0 0 0 1px rgba(242,205,129,.28),0 14px 25px rgba(0,4,13,.30)}
+.card .price{color:var(--gold);text-shadow:0 0 24px rgba(255,200,92,.14)}
+.card h3{color:#f6fbff}
+.card li{color:#dcecf3}
+.tag{background:rgba(86,69,23,.66);border-color:#a58a4b;color:#ffe3a4}
+.tag.alt{background:rgba(6,55,71,.95);border-color:#2bc5da;color:#91f6ff}
+.benefit{background:rgba(7,47,43,.94);border-color:#44ae98}
+.benefit strong{color:var(--mint)}.benefit p{color:#dcfdf0}
+.compare{background:rgba(6,22,40,.94)}
+.compare th,.compare td{border-color:#244b62}
+.compare th{color:#89ecf4}
+.summary{background:#092536;border-color:#3597a1;color:#e1faff}
+label.choice{color:#e4f5f9}
+label.choice input{accent-color:#00cedd}
+select{background:#092638;border-color:#2bbdd2;color:#f5fcff}
+button:not(.link){background:linear-gradient(110deg,#00c8dd,#087cab);color:#04121f}
+button:not(.link):disabled{background:#293f4c;color:#b3c3cb}
+.link{color:#6df7e3}
+.dialog{background:#091d31;border-color:#248c9e;color:#eef9ff}
+.dialog p,.dialog li{color:#deebf3}
+.doc-links a{color:#adfbff;background:#092c3d;border-color:#2e8897}
+.doc-links a:focus-visible,.link:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid #ffdf86;outline-offset:3px}
+footer{color:#bccfda;border-color:#2a5567}
+.status{color:#b6ffde}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <main>
-<header><div class="logo">Rocha<span>+</span></div><div class="pill">Prévia de planejamento • sem cobranças</div></header>
+<header><div class="logo">Rocha<span>+</span></div><div class="pill">Prévia • sem cobranças</div></header>
 <section aria-labelledby="intro">
 <h1>Entre desde o começo. <em>Seu apoio vale mais.</em></h1>
 <p class="lead">O Rocha+ começa com TV aberta autorizada. Quem assinar nessa fase poderá receber a condição especial de <strong>Assinante Fundador</strong> quando houver uma futura expansão para filmes e séries.</p>
@@ -67,7 +112,7 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <div class="benefit"><span class="tag">Reconhecimento pela fidelidade</span><p><strong>Fundadores preservam o preço contratado nas renovações elegíveis.</strong> Mensal: R$ 4,90/mês. Anual: R$ 53,90/ano. Se cancelar e deixar a assinatura vencer, você perde o preço fundador ao voltar. O acesso já pago continua até o vencimento.</p></div>
 </section>
 <section aria-labelledby="futuro">
-<h2 id="futuro">Quando chegarem filmes e séries</h2>
+<h2 id="futuro">Possível expansão com filmes e séries</h2>
 <p class="sub">Esta é a tabela <strong>planejada para quem assinar depois da expansão</strong>. Os novos preços não se aplicariam automaticamente aos fundadores que mantiverem o direito ao preço legado.</p>
 <div class="grid">
 <article class="card"><span class="tag alt">Novo assinante</span><h3>Mensal futuro</h3><div class="price">R$ 15,50 <small>/mês</small></div><p class="note">12 mensalidades equivalem a R$ 186,00.</p></article>
@@ -88,12 +133,12 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <div id="selected" class="summary" style="margin-top:15px" aria-live="polite">R$ 4,90 por mês, renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.</div>
 <label class="choice"><input type="checkbox" id="accepted"> <span>Li e concordo com os <button type="button" class="link" data-doc="terms">Termos de Assinatura</button> e com o <button type="button" class="link" data-doc="founder">Regulamento do Plano Fundador</button>.</span></label>
 <p class="note">A <button type="button" class="link" data-doc="privacy">Política de Privacidade</button> deve ser apresentada ao usuário sem substituir as bases legais de tratamento de dados por consentimento genérico.</p>
-<div class="doc-links" aria-label="Documentos completos para revisão"><a href="./documentos.html#termos">Ver termos de assinatura ↗</a><a href="./documentos.html#fundador">Ver regras dos fundadores ↗</a><a href="./documentos.html#privacidade">Ver privacidade ↗</a></div>
+<div class="doc-links" aria-label="Informações e documentos para revisão"><a href="./ajuda.html">Dúvidas frequentes e ajuda ↗</a><a href="./documentos.html#termos">Ver termos de assinatura ↗</a><a href="./documentos.html#fundador">Ver regras dos fundadores ↗</a><a href="./documentos.html#privacidade">Ver privacidade ↗</a></div>
 <p class="note">Documentos em versão preliminar, ainda sem aprovação jurídica ou publicação comercial.</p><div class="actions"><button id="simulate" disabled>Simular confirmação (sem pagamento)</button><span class="note">Não contrata nem cobra nada.</span></div>
 <p id="result" class="status" role="status"></p>
 </div>
 </section>
-<footer>Protótipo independente. Não está publicado nem conectado ao Google Play Billing. Documentos completos disponíveis nos links acima. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
+<footer>Visual inspirado no fundo cósmico do Rocha+. <a href="./ajuda.html" style="color:#97f5f9">Perguntas frequentes</a>. Protótipo independente. Não está publicado nem conectado ao Google Play Billing. Documentos completos disponíveis nos links acima. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
 </main>
 <dialog id="docs" class="dialog"><h2 id="dialog-title">Documento</h2><div id="dialog-body"></div><button id="close" type="button">Fechar</button></dialog>
 <script>
