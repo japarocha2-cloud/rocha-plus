@@ -14,24 +14,28 @@ from pathlib import Path
 def run_check(row, seconds=30, timeout=50):
     command = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-loglevel", "warning",
                "-rw_timeout", "10000000", "-i", row["url"], "-t", str(seconds),
-               "-map", "0:v:0?", "-map", "0:a:0?", "-f", "null", "-"]
+               "-map", "0:v:0?", "-map", "0:a:0?", "-progress", "pipe:1", "-f", "null", "-"]
     started = time.monotonic()
     try:
-        result = subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 text=True, errors="replace", timeout=timeout)
         elapsed = round(time.monotonic()-started, 1)
         detail = (result.stderr or "")[-800:]
-        if result.returncode == 0 and elapsed >= seconds * 0.7:
+        progress = result.stdout or ""
+        # out_time_ms is actually microseconds in FFmpeg progress output.
+        durations = [int(value) / 1000000 for value in re.findall(r"out_time_ms=(\\d+)", progress)]
+        decoded_seconds = max(durations, default=0)
+        if result.returncode == 0 and decoded_seconds >= seconds * 0.9:
             status = "completou_teste"
         elif result.returncode == 0:
             status = "terminou_antes_do_prazo"
         else:
             status = "erro_decodificacao_ou_rede"
         return {**row, "v4_status": status, "v4_elapsed_seconds": elapsed,
-                "v4_exit_code": result.returncode, "v4_detail": detail.replace("\n", " | ")}
+                "v4_exit_code": result.returncode, "v4_decoded_seconds": decoded_seconds, "v4_detail": detail.replace("\n", " | ")}
     except subprocess.TimeoutExpired:
         return {**row, "v4_status": "tempo_esgotado", "v4_elapsed_seconds": round(time.monotonic()-started, 1),
-                "v4_exit_code": "", "v4_detail": "Processo finalizado após timeout"}
+                "v4_exit_code": "", "v4_decoded_seconds": "", "v4_detail": "Processo finalizado após timeout"}
     except Exception as error:
         return {**row, "v4_status": "erro_execucao", "v4_elapsed_seconds": round(time.monotonic()-started, 1),
                 "v4_exit_code": "", "v4_detail": str(error)[:300]}
@@ -60,7 +64,7 @@ def main():
         results = list(pool.map(lambda r: run_check(r, args.seconds, args.timeout), candidates))
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    fields = list(dict.fromkeys([*rows[0].keys(), "v4_status", "v4_elapsed_seconds", "v4_exit_code", "v4_detail"]))
+    fields = list(dict.fromkeys([*rows[0].keys(), "v4_status", "v4_elapsed_seconds", "v4_exit_code", "v4_decoded_seconds", "v4_detail"]))
     with output.with_suffix(".csv").open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
