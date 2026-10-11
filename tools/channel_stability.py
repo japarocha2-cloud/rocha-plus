@@ -11,6 +11,15 @@ import time
 from collections import Counter
 from pathlib import Path
 
+def media_seconds(progress):
+    """Parse FFmpeg's microsecond progress fields and timestamp fallback."""
+    values = []
+    for value in re.findall(r"(?m)^out_time_(?:us|ms)=(\d+)\s*$", progress):
+        values.append(int(value) / 1000000)
+    for h, m, s in re.findall(r"(?m)^out_time=(\d+):(\d+):([\d.]+)\s*$", progress):
+        values.append(int(h) * 3600 + int(m) * 60 + float(s))
+    return max(values, default=0.0)
+
 def run_check(row, seconds=30, timeout=50):
     command = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-loglevel", "warning",
                "-rw_timeout", "10000000", "-i", row["url"], "-t", str(seconds),
@@ -23,8 +32,7 @@ def run_check(row, seconds=30, timeout=50):
         detail = (result.stderr or "")[-800:]
         progress = result.stdout or ""
         # out_time_ms is actually microseconds in FFmpeg progress output.
-        durations = [int(value) / 1000000 for value in re.findall(r"out_time_ms=(\d+)", progress)]
-        decoded_seconds = max(durations, default=0)
+        decoded_seconds = media_seconds(progress)
         if result.returncode == 0 and decoded_seconds >= seconds * 0.9:
             status = "completou_teste"
         elif result.returncode == 0:
@@ -38,7 +46,7 @@ def run_check(row, seconds=30, timeout=50):
                 "v4_exit_code": "", "v4_decoded_seconds": "", "v4_detail": "Processo finalizado após timeout"}
     except Exception as error:
         return {**row, "v4_status": "erro_execucao", "v4_elapsed_seconds": round(time.monotonic()-started, 1),
-                "v4_exit_code": "", "v4_detail": str(error)[:300]}
+                "v4_exit_code": "", "v4_decoded_seconds": "", "v4_detail": str(error)[:300]}
 
 def main():
     ap = argparse.ArgumentParser(description="Rocha+ V4, amostragem de estabilidade; sem gravação")
