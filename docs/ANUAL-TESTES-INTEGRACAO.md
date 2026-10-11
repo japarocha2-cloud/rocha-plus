@@ -26,3 +26,15 @@ Branch: dev/founder-annual-app-integration. Base exata da PR #16: 8e0e3e36f19b3a
 Referências técnicas conferidas em 10/10/2026:
 - https://developer.android.com/google/play/billing/subscriptions
 - https://developer.android.com/google/play/billing/price-changes
+
+## Avanço: persistência de fundador somente no emulador
+
+- founder-test-store.js guarda registros e histórico de eventos em founderTestUsers, em transações. Rejeita qualquer projeto diferente de demo-rocha-billing ou host de emulador diferente de 127.0.0.1:8080. Não é importado/exportado pelo backend de cobrança.
+- Matrícula de teste mensal conserva 490 centavos; anual, 5390. Matrícula repetida não sobrescreve o histórico, inclusive após perda do benefício.
+- Eventos têm ID único e revisão esperada. Repetição é idempotente e retorna o estado atual; ID reutilizado para evento diferente e eventos desatualizados são recusados. Eventos concorrentes não sobrescrevem silenciosamente o histórico.
+- Cancelamento seguido de vencimento persiste perda permanente; retorno, restauração de estado ou nova tentativa de matrícula não recuperam o benefício. Retomada antes do vencimento e renovação elegível preservam a modalidade e o preço original no simulador.
+- Falha involuntária e migração ficam com reviewRequired, sem alterar modalidade ou inventar nova regra comercial.
+- Clientes anônimos, o próprio usuário e outras contas não podem ler, criar, alterar ou excluir os registros e eventos pelas regras de cliente.
+- Oito cenários adicionados à suíte do emulador: travas demo/local; persistência mensal/anual; perda após cancelamento/vencimento/retorno; continuidade; idempotência e eventos atrasados; concorrência; decisões pendentes; isolamento de cliente.
+
+Limite: esses eventos são controlados pelo teste, não derivados de compras Google Play reais. Ainda falta integrar elegibilidade comercial ao Publisher/RTDN, definir corte e regras pendentes, versionar aceite e homologar preço legado com licença Play. Nenhum dado de produção, endpoint, cobrança, produto ou tela do aplicativo foi alterado nesta continuação.
