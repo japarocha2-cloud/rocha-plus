@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: '22'
       - name: Policy and HTTP service tests with mocked Publisher
-        run: node --test backend/policy.test.js backend/service.test.js
+        run: node --test backend/policy.test.js backend/service.test.js backend/annual.test.js backend/founder-sandbox.test.js
       - name: Install backend and emulator dependencies
         run: npm install --prefix backend --ignore-scripts
       - name: Audit production dependencies

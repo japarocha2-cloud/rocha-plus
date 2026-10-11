@@ -3,13 +3,13 @@ export const productId = 'rocha_plus_monthly';
 export const accountId = uid => createHash('sha256').update('rocha-plus:' + uid).digest('hex');
 export function entitlement(purchase, now = Date.now()) {
   const item = purchase.lineItems?.find(x => x.productId === productId &&
-    x.offerDetails?.basePlanId === 'monthly');
+    ['monthly', 'yearly'].includes(x.offerDetails?.basePlanId));
   if (!item) throw new Error('invalid-product');
   const expiresAt = Date.parse(item.expiryTime);
   const state = purchase.subscriptionState;
   const active = ['SUBSCRIPTION_STATE_ACTIVE', 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD',
     'SUBSCRIPTION_STATE_CANCELED'].includes(state) && Number.isFinite(expiresAt) && expiresAt > now;
-  return { active, state, expiresAt: Number.isFinite(expiresAt) ? expiresAt : null,
+  return { active, state, basePlanId: item.offerDetails.basePlanId, expiresAt: Number.isFinite(expiresAt) ? expiresAt : null,
     autoRenewing: item.autoRenewingPlan?.autoRenewEnabled === true,
     testPurchase: !!purchase.testPurchase };
 }

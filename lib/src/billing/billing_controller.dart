@@ -9,6 +9,8 @@ import '../app_release_policy.dart';
 
 class BillingController extends ChangeNotifier {
   static const productId = 'rocha_plus_monthly';
+  // Explicit opt-in for licensed test builds; beta stays disconnected.
+  static const licenseTestBuild = bool.fromEnvironment('ROCHA_LICENSE_TEST_BUILD');
   static const endpoint = String.fromEnvironment('ROCHA_BILLING_ENDPOINT');
   final String uid;
   final bool beta;
@@ -22,6 +24,7 @@ class BillingController extends ChangeNotifier {
   bool busy = false;
   bool active = false;
   String state = 'NONE';
+  String? basePlanId;
   String? error;
   String? accountId;
   int? expiresAt;
@@ -47,6 +50,9 @@ class BillingController extends ChangeNotifier {
   }
   Future<void> initialize() async {
     if (beta) return; // No store connection or purchase flow in the authorized beta.
+    if (!licenseTestBuild) {
+      error = 'Compras desativadas nesta build de desenvolvimento.'; changed(); return;
+    }
     if (defaultTargetPlatform != TargetPlatform.android || kIsWeb) {
       error = 'Assinaturas disponíveis no Android com Google Play.'; changed(); return;
     }
@@ -63,20 +69,27 @@ class BillingController extends ChangeNotifier {
       offers = response.productDetails.whereType<GooglePlayProductDetails>().where((p) {
         final index = p.subscriptionIndex;
         final details = p.productDetails.subscriptionOfferDetails;
-        if (index == null || details == null || index >= details.length) return false;
+        if (index == null || index < 0 || details == null || index >= details.length) return false;
         final offer = details[index];
+        final annual = offer.basePlanId == 'yearly';
         final phases = offer.pricingPhases;
-        return offer.basePlanId == 'monthly' && phases.isNotEmpty &&
-          phases.last.billingPeriod == 'P1M' &&
+        return (offer.basePlanId == 'monthly' || annual) && phases.isNotEmpty &&
+          phases.last.billingPeriod == (annual ? 'P1Y' : 'P1M') &&
           phases.last.priceCurrencyCode == 'BRL' &&
-          phases.last.priceAmountMicros == 4900000 &&
-          (offer.offerId == null || (offer.offerId == 'trial-7-days' &&
+          phases.last.priceAmountMicros == (annual ? 53900000 : 4900000) &&
+          (offer.offerId == null || (!annual && offer.offerId == 'trial-7-days' &&
             phases.length == 2 && phases.first.priceAmountMicros == 0 &&
             phases.first.billingPeriod == 'P7D'));
       }).toList();
       await refresh();
       await InAppPurchase.instance.restorePurchases();
     });
+  }
+  bool isAnnual(GooglePlayProductDetails p) {
+    final index = p.subscriptionIndex;
+    final details = p.productDetails.subscriptionOfferDetails;
+    return index != null && details != null && index >= 0 && index < details.length &&
+      details[index].basePlanId == 'yearly';
   }
   bool isTrial(GooglePlayProductDetails p) {
     final index = p.subscriptionIndex;
@@ -88,6 +101,7 @@ class BillingController extends ChangeNotifier {
     expiresAt = value['expiresAt'] as int?;
     active = value['active'] == true && expiresAt != null;
     state = value['state'] as String? ?? 'NONE';
+    basePlanId = value['basePlanId'] as String?;
     autoRenewing = value['autoRenewing'] == true;
     _expiry?.cancel();
     if (active) {
@@ -120,7 +134,7 @@ class BillingController extends ChangeNotifier {
     finally { busy = false; changed(); }
   }
   Future<void> buy(GooglePlayProductDetails offer) async {
-    if (beta || accountId == null || !offers.contains(offer)) return;
+    if (beta || !licenseTestBuild || accountId == null || !offers.contains(offer)) return;
     await run(() async {
       final ok = await InAppPurchase.instance.buyNonConsumable(
         purchaseParam: GooglePlayPurchaseParam(productDetails: offer,

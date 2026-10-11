@@ -15,7 +15,7 @@ test('expiry wins even when Play says active', () =>
   assert.equal(entitlement(make('SUBSCRIPTION_STATE_ACTIVE'), Date.parse('2031-01-01')).active, false));
 test('wrong product and plan rejected', () => {
   const p = make('SUBSCRIPTION_STATE_ACTIVE');
-  p.lineItems[0].offerDetails.basePlanId = 'yearly';
+  p.lineItems[0].offerDetails.basePlanId = 'unknown';
   assert.throws(() => entitlement(p));
 });
 test('missing expiry fails closed', () => {
