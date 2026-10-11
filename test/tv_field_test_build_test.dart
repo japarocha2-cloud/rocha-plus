@@ -18,5 +18,5 @@ void main() {
     expect(find.text('TV ao Vivo'), findsWidgets);
     expect(find.byKey(const ValueKey('home-preview-notice')), findsNothing);
     expect(tester.takeException(), isNull);
-  });
+  }, skip: !rochaTvFieldTest);
 }
