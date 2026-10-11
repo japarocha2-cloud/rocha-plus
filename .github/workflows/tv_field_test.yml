@@ -29,6 +29,16 @@ jobs:
       - run: flutter test
       - run: flutter test --dart-define=ROCHA_TV_FIELD_TEST=true test/tv_field_test_build_test.dart
       - run: python3 tools/prepare_tv_field_test.py
+      - name: Diagnose Android embedding before APK build
+        run: |
+          echo "=== Android manifest ==="
+          cat android/app/src/main/AndroidManifest.xml
+          echo "=== Android embedding references ==="
+          grep -RInE 'io\.flutter\.app\.|flutterEmbedding|FlutterActivity|FlutterApplication' android tools/MainActivity.kt || true
+          echo "=== MainActivity ==="
+          cat android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt
+          echo "=== Flutter version ==="
+          flutter --version
       - run: flutter build apk --release --dart-define=ROCHA_TV_FIELD_TEST=true
       - uses: actions/upload-artifact@v4
         with:
