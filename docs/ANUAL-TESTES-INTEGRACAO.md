@@ -4,7 +4,7 @@ Branch: dev/founder-annual-app-integration. Base exata da PR #16: 8e0e3e36f19b3a
 
 ## Implementação
 - Planos fundadores de R$ 4,90/mês e R$ 53,90/12 meses no aplicativo, com economia anual de R$ 4,90. Futuro R$ 15,50/mês e R$ 170,50/ano somente informativo; filmes e séries sem data.
-- Fundo home-tv-galaxy já existente; cartões azul-petróleo, informação em ciano, preços dourados e economia verde-água. Apenas tela de assinatura alterada; Home/player/Cast/favoritos preservados.
+- Decisão do responsável: preservar as cores atuais do aplicativo. Assinatura, ajuda e documentos usam RochaTheme/RochaColors existentes, sem novo fundo ou paleta. O visual ciano/dourado/verde-água fica apenas na prévia web. Home/player/Cast/favoritos e o arquivo do tema foram preservados.
 - Termos, regulamento, privacidade e Central de Ajuda da PR #17 incorporados como assets offline. Ajuda permite busca local; documentos seguem minutas, sem aceite contratual persistido.
 - Produto de teste existente rocha_plus_monthly preservado; base plans monthly (P1M, BRL 4900000 micros) e yearly (P1Y, BRL 53900000 micros). O nome do produto é legado; a periodicidade vem do base plan, não do nome.
 - Anual sem trial. Mensal só permite trial-7-days quando retornado pela loja com fase gratuita P7D e fase BRL 4,90/P1M. Sem promessa geral de teste grátis.

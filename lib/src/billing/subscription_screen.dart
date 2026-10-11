@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'billing_controller.dart';
 import 'subscription_documents.dart';
+import '../theme/rocha_theme.dart';
 
 class SubscriptionScreen extends StatelessWidget {
   final BillingController controller;
@@ -11,26 +12,24 @@ class SubscriptionScreen extends StatelessWidget {
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: controller, builder: (_, __) => Scaffold(
       appBar: AppBar(title: const Text('Assinatura Rocha+')),
-      body: DecoratedBox(decoration: const BoxDecoration(
-        image: DecorationImage(image: AssetImage('branding/home-tv-galaxy.png'), fit: BoxFit.cover),
-      ), child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
+      body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
         child: ListView(padding: const EdgeInsets.all(24), shrinkWrap: true, children: [
-          const Text('Planos fundadores Rocha+', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF70E6F2))),
+          const Text('Planos fundadores Rocha+', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: RochaColors.silver)),
           const SizedBox(height: 16),
           Text(controller.beta ? 'Beta gratuito: sem cobrança e sem compra disponível.'
             : 'Reprodução disponível somente com assinatura ativa validada.'),
           const SizedBox(height: 12),
-          const Card(color: Color(0xF016303D), child: Padding(padding: EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Fundador mensal: R\$ 4,90/mês', style: TextStyle(color: Color(0xFFFFD67A), fontSize: 20)),
+          const Card( child: Padding(padding: EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Fundador mensal: R\$ 4,90/mês', style: TextStyle(color: RochaColors.gold, fontSize: 20)),
             SizedBox(height: 12),
-            Text('Fundador anual: R\$ 53,90 por 12 meses', style: TextStyle(color: Color(0xFFFFD67A), fontSize: 20)),
-            Text('Pagamento anual único. Economia de R\$ 4,90 frente a 12 mensalidades.', style: TextStyle(color: Color(0xFF8CE7CD))),
+            Text('Fundador anual: R\$ 53,90 por 12 meses', style: TextStyle(color: RochaColors.gold, fontSize: 20)),
+            Text('Pagamento anual único. Economia de R\$ 4,90 frente a 12 mensalidades.', style: TextStyle(color: RochaColors.playGreen)),
             SizedBox(height: 12),
-            Text('Valores de planejamento. Nenhuma venda ativa nesta prévia.', style: TextStyle(color: Colors.white)),
-            Text('Fundadores mantêm o preço original nas renovações elegíveis. Cancelar, deixar vencer e voltar implica perda do benefício. O período já pago permanece até o vencimento.', style: TextStyle(color: Colors.white)),
+            Text('Valores de planejamento. Nenhuma venda ativa nesta prévia.', style: TextStyle(color: RochaColors.silver)),
+            Text('Fundadores mantêm o preço original nas renovações elegíveis. Cancelar, deixar vencer e voltar implica perda do benefício. O período já pago permanece até o vencimento.', style: TextStyle(color: RochaColors.silver)),
             SizedBox(height: 12),
-            Text('Filmes e séries são uma expansão futura, sem data de lançamento. Para novos assinantes após eventual expansão: R\$ 15,50/mês ou R\$ 170,50/ano. Valores futuros, sem oferta ativa.', style: TextStyle(color: Color(0xFF70E6F2))),
-            Text('Sete dias grátis somente se a oferta e a elegibilidade forem confirmadas pela Google Play. Não é uma promessa de lançamento.', style: TextStyle(color: Colors.white)),
+            Text('Filmes e séries são uma expansão futura, sem data de lançamento. Para novos assinantes após eventual expansão: R\$ 15,50/mês ou R\$ 170,50/ano. Valores futuros, sem oferta ativa.', style: TextStyle(color: RochaColors.silver)),
+            Text('Sete dias grátis somente se a oferta e a elegibilidade forem confirmadas pela Google Play. Não é uma promessa de lançamento.', style: TextStyle(color: RochaColors.silver)),
           ]))),
           for (final document in subscriptionDocuments)
             TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
@@ -75,6 +74,6 @@ class SubscriptionScreen extends StatelessWidget {
           if (controller.busy) const Center(child: CircularProgressIndicator()),
           if (onSignOut != null) TextButton(onPressed: onSignOut, child: const Text('Sair da conta')),
         ])),
-      )),
+      ),
     ));
 }

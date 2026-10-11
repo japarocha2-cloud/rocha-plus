@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rocha_plus/src/theme/rocha_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/billing/billing_controller.dart';
 import 'package:rocha_plus/src/billing/subscription_screen.dart';
@@ -19,7 +20,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(360, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final controller = BillingController('tester');
-    await tester.pumpWidget(MaterialApp(builder: (context, child) => MediaQuery(
+    await tester.pumpWidget(MaterialApp(theme: RochaTheme.dark, builder: (context, child) => MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.5)), child: child!),
       home: SubscriptionScreen(controller: controller)));
     await tester.pumpAndSettle();
@@ -39,7 +40,7 @@ void main() {
   });
   testWidgets('all legal documents load offline', (tester) async {
     for (final document in subscriptionDocuments.where((d) => !d.searchable)) {
-      await tester.pumpWidget(MaterialApp(home: SubscriptionDocumentScreen(key: ValueKey(document.asset), document: document)));
+      await tester.pumpWidget(MaterialApp(theme: RochaTheme.dark, home: SubscriptionDocumentScreen(key: ValueKey(document.asset), document: document)));
       await tester.pumpAndSettle();
       expect(find.text('Documento indisponível. Tente novamente.'), findsNothing);
       expect(find.byType(SelectableText), findsWidgets); expect(tester.takeException(), isNull);
