@@ -21,10 +21,10 @@ Para assinar, poderá ser necessário criar/usar uma conta e identificar a compr
 
 | Plano Fundador (proposto) | Cobrança | Total pago no período |
 | --- | --- | --- |
-| Mensal | Renovação mensal | R$ 5,00 por mês |
-| Anual | Renovação anual | R$ 55,00 por 12 meses |
+| Mensal | Renovação mensal | R$ 4,90 por mês |
+| Anual | Renovação anual | R$ 53,90 por 12 meses |
 
-O anual representa desconto de R$ 5,00 em comparação a doze mensalidades de R$ 5,00 (R$ 60,00). Se existir teste gratuito, suas condições e elegibilidade deverão ser mostradas separadamente pela Google Play **antes** de qualquer aceite de cobrança.
+O anual representa desconto de R$ 4,90 em comparação a doze mensalidades de R$ 4,90 (R$ 58,80). Se existir teste gratuito, suas condições e elegibilidade deverão ser mostradas separadamente pela Google Play **antes** de qualquer aceite de cobrança.
 
 O preço final de cada compra será aquele apresentado na página de contratação e na confirmação da Google Play no momento da transação, de acordo com legislação e regras aplicáveis.
 
@@ -34,7 +34,7 @@ Quando comercialmente ativadas, as assinaturas poderão se renovar automaticamen
 Um plano **anual** é um período de cobrança de 12 meses; ele não deve ser anunciado como uma multa de fidelidade ou como renúncia a cancelamento, arrependimento ou reembolso cabível por lei. A política de reembolsos, cancelamentos e arrependimento precisa ser revisada juridicamente com as regras brasileiras e da loja. Não afirmar que pagamento anual é, em qualquer hipótese, irreembolsável.
 
 ## 6. Benefício do assinante fundador
-Clientes que aderirem durante o período fundador e atenderem aos critérios do regulamento específico poderão manter o preço de sua modalidade (R$ 5,00 mensal ou R$ 55,00 anual) nas renovações elegíveis, inclusive após a **eventual** inclusão de filmes e séries, se esta se concretizar.
+Clientes que aderirem durante o período fundador e atenderem aos critérios do regulamento específico poderão manter o preço de sua modalidade (R$ 4,90 mensal ou R$ 53,90 anual) nas renovações elegíveis, inclusive após a **eventual** inclusão de filmes e séries, se esta se concretizar.
 
 A regra comercial escolhida é: **se o cliente solicitar o cancelamento e a assinatura vencer sem renovação, perde o benefício de fundador para contratações posteriores**. A pessoa mantém o acesso pelo período já pago, salvo hipóteses legalmente aplicáveis de reembolso ou revogação. Se reativar a renovação **antes do vencimento**, sem interrupção da assinatura, conserva o benefício. Após vencimento, eventual contratação será pelo preço vigente para novas adesões. A data de corte, as regras para falhas involuntárias de pagamento, trocas de plano e outros aspectos de elegibilidade **ainda precisam ser definidos e publicados antes da primeira venda**. Não prometer preço vitalício incondicional nem que a expansão hipotética ocorrerá.
 
