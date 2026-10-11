@@ -4,6 +4,8 @@ import re
 import xml.etree.ElementTree as ET
 
 ANDROID = "http://schemas.android.com/apk/res/android"
+# Flutter checks the literal android: prefix when detecting embedding v2.
+ET.register_namespace("android", ANDROID)
 
 def prepare(root):
     root = Path(root)
