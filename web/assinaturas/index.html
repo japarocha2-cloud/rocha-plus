@@ -61,10 +61,10 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <section aria-labelledby="hoje">
 <h2 id="hoje">Planos do lançamento • TV aberta</h2>
 <div class="grid">
-<article class="card"><span class="tag">Fundador mensal</span><h3>Plano Mensal</h3><div class="price">R$ 5,00 <small>/mês</small></div><ul><li>Pagamento a cada mês</li><li>Menor valor desembolsado por vez</li><li>Cancelamento da renovação pela Google Play, quando comercialmente disponível</li><li>Preço de fundador planejado para renovações elegíveis</li></ul></article>
-<article class="card featured"><span class="tag">Fundador anual</span><h3>Plano Anual</h3><div class="price">R$ 55,00 <small>/ano</small></div><ul><li>12 meses de acesso, conforme as condições da assinatura</li><li>Equivale a aproximadamente R$ 4,58/mês</li><li>Economia de R$ 5 frente a 12 mensalidades</li><li>Preço anual de fundador planejado para renovações elegíveis</li></ul></article>
+<article class="card"><span class="tag">Fundador mensal</span><h3>Plano Mensal</h3><div class="price">R$ 4,90 <small>/mês</small></div><ul><li>Pagamento a cada mês</li><li>Menor valor desembolsado por vez</li><li>Cancelamento da renovação pela Google Play, quando comercialmente disponível</li><li>Preço de fundador planejado para renovações elegíveis</li></ul></article>
+<article class="card featured"><span class="tag">Fundador anual</span><h3>Plano Anual</h3><div class="price">R$ 53,90 <small>/ano</small></div><ul><li>12 meses de acesso, conforme as condições da assinatura</li><li>Equivale a aproximadamente R$ 4,49/mês</li><li>Economia de R$ 4,90 frente a 12 mensalidades</li><li>Preço anual de fundador planejado para renovações elegíveis</li></ul></article>
 </div>
-<div class="benefit"><span class="tag">Reconhecimento pela fidelidade</span><p><strong>Fundadores preservam o preço contratado nas renovações elegíveis.</strong> Mensal: R$ 5,00/mês. Anual: R$ 55,00/ano. Se cancelar e deixar a assinatura vencer, você perde o preço fundador ao voltar. O acesso já pago continua até o vencimento.</p></div>
+<div class="benefit"><span class="tag">Reconhecimento pela fidelidade</span><p><strong>Fundadores preservam o preço contratado nas renovações elegíveis.</strong> Mensal: R$ 4,90/mês. Anual: R$ 53,90/ano. Se cancelar e deixar a assinatura vencer, você perde o preço fundador ao voltar. O acesso já pago continua até o vencimento.</p></div>
 </section>
 <section aria-labelledby="futuro">
 <h2 id="futuro">Quando chegarem filmes e séries</h2>
@@ -76,7 +76,7 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <h2>Comparação rápida</h2>
 <table class="compare">
 <thead><tr><th>Modalidade</th><th>Fundador (lançamento)</th><th>Novo cliente (expansão)</th></tr></thead>
-<tbody><tr><td>Mensal</td><td>R$ 5,00/mês</td><td>R$ 15,50/mês</td></tr><tr><td>Anual</td><td>R$ 55,00/ano</td><td>R$ 170,50/ano</td></tr><tr><td>Filmes e séries</td><td colspan="2">Somente após a expansão, se e quando lançada</td></tr></tbody>
+<tbody><tr><td>Mensal</td><td>R$ 4,90/mês</td><td>R$ 15,50/mês</td></tr><tr><td>Anual</td><td>R$ 53,90/ano</td><td>R$ 170,50/ano</td></tr><tr><td>Filmes e séries</td><td colspan="2">Somente após a expansão, se e quando lançada</td></tr></tbody>
 </table>
 <p class="note">Cancelar e deixar vencer implica perda do desconto fundador. Outras regras de elegibilidade, restauração e eventuais alterações de preços precisam constar no regulamento final. Números futuros são hipóteses comerciais e não oferta em vigor.</p>
 </section>
@@ -84,8 +84,8 @@ footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px
 <h2 id="aceite">Prévia de confirmação do assinante</h2>
 <div class="card">
 <label for="plan">Escolha um plano para visualizar as condições</label>
-<select id="plan"><option value="monthly">Fundador mensal • R$ 5,00/mês</option><option value="yearly">Fundador anual • R$ 55,00/ano</option></select>
-<div id="selected" class="summary" style="margin-top:15px" aria-live="polite">R$ 5,00 por mês, renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.</div>
+<select id="plan"><option value="monthly">Fundador mensal • R$ 4,90/mês</option><option value="yearly">Fundador anual • R$ 53,90/ano</option></select>
+<div id="selected" class="summary" style="margin-top:15px" aria-live="polite">R$ 4,90 por mês, renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.</div>
 <label class="choice"><input type="checkbox" id="accepted"> <span>Li e concordo com os <button type="button" class="link" data-doc="terms">Termos de Assinatura</button> e com o <button type="button" class="link" data-doc="founder">Regulamento do Plano Fundador</button>.</span></label>
 <p class="note">A <button type="button" class="link" data-doc="privacy">Política de Privacidade</button> deve ser apresentada ao usuário sem substituir as bases legais de tratamento de dados por consentimento genérico.</p>
 <div class="doc-links" aria-label="Documentos completos para revisão"><a href="./documentos.html#termos">Ver termos de assinatura ↗</a><a href="./documentos.html#fundador">Ver regras dos fundadores ↗</a><a href="./documentos.html#privacidade">Ver privacidade ↗</a></div>
@@ -105,11 +105,11 @@ const result=document.getElementById('result');
 const dialog=document.getElementById('docs');
 const documents={
  terms:{title:'Termos de Assinatura • resumo ilustrativo',body:'<p>Antes da contratação real, o Rocha+ informará claramente preço, periodicidade, renovação automática, início da cobrança e eventual teste gratuito apenas quando elegível e oferecido pela Google Play.</p><p>O cancelamento da renovação será gerenciado pela loja e não elimina direitos do consumidor, como eventuais reembolsos devidos por lei. Disponibilidade dos canais depende das autorizações e da operação do serviço.</p><p><strong>Este resumo não substitui os termos jurídicos definitivos.</strong></p>'},
- founder:{title:'Regulamento do Fundador • minuta',body:'<p>O benefício de fundador será destinado a assinaturas elegíveis contratadas antes de uma data de corte a ser anunciada e registrada.</p><p>Durante as renovações elegíveis, a intenção comercial é preservar o preço mensal de R$ 5,00 ou anual de R$ 55,00, inclusive após eventual lançamento de filmes e séries. Se cancelar e deixar a assinatura vencer, você perderá o preço fundador ao voltar. O acesso já pago continua até o vencimento. Se reativar antes de vencer e permanecer na mesma assinatura sem interrupção, o preço legado continua. Regras de mudança de plano e falhas de pagamento serão detalhadas antes da contratação.</p><p>Filmes e séries constituem uma expansão futura, não uma entrega garantida em data determinada. As condições estarão sujeitas às regras legais e técnicas da plataforma de pagamento.</p>'},
+ founder:{title:'Regulamento do Fundador • minuta',body:'<p>O benefício de fundador será destinado a assinaturas elegíveis contratadas antes de uma data de corte a ser anunciada e registrada.</p><p>Durante as renovações elegíveis, a intenção comercial é preservar o preço mensal de R$ 4,90 ou anual de R$ 53,90, inclusive após eventual lançamento de filmes e séries. Se cancelar e deixar a assinatura vencer, você perderá o preço fundador ao voltar. O acesso já pago continua até o vencimento. Se reativar antes de vencer e permanecer na mesma assinatura sem interrupção, o preço legado continua. Regras de mudança de plano e falhas de pagamento serão detalhadas antes da contratação.</p><p>Filmes e séries constituem uma expansão futura, não uma entrega garantida em data determinada. As condições estarão sujeitas às regras legais e técnicas da plataforma de pagamento.</p>'},
  privacy:{title:'Política de Privacidade • tópicos para a versão final',body:'<p>A versão final descreverá os dados tratados para conta, autenticação, pagamentos, suporte e segurança; bases legais; fornecedores (inclusive Google Play e Firebase, conforme efetivamente utilizados); retenção; direitos dos titulares; e canal de contato.</p><p>Não preencher dados de empresa, controlador, endereço, contato ou políticas técnicas sem confirmação. Esta é uma prévia, não a política publicada.</p>'}
 };
 function update(){
- selected.textContent=plan.value==='monthly'?'R$ 5,00 por mês. Renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.':'R$ 55,00 por 12 meses. Renovação anual prevista. Economia de R$ 5 sobre 12 mensalidades de R$ 5. Filmes e séries não estão disponíveis no lançamento.';
+ selected.textContent=plan.value==='monthly'?'R$ 4,90 por mês. Renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.':'R$ 53,90 por 12 meses. Renovação anual prevista. Economia de R$ 4,90 sobre 12 mensalidades de R$ 4,90. Filmes e séries não estão disponíveis no lançamento.';
  result.textContent='';
 }
 plan.addEventListener('change',update);
