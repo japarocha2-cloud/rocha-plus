@@ -3,10 +3,10 @@
 > **Uso interno / prévia. Sem venda ativada.** Antes de publicar, revisar juridicamente as respostas, conferir o conteúdo e verificar se correspondem à configuração real da Google Play.
 
 ## 1. Quais serão os preços no lançamento?
-A proposta para a fase inicial com TV aberta autorizada é **R$ 5,00 mensais** ou **R$ 55,00 anuais**. Os valores precisam ser confirmados nos produtos da Google Play antes da primeira cobrança. O Work tem uma implementação anterior de teste por **R$ 4,90/mês**, que ainda precisa ser reconciliada.
+A proposta para a fase inicial com TV aberta autorizada é **R$ 4,90 mensais** ou **R$ 53,90 anuais**. Os valores precisam ser confirmados nos produtos da Google Play antes da primeira cobrança. O Work já testa o mensal de **R$ 4,90/mês**; o anual de **R$ 53,90** ainda precisa ser implementado e validado na Google Play, sem habilitar cobranças reais por enquanto.
 
 ## 2. Quanto economizo contratando o anual fundador?
-Doze mensalidades de R$ 5,00 somam R$ 60,00. O plano anual proposto custa **R$ 55,00**, um desconto equivalente a **uma mensalidade**, com cobrança de uma vez a cada 12 meses, conforme a assinatura ativa.
+Doze mensalidades de R$ 4,90 somam R$ 58,80. O plano anual proposto custa **R$ 53,90**, um desconto equivalente a **uma mensalidade**, com cobrança de uma vez a cada 12 meses, conforme a assinatura ativa.
 
 ## 3. O que significa ser assinante fundador?
 É aderir durante o período inicial do Rocha+, definido por uma futura data de corte. O benefício proposto é preservar o preço original da modalidade nas **renovações elegíveis**, inclusive se houver expansão futura para filmes e séries. A data de corte e regras operacionais devem ser informadas antes da venda.
