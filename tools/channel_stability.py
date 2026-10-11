@@ -23,7 +23,7 @@ def run_check(row, seconds=30, timeout=50):
         detail = (result.stderr or "")[-800:]
         progress = result.stdout or ""
         # out_time_ms is actually microseconds in FFmpeg progress output.
-        durations = [int(value) / 1000000 for value in re.findall(r"out_time_ms=(\\d+)", progress)]
+        durations = [int(value) / 1000000 for value in re.findall(r"out_time_ms=(\d+)", progress)]
         decoded_seconds = max(durations, default=0)
         if result.returncode == 0 and decoded_seconds >= seconds * 0.9:
             status = "completou_teste"
