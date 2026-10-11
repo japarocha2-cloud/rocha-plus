@@ -18,7 +18,7 @@ DEFAULT = [
 ]
 AGENT = "RochaPlusHealthAudit/1.0"
 def fetch(url, timeout, cap=2000000):
-    request = urllib.request.Request(url, headers={"User-Agent": AGENT, "Range": "bytes=0-4095" if cap == 4096 else "bytes=0-"})
+    request = urllib.request.Request(url, headers={"User-Agent": AGENT})
     started = time.monotonic()
     with urllib.request.urlopen(request, timeout=timeout) as response:
         data = response.read(cap + 1)
@@ -90,8 +90,8 @@ def main():
         try:
             code, _, data, _ = fetch(source, args.timeout)
             decoded = data.decode("utf-8-sig", errors="replace")
-            if code != 200 or "#EXTM3U" not in decoded[:500]:
-                raise ValueError("URL não retornou M3U válido")
+            if code not in (200, 206) or "#EXTM3U" not in decoded[:500]:
+                raise ValueError(f"Resposta inválida: HTTP {code}, primeiros caracteres: {decoded[:90]!r}")
             all_entries.extend(parse_m3u(decoded, source))
         except Exception as exc:
             source_errors.append({"source": source, "error": str(exc)})
