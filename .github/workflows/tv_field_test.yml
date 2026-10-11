@@ -1,0 +1,37 @@
+name: Android TV field test
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tv-field-test:
+    if: github.head_ref == 'feature/tv-auto-fullscreen-20261011'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - name: Generate Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 -c "from pathlib import Path; p=Path('android/app/build.gradle.kts'); p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37'))"
+      - run: python3 tools/configure_android.py
+      - run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter test --dart-define=ROCHA_TV_FIELD_TEST=true test/tv_field_test_build_test.dart
+      - run: python3 tools/prepare_tv_field_test.py
+      - run: flutter build apk --release --dart-define=ROCHA_TV_FIELD_TEST=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-tv-field-test-no-login
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
