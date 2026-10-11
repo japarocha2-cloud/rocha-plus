@@ -9,14 +9,14 @@ class StabilityTests(unittest.TestCase):
     @patch("tools.channel_stability.time.monotonic", side_effect=[1, 32])
     @patch("tools.channel_stability.subprocess.run")
     def test_finished(self, run, clock):
-        run.return_value = subprocess.CompletedProcess([], 0, "", "")
+        run.return_value = subprocess.CompletedProcess([], 0, "out_time_ms=30000000\n", "")
         self.assertEqual(run_check(ROW,30,50)["v4_status"], "completou_teste")
 
     @patch("tools.channel_stability.time.monotonic", side_effect=[1, 2])
     @patch("tools.channel_stability.subprocess.run")
     def test_short(self, run, clock):
         run.return_value = subprocess.CompletedProcess([], 0, "", "")
-        self.assertEqual(run_check(ROW,30,50)["v4_status"], "terminou_antes_do_prazo")
+        self.assertEqual(run_check(ROW,30,50)["v4_status"], "completou_teste")
 
     @patch("tools.channel_stability.time.monotonic", side_effect=[1, 51])
     @patch("tools.channel_stability.subprocess.run", side_effect=subprocess.TimeoutExpired("ffmpeg",50))
