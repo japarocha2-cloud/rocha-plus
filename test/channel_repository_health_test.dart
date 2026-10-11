@@ -14,6 +14,27 @@ void main() {
 
   setUp(ChannelRepository.resetSessionHealthForTests);
 
+  test('Motorola failed signals are blocked without removing working variants', () {
+    final repository = ChannelRepository();
+    for (final name in [
+      'Record RS (720p) [Geo-blocked]',
+      'SBT Cuiabá',
+      'SBT Nova Mutum (1080p)',
+    ]) {
+      expect(repository.isBlocked(Channel(
+        name: name, url: 'https://example.com/changed.m3u8', group: 'TV aberta',
+      )), isTrue, reason: name);
+    }
+    for (final name in [
+      'Rede Globo (1080p)', 'RedeTV! Parana', 'SBT Interior (720p)',
+      'SBT Nacional (1080p)', 'Record SP',
+    ]) {
+      expect(repository.isBlocked(Channel(
+        name: name, url: 'https://example.com/working.m3u8', group: 'TV aberta',
+      )), isFalse, reason: name);
+    }
+  });
+
   test('player failure quarantines a stream for the current session', () {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';

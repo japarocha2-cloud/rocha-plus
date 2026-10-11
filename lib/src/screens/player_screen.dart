@@ -27,6 +27,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _loading = true;
   bool _failed = false;
   bool _casting = false;
+  String? _castMessage;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -208,12 +209,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _startCasting(GoogleCastDevice device) async {
     if (_casting) return;
-    setState(() => _casting = true);
+    setState(() { _casting = true; _castMessage = 'Conectando à TV…'; });
+    var sessionConnected = false;
     try {
       final started = await GoogleCastSessionManager.instance
           .startSessionWithDevice(device).timeout(const Duration(seconds: 8));
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
+      sessionConnected = true;
+      if (mounted) setState(() => _castMessage = 'Enviando o canal para a TV…');
       await CastHlsProxy.instance.close();
       final uri = Uri.parse(widget.channel.url);
       try {
@@ -225,6 +229,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
       await _controller?.pause();
       if (mounted) {
+        setState(() => _castMessage = null);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
@@ -239,14 +244,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
     } catch (_) {
       await CastHlsProxy.instance.close();
       try {
-        await GoogleCastSessionManager.instance.endSessionAndStopCasting();
+        await GoogleCastSessionManager.instance.endSessionAndStopCasting()
+            .timeout(const Duration(seconds: 5));
       } catch (_) {
         // Preserve the original playback failure.
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),
-        );
+        setState(() => _castMessage = sessionConnected
+            ? 'A TV conectou, mas não confirmou a reprodução do canal. Tente outro canal.'
+            : 'Não foi possível conectar à TV. Confira se ela está ligada e na mesma rede Wi-Fi.');
       }
     } finally {
       if (mounted) setState(() => _casting = false);
@@ -314,6 +320,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
       },
       child: Scaffold(
       backgroundColor: Colors.black,
+      bottomNavigationBar: _castMessage == null ? null : SafeArea(
+        child: Padding(padding: const EdgeInsets.all(12), child: Row(children: [
+          Expanded(child: Text(_castMessage!)),
+          if (!_casting) IconButton(tooltip: 'Fechar aviso de transmissão',
+            onPressed: () => setState(() => _castMessage = null),
+            icon: const Icon(Icons.close)),
+        ])),
+      ),
       appBar: _fullscreen
           ? null
           : AppBar(
@@ -323,7 +337,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 children: [
                   Text(widget.channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
-                    _playbackConfirmed
+                    _failed ? 'Sinal indisponível' : _playbackConfirmed
                         ? (_isBuffering ? 'Carregando…' : _isPlaying ? 'Reproduzindo' : 'Pausado')
                         : 'Conectando…',
                     style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/app.dart';
+import 'package:rocha_plus/src/live/favorites_repository.dart';
 import 'package:rocha_plus/src/auth/auth_controller.dart';
 import 'package:rocha_plus/src/auth/auth_repository.dart';
 import 'package:rocha_plus/src/screens/home_screen.dart';
@@ -126,7 +127,8 @@ void main() {
   testWidgets('session expiration removes nested private routes', (tester) async {
     repository.initial = const AuthAccount(uid: 'verified');
     await initialize(controller);
-    await tester.pumpWidget(RochaPlusApp(authController: controller));
+    await tester.pumpWidget(RochaPlusApp(authController: controller,
+      favoritesFactory: (_) => FavoritesRepository()));
     await tester.pump();
     if (find.text('Pular').evaluate().isNotEmpty) {
       await tester.tap(find.text('Pular'));
