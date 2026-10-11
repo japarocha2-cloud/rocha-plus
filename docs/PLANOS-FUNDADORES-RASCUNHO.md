@@ -6,7 +6,7 @@ Status: **proposta de planejamento, NÃO publicada e sem cobrança**. Revisão j
 
 | Cliente / fase | Mensal | Anual | Observação |
 | --- | ---: | ---: | --- |
-| Fundador que contrata na fase inicial de TV aberta | R$ 5,00 | R$ 55,00 | Anual com desconto de 1 mensalidade (12 × R$ 5 = R$ 60; R$ 60 - R$ 5 = R$ 55). |
+| Fundador que contrata na fase inicial de TV aberta | R$ 4,90 | R$ 53,90 | Anual com desconto de 1 mensalidade (12 × R$ 4,90 = R$ 58,80; R$ 58,80 - R$ 4,90 = R$ 53,90). |
 | Novos clientes **após eventual** lançamento de filmes e séries | R$ 15,50 | R$ 170,50 | Anual com desconto de 1 mensalidade (12 × R$ 15,50 = R$ 186; menos R$ 15,50). |
 
 - Lançamento principal: **TV aberta autorizada**, sem filmes e séries inicialmente.
@@ -16,9 +16,9 @@ Status: **proposta de planejamento, NÃO publicada e sem cobrança**. Revisão j
 - Data de corte, identificação do fundador, troca de plano, interrupções involuntárias, reembolsos e alterações da Play **ainda precisam de regras formais**. Não prometer preço vitalício irrestrito nem benefício que já esteja tecnicamente implementado.
 - Nenhuma contratação, implantação, atualização do APK, lançamento ou mudança de cobrança foi autorizada por este rascunho.
 
-## Incompatibilidade a resolver antes de uma implementação de pagamento
+## Situação da implementação antes de cobrar
 
-A branch Work \`feat/favorites-billing-integration\` e o PR #16 apresentam **R$ 4,90/mês** e teste de 7 dias (quando elegível), com backend que aceita apenas compras de teste. A decisão mais recente nesta conversa de planejamento é **R$ 5,00/mês** e **R$ 55,00/ano** para fundadores. Estas alterações **não** mudam produto na Play, widget de compra, backend, contrato da API nem o controle de elegibilidade. **Não ativar cobranças reais** antes de reconciliar os preços, configurar planos oficiais na Play e testar o comportamento integral da assinatura mensal/anual.
+A branch Work \`feat/favorites-billing-integration\` e o PR #16 apresentam **R$ 4,90/mês** e uma possível oferta de 7 dias para usuários elegíveis, com backend restrito a compras de teste. **O preço mensal agora coincide com a decisão comercial**. O **anual fundador de R$ 53,90** ainda não está implementado nesse candidato. Estes documentos **não** mudam produtos na Play, widget de compra, backend, contratos da API nem elegibilidade. **Não ativar cobranças reais** antes de configurar e testar mensal/anual e aprovar os termos.
 
 ## Textos sugeridos para os termos (minuta, não publicação)
 
@@ -51,7 +51,7 @@ Documento separado deve informar controlador e contato, finalidades e bases lega
 - Não há link público hospedado; sem alterações em produção, Firebase ou pagamentos.
 
 ## Checklist antes de publicação comercial
-- [ ] Confirmar preço mensal fundador **R$ 5,00** versus candidato existente **R$ 4,90**.
+- [ ] Confirmar mensal fundador **R$ 4,90** na configuração final da Play e implementar/testar anual fundador **R$ 53,90**.
 - [ ] Aprovar os preços e condições de mensal/anual fundadores e pós-expansão.
 - [ ] Revisão jurídica dos Termos, Política de Privacidade e Regulamento.
 - [ ] Definir data de corte, carência por falhas involuntárias de pagamento, mudanças de plano e implementação da **regra já escolhida**: cancelou, venceu e voltou = perde preço fundador.
