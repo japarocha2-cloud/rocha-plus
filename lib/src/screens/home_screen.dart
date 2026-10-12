@@ -261,6 +261,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   late final PageController controller;
   Timer? _autoTimer;
   int currentPage = initialPage;
+  int _targetPage = initialPage;
   int selected = 1;
   bool _dragging = false;
   bool _appActive = true;
@@ -303,8 +304,10 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 
   void _move(int direction, {bool automatic = false}) {
     if (!controller.hasClients || _dragging) return;
+    if (automatic && widget.wide && _tvFocused) return;
     if (!automatic) _restartAuto();
-    controller.animateToPage(currentPage + direction,
+    _targetPage += direction;
+    controller.animateToPage(_targetPage,
       duration: transitionDuration, curve: Curves.easeInOutCubic);
   }
 
@@ -373,6 +376,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
           controller: controller,
           onPageChanged: (value) => setState(() {
             currentPage = value;
+            _targetPage = value;
             selected = value % 3;
           }),
           itemBuilder: (context, page) => AnimatedPadding(
