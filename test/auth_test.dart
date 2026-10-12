@@ -135,6 +135,9 @@ void main() {
     if (find.text('Pular').evaluate().isNotEmpty) {
       await tester.tap(find.text('Pular'));
     }
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
     await tester.pumpAndSettle();
     expect(find.byType(HomeScreen), findsOneWidget);
     final navigator = Navigator.of(tester.element(find.byType(HomeScreen)));
