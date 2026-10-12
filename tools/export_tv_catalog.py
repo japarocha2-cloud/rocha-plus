@@ -26,7 +26,7 @@ def identity(s):
     import unicodedata
     s = unicodedata.normalize("NFKD", s.lower())
     s = "".join(c for c in s if not unicodedata.combining(c))
-    s = re.sub(r"\\s*\\(\\d+p\\)|\\s*\\[not 24/7\\]", "", s)
+    s = re.sub(r"\s*\(\d+p\)|\s*\[not 24/7\]", "", s)
     return " ".join(s.split())
 
 def valid_https(url):
@@ -36,7 +36,7 @@ def valid_https(url):
 def parse(text):
     data, pending = [], None
     for line in text.splitlines():
-        line = line.strip().lstrip("\\ufeff")
+        line = line.strip().lstrip("\ufeff")
         if line.startswith("#EXTINF:"):
             title = line.rsplit(",", 1)[-1].strip()
             logo = re.search(r'tvg-logo="([^"]*)"', line)
@@ -74,7 +74,7 @@ def main():
         item["category"] = "Nacionais" if any(name == x or name.startswith(x + " ") for x in TV_NATIONAL) else item["group"]
         result.append(item)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    args.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(f"{len(result)} unique candidates; {sum(x['status']=='approved' for x in result)} approved")
 
 if __name__ == "__main__":
