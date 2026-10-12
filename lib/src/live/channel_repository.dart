@@ -123,6 +123,9 @@ class ChannelRepository {
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
     _userBlockedNames = await _blocks.load();
+    // No approved stream means no network discovery in strict demo mode.
+    // The Home stays available, but no unverified channel is advertised.
+    if (verifiedOnly && approvedUrls.isEmpty) return const <Channel>[];
     if (!forceRefresh && _memoryCache != null) {
       return _withoutSessionFailures(_memoryCache!);
     }
