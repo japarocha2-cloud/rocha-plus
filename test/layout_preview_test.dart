@@ -77,4 +77,19 @@ void main() {
     expect(requests, 0);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('TV focused carousel does not advance automatically', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 720));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(MaterialApp(theme: RochaTheme.dark,
+      home: const HomeScreen(previewOnly: true)));
+    await tester.pump();
+    final pages = find.byKey(const ValueKey('home-featured-carousel'));
+    expect(pages, findsOneWidget);
+    final controller = tester.widget<PageView>(pages).controller!;
+    final startingPage = controller.page;
+    await tester.pump(const Duration(seconds: 7));
+    expect(controller.page, closeTo(startingPage!, 0.01));
+    expect(tester.takeException(), isNull);
+  });
+
 }

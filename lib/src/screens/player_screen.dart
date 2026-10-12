@@ -168,6 +168,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted ||
+          GoogleCastSessionManager.instance.connectionState !=
+              GoogleCastConnectState.connected) {
+        throw StateError('A sessão Google Cast foi desconectada antes de confirmar o vídeo.');
+      }
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       final info = status?.mediaInformation;
@@ -219,7 +224,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
       try {
         await _loadAndConfirmCast(uri);
       } catch (_) {
-        if (_castContentType(uri) != 'application/x-mpegURL' || !device.isOnLocalNetwork) rethrow;
+        // Relay only helps when the receiver is still connected but cannot
+        // fetch the upstream HLS. Never open a local server after a Cast drop.
+        if (GoogleCastSessionManager.instance.connectionState !=
+                GoogleCastConnectState.connected ||
+            _castContentType(uri) != 'application/x-mpegURL' ||
+            !device.isOnLocalNetwork) {
+          rethrow;
+        }
         final relayUri = await CastHlsProxy.instance.relay(uri);
         await _loadAndConfirmCast(relayUri);
       }
@@ -244,8 +256,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
         // Preserve the original playback failure.
       }
       if (mounted) {
+        // Restore the already-initialized local player after a failed Cast
+        // handoff, rather than leaving the viewer on a paused black screen.
+        final local = _controller;
+        if (local != null && local.value.isInitialized &&
+            !local.value.isPlaying && !local.value.hasError) {
+          try { await local.play(); } catch (_) { /* Player error UI handles it. */ }
+        }
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),
+          const SnackBar(content: Text('A TV não confirmou a reprodução. Reprodução local mantida.')),
         );
       }
     } finally {
