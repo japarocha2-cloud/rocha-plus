@@ -19,6 +19,22 @@ Status: **contrato de design**, não comprovação de build ou compatibilidade. 
 - **Samsung Tizen / LG webOS (Web)**: replicar o padrão via HTML/CSS/JS e APIs do controle; não assumir compatibilidade binária com o Roku.
 - **Android celular**: conservar identidade e componentes, mas adaptar navegação para toque e largura estreita; não forçar 3 cartas inteiras na largura do telefone.
 
+
+## Padrão funcional compartilhado (validar no Roku primeiro)
+
+A experiência aprovada na Roku será referência de **comportamento**, não só de aparência. Em cada plataforma, reproduzir os mesmos resultados do usuário, com implementação técnica nativa quando necessário:
+
+- Controle remoto: setas movem foco previsivelmente; OK seleciona/reproduz; Voltar sai do player para a lista e da lista para Home; botão Home segue regras do sistema.
+- Carrossel: três cartões, destaque central, avanço manual sincronizado com o cartão ativo; avanço automático somente conforme especificação aprovada e sem prejudicar a seleção do controle.
+- Catálogo: categorias, ordenação e favoritos coerentes; somente canais aprovados, sem URLs inválidas, duplicatas não desejadas ou canais em quarentena.
+- Player: abrir canal selecionado, indicar carregamento, reproduzir imagem e áudio, mostrar erro inteligível, permitir retorno seguro e liberar recursos ao sair.
+- Estados: catálogo vazio, falha de conexão, transmissão indisponível e carregamento sempre tratados sem tela travada.
+- Navegação e layout: foco visível, contraste legível à distância e sem recortes em telas 16:9.
+
+**Regra de propagação:** funcionalidade só recebe status de **validada no Roku** depois de teste real. A partir daí vira requisito a implementar e validar separadamente em Android TV/Google TV, Fire TV, Samsung Tizen e LG webOS. Reprodução validada no Roku **não prova** funcionamento em outros sistemas, que têm APIs, decodificadores e formatos de instalação distintos. O objetivo é reutilizar especificação, componentes e dados, sem repetir o planejamento nem pular os testes técnicos.
+
+**Registro de status em 11/10/2026:** Roku V0.7 possui fluxo de player no código, mas sem teste físico confirmado; nenhuma compatibilidade de reprodução multiplataforma foi comprovada por esse pacote. Não alterar o último teste congelado.
+
 ## Critérios de validação antes do teste
 
 1. Tela 16:9, sem recortes, contraste e foco visíveis a distância.
