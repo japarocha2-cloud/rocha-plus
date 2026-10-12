@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Widget _menu({bool drawer = false}) => Container(
     key: const ValueKey('official-sidebar'),
-    width: 218,
+    width: 240,
     decoration: const BoxDecoration(
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
             sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 220, mainAxisExtent: 120,
+                maxCrossAxisExtent: 240, mainAxisExtent: 132,
                 crossAxisSpacing: 12, mainAxisSpacing: 12),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
@@ -474,7 +474,7 @@ class _NavItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
       child: Material(type: MaterialType.transparency, child: ListTile(leading: Icon(icon, color: Colors.white70),
-        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.w600)),
         onTap: onTap))),
   );
 }
@@ -502,10 +502,10 @@ class _CategoryCardState extends State<_CategoryCard> {
       onFocusChange: (v) => setState(() => focused = v),
       child: Padding(padding: const EdgeInsets.all(15), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(widget.icon, color: RochaColors.gold, size: 28),
+          Icon(widget.icon, color: RochaColors.gold, size: 32),
           const Spacer(),
           Text(widget.label, maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
         ]))),
   );
 }
