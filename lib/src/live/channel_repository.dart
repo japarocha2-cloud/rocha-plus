@@ -9,8 +9,26 @@ import 'm3u_parser.dart';
 class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
   final http.Client _client;
+  final bool verifiedOnly;
+  final Set<String> approvedUrls;
   Future<List<Channel>>? _pendingLoad;
-  ChannelRepository({http.Client? client}) : _client = client ?? _defaultClient;
+
+  // Demonstration builds display only streams approved after real playback.
+  // HTTP reachability is not approval. Normal builds keep current behavior.
+  static const _verifiedOnlyBuild = bool.fromEnvironment('ROCHA_VERIFIED_ONLY');
+  static const _approvedBuildUrls = String.fromEnvironment('ROCHA_APPROVED_STREAM_URLS');
+
+  ChannelRepository({
+    http.Client? client,
+    bool? verifiedOnly,
+    Set<String>? approvedUrls,
+  }) : _client = client ?? _defaultClient,
+       verifiedOnly = verifiedOnly ?? _verifiedOnlyBuild,
+       approvedUrls = approvedUrls ??
+           _approvedBuildUrls.split(',').where((url) => url.trim().isNotEmpty).map((url) => url.trim()).toSet();
+
+  bool _approvedForDisplay(Channel channel) =>
+      !verifiedOnly || approvedUrls.contains(channel.url);
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -77,6 +95,7 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
+        .where(_approvedForDisplay)
         .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
@@ -94,6 +113,7 @@ class ChannelRepository {
       channels
           .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
+          .where(_approvedForDisplay)
           .toList(growable: false);
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) {
