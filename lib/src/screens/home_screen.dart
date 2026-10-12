@@ -264,6 +264,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   int selected = 1;
   bool _dragging = false;
   bool _appActive = true;
+  bool _tvFocused = false;
 
   @override
   void initState() {
@@ -285,7 +286,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 
   void _restartAuto() {
     _autoTimer?.cancel();
-    if (!_appActive || _dragging) return;
+    if (!_appActive || _dragging || (widget.wide && _tvFocused)) return;
     _autoTimer = Timer.periodic(autoAdvanceInterval, (_) {
       if (!mounted || !controller.hasClients) return;
       _move(1, automatic: true);
@@ -311,6 +312,14 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   Widget build(BuildContext context) => Focus(
     key: const ValueKey('tv-featured-keyboard-focus'),
     autofocus: widget.wide,
+    onFocusChange: (focused) {
+      _tvFocused = focused;
+      if (focused) {
+        _autoTimer?.cancel();
+      } else {
+        _restartAuto();
+      }
+    },
     onKeyEvent: (node, event) {
       if (!widget.wide || event is! KeyDownEvent) {
         return KeyEventResult.ignored;
