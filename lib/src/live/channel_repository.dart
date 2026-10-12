@@ -106,7 +106,9 @@ class ChannelRepository {
     }
 
     final parsed = jsonDecode(await _catalogLoader());
-    if (parsed is! List) throw const FormatException('Catálogo aprovado inválido');
+    if (parsed is! List) {
+      throw const FormatException('Catálogo aprovado inválido');
+    }
     final channels = <Channel>[];
     for (final item in parsed) {
       if (item is! Map || item['approved'] != true || item['status'] != 'approved' ||
