@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
 import '../widgets/rocha_channel_card.dart';
@@ -307,7 +308,25 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   }
 
   @override
-  Widget build(BuildContext context) => Column(children: [
+  Widget build(BuildContext context) => Focus(
+    key: const ValueKey('tv-featured-keyboard-focus'),
+    autofocus: widget.wide,
+    onKeyEvent: (node, event) {
+      if (!widget.wide || event is! KeyDownEvent) {
+        return KeyEventResult.ignored;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        _move(-1);
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        _move(1);
+        return KeyEventResult.handled;
+      }
+      // Up/down remain available for normal navigation among sections.
+      return KeyEventResult.ignored;
+    },
+    child: Column(children: [
     Padding(padding: EdgeInsets.fromLTRB(widget.wide ? 24 : 14, 0,
       widget.wide ? 24 : 14, 8), child: Row(children: [
       const Expanded(child: Text('Destaques', style: TextStyle(
@@ -358,7 +377,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
           ),
         ),
       )),
-  ]);
+  ]));
 }
 
 class _FeatureCategory extends StatelessWidget {
@@ -425,7 +444,7 @@ class _OfficialHero extends StatelessWidget {
             letterSpacing: wide ? 2 : 1.3, color: RochaColors.silver)),
           SizedBox(height: wide ? 14 : 12),
           OutlinedButton.icon(
-            autofocus: true, onPressed: onWatch,
+            autofocus: !wide, onPressed: onWatch,
             style: OutlinedButton.styleFrom(
               foregroundColor: RochaColors.gold,
               backgroundColor: const Color(0xCC050405),
