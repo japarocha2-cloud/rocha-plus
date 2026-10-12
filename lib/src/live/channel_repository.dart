@@ -112,11 +112,17 @@ class ChannelRepository {
     final channels = <Channel>[];
     for (final item in parsed) {
       if (item is! Map || item['approved'] != true || item['status'] != 'approved' ||
-          item['blocked'] == true || item['quarantined'] == true) continue;
-      if (item['name'] is! String || item['url'] is! String) continue;
+          item['blocked'] == true || item['quarantined'] == true) {
+        continue;
+      }
+      if (item['name'] is! String || item['url'] is! String) {
+        continue;
+      }
       final channel = Channel(name: item['name'] as String, url: item['url'] as String,
           logo: item['logo'] as String?, group: item['group'] as String? ?? 'TV aberta');
-      if (!_isPermanentlyBlocked(channel)) channels.add(channel);
+      if (!_isPermanentlyBlocked(channel)) {
+        channels.add(channel);
+      }
     }
     _verifiedCache = List.unmodifiable(channels);
     return _withoutSessionFailures(_verifiedCache!);
