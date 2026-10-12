@@ -13,6 +13,7 @@ def reason(row):
  if 'record' in n or any(n==b or n.startswith(b+' ') for b in BLOCKED):return 'previously_blocked'
  if row['v4_status']!='completou_teste':return row['v4_status']
  if row['v4_exit_code']!='0' or row['probe_status']!='video_e_audio' or float(row['v4_decoded_seconds'] or 0)<29:return 'insufficient_decoding_evidence'
+ if not row['url'].startswith('https://'):return 'insecure_http_transport'
  if not row['url'].startswith(('https://','http://')) or '.m3u8' not in row['url'].lower():return 'format_not_integrated_across_platforms'
  return None
 def group(row):
@@ -26,7 +27,7 @@ def generate(report):
  for row in rows:
   rejection=reason(row)
   if row['url'] in seen:rejection='duplicate_url'
-  if rejection:excluded.append({'name':row['name'],'url':row['url'],'reason':rejection});continue
+  if rejection:excluded.append({'name':row['name'],'url_sha256':hashlib.sha256(row['url'].encode()).hexdigest(),'reason':rejection});continue
   seen.add(row['url']);approved.append({'id':hashlib.sha256(row['url'].encode()).hexdigest()[:16],'name':row['name'],'url':row['url'],'group':group(row),'approved':True,'status':'approved','evidence':{'report':report.name,'decoded_seconds':float(row['v4_decoded_seconds']),'video_codec':row['video_codec'],'audio_codec':row['audio_codec']}})
  approved.sort(key=lambda c:next((i for i,t in enumerate(POPULAR) if t in normalized(c['name'])),len(POPULAR)))
  return approved,excluded

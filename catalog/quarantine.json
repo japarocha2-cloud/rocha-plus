@@ -1,257 +1,792 @@
 [
   {
+    "name": "Adult Swim Latin America Brazil (720p)",
+    "url_sha256": "204c450de10756585f83054347acf9657bd9f2428cf2935c1eea1b41b5128cc1",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "AgroCanal (720p)",
+    "url_sha256": "7e4612c25c897bb59e5c25fe7ddbf73afe20f843d839ce25737fa437645f3808",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "AgroMais (720p)",
+    "url_sha256": "19cb5d24b816db4da35bdade2a32b4eab94af74258098c2d1a06bf71e95c295c",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Amazon Sat (1080p)",
-    "url": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8",
+    "url_sha256": "2753c87b53e5faea97d88e9abf8aea3342aaee134c28f8cf89562c919dd59b8d",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "AMC Latin America Brazil (720p)",
+    "url_sha256": "8f25f44d09a11a9b1c2b1089a8781b79f8643f47f8d4b276aa094d70964dcb3c",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Arte 1 (720p)",
+    "url_sha256": "a74d4d9ee034cde8045839f3cff4019ca0ac60ff8caa7ab5abbddb71f142e40c",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "AXN (Brazil) (720p)",
+    "url_sha256": "4ee7dd581ecc77b1939f3aafef620438e8abb40ac116b28c2f13eaf3e483eb95",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Box Kids TV (720p)",
+    "url_sha256": "23289ac218171546d63fec77d46367404e55e1eadd0cb7e66612aa015b2876df",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Canal do Boi (720p)",
+    "url_sha256": "0513d8697f5835c90363863fcc66086be6d19b748654dca12e5937d9e4f21210",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Canal Educacao (720p)",
+    "url_sha256": "93b4843e40f1aff94513df29d8e9c05d3b6cab3a5e6ba2217d563f952bfa24ab",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Canal Futura (720p)",
+    "url_sha256": "064aba01c82be400f29695c9a3cfbb1e6c291fd72282f8827e02f0d61ac7ac7d",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Canal Gov (720p)",
+    "url_sha256": "43f5419fd8696c3bb2466eacd2ce7d010b07e786e07663a50430a865dc701adb",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Canal Sete",
-    "url": "http://play.canalsete.com.br:1935/canalsete/xpl-c7_source/playlist.m3u8",
+    "url_sha256": "7a064e91f464fd684683aae114f05e2012672ec683404193ac0d83863169ad28",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
+    "name": "Chef TV (720p)",
+    "url_sha256": "87bcc0fd9f44e669eb9a331b20d4ec0e27334b45c618d80e167418cb0247fb29",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "DumDum (720p)",
+    "url_sha256": "9f220f29636a5af3257e1a217130c68ac766c62025f52b234e3ab721e85369a1",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ESPN 4 (Brazil) (1080p)",
+    "url_sha256": "adeff3e740e2cb519950c0787ce4f39bf76dbe854097681f44a7c27d09d6c97a",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ESPN (Brazil) (1080p)",
+    "url_sha256": "735460eb80bf663450258ef7290b7436303d4f6e33c93e43225949976a7809e6",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Fish TV (1080p)",
+    "url_sha256": "4512a6b07eb510dfec5934fa761835fc0d93d9151137e122f3260255f5ef1dc7",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Fonte TV",
-    "url": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8",
+    "url_sha256": "d3884e33377c97f0c745e2b1cd5f5865810f326be11c0b568d7f039c19b2cd38",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "Fora Tedio TV (720p)",
-    "url": "https://stmv2.srvif.com/foratedio/foratedio/playlist.m3u8",
+    "url_sha256": "e4dcbbe79525b480484fcbf0b6c23697a2641512c219e66596ea6e035c4dca95",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "Futura (720p)",
+    "url_sha256": "3788339ee5cd516b7e3c2ac1a24c0c7da7b901cbdf86598be12439bf0f5172c7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "History 2 Latin America Brazil (720p)",
+    "url_sha256": "549322ec0f9767e0955472943cc8a888548105726f7615a37326e87fbc9534a7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "History (Brazil) (720p)",
+    "url_sha256": "6be843d16e1c2f96a543ef3bfce900fbf2442bfa49a8bb7a81e305d78e331c1d",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Jovem Pan News (720p)",
+    "url_sha256": "ba1e94a2f58bf4528b98c232978533fa7bcc5b5a23b71673078932eff2ad1add",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "KpopTV Play (576p)",
-    "url": "https://giatv.bozztv.com/giatv/giatv-kpoptvplay/kpoptvplay/playlist.m3u8",
+    "url_sha256": "52ac618aeaf94c1e78ff4f9e8223097049a332e5160094d6ba52621dd0a71214",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "Laboral TV (360p)",
-    "url": "https://tv.laboralsst.com.br/hls/stream.m3u8",
+    "url_sha256": "a14f60a05c980d8de2e26ea20ca37169ab4cce994f3dac1a926033996548f93d",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "Lifetime Latin America Brazil (720p)",
+    "url_sha256": "2d47bdf21b3bde05294bd6fefbb7daa48428a0cbee5221d45103dc5f712509d8",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Music Box Brazil (720p)",
+    "url_sha256": "328ae24392fb50df83ff5f7285a992e634dc4bf5b94c968a4d3fe332f32eb710",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Nova Era TV (1080p) [Not 24/7]",
+    "url_sha256": "21b553019ae897aab1dd3a0d60f55dc81e0d52d2667cb0a045e6ecd475873c36",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Novo Tempo (720p)",
+    "url_sha256": "79aecaa592ad560e5a000eb993d8d37d26ed5def4d3b77eb4abcb8b6b36a2a85",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "O Dia TV",
-    "url": "https://6836041ea1117.streamlock.net/tvodia/tvodia/playlist.m3u8",
+    "url_sha256": "892ddda1a8d09618d7745ce23c0bd047c63e4e2e1754b3a570b5878f1aab9c5a",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
+    "name": "Play TV (Brazil) (720p)",
+    "url_sha256": "8b0f87dbe125391d9bd4acd0951ab5e2a61a0f8067e1433f5053b33605f2dea5",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Primer TV (1080p)",
+    "url_sha256": "f9edc282157e3f5dac5aad90eeb55d1f4bb65a54b7ed62f9966a73a08b662617",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Record News (720p)",
-    "url": "http://45.162.64.114/RECORD_NEWS/index.m3u8",
+    "url_sha256": "451c3afa4cbf26d00fd9fe9b852c81acb26a04ed197900e725f1713def375f4e",
     "reason": "previously_blocked"
   },
   {
     "name": "RecordTV Interior SP",
-    "url": "http://200.77.176.130:8000/udp/224.0.0.4:49152",
+    "url_sha256": "8090836a282d379efb3ac2e0fd18a0d4ea72a2a2ac90b9564bcdf4f3f8a05219",
     "reason": "previously_blocked"
   },
   {
+    "name": "Rede CNT Rio de Janeiro (720p)",
+    "url_sha256": "43f584426337265ca681433bcff119b160b1858ea33241fa65a6d0e27d409321",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Rede Familia (720p)",
+    "url_sha256": "7b0cb0b96125b3869bcdabccb84a628590209832f25f66ce82e041c1f30a690c",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Rede Seculo 21 (720p)",
+    "url_sha256": "c37d2a6ffbe99c1da5608288756f8e5066905454c6ffe8398180307ea6e45c12",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Rede TV! (720p)",
+    "url_sha256": "9512640634225255a733487d7500272ed9e4e39ea96ffd47979bf4e1f000e96c",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Rede Vida (720p)",
+    "url_sha256": "e54396db1572e52d0964acb2417df4e14a715fec8951249688c78b23cb8fbaa7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Sony Movies (720p)",
+    "url_sha256": "ebc633d88c8bf7a32a34e634b1315bc4ec6272a24c6d2d2a654f51f4cc813530",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "SporTV 2 (1080p)",
+    "url_sha256": "2e7d712d34eb3058037582db638b9052bbfe49f2bcc5d448c86a68a01b00945a",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "SporTV 3 (1080p)",
+    "url_sha256": "c672d20e840f380f3b54a2f75007f013aece62f76d3849db5a28be9558ac6fe7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "SporTV (1080p)",
+    "url_sha256": "95a33790264a1a9bf8f4917d01f38be1b900b20dae9cb58da568617e5a436971",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Studio Universal Latin America Brazil (720p)",
+    "url_sha256": "5c095b5810ef5c15e0f9381b079ffb436ac749dc8d19f1d6dc0801bd2a1ce21b",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Telecine Action (1080p)",
-    "url": "http://46.151.196.223:14326/",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "3f508a9ac71577bce23f5c75afc40c9d27239f4a961fad3c4fe3878c89c63657",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Terra Viva (720p)",
+    "url_sha256": "ed2830f94890e9d7658809732660f2c473d6eb7f4440e2a62affa98971e14414",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "TLC Latin America Brazil (720p)",
-    "url": "http://79.127.238.228:14433",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "22dc4e011dfa2e11e078cd8f5c99a4b86a95b1fa783f010a31fe5c8384dc51ab",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TNT Novelas Brazil (720p)",
+    "url_sha256": "dbae033d2847f7994740439922aa57c74a510f0fd19e44a54625018c49802a36",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Travel Box Brazil (720p)",
+    "url_sha256": "4a427dfdc7a0f230ca39f3031077ade01800e49cc359f54fbf3c4145b87afcad",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Aparecida (720p)",
+    "url_sha256": "21c00aea25519a1934003f05d0a1a6dd4576ff06a9f941605b0fc679345902c6",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Bahia (1080i)",
+    "url_sha256": "31f55d560c0bf9a22c2b6adb8791ec1967f8956e1f453dfb915a224b35651e9d",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Brasil (720p)",
+    "url_sha256": "34cbfa3434ccd0a5aeb9626e6d3fb29b43bd9cf9c61adddc50039118fd1c35cd",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Cancao Nova (720p)",
+    "url_sha256": "fa6f5be8d76a7a7370948746fbfd0ae9a9e61eee1dd0b9a9d5f6492619651e0e",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Cultura (720p)",
+    "url_sha256": "a602f59cdca652b7e4fb4ef7292d4c7fe08efe0b40dbd5676d7c204f5cd83c58",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "TV Difusao (720p)",
-    "url": "https://tvdsoultv.acessaradios.com.br/tvdsoultv/tvdsoultv.stream/playlist.m3u8",
+    "url_sha256": "fe59f8b08ff77d1d3eea310fa084315daba895e3401d4db3f8bb50d0897a1e9e",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
+    "name": "TV Evangelizar (720p)",
+    "url_sha256": "dce3b5778c289bcb495bf969adcb7689d64222754beb52942cfeed1033409ac3",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV GRANDE NATAL HDTV BRASIL (1080p)",
+    "url_sha256": "5e2ebf1f0dded39dbe10db14e22feb3ff4a3dde30ef42fa4658ddf194f36b0d2",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Justica (720p)",
+    "url_sha256": "58a35b143b4dc19b9b8c317f88f32854a986c024e0aecec83e3b2fef13fd958f",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Natal (1080p)",
+    "url_sha256": "25267d3877af305fa6b30698a9e63414d4c633e7b6594cb4b4f40d79e666e46c",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Pai Eterno (720p)",
+    "url_sha256": "9d501f967d8e73db212431ec8daea38f6cda374b2be7048372e0947955fab522",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "TV Paraense (720p)",
-    "url": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u",
+    "url_sha256": "64543b7e5698926228ee1903dc9c62dd8db858c8350343b28019dc19404f29f5",
     "reason": "format_not_integrated_across_platforms"
   },
   {
+    "name": "TV Parana Turismo (720p) [Not 24/7]",
+    "url_sha256": "4b19ab3d84c03a2015a3a46a674567ce14289b0be642f08222213b4bddfec08f",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Ra Tim Bum (720p)",
+    "url_sha256": "46c905d1e9e4f30c799bdd55d0166595d84052bce4b6b0c6cb0f2ec1e9ca18b4",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TV Senado (Brazil) (720p)",
+    "url_sha256": "1c1be842888cb28e426337b466c796316a500d443583cba7e5da86ae59951a04",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "TV Vicosa (480p)",
-    "url": "http://wz4.dnip.com.br/fratevitv/fratevitv.sdp/playlist.m3u8",
+    "url_sha256": "f9ef913ad994513b89886c77ec0c4465686a4939da651f0070d10698d4cb502d",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "TV Vila Real (720p)",
-    "url": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8",
+    "url_sha256": "e07c956ab9e9542486ae1660d1789cb83a270695a6edb634a12fdc2cab4a077e",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "TV+Pet",
-    "url": "https://stmv5.samcast.com.br/tvmaispet6354/tvmaispet6354/playlist.m3u8",
+    "url_sha256": "c17c2ee54259789fc127cac28e6512360352bf8ef0c9224ca97bcefa9a825630",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
+    "name": "TVE Bahia (1080p)",
+    "url_sha256": "7776364d3fd427df87b68ee24144e92f048e70e6cd08011b3753289aaeb74244",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "WooHoo (720p)",
+    "url_sha256": "2988070f9231325a75f7bc4cda298a2a5f0e84a37873cf600be5b4d5a557e037",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ACC Network (720p)",
+    "url_sha256": "25265cade326df350922ddb8207ff6fe35dd6fefb0d0779f9f42ecb1ec80bc69",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Arryadia (720p)",
-    "url": "http://149.100.11.252:8000/play/a065/index.m3u8",
+    "url_sha256": "821f06680d4c51df149d261e6c89c9cb588333046d221ed536a9f334fbc6173e",
     "reason": "insufficient_decoding_evidence"
   },
   {
     "name": "AyM Sports (1080p)",
-    "url": "http://168.196.127.137:6001/play/a06v/index.m3u8",
+    "url_sha256": "4f2f79ebde821aa2a189a39ca6e810aa21c5ccde7786f3691a0d233655185236",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "Azteca Deportes Network (1080p)",
+    "url_sha256": "128f1dc495f2eda3f56a22ea2459ef4b7ea14ac1f3f03e36afbcc45d9018cf4e",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Belarus-5 (1080p) [Not 24/7]",
-    "url": "https://ngtrk.dc.beltelecom.by/ngtrk/smil:belarus5.smil/playlist.m3u8",
+    "url_sha256": "dc0a24f8725bcc88bd57673c898e20b5faeac1ed503d99daaa1b4bc2d5df2e08",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Belarus-5 HD (1080p)",
-    "url": "http://178.124.179.122:8080/BT5/index.m3u8",
+    "url_sha256": "21344d9de6de4652043494c125e06c6586ad508c90e1ea91c9922af1f6174f5d",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Canal+ Sport 2 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport2/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "61a4d9d19ee58aec433d79df5615630f685d928b061043649ec372c0bf1a60a7",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 3 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport3/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "eb7c18642bb49a1e51d5ac109cecf6d5ef3385a2ec6e67c4cdd938e62cb02cde",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 4 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport4/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "7be368547b13510f7c0dd77031efa4e1813d0cb8ca7db224a344aee54e46558a",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 5 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport5/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "98193b496d6e703cbeefb102255e255436846ff42a7e95fd135b0db13db4f828",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 6 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport6/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "8883f5662d1773bc46e78f2dc60e287b0909cadfb94ef4af3e93a7c7fde61afc",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 7 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport7/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "7eb77370bd0b63ae879079a938440b8e2014e45155c8c3a77f3d74a111f2efd0",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport 8 SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport8/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "875a18a214fef07b0a4955ebb176bbabd790c23de22ac61b86c13383ee689d46",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Canal+ Sport (1080p) [Geo-blocked]",
+    "url_sha256": "4c7138894083af509775f0cbd0cd881a7822b1e85a22b34f5302aadf900f79d4",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Canal+ Sport SK",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "9dd4b368faf3aa7147486a7a514ff735124584faaa5c00f5d9b3acc27194676c",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "CDN Deportes (720p) [Not 24/7]",
-    "url": "https://hls.tvabierta.net/hls/036.m3u8",
+    "url_sha256": "4863cf4c00f7e6408234691fe9cc2dabe43e7c2122955b6e41200bed25f94e7e",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "Claro Sports (1080p)",
-    "url": "http://168.196.127.137:6001/play/a08r/index.m3u8",
+    "url_sha256": "3b0a68615d17c2a168e2d2e0d714a2bc606983b58252cb5495b73ba3e0901f00",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "DiviSport (1080p)",
+    "url_sha256": "39906b480d53fe0b4eddb8679ea85648228939bf06d19bae96ba6eb170f6e5c7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "DSports (1080p)",
+    "url_sha256": "d1febdf0ef75af9e42f564e6701facc98f6f3fdd289d387b47e9018a64f52fa4",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Dynamo Kyiv TV (1080p)",
+    "url_sha256": "0d1d46603e41fff9a05e9039d9f73de2f026613ed50afe006243c622bbee23df",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Equalympic (1080p)",
+    "url_sha256": "6f127db5f96dbef15c5ee518e4564e4fd859d9e5a5e696819b71242a76c510e7",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ESPN 2 (United States) (720p)",
+    "url_sha256": "558db3acc527d09adef292db1414697586ad25650160958b5bcb968b40a27ff7",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "ESPN 2 Latin America (1080p)",
-    "url": "https://barinaslive1.boldmss.com/ESPN_2/ESPN_2.isml/ESPN_2.m3u8",
+    "url_sha256": "f14a3aabdc5caa11cd65b8d01c7089fbe78453382f7e39f6832486e27471da55",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "ESPN (United States) (720p)",
+    "url_sha256": "0612b11629dc19f8f7dfbd01938332a0ef8bf3ab80b29bc72fe0f5e14f153a7f",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ESPN Premium (Argentina) HD (1080p)",
+    "url_sha256": "b5e8b95c43a8bf8f13da9f7f998b76b55702f8251e3aebc1652aea8e3e991efa",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "ESPNU HD (720p)",
+    "url_sha256": "afe4b6fa0be66bfc1db2e9dd785f275d222ca130dcc9c86e0f3853f2c37581b5",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Eurosport 1 Russia (1080p)",
+    "url_sha256": "3f7485947214aadd6405ba763d9e1e3652a5fa5a921c12e400290c43ca79cc4a",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Eurosport 1 Polska (1080p)",
+    "url_sha256": "02ac1310dced7f4cdff3631c1e78baae4f2e9f13e0b013ed2de0f5fbe3c8e65d",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Eurosport 2 Russia (1080p)",
+    "url_sha256": "b1941861b05d20519f8bc96331234d68abd593993e098406f69f9d261c0852cb",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Eurosport 2 Polska (1080p)",
+    "url_sha256": "2ccf83008b3ee53c9faacf2a4d3b3b249cd905c8184fd9a8f736540b6ae6f838",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Extreme Sports Channel Polska (1080p)",
+    "url_sha256": "d7c526eb7cb00001e90219182fbff56b4bbf198b1022c11105e32813b37c6300",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Fast&FunBox",
-    "url": "https://dash3.antik.sk/live/test_fast_and_funbox_medium_atk/playlist.m3u8",
+    "url_sha256": "8bd8eff744efe1a7102ab725d45ee3458be7e2f55dff6820b8f291b8efce7f44",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "FB TV",
+    "url_sha256": "d972e6442fb0375e75945116df59e42811baa6696bcfd0e71690485d736360cc",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Fox Deportes (720p)",
+    "url_sha256": "4af68f9b530275808713b4b2b7f638af5ff9a820b1218c2bf67898479ba12844",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Fox Sports 1 (720p)",
+    "url_sha256": "a83aeb8cb94e329710cf8b21a1a7f2f10bb0491a40ec73129c153fffad849880",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Fox Sports (1080p)",
+    "url_sha256": "82f4dde827b0eb93f4485ee66d0b2765ee18d4b8e9af488f04c7c369e91e71f5",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Futbol TV (1080p)",
-    "url": "http://stream3.cinerama.uz/1010/tracks-v1a1/mono.m3u8",
+    "url_sha256": "daa3aa00184dde6607e14b2ff256bc81900e9beba496894648270b52bf7b95b8",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "FUTV",
+    "url_sha256": "757498ac1329e67fbd7574492a4c9fa7d711b887da604d9f9a7608c0ac6cd2ba",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Go3 Sport 1 (1080p)",
+    "url_sha256": "317b6d833e23b70a294e1488998d364159bcebedef83dff3a794559b685bd6af",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Golf + (1080p) [Geo-blocked]",
+    "url_sha256": "d51ed098a006a1efd1658e70f0669f11349ca4e8210479e9d041fe4061f241a6",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "L1 Max (1080p)",
+    "url_sha256": "01c7b1740f885e580ae0be909e30e2a9766c67e689784ccbdd011f182bb62f33",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "LRT Plius (1080p)",
+    "url_sha256": "c3e1483ebeef69fe5f622d447a9e5dd7b03633cf459a925e51fddd90a2efd2eb",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Maincast Cybersport (1080p)",
+    "url_sha256": "b35f9037e6467097294f4c3465dac7d077c10f6cc3280df6cb4f0129b1360651",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Maincast Sport (1080p)",
+    "url_sha256": "5899867007476fcc5ff1e3ea8734b4b1e094ce2094247806c50f4a07a586e3fb",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Match4 (1080p)",
-    "url": "http://141.94.193.53:80/Match4_HD/index.m3u8",
+    "url_sha256": "62e9d608020d03a52a24039d0b28c34219dca4ef0fe7dc28d8a72b1441250f80",
     "reason": "terminou_antes_do_prazo"
+  },
+  {
+    "name": "Match! Boets (576p)",
+    "url_sha256": "833c096081c0422f8bf51aed1fa5adca0d3509b05a92ccf2c4f1d1345c486ed5",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Match! Premier (480p) [Geo-blocked]",
-    "url": "http://192.162.64.99:5000/play/a02b/index.m3u8",
+    "url_sha256": "0248958834351f1d8a7687a31b4e85a097cd40f28be283b329c8c736b0991a1b",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
+    "name": "Meridiano TV (576p)",
+    "url_sha256": "5a9838bc5ac0e122e11f6c2fe8a3fdef4203aa8cc4fe14f53657d9711726f22a",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "MLB Strike Zone (720p)",
+    "url_sha256": "cff07741c58eba09c840a46cb205fa0ebd8ac8f31359656d45c5ff709c70cb4b",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "More Than Sports TV (1080p)",
-    "url": "https://mts1.iptv-playoutcenter.de/mts/mts-web/playlist.m3u8",
+    "url_sha256": "5909051a30c37414993a70a613246d61a3ab8de162c7c9fce27d161b3a2c9755",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "MSG (720p)",
+    "url_sha256": "bd16229a08f000e8e0f3bada0f08c06f624a5465c549edfff7952de067fa93e0",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "NBA TV (720p)",
+    "url_sha256": "4e66e76e59e2893267488b3e05e37ccdf484a271782b2b4dbb78d1dd4cb5e735",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Okko Futbol (1080p)",
+    "url_sha256": "c7c2c43d7f9c4f495188344da7764a55b82bca583bdc61d8601e8826d03397df",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Okko Prajm Sport (1080p)",
+    "url_sha256": "e06921615f69dd82a38a2fc33f8e55563e3e6ee4ed2d2144ca7e05ab2d91d194",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Okko Sport (1080p)",
+    "url_sha256": "f9aa3cb5e8099160987ade1b79c80258f76444b8ccef9323d48eea81d3701850",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Ovacion TV (720p) [Not 24/7]",
+    "url_sha256": "2b622f52d595e01c787eb7864f907d5235b5ec86ce32d5354ba10084dcd7ee05",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Polsat Sport Fight (1080p)",
+    "url_sha256": "23f3f97fbe7d51e8c7d35d5e020948cdd95e3e65c5faaf9faed91e51dcf9627e",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Prime (Syria) (1080p)",
-    "url": "https://cdn.bestream.io/prime/prime.m3u8",
+    "url_sha256": "47127c782ba1cb47b50aa5a4e6f533202cbf4960f2b01315a834609501358bc3",
     "reason": "tempo_esgotado"
+  },
+  {
+    "name": "QazSport (1080p)",
+    "url_sha256": "270f77ab22e88423d25a94de9614474b776e8d4bbcb4ee5c527f430afc844b44",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Setanta Sports 1 Eurasia (1080p)",
+    "url_sha256": "cc9781d1b11b8153c747aff4baabbc582c8b850ec0dedacc50dacf223d921c37",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Setanta Sports 2 Eurasia (1080p)",
+    "url_sha256": "38e3ff5229d43384e8b544161e8ede08b367b4afcdb6ff89a49aa40fd45e6101",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Setanta Sports HD",
+    "url_sha256": "64c71821db2167c9c0d115651520c252a00a81c6cd1de0d8ff6cf6a65438e79b",
+    "reason": "insecure_http_transport"
   },
   {
     "name": "Sony Sports Ten 1 HD (1080p)",
-    "url": "http://103.185.24.134:3001/SonyTenSports1/index.m3u8",
+    "url_sha256": "055e2f037c01725ceb0d4a6c351da7e4a68433d63af908c6c490e77981f336a8",
     "reason": "terminou_antes_do_prazo"
   },
   {
+    "name": "Sport 1 (Ukraine) (576p)",
+    "url_sha256": "05be1a84cc2afac2746a0a54837baed0da38409d18df33ee57840189f46908e9",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Sport 1 Baltic (1080p)",
+    "url_sha256": "e554c4f057e9865318a0ae54fef138a1f1aa6c94a28ab85663ad38ded74485c6",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Sport 2 (Ukraine) (1080p)",
-    "url": "http://stream.mcquack.net/392/index.m3u8",
+    "url_sha256": "e6d796136188316346f443ae9530f158c99e99c88d992f506d5ed04789c8b7de",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "Sport 3 (Ukraine) (1080p)",
+    "url_sha256": "e77ac9213e69fea6ad8062c0753a6829089cc3405299ce07f7ad2dafedc4d7b6",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Sport 4 (Ukraine) (576p)",
+    "url_sha256": "c8f09ca72651e7921b5a9d969053d72c796c3ada257a721f1374b5199ccc50d8",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Sport 5 (1080p)",
+    "url_sha256": "1d25b11fa5b9a50d9fa82ef74aa4f00ea489e1c0757c58b8269a2bb180644c31",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Sport TV (1080p)",
-    "url": "http://178.124.179.122:8080/SportTV/mpegts",
+    "url_sha256": "c026912737c5797cd4435b93c790352710e58b9e328963a907b193b2d8a68285",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Sportitalia (1080p)",
-    "url": "https://edge-001.streamup.eu/sportitalia/sihd_abr/playlist.m3u8",
+    "url_sha256": "f06ebdacc7f829842ef70c3185d05197762f00139ba08885134b59e2d4731f72",
     "reason": "tempo_esgotado"
   },
   {
     "name": "SportsGrid (1080p)",
-    "url": "https://sportsgrid-tribal.amagi.tv/playlist.m3u8",
+    "url_sha256": "fbe57d51aa740741a96cd3d4e1bb0be62ac83c66de137b037d9d2b11337b86e6",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "Star Sports Select 2 HD (1080p)",
+    "url_sha256": "b3074a4129d00bb681da06b82528f70501a865bd6e6736580abd01286840de43",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Suspilne. Sport (1080p)",
+    "url_sha256": "e03629fd4f900ce94d8fd8439056a88db5926fb637bcb6aa967434bb2bf37f46",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "Swerve Combat (1080p)",
-    "url": "https://linear-253.frequency.stream/mt/roku/253/hls/master/playlist.m3u8",
+    "url_sha256": "6f8f2395ee7bab7428997aae77f4e377fcff74a59ab5a1ffce1250f697d4cc1f",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Teledeporte",
-    "url": "https://rtve01p.origin.c21livecloud.com/live-origin/tdp-hls/bitrate_1.m3u8",
+    "url_sha256": "41e05902d55fa0d2a818ea707e82358add8a3ab2ccc5c3199bca4a91ff13fd48",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Tigo Sports (El Salvador) (1080p)",
-    "url": "http://45.167.2.101:8000/play/a0pp/index.m3u8",
+    "url_sha256": "4cc01162698ca886c0c1f20704853d90b304baa3b0939aa1e71e8f3a10a3ad78",
     "reason": "erro_decodificacao_ou_rede"
   },
   {
     "name": "Tigo Sports (Honduras) (1080p)",
-    "url": "http://168.196.127.137:6001/play/a0ay/index.m3u8",
+    "url_sha256": "fd08e4e8c778b98306a99b41523dfbaaed6ff668a777a1086b59217cb2252a75",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Trace Sport Stars (1080p)",
-    "url": "https://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8",
+    "url_sha256": "aa8c6d9fd540e06ef2fba95262856c8f798f79a4f9c411446ec8d1b58a87e55a",
     "reason": "tempo_esgotado"
   },
   {
     "name": "Trace Sport Stars Russia (720p)",
-    "url": "https://stream8.cinerama.uz/1274/tracks-v1a1/mono.m3u8",
+    "url_sha256": "47cc385b805aa9ca781c9ec3e2b494cc6f2997cad183ee194d6f9df24c882de4",
     "reason": "tempo_esgotado"
   },
   {
     "name": "TSN The Ocho (1080p)",
-    "url": "https://d3pnbvng3bx2nj.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rds8g35qfqrnv/TSN_The_Ocho.m3u8",
+    "url_sha256": "a80b16931ec08295469e6ef25fea6b89f792f27843ece308be0642f17c1528a4",
     "reason": "tempo_esgotado"
   },
   {
+    "name": "TVP Sport (1080p)",
+    "url_sha256": "6e6ef2e07d81f3159d618de18a2814385284a9467707f0bf75e6e1267b7a25bd",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "TVRI Sport (1080p)",
+    "url_sha256": "2320ae6df9e4525651eec5ea612f07a1867aae6a0ab6a5f8af84368c2d58e961",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "viju+ Sport (576p)",
+    "url_sha256": "e89523b4538403ffc99f53ded991d4ec3a7da220defee3e3cf0945f64a38c646",
+    "reason": "insecure_http_transport"
+  },
+  {
     "name": "viju+ Sport HD (1080p)",
-    "url": "http://46.53.200.153:7777/play/a01l/index.m3u8",
+    "url_sha256": "edcd7a81cad9e38dc30cabb9a8717711085766385d7d2e228109e5e9f6164ec7",
     "reason": "insufficient_decoding_evidence"
   },
   {
     "name": "Voyo Sport 1 (1080p)",
-    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-plus16/live_fullhd?offsetSeconds=0",
-    "reason": "format_not_integrated_across_platforms"
+    "url_sha256": "7f43d680959caa012328a8718ed626d4f911a543b858a74b32d96a7826b009bd",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "Win+ Futbol (1080p)",
+    "url_sha256": "ee855715ac7a5a352733c9afc052c5ec08e92a54d21d55a921f88bac8a479855",
+    "reason": "insecure_http_transport"
+  },
+  {
+    "name": "WWE Network (1080p)",
+    "url_sha256": "0becab3cea3a2016ba517e7e4031bc57628d420b9f64d2f711a9502fa91fd912",
+    "reason": "insecure_http_transport"
   }
 ]

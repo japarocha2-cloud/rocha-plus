@@ -13,5 +13,6 @@ class CatalogTests(unittest.TestCase):
    self.assertEqual(reason(self.sample(name=name)),'previously_blocked')
  def test_hls_approval_accepts_exact_source_without_rewriting(self):
   self.assertIsNone(reason(self.sample()))
-  self.assertEqual(reason(self.sample(url='http://example.com/mpegts')),'format_not_integrated_across_platforms')
+  self.assertEqual(reason(self.sample(url='http://example.com/live.m3u8')),'insecure_http_transport')
+  self.assertEqual(reason(self.sample(url='https://example.com/mpegts')),'format_not_integrated_across_platforms')
 if __name__=='__main__':unittest.main()
