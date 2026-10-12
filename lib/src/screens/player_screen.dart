@@ -229,7 +229,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
         if (GoogleCastSessionManager.instance.connectionState !=
                 GoogleCastConnectState.connected ||
             _castContentType(uri) != 'application/x-mpegURL' ||
-            !device.isOnLocalNetwork) rethrow;
+            !device.isOnLocalNetwork) {
+          rethrow;
+        }
         final relayUri = await CastHlsProxy.instance.relay(uri);
         await _loadAndConfirmCast(relayUri);
       }
@@ -261,6 +263,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
             !local.value.isPlaying && !local.value.hasError) {
           try { await local.play(); } catch (_) { /* Player error UI handles it. */ }
         }
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('A TV não confirmou a reprodução. Reprodução local mantida.')),
         );
