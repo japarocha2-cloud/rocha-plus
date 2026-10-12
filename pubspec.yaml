@@ -25,6 +25,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - catalog/approved.json
     - branding/rocha_plus_icon.webp
     - branding/dashboard-reference.png
     - branding/cast-reference.png
