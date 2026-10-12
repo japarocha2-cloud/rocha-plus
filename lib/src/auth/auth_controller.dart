@@ -16,7 +16,12 @@ class AuthController extends ChangeNotifier {
   bool supports(LoginProvider provider) => ready && repository.supports(provider);
 
   Future<void> initialize() async {
+    if (_disposed || ready) return;
+    initializing = true;
+    error = null;
+    notifyListeners();
     try {
+      await _subscription?.cancel();
       await repository.initialize();
       if (_disposed) return;
       ready = true;
