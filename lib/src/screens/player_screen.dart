@@ -168,6 +168,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted ||
+          GoogleCastSessionManager.instance.connectionState !=
+              GoogleCastConnectState.connected) {
+        throw StateError('A sessão Google Cast foi desconectada antes de confirmar o vídeo.');
+      }
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       final info = status?.mediaInformation;
