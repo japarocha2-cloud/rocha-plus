@@ -316,7 +316,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
     key: const ValueKey('tv-featured-keyboard-focus'),
     autofocus: widget.wide,
     onFocusChange: (focused) {
-      _tvFocused = focused;
+      setState(() => _tvFocused = focused);
       if (focused) {
         _autoTimer?.cancel();
       } else {
@@ -386,13 +386,16 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             child: switch (page % 3) {
               0 => _FeatureCategory(
                 key: const ValueKey('feature-sports'),
+                carouselFocused: widget.wide && _tvFocused && selected == 0,
                 icon: Icons.sports_soccer_outlined,
                 label: 'Esportes ao vivo',
                 onTap: () => widget.onOpen('Esportes')),
               1 => _OfficialHero(wide: widget.wide,
+                focused: widget.wide && _tvFocused && selected == 1,
                 onWatch: () => widget.onOpen('TV ao Vivo')),
               _ => _FeatureCategory(
                 key: const ValueKey('feature-kids'),
+                carouselFocused: widget.wide && _tvFocused && selected == 2,
                 icon: Icons.toys_outlined,
                 label: 'Espaço infantil',
                 onTap: () => widget.onOpen('Infantil')),
@@ -407,8 +410,9 @@ class _FeatureCategory extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool carouselFocused;
   const _FeatureCategory({super.key, required this.icon,
-    required this.label, required this.onTap});
+    required this.label, required this.onTap, this.carouselFocused = false});
 
   @override
   State<_FeatureCategory> createState() => _FeatureCategoryState();
@@ -423,9 +427,9 @@ class _FeatureCategoryState extends State<_FeatureCategory> {
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
       border: Border.all(
-        color: focused ? RochaColors.gold : const Color(0xFF4A286A),
-        width: focused ? 3 : 1),
-      boxShadow: focused
+        color: (focused || widget.carouselFocused) ? RochaColors.gold : const Color(0xFF4A286A),
+        width: (focused || widget.carouselFocused) ? 3 : 1),
+      boxShadow: (focused || widget.carouselFocused)
         ? const [BoxShadow(color: Color(0x668D54CF), blurRadius: 22)]
         : const []),
     clipBehavior: Clip.antiAlias,
@@ -454,13 +458,21 @@ class _FeatureCategoryState extends State<_FeatureCategory> {
 class _OfficialHero extends StatelessWidget {
   final bool wide;
   final VoidCallback onWatch;
-  const _OfficialHero({required this.wide, required this.onWatch});
+  final bool focused;
+  const _OfficialHero({required this.wide, required this.onWatch,
+    this.focused = false});
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 180),
     key: const ValueKey('official-hero'),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: focused ? RochaColors.gold : Colors.transparent,
+        width: 3),
+      boxShadow: focused
+        ? const [BoxShadow(color: Color(0x66FFC43D), blurRadius: 18)]
+        : const [],
       gradient: const LinearGradient(colors: [
         Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
     clipBehavior: Clip.antiAlias,
@@ -502,7 +514,7 @@ class _OfficialHero extends StatelessWidget {
   );
 }
 
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
@@ -510,14 +522,26 @@ class _NavItem extends StatelessWidget {
   const _NavItem({required this.label, required this.icon,
     required this.onTap, this.selected = false});
   @override
+  State<_NavItem> createState() => _NavItemState();
+}
+
+class _NavItemState extends State<_NavItem> {
+  bool focused = false;
+  @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-    child: Container(decoration: BoxDecoration(
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 130),
+      decoration: BoxDecoration(
+      border: Border.all(color: focused ? RochaColors.gold : Colors.transparent,
+        width: 2),
       borderRadius: BorderRadius.circular(10),
-      gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
-      child: Material(type: MaterialType.transparency, child: ListTile(leading: Icon(icon, color: Colors.white70),
-        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.w600)),
-        onTap: onTap))),
+      gradient: widget.selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
+      child: Material(type: MaterialType.transparency, child: ListTile(
+        onFocusChange: (value) => setState(() => focused = value),
+        leading: Icon(widget.icon, color: focused ? RochaColors.gold : Colors.white70),
+        title: Text(widget.label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.w600)),
+        onTap: widget.onTap))),
   );
 }
 
