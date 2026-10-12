@@ -323,6 +323,16 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
         _move(1);
         return KeyEventResult.handled;
       }
+      if (event.logicalKey == LogicalKeyboardKey.select ||
+          event.logicalKey == LogicalKeyboardKey.enter) {
+        final section = switch (selected) {
+          0 => 'Esportes',
+          1 => 'TV ao Vivo',
+          _ => 'Infantil',
+        };
+        widget.onOpen(section);
+        return KeyEventResult.handled;
+      }
       // Up/down remain available for normal navigation among sections.
       return KeyEventResult.ignored;
     },
