@@ -390,7 +390,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   ]));
 }
 
-class _FeatureCategory extends StatelessWidget {
+class _FeatureCategory extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -398,24 +398,43 @@ class _FeatureCategory extends StatelessWidget {
     required this.label, required this.onTap});
 
   @override
-  Widget build(BuildContext context) => Container(
+  State<_FeatureCategory> createState() => _FeatureCategoryState();
+}
+
+class _FeatureCategoryState extends State<_FeatureCategory> {
+  bool focused = false;
+
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 180),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft, end: Alignment.bottomRight,
-        colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
-      border: Border.all(color: const Color(0xFF4A286A))),
+      border: Border.all(
+        color: focused ? RochaColors.gold : const Color(0xFF4A286A),
+        width: focused ? 3 : 1),
+      boxShadow: focused
+        ? const [BoxShadow(color: Color(0x668D54CF), blurRadius: 22)]
+        : const []),
     clipBehavior: Clip.antiAlias,
-    child: Material(type: MaterialType.transparency, child: InkWell(
-      onTap: onTap,
-      child: Center(child: Padding(padding: const EdgeInsets.all(14),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 42, color: RochaColors.gold),
-          const SizedBox(height: 14),
-          Text(label, textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
-        ]))),
-    )),
+    child: Stack(fit: StackFit.expand, children: [
+      // Reuse the actual cosmic Home asset from the frozen APK, not a mockup.
+      Image.asset('branding/home-tv-galaxy.png',
+        fit: BoxFit.cover, alignment: Alignment.centerRight),
+      const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors: [Color(0xE9130A25), Color(0xC3211037), Color(0xD9080610)]))),
+      Material(type: MaterialType.transparency, child: InkWell(
+        onTap: widget.onTap,
+        onFocusChange: (value) => setState(() => focused = value),
+        child: Center(child: Padding(padding: const EdgeInsets.all(14),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Icon(widget.icon, size: 46, color: RochaColors.gold),
+            const SizedBox(height: 14),
+            Text(widget.label, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          ]))),
+      )),
+    ]),
   );
 }
 
