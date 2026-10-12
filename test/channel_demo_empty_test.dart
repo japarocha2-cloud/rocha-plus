@@ -1,10 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 
 void main() {
-  setUp(ChannelRepository.resetSessionHealthForTests);
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ChannelRepository.resetSessionHealthForTests();
+  });
 
   test('strict demo with no approved URLs never requests remote playlists', () async {
     var requests = 0;
