@@ -1,0 +1,257 @@
+[
+  {
+    "name": "Amazon Sat (1080p)",
+    "url": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Canal Sete",
+    "url": "http://play.canalsete.com.br:1935/canalsete/xpl-c7_source/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Fonte TV",
+    "url": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Fora Tedio TV (720p)",
+    "url": "https://stmv2.srvif.com/foratedio/foratedio/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "KpopTV Play (576p)",
+    "url": "https://giatv.bozztv.com/giatv/giatv-kpoptvplay/kpoptvplay/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Laboral TV (360p)",
+    "url": "https://tv.laboralsst.com.br/hls/stream.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "O Dia TV",
+    "url": "https://6836041ea1117.streamlock.net/tvodia/tvodia/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Record News (720p)",
+    "url": "http://45.162.64.114/RECORD_NEWS/index.m3u8",
+    "reason": "previously_blocked"
+  },
+  {
+    "name": "RecordTV Interior SP",
+    "url": "http://200.77.176.130:8000/udp/224.0.0.4:49152",
+    "reason": "previously_blocked"
+  },
+  {
+    "name": "Telecine Action (1080p)",
+    "url": "http://46.151.196.223:14326/",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "TLC Latin America Brazil (720p)",
+    "url": "http://79.127.238.228:14433",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "TV Difusao (720p)",
+    "url": "https://tvdsoultv.acessaradios.com.br/tvdsoultv/tvdsoultv.stream/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "TV Paraense (720p)",
+    "url": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "TV Vicosa (480p)",
+    "url": "http://wz4.dnip.com.br/fratevitv/fratevitv.sdp/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "TV Vila Real (720p)",
+    "url": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "TV+Pet",
+    "url": "https://stmv5.samcast.com.br/tvmaispet6354/tvmaispet6354/playlist.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Arryadia (720p)",
+    "url": "http://149.100.11.252:8000/play/a065/index.m3u8",
+    "reason": "insufficient_decoding_evidence"
+  },
+  {
+    "name": "AyM Sports (1080p)",
+    "url": "http://168.196.127.137:6001/play/a06v/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Belarus-5 (1080p) [Not 24/7]",
+    "url": "https://ngtrk.dc.beltelecom.by/ngtrk/smil:belarus5.smil/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Belarus-5 HD (1080p)",
+    "url": "http://178.124.179.122:8080/BT5/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Canal+ Sport 2 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport2/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 3 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport3/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 4 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport4/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 5 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport5/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 6 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport6/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 7 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport7/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport 8 SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport8/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "Canal+ Sport SK",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-sk-canal-plus-sport/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  },
+  {
+    "name": "CDN Deportes (720p) [Not 24/7]",
+    "url": "https://hls.tvabierta.net/hls/036.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Claro Sports (1080p)",
+    "url": "http://168.196.127.137:6001/play/a08r/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "ESPN 2 Latin America (1080p)",
+    "url": "https://barinaslive1.boldmss.com/ESPN_2/ESPN_2.isml/ESPN_2.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Fast&FunBox",
+    "url": "https://dash3.antik.sk/live/test_fast_and_funbox_medium_atk/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Futbol TV (1080p)",
+    "url": "http://stream3.cinerama.uz/1010/tracks-v1a1/mono.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Match4 (1080p)",
+    "url": "http://141.94.193.53:80/Match4_HD/index.m3u8",
+    "reason": "terminou_antes_do_prazo"
+  },
+  {
+    "name": "Match! Premier (480p) [Geo-blocked]",
+    "url": "http://192.162.64.99:5000/play/a02b/index.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "More Than Sports TV (1080p)",
+    "url": "https://mts1.iptv-playoutcenter.de/mts/mts-web/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Prime (Syria) (1080p)",
+    "url": "https://cdn.bestream.io/prime/prime.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Sony Sports Ten 1 HD (1080p)",
+    "url": "http://103.185.24.134:3001/SonyTenSports1/index.m3u8",
+    "reason": "terminou_antes_do_prazo"
+  },
+  {
+    "name": "Sport 2 (Ukraine) (1080p)",
+    "url": "http://stream.mcquack.net/392/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Sport TV (1080p)",
+    "url": "http://178.124.179.122:8080/SportTV/mpegts",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Sportitalia (1080p)",
+    "url": "https://edge-001.streamup.eu/sportitalia/sihd_abr/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "SportsGrid (1080p)",
+    "url": "https://sportsgrid-tribal.amagi.tv/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Swerve Combat (1080p)",
+    "url": "https://linear-253.frequency.stream/mt/roku/253/hls/master/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Teledeporte",
+    "url": "https://rtve01p.origin.c21livecloud.com/live-origin/tdp-hls/bitrate_1.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Tigo Sports (El Salvador) (1080p)",
+    "url": "http://45.167.2.101:8000/play/a0pp/index.m3u8",
+    "reason": "erro_decodificacao_ou_rede"
+  },
+  {
+    "name": "Tigo Sports (Honduras) (1080p)",
+    "url": "http://168.196.127.137:6001/play/a0ay/index.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Trace Sport Stars (1080p)",
+    "url": "https://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "Trace Sport Stars Russia (720p)",
+    "url": "https://stream8.cinerama.uz/1274/tracks-v1a1/mono.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "TSN The Ocho (1080p)",
+    "url": "https://d3pnbvng3bx2nj.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rds8g35qfqrnv/TSN_The_Ocho.m3u8",
+    "reason": "tempo_esgotado"
+  },
+  {
+    "name": "viju+ Sport HD (1080p)",
+    "url": "http://46.53.200.153:7777/play/a01l/index.m3u8",
+    "reason": "insufficient_decoding_evidence"
+  },
+  {
+    "name": "Voyo Sport 1 (1080p)",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/cme-ro-protv-plus16/live_fullhd?offsetSeconds=0",
+    "reason": "format_not_integrated_across_platforms"
+  }
+]
