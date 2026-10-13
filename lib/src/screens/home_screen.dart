@@ -12,6 +12,7 @@ import '../live/favorites_repository.dart';
 import 'live_tv_screen.dart';
 import 'news_screen.dart';
 import 'player_screen.dart';
+import 'subscription_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
@@ -91,6 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   Future<void> _open(String title) async {
+    if (title == 'Assinaturas') {
+      await Navigator.push(context, MaterialPageRoute(
+        builder: (_) => const SubscriptionScreen()));
+      return;
+    }
     if (widget.previewOnly) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Prévia do layout: canais, player e transmissão exigem login ativo.')));
@@ -121,6 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ...HomeScreen.sections.map((item) => _NavItem(
         label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1, icon: item.$2,
         onTap: () { if (drawer) Navigator.pop(context); _open(item.$1); })),
+      _NavItem(label: 'Assinaturas', icon: Icons.workspace_premium_outlined,
+        onTap: () { if (drawer) Navigator.pop(context); _open('Assinaturas'); }),
     ]),
   );
   @override
