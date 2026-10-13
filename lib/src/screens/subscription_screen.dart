@@ -20,8 +20,10 @@ class SubscriptionScreen extends StatelessWidget {
         await _openCheckout(context, legacy);
       }
     } catch (_) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível abrir o pagamento. Tente novamente.')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível abrir o pagamento. Tente novamente.')));
+      }
     }
   }
 
@@ -189,3 +191,4 @@ class _FutureCard extends StatelessWidget {
       const SizedBox(height: 10), Text(body, style: const TextStyle(color: Colors.white70)),
     ]));
 }
+
