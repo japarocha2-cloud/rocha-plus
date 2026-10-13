@@ -98,8 +98,10 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       await favoritesRepository.toggle(channel);
       if (mounted) setState(() => favorites = favoritesRepository.values);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Não foi possível salvar o favorito.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Não foi possível salvar o favorito.')));
+      }
     }
   }
 
