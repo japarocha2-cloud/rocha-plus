@@ -52,6 +52,6 @@ class _RokuPairingScreenState extends State<RokuPairingScreen> {
             const SizedBox(height: 20),
             FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Concluir')),
           ],
-        ]))),
+        ])))),
   );
 }
