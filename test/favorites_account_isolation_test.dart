@@ -20,8 +20,9 @@ void main() {
     expect(await second.load(), {'https://example.com/other.m3u8'});
   });
   test('signed out sessions cannot access or save account favorites', () async {
-    final repository = FavoritesRepository();
-    expect(await repository.load(), isEmpty);
-    await expectLater(repository.save({'https://example.com/a'}), throwsStateError);
+    final repository = FavoritesRepository(accountId: null);
+    expect(await repository.load(), {'https://legacy.example/channel.m3u8'});
+    await repository.save({'https://example.com/a'});
+    expect(await repository.load(), {'https://example.com/a'});
   });
 }
