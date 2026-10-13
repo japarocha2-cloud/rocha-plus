@@ -95,8 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
       await favoritesRepository.toggle(channel);
       if (mounted) setState(() => favorites = favoritesRepository.values);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Não foi possível salvar o favorito.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Não foi possível salvar o favorito.')));
+      }
     }
   }
   Future<void> _open(String title) async {
