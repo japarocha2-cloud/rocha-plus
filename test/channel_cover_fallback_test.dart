@@ -13,7 +13,7 @@ void main() {
       home: Scaffold(body: SizedBox(width: 260, height: 160,
         child: ChannelCover(channel: channel))),
     ));
-    expect(find.text('TV Exemplo'), findsOneWidget);
+    expect(find.text('TV Exemplo', findRichText: true), findsOneWidget);
     expect(find.byType(Image), findsNothing);
     expect(tester.takeException(), isNull);
   });
