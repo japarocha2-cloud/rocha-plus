@@ -97,3 +97,9 @@ Estados: APROVADO FÍSICO, REPROVADO, NÃO VALIDADO. Cast deve ter estado própr
 - Antes de fase comercial, implementar/revisar reconhecimento de pagamento, assinatura e período de teste. Acesso beta grátis não é teste comercial de sete dias.
 
 Esta auditoria acrescenta documentação/evidência à mesma branch. Não muda o código da #501 nem gera novo APK. Alteração posterior terá outro commit e precisará de outro candidato completo antes de aprovação física.
+
+## Retorno físico: instalação recusada no Moto g56 5G
+
+ADB autorizado no PC do usuário mostrou `INSTALL_FAILED_VERSION_DOWNGRADE`: versionCode 501 é inferior ao código 2465 ainda registrado no aparelho. A tela gráfica mostrava apenas pacote inválido. Não é prova de arquivo corrompido. A instalação da #501 falhou; nenhuma aprovação de execução física foi concedida.
+
+Correção na mesma branch: versionCode Android passa a 3000 + número do run, igual para APK universal, ARM64 e AAB. O run de Actions continua com seu próprio número; release-evidence registra ambos separadamente. Preservados o código funcional da #501, package ID, assinatura/Firebase e catálogo. Não usar downgrade forçado, limpeza de dados ou desinstalação adicional como solução. A compatibilidade da assinatura com o pacote 2465 ainda precisa ser testada.

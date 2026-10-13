@@ -43,7 +43,8 @@ if signed_release != firebase_release:
 
 report = {
     "commit": os.environ["GITHUB_SHA"],
-    "build_number": os.environ["GITHUB_RUN_NUMBER"],
+    "build_number": os.environ["ROCHA_ANDROID_VERSION_CODE"],
+    "workflow_run_number": os.environ["GITHUB_RUN_NUMBER"],
     "permissions": permissions,
     "cleartext_allowed": False,
     "debuggable": False,
