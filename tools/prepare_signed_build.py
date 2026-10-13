@@ -23,7 +23,10 @@ def prepare(root, private, env):
     private = Path(private)
     private.mkdir(parents=True, exist_ok=True)
     key = private / 'release.p12'
-    key.write_bytes(base64.b64decode(env['ROCHA_KEYSTORE_BASE64'], validate=True))
+    decoded_key = base64.b64decode(env['ROCHA_KEYSTORE_BASE64'], validate=True)
+    if len(decoded_key) < 128:
+        raise ValueError('Arquivo de assinatura vazio ou incompleto')
+    key.write_bytes(decoded_key)
     key.chmod(0o600)
     config_path = private / 'firebase.json'
     config_path.write_text(json.dumps(config), encoding='utf-8')
