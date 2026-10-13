@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../live/channel.dart';
 import '../live/channel_search.dart';
 import '../live/channel_repository.dart';
@@ -23,7 +24,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   bool scanning = false;
   Map<String, ChannelReachability> reachability = {};
   late final favoritesRepository = widget.accountId == null
-    ? FavoritesRepository() : FavoritesRepository.forAccount(widget.accountId!);
+    ? FavoritesRepository() : Firebase.apps.isEmpty
+      ? FavoritesRepository(accountId: widget.accountId)
+      : FavoritesRepository.forAccount(widget.accountId!);
   final search = TextEditingController();
   List<Channel> channels = const [];
   Set<String> favorites = {};
