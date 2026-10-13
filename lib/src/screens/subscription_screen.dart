@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/rocha_theme.dart';
 
 class SubscriptionScreen extends StatelessWidget {
   const SubscriptionScreen({super.key});
+
+  static final Uri _monthlyCheckout = Uri.parse('https://mpago.la/2E7yjF4');
+  static final Uri _annualCheckout = Uri.parse('https://mpago.la/2b9hitF');
+
+  Future<void> _openCheckout(BuildContext context, Uri checkout) async {
+    final opened = await launchUrl(checkout, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível abrir o Mercado Pago.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -14,12 +27,24 @@ class SubscriptionScreen extends StatelessWidget {
         eyebrow: 'LANÇAMENTO ROCHA+',
         title: 'Entre em uma nova fase do entretenimento.',
         subtitle: 'TV aberta agora. Filmes e séries no futuro.',
-        children: const [
-          _PlanCard(title: 'Plano Fundador Mensal', price: 'R\$ 4,90', period: '/ mês',
-            bullets: ['Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador']),
-          _PlanCard(title: 'Plano Fundador Anual', price: 'R\$ 55,00', period: '/ ano',
-            bullets: ['Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador']),
-          _FounderBenefit(),
+        children: [
+          _PlanCard(
+            title: 'Plano Fundador Mensal',
+            price: 'R\$ 4,90',
+            period: '/ mês',
+            bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
+            buttonLabel: 'Assinar mensal',
+            onPressed: () => _openCheckout(context, _monthlyCheckout),
+          ),
+          _PlanCard(
+            title: 'Plano Fundador Anual',
+            price: 'R\$ 55,00',
+            period: '/ ano',
+            bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
+            buttonLabel: 'Assinar anual',
+            onPressed: () => _openCheckout(context, _annualCheckout),
+          ),
+          const _FounderBenefit(),
         ],
       );
       final future = _section(
@@ -56,16 +81,22 @@ class SubscriptionScreen extends StatelessWidget {
       Text(subtitle, style: const TextStyle(color: Colors.white70)),
       const SizedBox(height: 20),
       ...children.expand((w) => [w, const SizedBox(height: 12)]),
-      FilledButton(onPressed: () {}, child: const Padding(
-        padding: EdgeInsets.symmetric(vertical: 14), child: Text('Assinar agora'))),
     ]),
   );
 }
 
 class _PlanCard extends StatelessWidget {
-  final String title, price, period;
+  final String title, price, period, buttonLabel;
   final List<String> bullets;
-  const _PlanCard({required this.title, required this.price, required this.period, required this.bullets});
+  final VoidCallback onPressed;
+  const _PlanCard({
+    required this.title,
+    required this.price,
+    required this.period,
+    required this.bullets,
+    required this.buttonLabel,
+    required this.onPressed,
+  });
   @override
   Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(color: const Color(0xFF171020),
@@ -83,6 +114,14 @@ class _PlanCard extends StatelessWidget {
       ...bullets.map((b) => Padding(padding: const EdgeInsets.only(bottom: 6),
         child: Row(children: [const Icon(Icons.check_circle_outline, size: 17,
           color: RochaColors.gold), const SizedBox(width: 8), Expanded(child: Text(b))]))),
+      const SizedBox(height: 10),
+      SizedBox(width: double.infinity, child: FilledButton(
+        onPressed: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          child: Text(buttonLabel),
+        ),
+      )),
     ]));
 }
 
