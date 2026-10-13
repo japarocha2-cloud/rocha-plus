@@ -48,8 +48,10 @@ class SignedBuildTest(unittest.TestCase):
         self.assertIn('name: rocha-plus-beta-login-play-store-aab', workflow)
         self.assertNotIn('name: rocha-plus-universal', workflow)
         self.assertNotIn('name: rocha-plus-play-store', workflow)
-        self.assertIn('name: rocha-plus-layout-preview-no-channels', workflow)
-        self.assertIn('--dart-define=ROCHA_LAYOUT_PREVIEW=true', workflow)
+        # Automatic push/PR runs are validation-only: they must not publish
+        # either a full beta or the old visual-only preview APK.
+        self.assertNotIn('name: rocha-plus-layout-preview-no-channels', workflow)
+        self.assertNotIn('--dart-define=ROCHA_LAYOUT_PREVIEW=true', workflow)
 
 if __name__ == '__main__':
     unittest.main()
