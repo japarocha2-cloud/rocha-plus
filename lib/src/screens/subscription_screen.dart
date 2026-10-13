@@ -3,7 +3,27 @@ import 'package:url_launcher/url_launcher.dart';
 import '../theme/rocha_theme.dart';
 
 class SubscriptionScreen extends StatelessWidget {
-  const SubscriptionScreen({super.key});
+  final Future<void> Function(String plan)? checkout;
+  final Future<void> Function()? onRefresh;
+  final Future<void> Function()? onSignOut;
+  final String? statusMessage;
+  final bool busy;
+  const SubscriptionScreen({super.key, this.checkout, this.onRefresh,
+    this.onSignOut, this.statusMessage, this.busy = false});
+
+  Future<void> _openPlan(BuildContext context, String plan, Uri legacy) async {
+    if (busy) return;
+    try {
+      if (checkout != null) {
+        await checkout!(plan);
+      } else {
+        await _openCheckout(context, legacy);
+      }
+    } catch (_) {
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível abrir o pagamento. Tente novamente.')));
+    }
+  }
 
   static final Uri _monthlyCheckout = Uri.parse('https://mpago.la/2E7yjF4');
   static final Uri _annualCheckout = Uri.parse('https://mpago.la/2b9hitF');
@@ -20,7 +40,10 @@ class SubscriptionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: RochaColors.background,
-    appBar: AppBar(title: const Text('Assinaturas')),
+    appBar: AppBar(title: const Text('Assinaturas'), actions: [
+      if (onSignOut != null) TextButton(onPressed: busy ? null : onSignOut,
+        child: const Text('Sair')),
+    ]),
     body: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
       final horizontal = constraints.maxWidth >= 820;
       final launch = _section(
@@ -28,13 +51,19 @@ class SubscriptionScreen extends StatelessWidget {
         title: 'Entre em uma nova fase do entretenimento.',
         subtitle: 'TV aberta agora. Filmes e séries no futuro.',
         children: [
+          if (checkout != null) const Text('O pagamento libera o período escolhido. A renovação depende de novo pagamento.'),
+          if (statusMessage != null) Text(statusMessage!,
+            key: const ValueKey('subscription-access-status')),
+          if (onRefresh != null) OutlinedButton(
+            onPressed: busy ? null : onRefresh,
+            child: Text(busy ? 'Verificando…' : 'Já paguei / verificar acesso')),
           _PlanCard(
             title: 'Plano Fundador Mensal',
             price: 'R\$ 4,90',
             period: '/ mês',
             bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
             buttonLabel: 'Assinar mensal',
-            onPressed: () => _openCheckout(context, _monthlyCheckout),
+            onPressed: () => _openPlan(context, 'monthly', _monthlyCheckout),
           ),
           _PlanCard(
             title: 'Plano Fundador Anual',
@@ -42,7 +71,7 @@ class SubscriptionScreen extends StatelessWidget {
             period: '/ ano',
             bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
             buttonLabel: 'Assinar anual',
-            onPressed: () => _openCheckout(context, _annualCheckout),
+            onPressed: () => _openPlan(context, 'annual', _annualCheckout),
           ),
           const _FounderBenefit(),
         ],

@@ -3,9 +3,8 @@ enum RochaReleaseStage { beta, official }
 class RochaReleasePolicy {
   const RochaReleasePolicy._();
 
-  // During beta, authenticated testers have full access without a paid plan.
-  // Commercial subscription enforcement is reserved for the official release.
-  static const RochaReleaseStage stage = RochaReleaseStage.beta;
+  // The commercial branch grants access only through server-confirmed trial or payment.
+  static const RochaReleaseStage stage = RochaReleaseStage.official;
 
   static bool get loginRequired => true;
   static bool get paidSubscriptionRequired =>

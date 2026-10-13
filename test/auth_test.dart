@@ -1,3 +1,4 @@
+import 'billing_test.dart' show FakeBillingRepository;
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -128,7 +129,7 @@ void main() {
     ChannelRepository.resetSessionHealthForTests();
     repository.initial = const AuthAccount(uid: 'verified');
     await initialize(controller);
-    await tester.pumpWidget(RochaPlusApp(authController: controller));
+    await tester.pumpWidget(RochaPlusApp(authController: controller, billingRepository: FakeBillingRepository()));
     await tester.pump();
     if (find.text('Pular').evaluate().isNotEmpty) {
       await tester.tap(find.text('Pular'));

@@ -1,3 +1,5 @@
+import 'billing/billing_repository.dart';
+import 'billing/subscription_gate.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
@@ -9,7 +11,8 @@ import 'theme/rocha_theme.dart';
 
 class RochaPlusApp extends StatefulWidget {
   final AuthController? authController;
-  const RochaPlusApp({super.key, this.authController});
+  final BillingRepository? billingRepository;
+  const RochaPlusApp({super.key, this.authController, this.billingRepository});
   @override
   State<RochaPlusApp> createState() => _RochaPlusAppState();
 }
@@ -52,7 +55,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
-              : HomeScreen(accountId: controller.account!.uid, onSignOut: () async {
+              : SubscriptionGate(uid: controller.account!.uid, repository: widget.billingRepository, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
           }),

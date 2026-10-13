@@ -29,13 +29,13 @@ class _RokuPairingScreenState extends State<RokuPairingScreen> {
   }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Conectar Roku')),
+    appBar: AppBar(title: const Text('Conectar TV')),
     body: Center(child: SingleChildScrollView(padding: const EdgeInsets.all(24),
       child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 480),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(approved ? Icons.check_circle_outline : Icons.tv, size: 64),
           const SizedBox(height: 24),
-          Text(approved ? 'TV confirmada na sua conta' : 'Digite o código que aparece na sua Roku',
+          Text(approved ? 'TV confirmada na sua conta' : 'Digite o código que aparece na sua TV',
             textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 24),
           if (!approved) ...[

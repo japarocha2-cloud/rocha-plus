@@ -19,8 +19,9 @@ class HomeScreen extends StatefulWidget {
   final Future<void> Function()? onSignOut;
   final bool previewOnly;
   final String? accountId;
+  final WidgetBuilder? subscriptionBuilder;
   const HomeScreen({super.key, this.repository, this.onSignOut,
-    this.previewOnly = false, this.accountId});
+    this.previewOnly = false, this.accountId, this.subscriptionBuilder});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -94,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _open(String title) async {
     if (title == 'Assinaturas') {
       await Navigator.push(context, MaterialPageRoute(
-        builder: (_) => const SubscriptionScreen()));
+        builder: widget.subscriptionBuilder ?? (_) => const SubscriptionScreen()));
       return;
     }
     if (widget.previewOnly) {
@@ -173,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               )),
               if (!widget.previewOnly && RokuPairingService.isConfigured)
-                IconButton(tooltip: 'Conectar Roku', icon: const Icon(Icons.connected_tv),
+                IconButton(tooltip: 'Conectar TV', icon: const Icon(Icons.connected_tv),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) =>
                     RokuPairingScreen(service: RokuPairingService(
                       endpoint: RokuPairingService.configuredEndpoint,

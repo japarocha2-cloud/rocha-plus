@@ -1,0 +1,9 @@
+{
+  "id": "com.rochaplus.tv",
+  "version": "0.5.1",
+  "vendor": "RochaPlus",
+  "type": "web",
+  "main": "index.html",
+  "title": "Rocha+",
+  "icon": "images/icon-webos.png"
+}

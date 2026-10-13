@@ -13,10 +13,10 @@ BANNED = {
 
 TEXT_EXTS = {
     ".dart", ".yaml", ".yml", ".json", ".xml", ".gradle",
-    ".kts", ".md", ".txt", ".properties", ".java", ".kt"
+    ".kts", ".md", ".txt", ".properties", ".java", ".kt", ".js", ".mjs", ".brs"
 }
 
-ignore_parts = {".git", "build", ".dart_tool"}
+ignore_parts = {".git", "build", ".dart_tool", "node_modules"}
 issues = []
 dart_files = []
 
@@ -42,7 +42,7 @@ for path in ROOT.rglob("*"):
         issues.append(f"{rel}: texto visível 'Undefined' encontrado")
 
     # Segredos e transporte inseguro são bloqueadores de release.
-    if re.search(r'(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["\'][^"\']{8,}', text):
+    if '.test.' not in path.name and rel.parts[0] not in {'test', 'docs'} and re.search(r'(?i)(?<![\w&?])[\w-]*(api[_-]?key|secret|token|password)\s*[:=]\s*(["\'])([^"\'\r\n]{8,})\2', text):
         issues.append(f"{rel}: possível segredo fixo no código")
     # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml"}:

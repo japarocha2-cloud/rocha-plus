@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><widget xmlns="http://www.w3.org/ns/widgets" id="https://rochamais.example/tv" version="0.5.1" viewmodes="maximized"><name>Rocha+</name><content src="index.html"/><icon src="images/icon-tizen.png"/><feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/></widget>
