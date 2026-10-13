@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -127,10 +126,6 @@ void main() {
   });
   testWidgets('session expiration removes nested private routes', (tester) async {
     ChannelRepository.resetSessionHealthForTests();
-    await tester.runAsync(() async {
-      await rootBundle.loadString('catalog/approved.json');
-      await rootBundle.loadString('catalog/quarantine.json');
-    });
     repository.initial = const AuthAccount(uid: 'verified');
     await initialize(controller);
     await tester.pumpWidget(RochaPlusApp(authController: controller));
@@ -138,18 +133,25 @@ void main() {
     if (find.text('Pular').evaluate().isNotEmpty) {
       await tester.tap(find.text('Pular'));
     }
-    await tester.pumpAndSettle();
+    // Route transitions must finish even while the catalogue is loading.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(HomeScreen), findsOneWidget);
     final navigator = Navigator.of(tester.element(find.byType(HomeScreen)));
     unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) =>
       const Scaffold(body: Text('Conteúdo privado')))));
-    await tester.pumpAndSettle();
+    // Route transitions must finish even while the catalogue is loading.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Conteúdo privado'), findsOneWidget);
     repository.changes.add(null);
-    await tester.pumpAndSettle();
+    // Route transitions must finish even while the catalogue is loading.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(LoginScreen), findsOneWidget);
     expect(find.text('Conteúdo privado'), findsNothing);
     expect(find.byType(HomeScreen), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }
+
