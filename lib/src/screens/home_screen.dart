@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../tv/roku_pairing_service.dart';
 import '../tv/roku_pairing_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
@@ -36,7 +37,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final repository = widget.repository ?? ChannelRepository();
   late final favoritesRepository = widget.accountId == null
-    ? FavoritesRepository() : FavoritesRepository.forAccount(widget.accountId!);
+    ? FavoritesRepository() : Firebase.apps.isEmpty
+      ? FavoritesRepository(accountId: widget.accountId)
+      : FavoritesRepository.forAccount(widget.accountId!);
   List<Channel> channels = [];
   Set<String> favorites = {};
   bool loading = true;
