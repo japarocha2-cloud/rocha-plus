@@ -24,10 +24,10 @@ class SignedBuildTest(unittest.TestCase):
                       'ROCHA_FIREBASE_API_KEY':'test', 'ROCHA_FIREBASE_SENDER_ID':'test',
                       'ROCHA_GOOGLE_SERVER_CLIENT_ID':'test'}
             key, cfg = prepare(root, root / 'private', {
-                'ROCHA_KEYSTORE_BASE64':base64.b64encode(b'fixture').decode(),
+                'ROCHA_KEYSTORE_BASE64':base64.b64encode(b'fixture' * 32).decode(),
                 'ROCHA_KEYSTORE_PASSWORD':'fixture-password', 'ROCHA_KEY_ALIAS':'fixture',
                 'ROCHA_FIREBASE_CONFIG_JSON':json.dumps(config)})
-            self.assertEqual(key.read_bytes(), b'fixture')
+            self.assertEqual(key.read_bytes(), b'fixture' * 32)
             self.assertEqual(json.loads(cfg.read_text()), config)
             self.assertNotIn('getByName("debug")', gradle.read_text())
             self.assertNotIn('fixture-password', gradle.read_text())
