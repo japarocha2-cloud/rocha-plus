@@ -788,5 +788,15 @@
     "name": "WWE Network (1080p)",
     "url_sha256": "0becab3cea3a2016ba517e7e4031bc57628d420b9f64d2f711a9502fa91fd912",
     "reason": "insecure_http_transport"
+  },
+  {
+    "name": "SBT Cuiaba",
+    "url_sha256": "66e7fa07d23086ef53b489eeac7c2c3091614c8fe24495dda410d1041d58f8d7",
+    "reason": "http_404_20261013",
+    "evidence": {
+      "test": "HTTP playlist fetch",
+      "physical_test": false,
+      "date": "2026-10-13"
+    }
   }
 ]

@@ -6,6 +6,10 @@ class ChannelBlocks {
   static const _urlKey = 'rocha_rejected_channel_urls_v1';
   static Future<void> _writes = Future<void>.value();
 
+  static void resetForTests() {
+    _writes = Future<void>.value();
+  }
+
   Future<Set<String>> load() => _load(_key);
   Future<Set<String>> loadUrls() => _load(_urlKey);
   Future<Set<String>> _load(String key) async {

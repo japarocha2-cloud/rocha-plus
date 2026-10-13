@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -124,6 +126,11 @@ void main() {
     expect(find.byType(HomeScreen), findsNothing);
   });
   testWidgets('session expiration removes nested private routes', (tester) async {
+    ChannelRepository.resetSessionHealthForTests();
+    await tester.runAsync(() async {
+      await rootBundle.loadString('catalog/approved.json');
+      await rootBundle.loadString('catalog/quarantine.json');
+    });
     repository.initial = const AuthAccount(uid: 'verified');
     await initialize(controller);
     await tester.pumpWidget(RochaPlusApp(authController: controller));

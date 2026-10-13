@@ -92,6 +92,7 @@ class ChannelRepository {
   }
 
   static void resetSessionHealthForTests() {
+    ChannelBlocks.resetForTests();
     _userBlockedNames = {};
     _sessionFailedUrls.clear();
   }
@@ -205,4 +206,3 @@ class ChannelRepository {
   }
 
 }
-
