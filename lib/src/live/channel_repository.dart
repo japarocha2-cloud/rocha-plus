@@ -132,7 +132,9 @@ class ChannelRepository {
     for (final item in approved) {
       if (item is! Map || item['approved'] != true || item['status'] != 'approved' ||
           item['blocked'] == true || item['quarantined'] == true ||
-          item['name'] is! String || item['url'] is! String) continue;
+          item['name'] is! String || item['url'] is! String) {
+        continue;
+      }
       final name = (item['name'] as String).trim();
       final url = item['url'] as String;
       final uri = Uri.tryParse(url);
@@ -143,7 +145,9 @@ class ChannelRepository {
           (evidence['decoded_seconds'] as num) < 29 ||
           evidence['video_codec'] is! String || (evidence['video_codec'] as String).isEmpty ||
           evidence['audio_codec'] is! String || (evidence['audio_codec'] as String).isEmpty ||
-          !seen.add(url)) continue;
+          !seen.add(url)) {
+        continue;
+      }
       final logo = item['logo'] is String ? item['logo'] as String : null;
       final logoUri = logo == null ? null : Uri.tryParse(logo);
       final channel = Channel(name: name, url: url,
@@ -201,3 +205,4 @@ class ChannelRepository {
   }
 
 }
+
