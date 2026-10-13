@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../tv/roku_pairing_service.dart';
+import '../tv/roku_pairing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/rocha_theme.dart';
@@ -15,8 +18,9 @@ class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
   final Future<void> Function()? onSignOut;
   final bool previewOnly;
+  final String? accountId;
   const HomeScreen({super.key, this.repository, this.onSignOut,
-    this.previewOnly = false});
+    this.previewOnly = false, this.accountId});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -30,7 +34,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final repository = widget.repository ?? ChannelRepository();
-  final favoritesRepository = FavoritesRepository();
+  late final favoritesRepository = FavoritesRepository(accountId: widget.accountId);
   List<Channel> channels = [];
   Set<String> favorites = {};
   bool loading = true;
@@ -98,8 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
       'Infantil' => 'Infantil', _ => 'TV aberta',
     };
     await Navigator.push(context, MaterialPageRoute(builder: (_) =>
-      title == 'Notícias' ? const NewsScreen() :
-        LiveTvScreen(initialGroup: group, repository: widget.repository)));
+      title == 'Notícias' ? NewsScreen(accountId: widget.accountId) :
+        LiveTvScreen(initialGroup: group, repository: widget.repository, accountId: widget.accountId)));
     if (mounted) { _load(); }
   }
   Widget _menu({bool drawer = false}) => Container(
@@ -147,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _open('TV ao Vivo');
                   } else {
                     Navigator.push(context, MaterialPageRoute(
-                      builder: (_) => LiveTvScreen(repository: widget.repository)));
+                      builder: (_) => LiveTvScreen(repository: widget.repository, accountId: widget.accountId)));
                   }
                 },
                 child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
@@ -161,6 +165,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   ]),
                 ),
               )),
+              if (!widget.previewOnly && RokuPairingService.isConfigured)
+                IconButton(tooltip: 'Conectar Roku', icon: const Icon(Icons.connected_tv),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) =>
+                    RokuPairingScreen(service: RokuPairingService(
+                      endpoint: RokuPairingService.configuredEndpoint,
+                      tokenProvider: () async {
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user == null) return null;
+                        return user.getIdToken();
+                      },
+                    ))))),
               IconButton(tooltip: 'Abrir canais para transmitir',
                 onPressed: () => _open('TV ao Vivo'),
                 icon: const Icon(Icons.cast, color: RochaColors.gold)),
