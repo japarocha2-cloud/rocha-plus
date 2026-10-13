@@ -4,6 +4,7 @@ import '../live/channel_search.dart';
 import '../live/channel_repository.dart';
 import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
+import '../widgets/favorites_sync_notice.dart';
 import '../theme/rocha_theme.dart';
 import 'player_screen.dart';
 import '../widgets/rocha_channel_card.dart';
@@ -21,7 +22,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   late final ChannelRepository repository;
   bool scanning = false;
   Map<String, ChannelReachability> reachability = {};
-  late final favoritesRepository = FavoritesRepository(accountId: widget.accountId);
+  late final favoritesRepository = widget.accountId == null
+    ? FavoritesRepository() : FavoritesRepository.forAccount(widget.accountId!);
   final search = TextEditingController();
   List<Channel> channels = const [];
   Set<String> favorites = {};
@@ -34,9 +36,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     super.initState();
     repository = widget.repository ?? ChannelRepository();
     selectedGroup = widget.initialGroup;
+    favoritesRepository.addListener(_favoritesChanged);
     load();
   }
 
+  void _favoritesChanged() {
+    if (mounted) setState(() => favorites = favoritesRepository.values);
+  }
   Future<void> load({bool forceRefresh = false}) async {
     setState(() { loading = true; error = null; });
     try {
@@ -88,15 +94,20 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   Future<void> toggleFavorite(Channel channel) async {
-    final next = {...favorites};
-    next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
-    setState(() => favorites = next);
-    await favoritesRepository.save(next);
+    try {
+      await favoritesRepository.toggle(channel);
+      if (mounted) setState(() => favorites = favoritesRepository.values);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Não foi possível salvar o favorito.')));
+    }
   }
 
   @override
   void dispose() {
     search.dispose();
+    favoritesRepository.removeListener(_favoritesChanged);
+    favoritesRepository.dispose();
     super.dispose();
   }
 
@@ -123,7 +134,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       if (technicalGroup || repository.isQuarantined(c.url) || repository.isBlocked(c)) return false;
       final matchesSearch = channelMatchesSearch(c, q);
       final matchesGroup = selectedGroup == 'Todos' ||
-          (selectedGroup == 'Favoritos' && favorites.contains(c.url)) ||
+          (selectedGroup == 'Favoritos' && favoritesRepository.contains(favorites, c)) ||
           c.group == selectedGroup;
       return matchesSearch && matchesGroup;
     }).toList(growable: false);
@@ -211,6 +222,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
               child: Text('${visible.length} canais', style: const TextStyle(color: Colors.white54)),
             ),
           ),
+        if (!loading && error == null) FavoritesSyncNotice(
+          repository: favoritesRepository, catalog: channels),
         Expanded(
           child: loading
               ? const Center(child: CircularProgressIndicator(color: RochaColors.ruby))
@@ -230,7 +243,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                             itemBuilder: (_, i) {
                               final channel = visible[i];
                               return RochaChannelCard(
-                                channel: channel, favorite: favorites.contains(channel.url),
+                                channel: channel, favorite: favoritesRepository.contains(favorites, channel),
                                 availability: reachability[channel.url] == ChannelReachability.unavailable
                                     ? 'Endereço indisponível na última verificação' : null,
                                 onFavorite: () => toggleFavorite(channel),
