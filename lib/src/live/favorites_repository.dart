@@ -67,7 +67,10 @@ class FavoritesRepository extends ChangeNotifier {
     if (_first == null) {
       _first = Completer<void>();
       final prefs = await SharedPreferences.getInstance();
-      legacyUrls = prefs.getStringList(_localKey)?.toSet() ?? {};
+      legacyUrls = {
+        ...?prefs.getStringList(_key),
+        ...?prefs.getStringList('favorite_channel_urls.account.${Uri.encodeComponent(FirebaseAuth.instance.currentUser?.uid ?? '')}'),
+      };
       if (_disposed) return {};
       _subscription = store!.watch().listen((snapshot) {
         if (_disposed) return;
