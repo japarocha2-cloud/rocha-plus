@@ -27,7 +27,7 @@ class ChannelCover extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Positioned(right: -18, bottom: -25,
-            child: Icon(Icons.live_tv_rounded, size: 125,
+            child: Icon(Icons.live_tv_outlined, size: 125,
               color: Colors.white.withValues(alpha: .08))),
           Center(child: Padding(
             padding: const EdgeInsets.all(12),
@@ -43,7 +43,7 @@ class ChannelCover extends StatelessWidget {
         ],
       ),
     );
-    final logo = channel.logo;
+    final logo = channel.logo?.trim();
     if (logo == null || logo.isEmpty) return artwork;
     return Image.network(logo, fit: BoxFit.contain,
       loadingBuilder: (_, child, progress) => progress == null ? child : artwork,
