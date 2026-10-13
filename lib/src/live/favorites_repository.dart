@@ -13,7 +13,10 @@ class FavoritesRepository extends ChangeNotifier {
   static const _key = 'favorite_channel_urls';
   final FavoritesStore? store;
   final bool Function()? isCurrentAccount;
-  FavoritesRepository({this.store, this.isCurrentAccount, String? accountId});
+  FavoritesRepository({this.store, this.isCurrentAccount, this.accountId});
+  final String? accountId;
+  String get _localKey => accountId == null || accountId!.isEmpty
+    ? _key : 'favorite_channel_urls.account.${Uri.encodeComponent(accountId!)}';
   factory FavoritesRepository.forAccount(String uid) => FavoritesRepository(
     store: FirestoreFavoritesStore(uid),
     isCurrentAccount: () => FirebaseAuth.instance.currentUser?.uid == uid,
@@ -57,14 +60,14 @@ class FavoritesRepository extends ChangeNotifier {
     if (_disposed) return {};
     if (!cloud) {
       final prefs = await SharedPreferences.getInstance();
-      _local = prefs.getStringList(_key)?.toSet() ?? {};
+      _local = prefs.getStringList(_localKey)?.toSet() ?? {};
       ready = true; return values;
     }
     if (isCurrentAccount?.call() == false) throw StateError('Session changed');
     if (_first == null) {
       _first = Completer<void>();
       final prefs = await SharedPreferences.getInstance();
-      legacyUrls = prefs.getStringList(_key)?.toSet() ?? {};
+      legacyUrls = prefs.getStringList(_localKey)?.toSet() ?? {};
       if (_disposed) return {};
       _subscription = store!.watch().listen((snapshot) {
         if (_disposed) return;
@@ -88,7 +91,7 @@ class FavoritesRepository extends ChangeNotifier {
     if (cloud) throw StateError('Use per-channel mutations for cloud favorites');
     final prefs = await SharedPreferences.getInstance();
     final list = urls.toList()..sort();
-    if (!await prefs.setStringList(_key, list)) throw StateError('Save failed');
+    if (!await prefs.setStringList(_localKey, list)) throw StateError('Save failed');
     _local = {...urls}; _notify();
   }
   Future<void> toggle(Channel channel) async {
