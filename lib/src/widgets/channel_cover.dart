@@ -31,10 +31,14 @@ class ChannelCover extends StatelessWidget {
               color: Colors.white.withValues(alpha: .08))),
           Center(child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Text(name, textAlign: TextAlign.center, maxLines: 3,
+            child: ExcludeSemantics(child: RichText(
+              textAlign: TextAlign.center, maxLines: 3,
+              textScaler: MediaQuery.textScalerOf(context),
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 21, height: 1.1,
-                fontWeight: FontWeight.w900, color: Colors.white)),
+              text: TextSpan(text: name,
+                style: const TextStyle(fontSize: 21, height: 1.1,
+                  fontWeight: FontWeight.w900, color: Colors.white)),
+            )),
           )),
         ],
       ),
