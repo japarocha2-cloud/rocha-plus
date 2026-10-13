@@ -32,3 +32,5 @@ flutter:
     - branding/home-tv-galaxy.png
     - branding/intro-rocha-plus.mp4
     - branding/rocha-wordmark-antennas.webp
+    - catalog/approved.json
+    - catalog/quarantine.json

@@ -12,4 +12,15 @@ void main() {
     await ChannelBlocks().clear();
     expect(await ChannelBlocks().load(), isEmpty);
   });
+  test('concurrent removals do not overwrite each other', () async {
+    await Future.wait([ChannelBlocks().block('Canal A'), ChannelBlocks().block('Canal B')]);
+    expect(await ChannelBlocks().load(), containsAll(['canal a', 'canal b']));
+  });
+  test('restoring hidden names does not restore rejected URLs', () async {
+    await ChannelBlocks().block('Canal');
+    await ChannelBlocks().blockUrl('https://example.com/broken');
+    await ChannelBlocks().clear();
+    expect(await ChannelBlocks().load(), isEmpty);
+    expect(await ChannelBlocks().loadUrls(), contains('https://example.com/broken'));
+  });
 }

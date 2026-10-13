@@ -1,93 +1,89 @@
 import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
+
+Map<String, Object?> approved(String name, String url) => {
+  'name': name, 'url': url, 'approved': true, 'status': 'approved',
+  'group': 'TV aberta',
+  'evidence': {'decoded_seconds': 30, 'video_codec': 'h264', 'audio_codec': 'aac'},
+};
+
+ChannelRepository repository(List<Object?> entries, {List<Object?> excluded = const []}) =>
+    ChannelRepository(catalogLoader: () async => jsonEncode(entries),
+      quarantineLoader: () async => jsonEncode(excluded),
+      client: MockClient((_) async => throw StateError('Public catalogue fallback forbidden')));
 
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
   });
-  test('partial refresh retains only the failed source from its own cache', () async {
-    var refresh = false;
-    final repo = ChannelRepository(client: MockClient((request) async {
-      if (request.url == ChannelRepository.sportsPlaylist) {
-        return refresh ? http.Response('', 503) : http.Response(
-            '#EXTM3U\n#EXTINF:-1,Football\nhttps://example.com/sport\n', 200);
-      }
-      return http.Response('#EXTM3U\n#EXTINF:-1,TV\n'
-          'https://example.com/${refresh ? 'new' : 'old'}\n', 200);
-    }));
-    await repo.loadBrazilPublicDirectory();
-    refresh = true;
-    final channels = await repo.loadBrazilPublicDirectory(forceRefresh: true);
-    expect(channels.map((c) => c.url), containsAll([
-      'https://example.com/sport', 'https://example.com/new']));
-    expect(channels.map((c) => c.url), isNot(contains('https://example.com/old')));
-  });
 
-  test('successful playback restores a quarantined cached channel without reload', () async {
-    var calls = 0;
-    final repo = ChannelRepository(client: MockClient((request) async {
-      calls++;
-      return http.Response('#EXTM3U\n#EXTINF:-1,Canal\nhttps://example.com/live\n', 200);
-    }));
-    await repo.loadBrazilPublicDirectory();
-    repo.reportPlaybackFailure('https://example.com/live');
-    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
-    repo.reportPlaybackSuccess('https://example.com/live');
+  test('refresh never imports channels outside the selected catalogue', () async {
+    final repo = repository([approved('Canal', 'https://example.com/live')]);
     expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
-    expect(calls, 2);
+    expect(await repo.loadBrazilPublicDirectory(forceRefresh: true), hasLength(1));
   });
 
-  test('duplicate source URL retains Brazilian title and promotes sports group', () async {
-    final repo = ChannelRepository(client: MockClient((request) async =>
-        http.Response('#EXTM3U\n#EXTINF:-1,${request.url == ChannelRepository.sportsPlaylist ? 'Foreign name' : 'Nome brasileiro'}\n'
-            'https://example.com/live\n', 200)));
-    final channels = await repo.loadBrazilPublicDirectory();
-    expect(channels.single.name, 'Nome brasileiro');
-    expect(channels.single.group, 'Esportes');
+  test('quarantine and historical removals survive quality and URL changes', () async {
+    final repo = repository([
+      approved('Removido (1080p)', 'https://example.com/new'),
+      approved('1001 Noites', 'https://example.com/new2'),
+      approved('Canal', 'https://example.com/live'),
+    ], excluded: [{'name': 'Removido (720p)', 'reason': 'timeout'}]);
+    expect((await repo.loadBrazilPublicDirectory()).single.name, 'Canal');
+    await repo.restoreUserBlockedChannels();
+    expect((await repo.loadBrazilPublicDirectory(forceRefresh: true)).single.name, 'Canal');
   });
 
-  test('concurrent catalog loads share requests and preserve source quality URL', () async {
-    var calls = 0;
+  test('unapproved, insecure, silent and untested sources are excluded', () async {
+    final repo = repository([
+      approved('OK', 'https://example.com/ok'),
+      {...approved('No approval', 'https://example.com/no'), 'approved': false},
+      approved('HTTP', 'http://example.com/http'),
+      {...approved('No evidence', 'https://example.com/unknown'), 'evidence': null},
+      {...approved('Silent', 'https://example.com/silent'),
+        'evidence': {'decoded_seconds': 30, 'video_codec': 'h264', 'audio_codec': ''}},
+    ]);
+    expect((await repo.loadBrazilPublicDirectory()).single.name, 'OK');
+  });
+
+  test('rejected URL survives a fresh repository and session reset', () async {
+    final entries = [approved('Canal', 'https://example.com/live')];
+    final first = repository(entries);
+    await first.loadBrazilPublicDirectory();
+    await first.reportPlaybackFailure('https://example.com/live');
+    ChannelRepository.resetSessionHealthForTests();
+    final second = repository(entries);
+    expect(await second.loadBrazilPublicDirectory(), isEmpty);
+    second.reportPlaybackSuccess('https://example.com/live');
+    await second.restoreUserBlockedChannels();
+    expect(await second.loadBrazilPublicDirectory(forceRefresh: true), isEmpty);
+  });
+
+  test('concurrent loads share asset reads and preserve the original URL', () async {
+    var reads = 0;
     final gate = Completer<void>();
-    final repo = ChannelRepository(client: MockClient((request) async {
-      calls++;
+    final repo = ChannelRepository(quarantineLoader: () async => '[]', catalogLoader: () async {
+      reads++;
       await gate.future;
-      return http.Response('#EXTM3U\n#EXTINF:-1 group-title="General",Canal\n'
-          'https://example.com/master.m3u8?quality=original\n', 200);
-    }));
+      return jsonEncode([approved('Canal', 'https://example.com/master.m3u8?quality=original')]);
+    });
     final first = repo.loadBrazilPublicDirectory();
     final second = repo.loadBrazilPublicDirectory();
     gate.complete();
     final results = await Future.wait([first, second]);
-    expect(calls, 2);
-    expect(results.first.single.url,
-        'https://example.com/master.m3u8?quality=original');
-    await repo.loadBrazilPublicDirectory();
-    expect(calls, 2);
+    expect(reads, 1);
+    expect(results.first.single.url, 'https://example.com/master.m3u8?quality=original');
   });
-  test('one failed directory does not discard the other source', () async {
-    final repo = ChannelRepository(client: MockClient((request) async {
-      if (request.url == ChannelRepository.sportsPlaylist) {
-        return http.Response('', 503);
-      }
-      return http.Response('#EXTM3U\n#EXTINF:-1,Canal\n'
-          'https://example.com/master.m3u8\n', 200);
-    }));
-    expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
-  });
-  test('failed refresh retains last known catalog', () async {
-    var offline = false;
-    final repo = ChannelRepository(client: MockClient((request) async =>
-        offline ? http.Response('', 503) : http.Response(
-        '#EXTM3U\n#EXTINF:-1,Canal\nhttps://example.com/master.m3u8\n', 200)));
-    final first = await repo.loadBrazilPublicDirectory();
-    offline = true;
-    final fallback = await repo.loadBrazilPublicDirectory(forceRefresh: true);
-    expect(fallback.single.url, first.single.url);
+
+  test('invalid assets fail closed without public playlist requests', () async {
+    final repo = ChannelRepository(catalogLoader: () async => '{}', quarantineLoader: () async => '[]',
+      client: MockClient((_) async => throw StateError('Unexpected network request')));
+    await expectLater(repo.loadBrazilPublicDirectory(), throwsFormatException);
+    expect(await repository([]).loadBrazilPublicDirectory(), isEmpty);
   });
 }

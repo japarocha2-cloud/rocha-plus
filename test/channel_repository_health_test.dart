@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
@@ -12,33 +13,36 @@ void main() {
     expect(repo.sportsOnly([nfl, female, male]), [male, female, nfl]);
   });
 
-  setUp(ChannelRepository.resetSessionHealthForTests);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ChannelRepository.resetSessionHealthForTests();
+  });
 
-  test('player failure quarantines a stream for the current session', () {
+  test('player failure quarantines a stream for the current session', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     expect(repository.isQuarantined(url), isFalse);
-    repository.reportPlaybackFailure(url);
+    await repository.reportPlaybackFailure(url);
     expect(repository.isQuarantined(url), isTrue);
   });
 
-  test('successful playback clears a previous quarantine', () {
+  test('decoder progress cannot reapprove a rejected stream', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
-    repository.reportPlaybackFailure(url);
+    await repository.reportPlaybackFailure(url);
     repository.reportPlaybackSuccess(url);
-    expect(repository.isQuarantined(url), isFalse);
+    expect(repository.isQuarantined(url), isTrue);
   });
 
-  test('sports catalog excludes non-sports and quarantined streams', () {
+  test('sports catalog excludes non-sports and quarantined streams', () async {
     final repository = ChannelRepository();
     const sport = Channel(name: 'Futebol Brasil', url: 'https://example.com/sport.m3u8', group: 'Esportes');
     const news = Channel(name: 'Jornal', url: 'https://example.com/news.m3u8', group: 'News');
 
     expect(repository.sportsOnly([sport, news]), [sport]);
-    repository.reportPlaybackFailure(sport.url);
+    await repository.reportPlaybackFailure(sport.url);
     expect(repository.sportsOnly([sport, news]), isEmpty);
   });
 

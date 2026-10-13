@@ -1,3 +1,4 @@
+import 'reviewed_catalog_fixture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +13,7 @@ void main() {
     ChannelRepository.resetSessionHealthForTests();
   });
   testWidgets('channel hiding persists and restore brings it back', (tester) async {
-    final repo = ChannelRepository(client: MockClient((request) async =>
+    final repo = reviewedFixtureRepository(client: MockClient((request) async =>
       http.Response('#EXTM3U\n#EXTINF:-1 group-title="Kids",Canal Criança\n'
           'https://example.com/kids.m3u8\n', 200, headers: {'content-type': 'text/plain; charset=utf-8'})));
     await tester.pumpWidget(MaterialApp(home: LiveTvScreen(repository: repo)));
