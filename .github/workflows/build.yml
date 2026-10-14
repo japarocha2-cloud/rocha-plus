@@ -163,8 +163,8 @@ jobs:
           # Change only the install ID so the laboratory APK remains separate.
           import re
           s, count = re.subn(
-              r'(applicationId\\s*=\\s*")[^"]+(")',
-              r'\\g<1>com.rochaplus.triallab\\g<2>',
+              r'(applicationId\s*=\s*")[^"]+(")',
+              r'\g<1>com.rochaplus.triallab\g<2>',
               s,
               count=1,
           )
