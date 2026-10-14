@@ -287,8 +287,14 @@ sub onBillingExpiry()
 end sub
 sub onBillingResult(ok as boolean,data as object,elapsedMs as integer)
  remaining = 0
- if ok and data.active = true and data.accessUntil <> invalid and data.serverTime <> invalid
-  remaining = data.accessUntil-data.serverTime-elapsedMs
+ ' Only a typed and consistent server entitlement may open Roku playback.
+ if ok and type(data) = "roAssociativeArray"
+  if data.active = true and (data.state = "trial" or data.state = "paid")
+   validTimes = (type(data.accessUntil) = "roInteger" or type(data.accessUntil) = "roLongInteger") and (type(data.serverTime) = "roInteger" or type(data.serverTime) = "roLongInteger")
+   if validTimes and elapsedMs >= 0
+    remaining = data.accessUntil - data.serverTime - elapsedMs
+   end if
+  end if
  end if
  m.billingClock.Mark()
  m.billingLifetime = 0
