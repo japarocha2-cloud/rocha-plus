@@ -12,7 +12,6 @@ class FirebaseAuthRepository implements AuthRepository {
   static const _sender = String.fromEnvironment('ROCHA_FIREBASE_SENDER_ID');
   static const _googleClient = String.fromEnvironment('ROCHA_GOOGLE_SERVER_CLIENT_ID');
   static const _adminEmail = 'luquin.has.rocha2@gmail.com';
-  static const _appleEnabled = bool.fromEnvironment('ROCHA_APPLE_ENABLED');
   bool _googleReady = false;
 
   // A layout-only preview may be offered by an explicitly marked build only
