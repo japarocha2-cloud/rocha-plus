@@ -25,8 +25,8 @@ class HomeScreen extends StatefulWidget {
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
-    ('Notícias', Icons.newspaper_outlined),
     ('Infantil', Icons.toys_outlined),
+    ('Notícias', Icons.newspaper_outlined),
     ('Favoritos', Icons.favorite_border),
   ];
   @override
@@ -206,9 +206,13 @@ class _HomeScreenState extends State<HomeScreen> {
           )),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
             sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 220, mainAxisExtent: 120,
-                crossAxisSpacing: 12, mainAxisSpacing: 12),
+              gridDelegate: wide
+                ? const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 220, mainAxisExtent: 120,
+                    crossAxisSpacing: 12, mainAxisSpacing: 12)
+                : const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, mainAxisSpacing: 12,
+                    crossAxisSpacing: 12, childAspectRatio: .80),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
@@ -341,7 +345,8 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
       IconButton(tooltip: 'Próximo destaque',
         onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
     ])),
-    SizedBox(height: widget.wide ? 304 : 308,
+    LayoutBuilder(builder: (context, constraints) => SizedBox(
+      height: widget.wide ? 304 : (constraints.maxWidth * 1.04).clamp(330.0, 540.0),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollStartNotification &&
@@ -381,7 +386,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             },
           ),
         ),
-      )),
+      ))),
   ]);
 }
 
@@ -507,10 +512,13 @@ class _CategoryCardState extends State<_CategoryCard> {
       onFocusChange: (v) => setState(() => focused = v),
       child: Padding(padding: const EdgeInsets.all(15), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(widget.icon, color: RochaColors.gold, size: 28),
+          Align(alignment: Alignment.topRight,
+            child: Icon(widget.icon, color: RochaColors.gold, size: 36)),
           const Spacer(),
-          Text(widget.label, maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+          Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          Container(height: 2, width: 34, color: RochaColors.gold),
         ]))),
   );
 }
