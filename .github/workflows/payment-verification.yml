@@ -1,0 +1,26 @@
+name: Rocha+ Payment Verification Tests
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/payment-verification.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/payment-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  payment-verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run server-side payment verification tests
+        run: node --test backend/*.test.js
