@@ -34,6 +34,9 @@ void main() {
       expect(find.text('Explore o Rocha+'), findsWidgets);
       expect(find.byKey(const ValueKey('category-TV ao Vivo')), findsWidgets);
       expect(find.byKey(const ValueKey('category-Esportes')), findsWidgets);
+      // Category labels stay below the carousel and remain independent of ads.
+      expect(find.byKey(const ValueKey('category-Infantil')), findsWidgets);
+      expect(find.byKey(const ValueKey('category-Notícias')), findsWidgets);
       expect(tester.takeException(), isNull);
 
       // Rotates without input every six seconds, including the last-to-first loop.
@@ -47,7 +50,7 @@ void main() {
 
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
 
       // Manual arrows continue working at every position and restart the interval.
       await tester.tap(find.byTooltip('Destaque anterior'));
@@ -55,7 +58,7 @@ void main() {
       expect(find.byKey(ValueKey(size.width >= 900 ? 'feature-sports' : 'sponsor-slot-1')), findsOneWidget);
       await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
