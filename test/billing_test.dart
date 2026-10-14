@@ -10,6 +10,15 @@ class FakeBillingRepository implements BillingRepository {
   bool fail = false;
   Duration duration = const Duration(days: 7);
   int checkouts = 0;
+  bool noticeClaimed = false;
+  bool welcomeEnabled = false;
+  @override
+  Future<bool> claimTrialWelcomeNotice() async {
+    if (fail) throw const BillingFailure('Sem confirmação do servidor.');
+    if (!welcomeEnabled || !active || noticeClaimed) return false;
+    noticeClaimed = true;
+    return true;
+  }
   @override
   Future<BillingAccess> status() async {
     if (fail) throw const BillingFailure('Sem confirmação do servidor.');

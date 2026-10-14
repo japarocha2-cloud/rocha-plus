@@ -20,6 +20,8 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   late final BillingController controller;
   GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
   bool previouslyAllowed = false;
+  bool noticePending = false;
+  bool noticeChecked = false;
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,32 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
     if (previouslyAllowed && !allowed) unawaited(stopCast());
     if (previouslyAllowed != allowed) navigationKey = GlobalKey<NavigatorState>();
     previouslyAllowed = allowed;
+    if (allowed && !controller.checking && controller.error == null &&
+        controller.access?.state == 'trial' && !noticeChecked && !noticePending) {
+      noticePending = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(showWelcomeNotice()));
+    }
+  }
+  Future<void> showWelcomeNotice() async {
+    try {
+      if (!mounted) return;
+      final show = await controller.repository.claimTrialWelcomeNotice();
+      if (!mounted) return;
+      noticeChecked = true;
+      if (!show || !controller.allowed || controller.access?.state != 'trial') return;
+      await showDialog<void>(context: context, barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Você ganhou 7 dias grátis!'),
+          content: const Text('Bem-vindo ao Rocha+! Aproveite os canais e recursos durante seu período de teste. '
+            'Depois, escolha um plano para continuar: R\$ 4,90 por mês ou R\$ 55,00 por ano.'),
+          actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Começar a assistir'))],
+        ));
+    } catch (_) {
+      // A notice failure never grants playback access; retry on next status refresh.
+    } finally {
+      noticePending = false;
+    }
   }
   Widget subscription(BuildContext context) => AnimatedBuilder(animation: controller,
     builder: (_, __) => SubscriptionScreen(checkout: controller.checkout,

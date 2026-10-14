@@ -12,12 +12,15 @@ export function createService({ store, verifyIdentity, provider, verifySignature
     try { identity = await verifyIdentity(token, true); }
     catch (_) { return { status: 401, body: { error: 'auth' } }; }
     if (!identity?.uid) return { status: 401, body: { error: 'auth' } };
-    if (!['status', 'checkout'].includes(body?.action)) return { status: 400, body: { error: 'action' } };
+    if (!['status', 'checkout', 'claimTrialWelcomeNotice'].includes(body?.action)) return { status: 400, body: { error: 'action' } };
     if (body.action === 'checkout' && !Object.hasOwn(PLANS, body.plan)) return { status: 400, body: { error: 'plan' } };
     try {
       const time = now();
       const user = await store.user(identity.uid, time,
         identity.email_verified === true ? identity.email : null);
+      if (body.action === 'claimTrialWelcomeNotice') {
+        return { status: 200, body: { showNotice: await store.claimTrialWelcomeNotice(identity.uid, time) } };
+      }
       if (body.action === 'status') return { status: 200, body: access(user, time) };
       if (!paymentsEnabled) return { status: 503, body: { error: 'payments-not-configured' } };
       const order = { id: newId(), uid: identity.uid, plan: body.plan, createdAt: time };

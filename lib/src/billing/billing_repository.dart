@@ -35,6 +35,7 @@ class BillingAccess {
 abstract class BillingRepository {
   Future<BillingAccess> status();
   Future<Uri> checkout(String plan);
+  Future<bool> claimTrialWelcomeNotice();
 }
 class HttpBillingRepository implements BillingRepository {
   static const configuredEndpoint = String.fromEnvironment('ROCHA_BILLING_API_URL');
@@ -77,6 +78,14 @@ class HttpBillingRepository implements BillingRepository {
   }
   @override
   Future<BillingAccess> status() async => BillingAccess.fromJson(await _request({'action': 'status'}));
+  @override
+  Future<bool> claimTrialWelcomeNotice() async {
+    final data = await _request({'action': 'claimTrialWelcomeNotice'});
+    if (data['showNotice'] is! bool) {
+      throw const BillingFailure('Resposta de aviso inválida.');
+    }
+    return data['showNotice'] == true;
+  }
   @override
   Future<Uri> checkout(String plan) async {
     if (!['monthly', 'annual'].contains(plan)) {

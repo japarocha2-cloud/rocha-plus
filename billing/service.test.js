@@ -112,3 +112,18 @@ test('calendar periods clamp month ends and leap years',()=>{
   assert.equal(addMonths(Date.parse('2028-02-29T10:00:00Z'),12),Date.parse('2029-02-28T10:00:00Z'));
   assert.equal(access({trialEndsAt:start,payments:{}},start).active,false);
 });
+
+test('trial welcome is claimed once per verified account across devices', async()=>{
+  const f=fixture();
+  const replies=await Promise.all([f.request('claimTrialWelcomeNotice'),f.request('claimTrialWelcomeNotice')]);
+  assert.deepEqual(replies.map(r=>r.body.showNotice).sort(),[false,true]);
+  assert.equal((await f.request('claimTrialWelcomeNotice','A',{uid:'B'})).body.showNotice,false);
+  assert.equal((await f.request('claimTrialWelcomeNotice','B')).body.showNotice,true);
+  assert.equal((await f.request('claimTrialWelcomeNotice','fake')).status,401);
+});
+test('expired or paid accounts cannot receive a fresh seven-day welcome', async()=>{
+  const f=fixture();await f.request('status');f.now(start+TRIAL_MS);
+  assert.equal((await f.request('claimTrialWelcomeNotice')).body.showNotice,false);
+  await f.request('checkout','A',{plan:'monthly'});await f.webhook();
+  assert.equal((await f.request('claimTrialWelcomeNotice')).body.showNotice,false);
+});

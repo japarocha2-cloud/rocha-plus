@@ -15,6 +15,17 @@ export function createStore(db) {
         return user;
       });
     },
+    async claimTrialWelcomeNotice(uid, now) {
+      return db.runTransaction(async tx => {
+        const ref = userRef(uid);
+        const user = (await tx.get(ref)).data();
+        if (!user || user.trialWelcomeNoticeAt != null || access(user, now).state !== 'trial') {
+          return false;
+        }
+        tx.update(ref, { trialWelcomeNoticeAt: now });
+        return true;
+      });
+    },
     async reserve(order, now) {
       await db.runTransaction(async tx => {
         const ref = userRef(order.uid);

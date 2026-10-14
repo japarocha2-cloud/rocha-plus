@@ -37,4 +37,23 @@ void main() {
     expect(find.byType(SubscriptionScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets('trial welcome appears once for the account across gate recreation', (tester) async {
+    final repository = FakeBillingRepository()..welcomeEnabled = true;
+    Widget gate() => MaterialApp(home: SubscriptionGate(uid: 'A',
+      repository: repository, onSignOut: () async {}));
+    await tester.pumpWidget(gate());
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Você ganhou 7 dias grátis!'), findsOneWidget);
+    await tester.tap(find.text('Começar a assistir'));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(gate());
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Você ganhou 7 dias grátis!'), findsNothing);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
 }

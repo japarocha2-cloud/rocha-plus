@@ -62,3 +62,18 @@ O painel Firebase mostra registros em `rochaBillingUsers` (UID, e-mail verificad
 - Celular e TV pareada usam o mesmo UID e validade. Verificar controle remoto, introdução com áudio, vídeo/áudio, fullscreen e interrupção de Cast na perda de acesso.
 
 Fontes oficiais: Firebase ID tokens (`https://firebase.google.com/docs/auth/admin/verify-id-tokens`), parâmetros/secrets (`https://firebase.google.com/docs/functions/config-env`), Mercado Pago Webhooks (`https://www.mercadopago.com.br/developers/en/docs/links-and-debts/additional-content/your-integrations/notifications/webhooks`).
+
+## Aviso único e teste físico dos 7 dias
+
+Após o primeiro login com teste ativo, o aplicativo mostra “Você ganhou 7 dias grátis!” e o botão “Começar a assistir”. O servidor reserva o aviso uma única vez por UID em transação; reinstalar, abrir em outro aparelho ou chamadas concorrentes não repetem o aviso. Um erro de rede não é tratado como teste vencido nem como novo teste. A reserva prioriza não repetir: caso o app feche entre reservar e desenhar o aviso, ele pode não chegar a aparecer. O prazo começa no primeiro acesso autenticado ao serviço, não no botão do aviso.
+
+Para testar sem esperar uma semana, use uma conta descartável sem histórico de pagamento. O APK precisa ser completo, assinado e apontar para o serviço publicado. O utilitário administrativo abaixo é somente de terminal, exige credenciais administrativas fora do APK e não oferece endpoint para alterar prazo pelo cliente:
+
+```
+node billing/tools/expire-test-trial.mjs --project PROJECT_ID --test-uid TEST_UID
+node billing/tools/expire-test-trial.mjs --project PROJECT_ID --test-uid TEST_UID --apply
+```
+
+O primeiro comando apenas verifica o resultado previsto. O segundo encurta somente o prazo da conta indicada; não modifica a regra global de 7 dias, não cria outro teste, não apaga o registro do aviso e recusa contas com pagamentos. Ainda não foi executado contra Firebase real.
+
+Teste físico: entrar com a conta nova e observar o aviso; fechar e entrar novamente para confirmar que não repete; abrir um canal; vencer o prazo com o utilitário; usar “Já paguei / verificar acesso” ou aguardar a consulta periódica (até um minuto); confirmar que vídeo e áudio param, a tela de Assinaturas aparece e Voltar não reabre o player; reinstalar e confirmar que o mesmo UID permanece bloqueado. Pagamento e liberação devem ser verificados separadamente pelo fluxo oficial do Mercado Pago. Não alterar o relógio do celular para esse teste.
