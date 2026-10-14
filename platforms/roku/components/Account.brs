@@ -290,7 +290,9 @@ sub onBillingResult(ok as boolean,data as object,elapsedMs as integer)
  ' Only a typed and consistent server entitlement may open Roku playback.
  if ok and type(data) = "roAssociativeArray"
   if data.active = true and (data.state = "trial" or data.state = "paid")
-   validTimes = (type(data.accessUntil) = "roInteger" or type(data.accessUntil) = "roLongInteger") and (type(data.serverTime) = "roInteger" or type(data.serverTime) = "roLongInteger")
+   validUntil = (type(data.accessUntil) = "roInteger" or type(data.accessUntil) = "roLongInteger" or type(data.accessUntil) = "roDouble")
+   validServer = (type(data.serverTime) = "roInteger" or type(data.serverTime) = "roLongInteger" or type(data.serverTime) = "roDouble")
+   validTimes = validUntil and validServer
    if validTimes and elapsedMs >= 0
     remaining = data.accessUntil - data.serverTime - elapsedMs
    end if
