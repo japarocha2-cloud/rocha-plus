@@ -29,7 +29,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('home-featured-carousel')), findsOneWidget);
-      expect(find.byKey(const ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
       expect(find.byKey(const ValueKey('tv-galaxy-background')), size.width >= 900 ? findsOneWidget : findsNothing);
       expect(find.text('Explore o Rocha+'), findsWidgets);
       expect(find.byKey(const ValueKey('category-TV ao Vivo')), findsWidgets);
