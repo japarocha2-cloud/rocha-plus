@@ -50,11 +50,23 @@ class LoginScreen extends StatelessWidget {
                         ? () => unawaited(controller!.signIn(LoginProvider.google)) : null,
                   ),
                   const SizedBox(height: 14),
-                  _LoginButton(
+                  const _LoginButton(
                     icon: Icons.apple,
                     label: 'Entrar com Apple',
-                    onPressed: controller?.supports(LoginProvider.apple) == true && !controller!.busy
-                        ? () => unawaited(controller!.signIn(LoginProvider.apple)) : null,
+                  ),
+                  const SizedBox(height: 4),
+                  const Text('Em breve', style: TextStyle(
+                    fontSize: 11, color: Colors.redAccent)),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    key: const ValueKey('admin-login-entry'),
+                    onPressed: controller?.ready == true && controller?.busy == false
+                      ? () => showDialog<void>(
+                          context: context,
+                          builder: (_) => _AdminLoginDialog(controller: controller!),
+                        ) : null,
+                    child: const Text('Acesso administrativo',
+                      style: TextStyle(fontSize: 12, color: Colors.white54)),
                   ),
                   if (onPreviewLayout != null) ...[
                     const SizedBox(height: 20),
@@ -118,4 +130,47 @@ class _LoginButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AdminLoginDialog extends StatefulWidget {
+  final AuthController controller;
+  const _AdminLoginDialog({required this.controller});
+  @override
+  State<_AdminLoginDialog> createState() => _AdminLoginDialogState();
+}
+class _AdminLoginDialogState extends State<_AdminLoginDialog> {
+  final email = TextEditingController();
+  final password = TextEditingController();
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Acesso ADM Rocha+'),
+    content: SizedBox(width: 360, child: Column(
+      mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: email, keyboardType: TextInputType.emailAddress,
+          autocorrect: false, decoration: const InputDecoration(labelText: 'E-mail')),
+        TextField(controller: password, obscureText: true, autocorrect: false,
+          enableSuggestions: false,
+          decoration: const InputDecoration(labelText: 'Senha')),
+        AnimatedBuilder(animation: widget.controller, builder: (_, __) =>
+          widget.controller.error == null ? const SizedBox.shrink() :
+          Padding(padding: const EdgeInsets.only(top: 12),
+            child: Text(widget.controller.error!, style:
+              const TextStyle(color: Colors.redAccent, fontSize: 12)))),
+      ])),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+      FilledButton(onPressed: widget.controller.busy ? null : () async {
+        await widget.controller.signInAdmin(email.text, password.text);
+        if (context.mounted && widget.controller.account?.isAdmin == true) {
+          Navigator.of(context).pop();
+        }
+      }, child: const Text('Entrar')),
+    ],
+  );
 }
