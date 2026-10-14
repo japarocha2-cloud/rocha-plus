@@ -63,6 +63,33 @@ jobs:
         run: flutter test
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
+      - name: Configure isolated visual test app
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle = Path("android/app/build.gradle.kts")
+          text = gradle.read_text()
+          text = text.replace('applicationId = "com.example.rocha_plus"', 'applicationId = "com.rochaplus.visualtest"')
+          text = text.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.visualtest"')
+          gradle.write_text(text)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          if manifest.exists():
+              m = manifest.read_text()
+              m = m.replace('android:label="Rocha+"', 'android:label="Rocha+ Visual Test"')
+              m = m.replace('android:label="rocha_plus"', 'android:label="Rocha+ Visual Test"')
+              manifest.write_text(m)
+          PY
+      - name: Build visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: flutter build apk --debug --dart-define=ROCHA_VISUAL_TEST=true
+      - name: Upload visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-visual-test
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
       - name: Resolve Android version code
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/android_version_code.py
