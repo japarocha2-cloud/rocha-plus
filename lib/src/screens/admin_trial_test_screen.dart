@@ -49,6 +49,37 @@ class _AdminTrialTestScreenState extends State<AdminTrialTestScreen> {
   Future<void> consult() async {
     final id = accountId.text.trim();
     if (!RegExp(r'^[0-9]{1,128}$').hasMatch(id)) {
+      setState(() => message = 'Informe o identificador numérico da conta Google.');
+      return;
+    }
+    setState(() { busy = true; message = 'Consultando prazo no Firestore…'; });
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null || !user.emailVerified ||
+          (await user.getIdTokenResult(true)).claims?['rochaAdmin'] != true) {
+        throw const FormatException('Acesso administrativo não autorizado.');
+      }
+      final token = await user.getIdToken();
+      final project = Firebase.app().options.projectId;
+      final uri = Uri.https('firestore.googleapis.com',
+        '/v1/projects/$project/databases/(default)/documents/rochaSparkAccounts/$id');
+      final response = await http.get(uri,
+        headers: {'Authorization': 'Bearer $token'}).timeout(const Duration(seconds: 12));
+      if (response.statusCode == 404) {
+        throw const FormatException('Conta não encontrada. Confirme o ID Google.');
+      }
+      if (response.statusCode != 200) {
+        throw FormatException('Consulta não autorizada ou indisponível (${response.statusCode}).');
+      }
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final fields = decoded['fields'] as Map<String, dynamic>?;
+      final trial = fields?['trialStartedAt'] as Map<String, dynamic>?;
+      final stamp = DateTime.tryParse(trial?['timestampValue'] as String? ?? '');
+      if (stamp == null) throw const FormatException('Data de início ausente ou inválida.');
+      final now = DateTime.now().toUtc();
+      final endsAt = stamp.toUtc().add(const Duration(days: 7));
+      final expired = !now.isBefore(endsAt);
+      if (!mounted) return;
       setState(() => message =
         'Início: ${stamp.toLocal()}\n'
         'Fim previsto: ${endsAt.toLocal()}\n'
