@@ -7,7 +7,7 @@ const PLANS = Object.freeze({
   monthly: { amount: 4.90, currency: 'BRL' },
   annual: { amount: 55.00, currency: 'BRL' },
 });
-function verifyMercadoPagoPayment(payment, { accountId, plan, collectorId, expectedReference }) {
+function verifyMercadoPagoPayment(payment, { accountId, plan, collectorId, expectedReference, referenceAccountId }) {
   const expected = PLANS[plan];
   if (!expected || !/^[0-9]{1,128}$/.test(String(accountId ?? ''))) return false;
   if (!payment || typeof payment !== 'object') return false;
@@ -19,7 +19,7 @@ function verifyMercadoPagoPayment(payment, { accountId, plan, collectorId, expec
   if (!collectorId || String(payment.collector_id) !== String(collectorId)) return false;
   // Per-user checkout must bind a unique, server-generated external_reference.
   // The static mpago.la links do not satisfy this requirement.
-  if (!expectedReference || payment.external_reference !== expectedReference) return false;
+  if (!referenceAccountId || String(referenceAccountId) !== String(accountId)) return false;\n  if (!expectedReference || payment.external_reference !== expectedReference) return false;
   // The opaque reference must be matched to an authenticated, server-stored\n  // checkout correlation for accountId. Never infer ownership from substrings.\n  if (!payment.date_approved || Number.isNaN(Date.parse(payment.date_approved))) return false;
   if (payment.refunded_amount != null && Number(payment.refunded_amount) > 0) return false;
   return true;
