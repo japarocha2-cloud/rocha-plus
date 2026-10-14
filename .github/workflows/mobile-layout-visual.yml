@@ -26,7 +26,7 @@ jobs:
           s = p.read_text()
           s = s.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
           import re
-          s, n = re.subn(r'(applicationId\\s*=\\s*")[^"]+(")', r'\\g<1>com.rochaplus.layoutpreview\\g<2>', s, count=1)
+          s, n = re.subn(r'(applicationId\s*=\s*")[^"]+(")', r'\g<1>com.rochaplus.layoutpreview\g<2>', s, count=1)
           if n != 1:
               raise RuntimeError('applicationId not found')
           p.write_text(s)
