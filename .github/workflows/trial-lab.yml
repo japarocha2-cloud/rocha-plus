@@ -1,0 +1,48 @@
+name: Rocha+ Two Minute Laboratory APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lab-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Prepare isolated Android laboratory
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          s = p.read_text().replace('compileSdk = flutter.compileSdkVersion','compileSdk = 37')
+          p.write_text(s)
+          PY
+          python3 tools/configure_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          s = p.read_text().replace('com.rochaplus.app','com.rochaplus.triallab').replace('com.example.rocha_plus','com.rochaplus.triallab')
+          p.write_text(s)
+          p = Path('android/app/src/main/AndroidManifest.xml')
+          s = p.read_text().replace('android:label="Rocha+"','android:label="Rocha+ Laboratório"')
+          p.write_text(s)
+          PY
+      - run: flutter pub get
+      - name: Check laboratory entry
+        run: flutter analyze lib/trial_lab_main.dart
+      - name: Build separate debug APK
+        run: flutter build apk --debug --target lib/trial_lab_main.dart
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-laboratorio-2-minutos
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
