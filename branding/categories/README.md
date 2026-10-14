@@ -1,7 +1,12 @@
-# Rocha+ mobile category artwork
+# Rocha+ mobile category covers
 
-Only the four category tiles below the advertising carousel use these images. Do not change channel artwork or catalogs.
+Four optimized WebP artworks are bundled only into the four mobile category cards below the advertising carousel:
 
-Place `tv_ao_vivo.webp`, `esportes.webp`, `infantil.webp`, `noticias.webp` in this folder, extracted from the accompanying approved cover ZIP. Then register each asset in `pubspec.yaml` under `flutter: assets:`. Until both steps are complete, the mobile category cards display their original gradient fallback. Do not ship or claim the new artwork is visible yet.
+- `tv_ao_vivo.webp` -> TV ao Vivo
+- `esportes.webp` -> Esportes
+- `infantil.webp` -> Infantil
+- `noticias.webp` -> Notícias
 
-The advertising carousel above the categories is independent. APK 538 freeze is not altered. This is a mobile-only layout branch.
+These are reduced-resolution mobile-card adaptations of the approved reference art, not replacements for original high-resolution artwork. They are registered under `flutter.assets` in `pubspec.yaml`. They are **not** channel covers; never change channel catalogs, channel artwork, the live-player, or favorites as part of this layout task.
+
+The APK 538 freeze and the approved-layout checkpoint remain separate. Full phone-side QA is required prior to release.
