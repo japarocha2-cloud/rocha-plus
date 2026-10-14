@@ -29,3 +29,12 @@ test('TV logout clears identity and cannot leave a playback grant',async()=>{
   await f.account.refreshAccess();f.account.signOut();assert.equal(f.account.allowed,false);
   assert.equal(f.storage.getItem('rocha_account'),undefined);assert.equal(f.account.uid,'');
 });
+
+test('Web TV rejects string dates even when numerically plausible',async()=>{
+  const f=fixture();f.grant({active:true,state:'paid',serverTime:'100000',accessUntil:'200000'});
+  await f.account.refreshAccess();assert.equal(f.account.allowed,false);f.account.dispose();
+});
+test('Web TV rejects contradictory expired state with active flag',async()=>{
+  const f=fixture();f.grant({active:true,state:'expired',serverTime:100000,accessUntil:200000});
+  await f.account.refreshAccess();assert.equal(f.account.allowed,false);f.account.dispose();
+});
