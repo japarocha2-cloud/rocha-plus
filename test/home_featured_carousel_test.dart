@@ -29,8 +29,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('home-featured-carousel')), findsOneWidget);
-      expect(find.byKey(const ValueKey('sponsor-slot-2')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tv-galaxy-background')), findsNothing);
+      expect(find.byKey(const ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
+      expect(find.byKey(const ValueKey('tv-galaxy-background')), size.width >= 900 ? findsOneWidget : findsNothing);
       expect(find.text('Explore o Rocha+'), findsWidgets);
       expect(find.byKey(const ValueKey('category-TV ao Vivo')), findsWidgets);
       expect(find.byKey(const ValueKey('category-Esportes')), findsWidgets);
@@ -39,11 +39,11 @@ void main() {
       // Rotates without input every six seconds, including the last-to-first loop.
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('sponsor-slot-3')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'feature-kids' : 'sponsor-slot-3')), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('sponsor-slot-1')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'feature-sports' : 'sponsor-slot-1')), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
@@ -52,7 +52,7 @@ void main() {
       // Manual arrows continue working at every position and restart the interval.
       await tester.tap(find.byTooltip('Destaque anterior'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('sponsor-slot-1')), findsOneWidget);
+      expect(find.byKey(ValueKey(size.width >= 900 ? 'feature-sports' : 'sponsor-slot-1')), findsOneWidget);
       await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
