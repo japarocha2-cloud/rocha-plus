@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ROCHA_SPARK_TRIAL: ${{ vars.ROCHA_SPARK_TRIAL }}
+      ROCHA_UNIFIED_RELEASE: ${{ vars.ROCHA_UNIFIED_RELEASE }}
       ROCHA_SPARK_FIREBASE_PROJECT_ID: rocha-plus
       ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
       ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
