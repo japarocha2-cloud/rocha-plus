@@ -11,6 +11,7 @@ class FirebaseAuthRepository implements AuthRepository {
   static const _apiKey = String.fromEnvironment('ROCHA_FIREBASE_API_KEY');
   static const _sender = String.fromEnvironment('ROCHA_FIREBASE_SENDER_ID');
   static const _googleClient = String.fromEnvironment('ROCHA_GOOGLE_SERVER_CLIENT_ID');
+  static const _adminEmail = 'luquin.has.rocha2@gmail.com';
   static const _appleEnabled = bool.fromEnvironment('ROCHA_APPLE_ENABLED');
   bool _googleReady = false;
 
@@ -34,19 +35,29 @@ class FirebaseAuthRepository implements AuthRepository {
     _auth = FirebaseAuth.instance;
   }
 
+  // Email alone never provides administrator privileges.
+  // The rochaAdmin custom claim must be issued by a trusted Firebase Admin SDK.
   @override
-  Stream<AuthAccount?> get accountChanges => _auth!.authStateChanges().map((user) {
-    if (user == null || user.isAnonymous ||
-        !user.providerData.any((provider) =>
-          provider.providerId == 'google.com' || provider.providerId == 'apple.com')) {
+  Stream<AuthAccount?> get accountChanges => _auth!.idTokenChanges().asyncMap((user) async {
+    if (user == null || user.isAnonymous) return null;
+    final providers = user.providerData.map((provider) => provider.providerId).toSet();
+    if (providers.contains('password') &&
+        user.email?.toLowerCase() == _adminEmail && user.emailVerified) {
+      final claims = (await user.getIdTokenResult(true)).claims;
+      if (claims?['rochaAdmin'] == true) {
+        return AuthAccount(uid: user.uid, displayName: user.displayName, isAdmin: true);
+      }
       return null;
     }
-    return AuthAccount(uid: user.uid, displayName: user.displayName);
+    if (providers.contains('google.com') || providers.contains('apple.com')) {
+      return AuthAccount(uid: user.uid, displayName: user.displayName);
+    }
+    return null;
   });
 
   @override
   bool supports(LoginProvider provider) => _auth != null &&
-      (provider == LoginProvider.google ? _googleClient.isNotEmpty : _appleEnabled);
+      (provider == LoginProvider.google ? _googleClient.isNotEmpty : false);
 
   @override
   Future<void> signIn(LoginProvider provider) async {
@@ -79,6 +90,27 @@ class FirebaseAuthRepository implements AuthRepository {
         throw const LoginFailure('Use a opção de login utilizada anteriormente nesta conta.');
       }
       throw const LoginFailure('Não foi possível confirmar o login. Confira a conexão e tente novamente.');
+    }
+  }
+
+  @override
+  Future<void> signInAdmin(String email, String password) async {
+    if (email.trim().toLowerCase() != _adminEmail || password.isEmpty) {
+      throw const LoginFailure('Credenciais administrativas inválidas.');
+    }
+    try {
+      final result = await _auth!.signInWithEmailAndPassword(
+        email: email.trim(), password: password);
+      final user = result.user;
+      if (user == null || !user.emailVerified ||
+          (await user.getIdTokenResult(true)).claims?['rochaAdmin'] != true) {
+        await _auth!.signOut();
+        throw const LoginFailure('Conta ainda não autorizada como administrador.');
+      }
+    } on LoginFailure {
+      rethrow;
+    } on FirebaseAuthException {
+      throw const LoginFailure('Não foi possível validar o acesso administrativo.');
     }
   }
 
