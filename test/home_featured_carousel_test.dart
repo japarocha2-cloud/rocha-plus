@@ -20,7 +20,7 @@ void main() {
 
   for (final size in [const Size(320, 568), const Size(430, 932),
       const Size(960, 540), const Size(1920, 1080)]) {
-    testWidgets('featured layout stays usable at $size without replacing official assets',
+    testWidgets('advertising carousel stays usable at $size without modifying channel assets',
         (tester) async {
       await tester.binding.setSurfaceSize(size);
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -29,20 +29,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('home-featured-carousel')), findsOneWidget);
-      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tv-galaxy-background')),
-        size.width >= 900 ? findsOneWidget : findsNothing);
+      expect(find.byKey(const ValueKey('sponsor-slot-2')), findsOneWidget);
+      expect(find.byKey(const ValueKey('tv-galaxy-background')), findsNothing);
       expect(find.text('Explore o Rocha+'), findsWidgets);
+      expect(find.byKey(const ValueKey('category-TV ao Vivo')), findsWidgets);
+      expect(find.byKey(const ValueKey('category-Esportes')), findsWidgets);
       expect(tester.takeException(), isNull);
 
       // Rotates without input every six seconds, including the last-to-first loop.
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
-      expect(find.text('Espaço infantil'), findsOneWidget);
+      expect(find.byKey(const ValueKey('sponsor-slot-3')), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
-      expect(find.text('Esportes ao vivo'), findsOneWidget);
+      expect(find.byKey(const ValueKey('sponsor-slot-1')), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
@@ -51,7 +52,7 @@ void main() {
       // Manual arrows continue working at every position and restart the interval.
       await tester.tap(find.byTooltip('Destaque anterior'));
       await tester.pumpAndSettle();
-      expect(find.text('Esportes ao vivo'), findsOneWidget);
+      expect(find.byKey(const ValueKey('sponsor-slot-1')), findsOneWidget);
       await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
