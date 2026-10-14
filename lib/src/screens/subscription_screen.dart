@@ -136,7 +136,7 @@ class _PlanCard extends StatelessWidget {
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
       const SizedBox(height: 8),
-      Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+      Wrap(crossAxisAlignment: WrapCrossAlignment.end, children: [
         Text(price, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900)),
         Padding(padding: const EdgeInsets.only(bottom: 5), child:
           Text(period, style: const TextStyle(color: Colors.white60))),
