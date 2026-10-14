@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       - name: Validate mobile carousel and category layout
-        run: flutter test test/mobile_category_layout_test.dart test/home_featured_carousel_test.dart
+        run: flutter test test/mobile_category_layout_test.dart test/home_featured_carousel_test.dart test/mobile_category_assets_test.dart
       - name: Build isolated visual APK
         run: flutter build apk --debug --dart-define=ROCHA_VISUAL_TEST=true
       - name: Publish visual APK
