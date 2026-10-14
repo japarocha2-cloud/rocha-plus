@@ -38,6 +38,10 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
   testWidgets('trial welcome appears once for the account across gate recreation', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final repository = FakeBillingRepository()..welcomeEnabled = true;
     Widget gate() => MaterialApp(home: SubscriptionGate(uid: 'A',
       repository: repository, onSignOut: () async {}));
@@ -45,6 +49,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Você ganhou 7 dias grátis!'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.text('Começar a assistir'));
     await tester.tap(find.text('Começar a assistir'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpWidget(const SizedBox());

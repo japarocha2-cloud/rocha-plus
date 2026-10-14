@@ -6,6 +6,7 @@ import '../screens/home_screen.dart';
 import '../screens/subscription_screen.dart';
 import 'billing_controller.dart';
 import 'billing_repository.dart';
+import 'trial_welcome_dialog.dart';
 
 class SubscriptionGate extends StatefulWidget {
   final String uid;
@@ -53,13 +54,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
       noticeChecked = true;
       if (!show || !controller.allowed || controller.access?.state != 'trial') return;
       await showDialog<void>(context: context, barrierDismissible: false,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Você ganhou 7 dias grátis!'),
-          content: const Text('Bem-vindo ao Rocha+! Aproveite os canais e recursos durante seu período de teste. '
-            'Depois, escolha um plano para continuar: R\$ 4,90 por mês ou R\$ 55,00 por ano.'),
-          actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Começar a assistir'))],
-        ));
+        builder: (_) => const TrialWelcomeDialog());
     } catch (_) {
       // A notice failure never grants playback access; retry on next status refresh.
     } finally {
