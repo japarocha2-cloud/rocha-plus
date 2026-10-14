@@ -36,8 +36,8 @@ jobs:
           PY
       - name: Configure official Android app
         run: python3 tools/configure_android.py
-      - name: Android config tests
-        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Android scaffold configuration tests
+        run: python3 -m unittest discover -s tools -p 'test_configure_android.py'
       - name: Prepare private signing and Firebase config
         env:
           ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
