@@ -7,6 +7,7 @@ import 'auth/firebase_auth_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/intro_screen.dart';
+import 'screens/visual_trial_test_screen.dart';
 import 'theme/rocha_theme.dart';
 
 class RochaPlusApp extends StatefulWidget {
@@ -22,6 +23,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   bool introFinished = false;
   bool showingLayoutPreview = false;
   static const _previewBuild = bool.fromEnvironment('ROCHA_LAYOUT_PREVIEW');
+  static const _visualTestBuild = bool.fromEnvironment('ROCHA_VISUAL_TEST');
   bool get _mayPreview => _previewBuild && !FirebaseAuthRepository.isConfigured;
   @override
   void initState() {
@@ -37,6 +39,14 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (_visualTestBuild) {
+      return MaterialApp(
+        title: 'Rocha+ Visual Test',
+        debugShowCheckedModeBanner: false,
+        theme: RochaTheme.dark,
+        home: const VisualTrialTestScreen(),
+      );
+    }
     return AnimatedBuilder(animation: controller, builder: (_, __) => MaterialApp(
       // Clear every nested channel/player route when the session changes.
       key: ValueKey(controller.account?.uid ??
