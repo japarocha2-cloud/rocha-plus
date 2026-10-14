@@ -59,6 +59,19 @@ jobs:
             --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \
             --build-number="$ROCHA_ANDROID_VERSION_CODE" \
             --dart-define-from-file="$ROCHA_FIREBASE_FILE"
+      - name: Verify release APK installability metadata and signature
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          test -s "$APK"
+          SDK="$ANDROID_HOME/build-tools"
+          AAPT="$(find "$SDK" -name aapt -type f | sort -V | tail -1)"
+          APKSIGNER="$(find "$SDK" -name apksigner -type f | sort -V | tail -1)"
+          test -x "$AAPT" && test -x "$APKSIGNER"
+          "$AAPT" dump badging "$APK" | tee /tmp/rocha-apk-badging.txt
+          grep -q "^package: name='com.rochaplus.app'" /tmp/rocha-apk-badging.txt
+          grep -q "^sdkVersion:" /tmp/rocha-apk-badging.txt
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          unzip -t "$APK" >/dev/null
       - name: Upload candidate (never publish as production)
         uses: actions/upload-artifact@v4
         with:
