@@ -46,7 +46,7 @@ jobs:
       - name: Flutter dependencies
         run: flutter pub get
       - name: Verify mobile layout and carousel
-        run: flutter test test/mobile_category_layout_test.dart test/home_featured_carousel_test.dart
+        run: flutter test test/mobile_category_layout_test.dart test/home_featured_carousel_test.dart test/mobile_category_assets_test.dart
       - name: Verify channel/favorite regressions
         run: flutter test test/channel_card_regression_test.dart test/channel_repository_health_test.dart test/favorites_account_isolation_test.dart
       - name: Configure version code
