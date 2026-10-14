@@ -205,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ]),
           )),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
-            sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
+            sliver: SliverGrid.builder(itemCount: wide ? HomeScreen.sections.length : 4,
               gridDelegate: wide
                 ? const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 220, mainAxisExtent: 120,
