@@ -40,14 +40,14 @@ class TrialWelcomeDialog extends StatelessWidget {
                       fit: BoxFit.fill,
                       excludeFromSemantics: true),
                   ),
-                  const Positioned.fill(child: Semantics(
+                  Positioned.fill(child: Semantics(
                     label: 'Rocha+. Você ganhou 7 dias grátis! '
                       'Bem-vindo ao Rocha+. Aproveite os canais e recursos '
                       'durante seu período de teste. Depois dos 7 dias, '
                       'escolha um plano para continuar assistindo. '
                       'Mensal R\$ 4,90. Anual R\$ 55,00. '
                       'Este aviso aparece uma única vez por conta.',
-                    child: SizedBox.expand(),
+                    child: const SizedBox.expand(),
                   )),
                   Positioned(
                     left: 44, top: 840, width: 548, height: 90,
