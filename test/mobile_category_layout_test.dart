@@ -16,7 +16,7 @@ void main() {
 
       expect(find.byKey(const ValueKey('home-featured-carousel')), findsOneWidget);
       expect(find.byKey(const ValueKey('sponsor-slot-2')), findsOneWidget);
-      expect(find.text('Explore o Rocha+'), findsOneWidget);
+      // On short screens the section sits below the visible viewport; scroll to it.
 
       final scroll = find.descendant(
         of: find.byKey(const ValueKey('home-scroll')),
