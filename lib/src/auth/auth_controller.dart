@@ -63,6 +63,22 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  Future<void> signInAdmin(String email, String password) async {
+    if (busy || !ready || _disposed) return;
+    busy = true;
+    error = null;
+    notifyListeners();
+    try {
+      await repository.signInAdmin(email, password);
+    } on LoginFailure catch (failure) {
+      if (!_disposed) error = failure.message;
+    } catch (_) {
+      if (!_disposed) error = 'Não foi possível validar o acesso administrativo.';
+    } finally {
+      if (!_disposed) { busy = false; notifyListeners(); }
+    }
+  }
+
   Future<void> signOut() async {
     if (busy || _disposed) return;
     busy = true;
