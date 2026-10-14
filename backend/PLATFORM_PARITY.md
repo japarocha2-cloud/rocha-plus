@@ -20,3 +20,8 @@ For EACH platform: login/logout, 7-day first use, persistence after app/device r
 
 ## Progress discipline
 This document is a requirement specification, not proof that Roku/TV/Cast implementations are complete. APK 538 remains frozen; implement on development branches and only propagate after tests pass.
+
+## Commercial activation gate: one authoritative backend
+Code audit (2026-10-14) found two Android modes: `ROCHA_SPARK_TRIAL=true` reads `rochaSparkAccounts/{googleProviderUid}` from Firestore, while `HttpBillingRepository` uses the existing `billing/index.js` HTTPS recurring service backed by `rochaBillingUsers/{hashedFirebaseUid}`. Roku and Web TV already call the HTTPS billing service. These are NOT interchangeable records or trial counters. Never enable a paid cross-device rollout while Android uses Spark and TVs use the recurring backend without migrating the immutable initial trial dates and verified entitlements. A unified server authority, account identity mapping, and migration tests must be verified before release. Do not erase trial state or silently award another seven days.
+
+The existing recurring service (`billing/recurring_service.js`) and subscription ledger (`billing/store.js`) already implement much of the payment lifecycle; extend and deploy those files rather than creating a separate unintegrated webhook from `backend/` examples. A GitHub commit alone is not deployment. Confirm platform-store billing requirements before release.
