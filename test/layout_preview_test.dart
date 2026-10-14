@@ -1,3 +1,4 @@
+import 'reviewed_catalog_fixture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -5,7 +6,6 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/auth/auth_controller.dart';
 import 'package:rocha_plus/src/auth/auth_repository.dart';
-import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/screens/home_screen.dart';
 import 'package:rocha_plus/src/screens/live_tv_screen.dart';
 import 'package:rocha_plus/src/screens/login_screen.dart';
@@ -59,7 +59,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(430, 932));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     var requests = 0;
-    final repository = ChannelRepository(client: MockClient((request) async {
+    final repository = reviewedFixtureRepository(client: MockClient((request) async {
       requests++;
       return http.Response('UNEXPECTED REQUEST', 500);
     }));

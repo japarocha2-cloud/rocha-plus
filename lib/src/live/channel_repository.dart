@@ -4,13 +4,22 @@ import 'channel.dart';
 import 'channel_identity.dart';
 import 'channel_blocks.dart';
 import 'channel_scanner.dart';
-import 'm3u_parser.dart';
+import 'package:flutter/services.dart';
 
 class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
   final http.Client _client;
   Future<List<Channel>>? _pendingLoad;
-  ChannelRepository({http.Client? client}) : _client = client ?? _defaultClient;
+  ChannelRepository({http.Client? client,
+    Future<String> Function()? catalogLoader,
+    Future<String> Function()? quarantineLoader})
+      : _client = client ?? _defaultClient,
+        _catalogLoader = catalogLoader ?? (() => rootBundle.loadString('catalog/approved.json')),
+        _quarantineLoader = quarantineLoader ?? (() => rootBundle.loadString('catalog/quarantine.json'));
+  final Future<String> Function() _catalogLoader;
+  final Future<String> Function() _quarantineLoader;
+  List<Channel>? _reviewedCache;
+  final Set<String> _excludedNames = {};
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -27,13 +36,8 @@ class ChannelRepository {
   Future<void> restoreUserBlockedChannels() async {
     await _blocks.clear();
     _userBlockedNames = {};
-    _memoryCache = null;
+    _reviewedCache = null;
   }
-
-  static final Map<Uri, List<Channel>> _sourceCache = {};
-  static List<Channel>? _memoryCache;
-  static List<Channel>? _lastKnownGoodCache;
-  static final Set<String> _sessionFailedUrls = <String>{};
 
   // Bloqueio persistente por nome. Use esta camada para canais reprovados
   // em teste físico: eles não voltam quando o diretório remoto é atualizado.
@@ -53,17 +57,14 @@ class ChannelRepository {
 
   bool _isPermanentlyBlocked(Channel channel) {
     final normalized = channelIdentity(channel.name);
-    return _userBlockedNames.contains(normalized) ||
+    return _excludedNames.contains(normalized) || _userBlockedNames.contains(normalized) ||
         _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
   }
 
-  void reportPlaybackFailure(String url) {
-    _sessionFailedUrls.add(url);
-  }
-
-  void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
-
-  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+  // Playback errors do not change the reviewed catalogue.
+  Future<void> reportPlaybackFailure(String url) async {}
+  void reportPlaybackSuccess(String url) {}
+  bool isQuarantined(String url) => false;
 
   Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
       ChannelScanner(_client).scan(channels);
@@ -77,22 +78,17 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
-        .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
 
   static void resetSessionHealthForTests() {
+    ChannelBlocks.resetForTests();
     _userBlockedNames = {};
-    _sourceCache.clear();
-    _sessionFailedUrls.clear();
-    _memoryCache = null;
-    _lastKnownGoodCache = null;
   }
 
-  List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
+  List<Channel> _visibleReviewedChannels(Iterable<Channel> channels) =>
       channels
-          .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -103,75 +99,54 @@ class ChannelRepository {
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
     _userBlockedNames = await _blocks.load();
-    if (!forceRefresh && _memoryCache != null) {
-      return _withoutSessionFailures(_memoryCache!);
+    if (!forceRefresh && _reviewedCache != null) {
+      return _visibleReviewedChannels(_reviewedCache!);
     }
-
-    final fallback = _lastKnownGoodCache;
-
-    final results = await Future.wait([
-      _loadPlaylistSafely(developmentPlaylist),
-      _loadPlaylistSafely(sportsPlaylist),
-    ]).timeout(const Duration(seconds: 16), onTimeout: () => const [<Channel>[], <Channel>[]]);
-
-    final brazil = results[0];
-    final sports = results[1]
-        .map((channel) => Channel(
-              name: channel.name,
-              url: channel.url,
-              logo: channel.logo,
-              group: 'Esportes',
-            ))
-        .toList(growable: false);
-
-    final merged = <String, Channel>{};
-    for (final channel in [...brazil, ...sports]) {
-      final previous = merged[channel.url];
-      merged[channel.url] = previous == null ? channel : Channel(
-        name: previous.name,
-        url: previous.url,
-        logo: previous.logo ?? channel.logo,
-        group: channel.group == 'Esportes' ? 'Esportes' : previous.group,
-      );
+    // Only the packaged, previously selected sources may enter the catalogue.
+    // Missing/invalid assets never trigger a public-playlist fallback.
+    final sources = await Future.wait([_catalogLoader(), _quarantineLoader()]);
+    final approved = jsonDecode(sources[0]);
+    final excluded = jsonDecode(sources[1]);
+    if (approved is! List || excluded is! List) {
+      throw const FormatException('Catálogo selecionado inválido.');
     }
-
-    // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
-    // são carregadas; a validação profunda não bloqueia mais centenas de
-    // canais antes de a interface aparecer. Falhas reais do player entram
-    // em quarentena durante a sessão por reportPlaybackFailure().
-    final ordered = _orderSportsFirst(
-      merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
-    );
-    if (ordered.isNotEmpty) {
-      _memoryCache = List.unmodifiable(ordered);
-      _lastKnownGoodCache = _memoryCache;
-      return _withoutSessionFailures(_memoryCache!);
+    _excludedNames.clear();
+    for (final item in excluded) {
+      if (item is Map && item['name'] is String) {
+        _excludedNames.add(channelIdentity(item['name'] as String));
+      }
     }
-
-    if (fallback != null && fallback.isNotEmpty) {
-      return _withoutSessionFailures(fallback);
+    final channels = <Channel>[];
+    final seen = <String>{};
+    for (final item in approved) {
+      if (item is! Map || item['approved'] != true || item['status'] != 'approved' ||
+          item['blocked'] == true || item['quarantined'] == true ||
+          item['name'] is! String || item['url'] is! String) {
+        continue;
+      }
+      final name = (item['name'] as String).trim();
+      final url = item['url'] as String;
+      final uri = Uri.tryParse(url);
+      final evidence = item['evidence'];
+      if (name.isEmpty || uri == null || uri.scheme != 'https' ||
+          uri.host.isEmpty || uri.userInfo.isNotEmpty ||
+          evidence is! Map || evidence['decoded_seconds'] is! num ||
+          (evidence['decoded_seconds'] as num) < 29 ||
+          evidence['video_codec'] is! String || (evidence['video_codec'] as String).isEmpty ||
+          evidence['audio_codec'] is! String || (evidence['audio_codec'] as String).isEmpty ||
+          !seen.add(url)) {
+        continue;
+      }
+      final logo = item['logo'] is String ? item['logo'] as String : null;
+      final logoUri = logo == null ? null : Uri.tryParse(logo);
+      final channel = Channel(name: name, url: url,
+          logo: logoUri != null && logoUri.scheme == 'https' &&
+              logoUri.host.isNotEmpty && logoUri.userInfo.isEmpty ? logo : null,
+          group: item['group'] is String ? item['group'] as String : 'TV aberta');
+      if (!_isPermanentlyBlocked(channel)) channels.add(channel);
     }
-    if (_memoryCache != null) return _withoutSessionFailures(_memoryCache!);
-    throw Exception('Não foi possível carregar canais disponíveis.');
-  }
-
-  Future<List<Channel>> _loadPlaylistSafely(Uri playlist) async {
-    try {
-      final channels = await _loadPlaylist(playlist);
-      if (channels.isEmpty) return _sourceCache[playlist] ?? const <Channel>[];
-      _sourceCache[playlist] = List.unmodifiable(channels);
-      return channels;
-    } catch (_) {
-      return _sourceCache[playlist] ?? const <Channel>[];
-    }
-  }
-
-  Future<List<Channel>> _loadPlaylist(Uri playlist) async {
-    final res = await _client.get(playlist).timeout(const Duration(seconds: 8));
-    if (res.statusCode != 200) {
-      throw Exception('Não foi possível carregar o catálogo.');
-    }
-    return M3uParser.parse(utf8.decode(res.bodyBytes));
+    _reviewedCache = List.unmodifiable(channels);
+    return _visibleReviewedChannels(_reviewedCache!);
   }
 
   List<Channel> _orderSportsFirst(List<Channel> channels) {
