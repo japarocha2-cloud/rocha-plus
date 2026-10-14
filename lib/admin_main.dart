@@ -80,6 +80,6 @@ class _AdminLoginState extends State<_AdminLogin> {
               const TextStyle(color: Colors.redAccent)),
         ],
       ))),
-    )),
+    ),
   );
 }
