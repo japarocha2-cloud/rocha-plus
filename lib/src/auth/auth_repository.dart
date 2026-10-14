@@ -1,7 +1,8 @@
 class AuthAccount {
   final String uid;
   final String? displayName;
-  const AuthAccount({required this.uid, this.displayName});
+  final bool isAdmin;
+  const AuthAccount({required this.uid, this.displayName, this.isAdmin = false});
 }
 
 enum LoginProvider { google, apple }
@@ -17,5 +18,6 @@ abstract class AuthRepository {
   Stream<AuthAccount?> get accountChanges;
   bool supports(LoginProvider provider);
   Future<void> signIn(LoginProvider provider);
+  Future<void> signInAdmin(String email, String password);
   Future<void> signOut();
 }
