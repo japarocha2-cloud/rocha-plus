@@ -370,7 +370,16 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             duration: const Duration(milliseconds: 180),
             padding: EdgeInsets.fromLTRB(5, selected == page % 3 ? 0 : 20,
               5, selected == page % 3 ? 0 : 20),
-            child: switch (page % 3) {
+            child: widget.wide ? switch (page % 3) {
+              0 => _FeatureCategory(key: const ValueKey('feature-sports'),
+                icon: Icons.sports_soccer_outlined, label: 'Esportes ao vivo',
+                onTap: () => widget.onOpen('Esportes')),
+              1 => _OfficialHero(wide: true,
+                onWatch: () => widget.onOpen('TV ao Vivo')),
+              _ => _FeatureCategory(key: const ValueKey('feature-kids'),
+                icon: Icons.toys_outlined, label: 'Espaço infantil',
+                onTap: () => widget.onOpen('Infantil')),
+            } : switch (page % 3) {
               0 => const _SponsoredPlaceholder(
                 key: ValueKey('sponsor-slot-1'),
                 title: 'Sua marca aqui', icon: Icons.campaign_outlined),
