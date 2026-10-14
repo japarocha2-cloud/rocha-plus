@@ -6,6 +6,7 @@ import 'auth/auth_controller.dart';
 import 'auth/firebase_auth_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/admin_home_screen.dart';
 import 'screens/intro_screen.dart';
 import 'screens/visual_trial_test_screen.dart';
 import 'theme/rocha_theme.dart';
@@ -65,6 +66,8 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
+              : controller.account!.isAdmin
+              ? AdminHomeScreen(onSignOut: () => controller.signOut())
               : SubscriptionGate(uid: controller.account!.uid, repository: widget.billingRepository, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
