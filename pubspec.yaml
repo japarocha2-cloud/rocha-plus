@@ -33,6 +33,10 @@ flutter:
     - branding/cast-reference.png
     - branding/home-tv-galaxy.png
     - branding/intro-rocha-plus.mp4
+    - branding/categories/tv_ao_vivo.webp
+    - branding/categories/esportes.webp
+    - branding/categories/infantil.webp
+    - branding/categories/noticias.webp
     - branding/rocha-wordmark-antennas.webp
     - catalog/approved.json
     - catalog/quarantine.json
