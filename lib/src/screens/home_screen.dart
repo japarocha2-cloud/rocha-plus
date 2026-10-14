@@ -524,6 +524,15 @@ class _CategoryCard extends StatefulWidget {
 }
 class _CategoryCardState extends State<_CategoryCard> {
   bool focused = false;
+  // Visual assets are optional until added to the mobile-only asset bundle.
+  // This never changes channel artwork, channel URLs, or player behavior.
+  String? get _coverAsset => switch (widget.label) {
+    'TV ao Vivo' => 'branding/categories/tv_ao_vivo.webp',
+    'Esportes' => 'branding/categories/esportes.webp',
+    'Infantil' => 'branding/categories/infantil.webp',
+    'Notícias' => 'branding/categories/noticias.webp',
+    _ => null,
+  };
   @override
   Widget build(BuildContext context) => AnimatedContainer(
     duration: const Duration(milliseconds: 130),
@@ -535,15 +544,23 @@ class _CategoryCardState extends State<_CategoryCard> {
       boxShadow: focused ? const [BoxShadow(color: Color(0x555A20A8), blurRadius: 18)] : []),
     child: InkWell(onTap: widget.onTap, borderRadius: BorderRadius.circular(14),
       onFocusChange: (v) => setState(() => focused = v),
-      child: Padding(padding: const EdgeInsets.all(15), child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Align(alignment: Alignment.topRight,
-            child: Icon(widget.icon, color: RochaColors.gold, size: 36)),
-          const Spacer(),
-          Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 8),
-          Container(height: 2, width: 34, color: RochaColors.gold),
-        ]))),
+      child: Stack(fit: StackFit.expand, children: [
+        if (_coverAsset != null) Image.asset(_coverAsset!, fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+        const DecoratedBox(decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x08050409), Color(0xE8050409)]))),
+        Padding(padding: const EdgeInsets.all(15), child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Align(alignment: Alignment.topRight,
+              child: Icon(widget.icon, color: RochaColors.gold, size: 28)),
+            const Spacer(),
+            Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            Container(height: 2, width: 34, color: RochaColors.gold),
+          ])),
+      ])),
   );
 }
