@@ -36,6 +36,12 @@ class FakeAuth extends AuthRepository {
     if (signInFailure != null) throw signInFailure!;
   }
   @override
+  Future<void> signInAdmin(String email, String password) async {
+    attempts++;
+    if (gate != null) await gate!.future;
+    if (signInFailure != null) throw signInFailure!;
+  }
+  @override
   Future<void> signOut() async {
     if (logoutFails) throw StateError('network');
     changes.add(null);
