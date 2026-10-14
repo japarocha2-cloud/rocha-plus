@@ -2,7 +2,7 @@ name: Build Rocha+
 
 on:
   push:
-    branches: [main, feat/mercadopago-trial-20261013, feat/admin-login-firebase-20261014]
+    branches: [main, feat/mercadopago-trial-20261013, feat/admin-login-firebase-20261014, feat/admin-trial-test-apk-20261014]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -152,6 +152,30 @@ jobs:
             echo "### Rocha+ validacao de codigo (sem APK)" >> "$GITHUB_STEP_SUMMARY"
             echo "Esta execucao testa codigo, mas nao gera APK para entrega. Para APK completo use Actions > Build Rocha+ > Run workflow > signed_login=true." >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Prepare isolated 2-minute laboratory application
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle = Path("android/app/build.gradle.kts")
+          s = gradle.read_text()
+          s = s.replace('com.rochaplus.app', 'com.rochaplus.triallab')
+          s = s.replace('com.example.rocha_plus', 'com.rochaplus.triallab')
+          gradle.write_text(s)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          s = manifest.read_text().replace('android:label="Rocha+"', 'android:label="Rocha+ Laboratório"')
+          manifest.write_text(s)
+          PY
+      - name: Build isolated 2-minute APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        run: flutter build apk --debug --target lib/trial_lab_main.dart
+      - name: Upload isolated 2-minute APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-laboratorio-2-minutos
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
       - name: Remove private build inputs
         if: always()
         run: rm -rf -- "$RUNNER_TEMP/rocha-private"
