@@ -211,8 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     maxCrossAxisExtent: 220, mainAxisExtent: 120,
                     crossAxisSpacing: 12, mainAxisSpacing: 12)
                 : const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, mainAxisSpacing: 12,
-                    crossAxisSpacing: 12, childAspectRatio: .80),
+                    // Four category covers on the first row, as in the approved mockup.
+                    crossAxisCount: 4, mainAxisSpacing: 8,
+                    crossAxisSpacing: 7, childAspectRatio: .82),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
@@ -560,16 +561,24 @@ class _CategoryCardState extends State<_CategoryCard> {
           gradient: LinearGradient(begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Color(0x08050409), Color(0xE8050409)]))),
-        Padding(padding: const EdgeInsets.all(15), child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Align(alignment: Alignment.topRight,
-              child: Icon(widget.icon, color: RochaColors.gold, size: 28)),
-            const Spacer(),
-            Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
-            Container(height: 2, width: 34, color: RochaColors.gold),
-          ])),
+        LayoutBuilder(builder: (context, box) {
+          final compact = box.maxWidth < 120;
+          return Padding(
+            padding: EdgeInsets.all(compact ? 7 : 15),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Align(alignment: Alignment.topRight,
+                child: Icon(widget.icon, color: RochaColors.gold,
+                  size: compact ? 19 : 28)),
+              const Spacer(),
+              Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: compact ? 11 : 17,
+                  fontWeight: FontWeight.w800)),
+              SizedBox(height: compact ? 4 : 8),
+              Container(height: 2, width: compact ? 22 : 34,
+                color: RochaColors.gold),
+            ]),
+          );
+        }),
       ])),
   );
 }
