@@ -12,7 +12,7 @@ Lucas confirmou instalação, favoritos separados por conta e fluxo de Assinatur
 - 190 fontes selecionadas anteriormente por decodificação automatizada; 158 exclusões recuperadas, mais SBT Cuiabá excluído por HTTP 404 nesta rodada. A evidência anterior é de FFmpeg, não de aprovação física de 190 canais.
 - Capas recuperadas por correspondência de URL/nome, sem acrescentar canais.
 - Bloqueios históricos por nome continuam aplicados, independentemente da resolução ou URL.
-- Falhas reportadas pelo player persistem por URL; atualização, reinício e progresso tardio do decoder não readmitem uma fonte rejeitada. Uma falha de rede pode provocar uma exclusão conservadora que exigirá revisão explícita.
+- Política atual, solicitada após aprovação física da #510: falhas de reprodução não removem canais aprovados, nem durante a sessão nem após reinício. Registros antigos de falhas por URL são ignorados. Exclusões da varredura e ocultações explícitas continuam respeitadas.
 
 ## SBT: pendência aberta
 

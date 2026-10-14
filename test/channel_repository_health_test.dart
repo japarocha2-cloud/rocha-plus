@@ -18,32 +18,32 @@ void main() {
     ChannelRepository.resetSessionHealthForTests();
   });
 
-  test('player failure quarantines a stream for the current session', () async {
+  test('playback failure keeps a reviewed stream available', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     expect(repository.isQuarantined(url), isFalse);
     await repository.reportPlaybackFailure(url);
-    expect(repository.isQuarantined(url), isTrue);
+    expect(repository.isQuarantined(url), isFalse);
   });
 
-  test('decoder progress cannot reapprove a rejected stream', () async {
+  test('playback callbacks never change catalogue approval', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     await repository.reportPlaybackFailure(url);
     repository.reportPlaybackSuccess(url);
-    expect(repository.isQuarantined(url), isTrue);
+    expect(repository.isQuarantined(url), isFalse);
   });
 
-  test('sports catalog excludes non-sports and quarantined streams', () async {
+  test('sports catalog preserves approved streams after playback errors', () async {
     final repository = ChannelRepository();
     const sport = Channel(name: 'Futebol Brasil', url: 'https://example.com/sport.m3u8', group: 'Esportes');
     const news = Channel(name: 'Jornal', url: 'https://example.com/news.m3u8', group: 'News');
 
     expect(repository.sportsOnly([sport, news]), [sport]);
     await repository.reportPlaybackFailure(sport.url);
-    expect(repository.sportsOnly([sport, news]), isEmpty);
+    expect(repository.sportsOnly([sport, news]), [sport]);
   });
 
   test('physical-test blocklist survives remote URL changes', () {

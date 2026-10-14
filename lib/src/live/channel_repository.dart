@@ -39,8 +39,6 @@ class ChannelRepository {
     _reviewedCache = null;
   }
 
-  static final Set<String> _sessionFailedUrls = <String>{};
-
   // Bloqueio persistente por nome. Use esta camada para canais reprovados
   // em teste físico: eles não voltam quando o diretório remoto é atualizado.
   static const Set<String> _blockedChannelNames = <String>{
@@ -63,16 +61,10 @@ class ChannelRepository {
         _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
   }
 
-  Future<void> reportPlaybackFailure(String url) async {
-    _sessionFailedUrls.add(url);
-    await _blocks.blockUrl(url);
-  }
-
-  // Decoder progress alone cannot approve a previously rejected source.
-  // Persisted playback failures require explicit catalogue review.
+  // Playback errors do not change the reviewed catalogue.
+  Future<void> reportPlaybackFailure(String url) async {}
   void reportPlaybackSuccess(String url) {}
-
-  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+  bool isQuarantined(String url) => false;
 
   Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
       ChannelScanner(_client).scan(channels);
@@ -86,7 +78,6 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
-        .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
@@ -94,12 +85,10 @@ class ChannelRepository {
   static void resetSessionHealthForTests() {
     ChannelBlocks.resetForTests();
     _userBlockedNames = {};
-    _sessionFailedUrls.clear();
   }
 
-  List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
+  List<Channel> _visibleReviewedChannels(Iterable<Channel> channels) =>
       channels
-          .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -110,9 +99,8 @@ class ChannelRepository {
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
     _userBlockedNames = await _blocks.load();
-    _sessionFailedUrls.addAll(await _blocks.loadUrls());
     if (!forceRefresh && _reviewedCache != null) {
-      return _withoutSessionFailures(_reviewedCache!);
+      return _visibleReviewedChannels(_reviewedCache!);
     }
     // Only the packaged, previously selected sources may enter the catalogue.
     // Missing/invalid assets never trigger a public-playlist fallback.
@@ -158,7 +146,7 @@ class ChannelRepository {
       if (!_isPermanentlyBlocked(channel)) channels.add(channel);
     }
     _reviewedCache = List.unmodifiable(channels);
-    return _withoutSessionFailures(_reviewedCache!);
+    return _visibleReviewedChannels(_reviewedCache!);
   }
 
   List<Channel> _orderSportsFirst(List<Channel> channels) {
