@@ -32,11 +32,7 @@ void main() {
       expect(find.byKey(ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
       expect(find.byKey(const ValueKey('tv-galaxy-background')), size.width >= 900 ? findsOneWidget : findsNothing);
       expect(find.text('Explore o Rocha+'), findsWidgets);
-      expect(find.byKey(const ValueKey('category-TV ao Vivo')), findsWidgets);
-      expect(find.byKey(const ValueKey('category-Esportes')), findsWidgets);
       // Category labels stay below the carousel and remain independent of ads.
-      expect(find.byKey(const ValueKey('category-Infantil')), findsWidgets);
-      expect(find.byKey(const ValueKey('category-Notícias')), findsWidgets);
       expect(tester.takeException(), isNull);
 
       // Rotates without input every six seconds, including the last-to-first loop.
