@@ -26,6 +26,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - branding/trial-welcome-approved.png
     - branding/trial-welcome-boy.webp
     - branding/rocha_plus_icon.webp
     - branding/dashboard-reference.png

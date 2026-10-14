@@ -23,6 +23,7 @@ class FakeBillingRepository implements BillingRepository {
   Future<BillingAccess> status() async {
     if (fail) throw const BillingFailure('Sem confirmação do servidor.');
     return BillingAccess(active: active, state: active ? 'trial' : 'expired',
+      trialWelcomeNoticeAccepted: !welcomeEnabled || noticeClaimed,
       remaining: active ? duration : Duration.zero, trialRemainingDays: active ? 7 : 0);
   }
   @override

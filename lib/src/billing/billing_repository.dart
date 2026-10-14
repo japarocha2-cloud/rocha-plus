@@ -14,9 +14,11 @@ class BillingAccess {
   final DateTime? expiresAt;
   final bool subscriptionLinked;
   final bool automaticRenewal;
+  final bool trialWelcomeNoticeAccepted;
   const BillingAccess({required this.active, required this.state,
     required this.remaining, required this.trialRemainingDays, this.expiresAt,
-    this.subscriptionLinked = false, this.automaticRenewal = false});
+    this.subscriptionLinked = false, this.automaticRenewal = false,
+    this.trialWelcomeNoticeAccepted = false});
   factory BillingAccess.fromJson(Map<String, dynamic> data) {
     final state = data['state'];
     final active = data['active'];
@@ -33,6 +35,7 @@ class BillingAccess {
       remaining: Duration(milliseconds: active ? (until as int) - serverTime : 0),
       trialRemainingDays: days, subscriptionLinked: data['recognition'] == 'linked',
       automaticRenewal: data['automaticRenewal'] == true,
+      trialWelcomeNoticeAccepted: data['trialWelcomeNoticeAccepted'] == true,
       expiresAt: until is int ? DateTime.fromMillisecondsSinceEpoch(until) : null);
   }
 }

@@ -43,6 +43,7 @@ export function access(user, now) {
     paidUntil,
     accessUntil: activePaid ? paidUntil : trial ? user.trialEndsAt : null,
     trialRemainingDays: Math.max(0, Math.ceil((user.trialEndsAt - now) / 86400000)),
+    trialWelcomeNoticeAccepted: user.trialWelcomeNoticeAt != null,
     automaticRenewal: false,
   };
 }

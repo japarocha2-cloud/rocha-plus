@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import '../cast/cast_hls_proxy.dart';
@@ -46,17 +47,49 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
       WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(showWelcomeNotice()));
     }
   }
+  String get _acceptedKey => 'trial-welcome-accepted:${widget.uid}';
+  String get _pendingKey => 'trial-welcome-pending:${widget.uid}';
+
+  Future<void> _syncAcceptance(SharedPreferences prefs) async {
+    if (prefs.getBool(_pendingKey) != true) return;
+    try {
+      // The authenticated server binds this acknowledgement to the account.
+      await controller.repository.claimTrialWelcomeNotice();
+      await prefs.remove(_pendingKey);
+    } catch (_) {
+      // Keep the local acknowledgement and retry on the next status refresh.
+    }
+  }
+
   Future<void> showWelcomeNotice() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
       if (!mounted) return;
-      final show = await controller.repository.claimTrialWelcomeNotice();
-      if (!mounted) return;
+      if (controller.access?.trialWelcomeNoticeAccepted == true) {
+        await prefs.setBool(_acceptedKey, true);
+        await prefs.remove(_pendingKey);
+        noticeChecked = true;
+        return;
+      }
+      if (prefs.getBool(_acceptedKey) == true) {
+        await _syncAcceptance(prefs);
+        noticeChecked = prefs.getBool(_pendingKey) != true;
+        return;
+      }
+      if (!controller.allowed || controller.access?.state != 'trial') return;
       noticeChecked = true;
-      if (!show || !controller.allowed || controller.access?.state != 'trial') return;
-      await showDialog<void>(context: context, barrierDismissible: false,
-        builder: (_) => const TrialWelcomeDialog());
+      final accepted = await showTrialWelcomeDialog(context);
+      if (accepted == true) {
+        // The dialog has already closed; storage/network never delay the click.
+        await prefs.setBool(_pendingKey, true);
+        await prefs.setBool(_acceptedKey, true);
+        await _syncAcceptance(prefs);
+        noticeChecked = prefs.getBool(_pendingKey) != true;
+      } else {
+        noticeChecked = false;
+      }
     } catch (_) {
-      // A notice failure never grants playback access; retry on next status refresh.
+      noticeChecked = false;
     } finally {
       noticePending = false;
     }

@@ -111,3 +111,12 @@ test('expired or paid accounts cannot receive a fresh seven-day welcome', async(
   await f.request('checkout','A',{plan:'monthly'});await f.webhook();
   assert.equal((await f.request('claimTrialWelcomeNotice')).body.showNotice,false);
 });
+
+test('reading trial status never accepts the alert; acceptance survives account reload', async()=>{
+  const f=fixture();
+  assert.equal((await f.request('status')).body.trialWelcomeNoticeAccepted,false);
+  assert.equal((await f.request('status')).body.trialWelcomeNoticeAccepted,false);
+  await f.request('claimTrialWelcomeNotice');
+  assert.equal((await f.request('status')).body.trialWelcomeNoticeAccepted,true);
+  assert.equal((await f.request('status','B')).body.trialWelcomeNoticeAccepted,false);
+});
