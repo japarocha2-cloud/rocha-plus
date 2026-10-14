@@ -18,3 +18,16 @@ for (const [name, change] of Object.entries({
   wrongSeller: { collector_id: 10 },
   unaccredited: { status_detail: 'pending_contingency' },
 })) test('rejects ' + name, () => assert.equal(verifyMercadoPagoPayment({ ...payment, ...change }, opts), false));
+
+test('rejects missing collector identity', () => assert.equal(
+  verifyMercadoPagoPayment(payment, { ...opts, collectorId: '' }), false));
+test('rejects missing individual reference', () => assert.equal(
+  verifyMercadoPagoPayment(payment, { ...opts, expectedReference: '' }), false));
+test('rejects a mismatched subscription plan', () => assert.equal(
+  verifyMercadoPagoPayment(payment, { ...opts, plan: 'annual' }), false));
+test('rejects a missing approval timestamp', () => assert.equal(
+  verifyMercadoPagoPayment({ ...payment, date_approved: null }, opts), false));
+test('rejects malformed payment id', () => assert.equal(
+  verifyMercadoPagoPayment({ ...payment, id: 'not-a-payment' }, opts), false));
+test('rejects a different Firebase identity', () => assert.equal(
+  verifyMercadoPagoPayment(payment, { ...opts, accountId: '99999' }), false));
