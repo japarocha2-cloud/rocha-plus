@@ -53,7 +53,7 @@ class SubscriptionScreen extends StatelessWidget {
         title: 'Entre em uma nova fase do entretenimento.',
         subtitle: 'TV aberta agora. Filmes e séries no futuro.',
         children: [
-          if (checkout != null) const Text('O pagamento libera o período escolhido. A renovação depende de novo pagamento.'),
+          if (checkout != null) const Text('Ao contratar, você autoriza a renovação recorrente no Mercado Pago. Use o mesmo e-mail do seu login para vincular a assinatura.'),
           if (statusMessage != null) Text(statusMessage!,
             key: const ValueKey('subscription-access-status')),
           if (onRefresh != null) OutlinedButton(

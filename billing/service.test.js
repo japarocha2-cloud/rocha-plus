@@ -5,26 +5,10 @@ import { WebhookSignatureValidator } from 'mercadopago';
 import { createService } from './service.js';
 import { createStore, userKey } from './store.js';
 import { access, addMonths, TRIAL_MS } from './policy.js';
+import { memoryDb } from './test_helpers.js';
 const start = Date.parse('2026-10-13T12:00:00Z');
 const orderId = '11111111-1111-4111-8111-111111111111';
 const secret = 'synthetic-test-secret';
-function memoryDb() {
-  const data = new Map(); let queue = Promise.resolve();
-  return { data, doc: path => ({path, get: async()=>({data:()=>data.get(path)})}),
-    runTransaction(fn) {
-      const run = queue.then(async()=>{
-        const writes=[];
-        const result=await fn({
-          get: async ref=>{ assert.equal(writes.length,0,'Firestore reads precede writes');
-            const value=data.get(ref.path);return {exists:value!=null,data:()=>value&&structuredClone(value)}; },
-          create:(ref,value)=>{if(data.has(ref.path))throw Error('exists');writes.push([ref.path,value]);},
-          set:(ref,value)=>writes.push([ref.path,value]),
-          update:(ref,value)=>writes.push([ref.path,{...data.get(ref.path),...value}]),
-        });
-        for(const [key,value] of writes)data.set(key,structuredClone(value));return result;
-      });queue=run.catch(()=>{});return run;
-    }};
-}
 function fixture(options={}) {
   const db=memoryDb(),store=createStore(db);let time=start,calls=0;
   let payment={id:123,external_reference:orderId,collector_id:987,currency_id:'BRL',

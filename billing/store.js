@@ -8,11 +8,45 @@ export function createStore(db) {
       return db.runTransaction(async tx => {
         const ref = userRef(uid);
         const snapshot = await tx.get(ref);
-        if (snapshot.exists) return snapshot.data();
-        const user = { uid, email: email ?? null, createdAt: now,
-          trialEndsAt: now + TRIAL_MS, payments: {} };
-        tx.create(ref, user);
+        const emailRef = email ? db.doc('rochaBillingEmailTrials/' + userKey(email.trim().toLowerCase())) : null;
+        const shared = emailRef ? (await tx.get(emailRef)).data() : null;
+        const user = snapshot.exists ? snapshot.data() : { uid, email: email ?? null,
+          createdAt: now, trialEndsAt: now + TRIAL_MS, payments: {} };
+        const until = Math.min(user.trialEndsAt, shared?.trialEndsAt ?? user.trialEndsAt);
+        if (until !== user.trialEndsAt) { user.trialEndsAt = until; tx.set(ref, user); }
+        else if (!snapshot.exists) tx.create(ref, user);
+        if (emailRef && shared?.trialEndsAt !== until) tx.set(emailRef, { trialEndsAt: until });
         return user;
+      });
+    },
+    async subscriptionOwner(id) {
+      return (await db.doc('rochaBillingSubscriptions/' + id).get()).data();
+    },
+    async bindSubscription(uid, subscription, now) {
+      return db.runTransaction(async tx => {
+        const ref = userRef(uid), ownerRef = db.doc('rochaBillingSubscriptions/' + subscription.id);
+        const user = (await tx.get(ref)).data();
+        const owner = (await tx.get(ownerRef)).data();
+        const emailRef = subscription.email ? db.doc('rochaBillingEmailTrials/' + userKey(subscription.email)) : null;
+        const shared = emailRef ? (await tx.get(emailRef)).data() : null;
+        if (!user || (owner && (owner.uid !== uid || owner.plan !== subscription.plan ||
+            owner.payerId !== subscription.payerId))) throw new Error('subscription-owner');
+        const subscriptions = user.subscriptions ?? {};
+        const old = subscriptions[subscription.id];
+        if (old && old.updatedAt === subscription.updatedAt && old.status === subscription.status) return old;
+        if (old && (old.updatedAt > subscription.updatedAt ||
+            (old.updatedAt === subscription.updatedAt && ['paused', 'cancelled'].includes(old.status) &&
+              subscription.status === 'authorized'))) return old;
+        if (!old && Object.keys(subscriptions).length >= 10) throw new Error('subscription-limit');
+        const record = { id: subscription.id, uid, plan: subscription.plan, payerId: subscription.payerId,
+          status: subscription.status, createdAt: subscription.createdAt, updatedAt: subscription.updatedAt };
+        subscriptions[subscription.id] = record;
+        user.subscriptions = subscriptions;
+        user.trialEndsAt = Math.min(user.trialEndsAt, subscription.trialEndsAt, shared?.trialEndsAt ?? Infinity);
+        tx.set(ref, { ...user, entitlement: access(user, now) });
+        tx.set(ownerRef, record);
+        if (emailRef) tx.set(emailRef, { trialEndsAt: user.trialEndsAt });
+        return record;
       });
     },
     async claimTrialWelcomeNotice(uid, now) {
@@ -50,6 +84,9 @@ export function createStore(db) {
           throw new Error('payment-owner');
         }
         const old = user.payments[paymentId];
+        if (old?.kind === 'recurring' && (old.invoiceId !== payment.invoiceId ||
+            old.subscriptionId !== payment.subscriptionId)) throw new Error('invoice-owner');
+        if (old && JSON.stringify(old) === JSON.stringify(payment)) return access(user, now);
         if (old && (old.updatedAt > payment.updatedAt ||
             (old.updatedAt === payment.updatedAt && ['refunded', 'charged_back', 'in_mediation'].includes(old.status) && payment.status === 'approved'))) {
           return access(user, now);

@@ -7,21 +7,22 @@ import { defineBoolean, defineSecret, defineString } from 'firebase-functions/pa
 import { onRequest } from 'firebase-functions/v2/https';
 import { createStore } from './store.js';
 import { createProvider } from './provider.js';
-import { createService } from './service.js';
+import { createRecurringService } from './recurring_service.js';
 initializeApp();
 const accessToken = defineSecret('MP_ACCESS_TOKEN');
 const webhookSecret = defineSecret('MP_WEBHOOK_SECRET');
 const collectorId = defineString('MP_COLLECTOR_ID', { default: '' });
-const notificationsUrl = defineString('MP_NOTIFICATIONS_URL', { default: '' });
+const monthlyPlanId = defineString('MP_MONTHLY_PLAN_ID', { default: '' });
+const annualPlanId = defineString('MP_ANNUAL_PLAN_ID', { default: '' });
 const liveMode = defineBoolean('MP_LIVE_MODE', { default: false });
 const paymentsEnabled = defineBoolean('MP_PAYMENTS_ENABLED', { default: false });
 function service() {
   const provider = createProvider({ accessToken: accessToken.value(),
-    webhookSecret: webhookSecret.value(), notificationsUrl: notificationsUrl.value(), liveMode: liveMode.value() });
-  return createService({ store: createStore(getFirestore()), provider,
+    webhookSecret: webhookSecret.value() });
+  return createRecurringService({ store: createStore(getFirestore()), provider,
     verifySignature: provider.verifySignature,
     verifyIdentity: (token, revoked) => getAuth().verifyIdToken(token, revoked),
-    collectorId: collectorId.value(), liveMode: liveMode.value(), paymentsEnabled: paymentsEnabled.value() });
+    collectorId: collectorId.value(), planIds: { monthly: monthlyPlanId.value(), annual: annualPlanId.value() }, liveMode: liveMode.value(), paymentsEnabled: paymentsEnabled.value() });
 }
 const options = { region: 'southamerica-east1', maxInstances: 3, timeoutSeconds: 30,
   secrets: [accessToken, webhookSecret], cors: true };

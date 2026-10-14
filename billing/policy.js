@@ -24,9 +24,14 @@ export function access(user, now) {
     .filter(([, p]) => p.status === 'approved' && p.refundedCents === 0)
     .sort((a, b) => a[1].approvedAt - b[1].approvedAt || a[0].localeCompare(b[0]));
   let paidUntil = null;
-  for (const [, payment] of approved) {
+  for (const [, payment] of approved.filter(([, payment]) => payment.kind !== 'recurring')) {
     paidUntil = addMonths(Math.max(paidUntil ?? 0, user.trialEndsAt, payment.approvedAt),
       PLANS[payment.plan].months);
+  }
+  for (const [, payment] of approved.filter(([, payment]) => payment.kind === 'recurring')) {
+    // Recurring invoices cover their own calendar cycle. Replays and a second
+    // charge in the same cycle cannot add another month or another free trial.
+    if (Number.isFinite(payment.periodEnd)) paidUntil = Math.max(paidUntil ?? 0, payment.periodEnd);
   }
   const activePaid = paidUntil != null && paidUntil > now;
   const trial = user.trialEndsAt > now;
@@ -41,11 +46,14 @@ export function access(user, now) {
     automaticRenewal: false,
   };
 }
-export function checkedPayment(payment, order, { collectorId, liveMode, now }) {
-  if (String(payment.external_reference) !== order.id ||
-      String(payment.collector_id) !== String(collectorId) ||
+export function checkedPayment(payment, order, config) {
+  if (String(payment.external_reference) !== order.id) throw new Error('payment-reference');
+  return checkedPaymentDetails(payment, order.plan, config);
+}
+export function checkedPaymentDetails(payment, plan, { collectorId, liveMode, now }) {
+  if (String(payment.collector_id) !== String(collectorId) ||
       payment.live_mode !== liveMode || payment.currency_id !== 'BRL' ||
-      amountCents(payment.transaction_amount) !== PLANS[order.plan]?.cents) {
+      amountCents(payment.transaction_amount) !== PLANS[plan]?.cents) {
     throw new Error('payment-mismatch');
   }
   const updatedAt = Date.parse(payment.date_last_updated);
@@ -58,6 +66,6 @@ export function checkedPayment(payment, order, { collectorId, liveMode, now }) {
   if (!['approved', 'pending', 'in_process', 'rejected', 'cancelled', 'refunded', 'charged_back', 'in_mediation', 'authorized'].includes(status)) {
     throw new Error('payment-status');
   }
-  return { plan: order.plan, status, updatedAt, approvedAt,
+  return { plan, status, updatedAt, approvedAt,
     refundedCents: amountCents(payment.transaction_amount_refunded ?? 0) };
 }

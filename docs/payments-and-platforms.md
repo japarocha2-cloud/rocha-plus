@@ -12,15 +12,18 @@ A #510 existente permanece beta gratuito: um APK congelado não recebe um bloque
 
 ## Comportamento comercial implementado
 
-- Primeiro acesso confirmado pelo servidor cria um único prazo de sete dias para o UID Firebase.
-- Celular e TVs da mesma conta consultam a mesma validade; sair/reentrar/reinstalar não reinicia o prazo.
-- Após o prazo, o app fecha a navegação privada e solicita assinatura. Abrir um checkout ou voltar dele não libera acesso.
-- Mensal: R$ 4,90 e um mês civil; anual: R$ 55,00 e doze meses civis. Se o usuário comprar durante o teste, os dias gratuitos restantes são preservados.
-- Cada checkout tem uma referência aleatória vinculada no servidor à conta e ao plano. O app não escolhe preço ou UID.
-- Webhook validado pelo SDK oficial Mercado Pago; o servidor consulta o pagamento na API e compara conta recebedora, ambiente, referência, valor e moeda.
-- Duplicatas não renovam novamente. Estorno, contestação ou reembolso parcial retiram a concessão daquele pagamento. Atualizações antigas não readmitem pagamento revogado.
-- Esta etapa vende períodos de acesso: **não há débito automático recorrente**. Renovação depende de novo pagamento; recorrência exige integração e aceite próprios.
-- Não há migração automática de pagamentos antigos dos links genéricos da #510 para uma conta. Havendo compradores anteriores, reconciliar o pagamento e a identidade antes do lançamento.
+O contrato real é uma assinatura recorrente do Mercado Pago, criada pelos links já existentes, conforme a captura enviada por Lucas (adesão mensal em teste grátis, primeira cobrança indicada para 21/out). A produção agora usa `recurring_service.js`, não o protótipo anterior de pagamentos avulsos (`service.js`, mantido apenas para testes históricos). Não se cria outro plano, não se altera o contrato da irmã, nem se cobra dinheiro nesta correção.
+
+- Os links continuam mensal R$ 4,90 → `https://mpago.la/2E7yjF4` e anual R$ 55,00 → `https://mpago.la/2b9hitF`.
+- A consulta autenticada usa UID e e-mail **verificado do token Firebase**. Não aceita e-mail, UID, valor ou identificação de assinatura escolhidos pelo cliente.
+- O servidor procura assinaturas dos dois IDs de plano configurados, consulta os detalhes e confere recebedor, plano, valor, moeda, recorrência, pagador e datas. Uma assinatura com referência externa de outro sistema exige revisão administrativa, não é reassociada silenciosamente.
+- O mesmo e-mail no Google/Firebase e no Mercado Pago permite reconhecer adesões já feitas pelos links da #510. E-mails diferentes exigem prova de identidade e vínculo administrativo; nome, captura ou saber um ID não bastam. Uma assinatura já vinculada a outro UID não pode ser tomada.
+- O primeiro acesso estabelece sete dias. UID e hash do e-mail verificado guardam o prazo no servidor; reinstalar ou recriar UID com o mesmo e-mail não renova. Isso **não impede uma pessoa de usar vários e-mails distintos**.
+- O prazo não é prolongado pela adesão posterior: utiliza a menor data entre o teste registrado e o início original da assinatura. Uma nova `next_payment_date` não vira teste grátis. Não há acesso gratuito adicional, mas a agenda de cobrança existente no Mercado Pago não é alterada: se a pessoa aderir mais tarde a um plano com teste próprio, pode haver intervalo bloqueado até a primeira cobrança. Alinhar cobrança e teste contratual é uma configuração separada que precisa ser conferida no painel real, sem modificar contratos antigos automaticamente.
+- `authorized` indica autorização para recorrência, **não pagamento realizado**. Depois dos sete dias, somente cobrança confirmada na API libera acesso. Cada fatura mensal cobre seu mês civil; a anual cobre doze meses. Não se soma teste novamente a cada fatura.
+- Webhooks aceitam `subscription_preapproval`, `subscription_authorized_payment` e `payment`, validam assinatura com o SDK oficial e consultam os recursos correspondentes. O vínculo fatura → assinatura → UID e pagamento → recebedor/pagador/valor é conferido.
+- Repetir uma notificação ou ter duas cobranças no mesmo ciclo não soma meses. Reembolso/contestação retiram o acesso concedido por aquele pagamento. Cancelamento/pausa interrompem o indicador de renovação; o período já pago continua até vencer, salvo estorno. Atualizações antigas não restauram pagamento/renovação revogados.
+- O cliente mostra quando encontrou a assinatura. Voltar do checkout não libera reprodução. A concessão curta é renovada pelo servidor; expiração fecha player e navegação privada, inclusive Cast.
 
 ## Mesma base por plataforma
 
@@ -28,8 +31,8 @@ A #510 existente permanece beta gratuito: um APK congelado não recebe um bloque
 | --- | --- | --- |
 | Celular Android | Flutter da #510 + bloqueio comercial | Testes automatizados; nova versão ainda depende de servidor e aparelho |
 | Android TV / Google TV / Fire TV | Mesma base Flutter, catálogo, recursos, player e política de acesso | Compatibilidade de login/controle/Cast por aparelho ainda precisa de confirmação |
-| Roku | BrightScript existente reaproveitado, conta pareada, assinatura pelo mesmo UID, catálogo exato e exclusões persistentes | Compilação BrightScript realizada; configuração e teste físico pendentes |
-| LG webOS / Samsung Tizen | Cliente web existente reaproveitado, pareamento e assinatura, favoritos por conta e exclusões persistentes | Testes do adaptador e sintaxe; SDKs de empacotamento e TVs reais pendentes |
+| Roku | BrightScript existente reaproveitado, conta pareada, assinatura pelo mesmo UID, catálogo exato e exclusões editoriais | Compilação BrightScript realizada; configuração e teste físico pendentes |
+| LG webOS / Samsung Tizen | Cliente web existente reaproveitado, pareamento e assinatura, favoritos por conta e exclusões editoriais | Testes do adaptador e sintaxe; SDKs de empacotamento e TVs reais pendentes |
 | Chromecast antigo | Cast do app Android, sem APK próprio | A #510 foi aprovada pelo usuário; o bloqueio comercial tenta encerrar a sessão ao perder acesso |
 
 `catalog/approved.json` e `catalog/quarantine.json` são a fonte única. `tools/sync_platform_baseline.py` exporta os mesmos bytes para Roku e web-TV, verifica evidência e recusa fontes não aprovadas. Não consulta playlists públicas. Nenhum fallback experimental será exportado.
@@ -42,22 +45,22 @@ Código não equivale a serviço publicado. Nenhuma função, cobrança real ou 
 
 1. Usar o **mesmo projeto Firebase** do login da #510, com acesso administrativo e Firestore disponível. Conferir o plano/custos antes de contratar ou ampliar serviços.
 2. No projeto Firebase/Secret Manager, cadastrar `MP_ACCESS_TOKEN` e `MP_WEBHOOK_SECRET` pela interface segura ou Firebase CLI. Nunca colocar esses valores no APK, Git ou conversa.
-3. Configurar parâmetros do servidor: `MP_COLLECTOR_ID`, `MP_NOTIFICATIONS_URL`, `ROCHA_FIREBASE_WEB_API_KEY` (configuração pública do cliente), `MP_LIVE_MODE=false` e `MP_PAYMENTS_ENABLED=false` inicialmente.
+3. Configurar parâmetros do servidor: `MP_COLLECTOR_ID`, `MP_MONTHLY_PLAN_ID`, `MP_ANNUAL_PLAN_ID` (IDs dos planos já existentes), `ROCHA_FIREBASE_WEB_API_KEY` (configuração pública do cliente), `MP_LIVE_MODE=false` e `MP_PAYMENTS_ENABLED=false` inicialmente.
 4. Publicar apenas a nova codebase: `firebase deploy --config firebase.billing.json --only functions:rocha-mercadopago --project PROJETO_CONFIRMADO`. As funções são `mercadoBilling`, `mercadoWebhook` e `rokuPairing`, região `southamerica-east1`.
-5. Conferir as regras Firestore existentes antes de alterá-las. Mesclar os três bloqueios de `billing/firestore.rules` e impedir permissões amplas sobre essas coleções; não substituir regras de favoritos/outros serviços às cegas. O SDK Admin usa IAM.
+5. Conferir as regras Firestore existentes antes de alterá-las. Mesclar os cinco bloqueios de `billing/firestore.rules` e impedir permissões amplas sobre essas coleções; não substituir regras de favoritos/outros serviços às cegas. O SDK Admin usa IAM.
 6. Pareamento requer emissão de custom tokens pelo SDK Admin. Conferir a permissão mínima de assinatura para a identidade da função e a API de autenticação. Não conceder papéis amplos ao aplicativo cliente.
-7. No Mercado Pago, configurar o evento `payment` para a URL publicada de `mercadoWebhook`, e testar com credenciais de teste. Confirmar pagamento, pendência, duplicata e estorno com duas contas.
+7. No Mercado Pago, configurar os eventos `subscription_preapproval`, `subscription_authorized_payment` e `payment` para a URL publicada de `mercadoWebhook`, e testar com credenciais de teste. Confirmar pagamento, pendência, duplicata e estorno com duas contas.
 8. Após essa validação, configurar credenciais/recebedor de produção e habilitar `MP_LIVE_MODE=true` e `MP_PAYMENTS_ENABLED=true`. A compra real é realizada pelo usuário, não pelo agente.
 9. No GitHub, configurar as variáveis públicas `ROCHA_BILLING_API_URL` e `ROCHA_ROKU_PAIRING_ENDPOINT` com as URLs publicadas. O pipeline recusa APK comercial com URL ausente/insegura.
 10. Configurar os clientes Roku/web-TV com `tools/configure_tv_services.py`, incluindo URL HTTPS da introdução original para Roku.
 
-O painel Firebase mostra registros em `rochaBillingUsers` (UID, e-mail verificado, fim do teste, pagamentos e validade) e `rochaBillingPayments` (estado conferido no provedor). A situação atual é calculada comparando a validade com a hora do servidor; uma fotografia antiga de `active` não deve ser interpretada como concessão eterna. Leitura administrativa usa IAM; clientes não podem enumerar assinantes.
+O painel Firebase mostra vínculos exclusivos em `rochaBillingSubscriptions`, prazo compartilhado em `rochaBillingEmailTrials` (somente hash do e-mail) e registros em `rochaBillingUsers` (UID, e-mail verificado, fim do teste, pagamentos e validade) e `rochaBillingPayments` (estado conferido no provedor). A situação atual é calculada comparando a validade com a hora do servidor; uma fotografia antiga de `active` não deve ser interpretada como concessão eterna. Leitura administrativa usa IAM; clientes não podem enumerar assinantes.
 
 ## Testes físicos a executar depois da ativação
 
 - Duas contas: A paga não libera B; reinstalar A não reinicia teste.
 - Avançar o cenário em ambiente de teste do servidor, sem alterar o relógio do aparelho: sete dias acabam e fecham inclusive a rota do player.
-- Pagamento pendente/rejeitado não libera; aprovado libera; duplicado mantém a mesma validade; estornado bloqueia.
+- Adesão `authorized` sem cobrança depois do teste não libera. Confirmar reconhecimento de uma adesão anterior usando o mesmo e-mail verificado. Pagamento pendente/rejeitado não libera; aprovado libera; duplicado mantém a mesma validade; estornado bloqueia.
 - Retorno do checkout atualiza pelo servidor; perda de conexão não transforma acesso desconhecido em assinatura válida.
 - Celular e TV pareada usam o mesmo UID e validade. Verificar controle remoto, introdução com áudio, vídeo/áudio, fullscreen e interrupção de Cast na perda de acesso.
 
@@ -79,3 +82,13 @@ O primeiro comando apenas verifica o resultado previsto. O segundo encurta somen
 Teste físico: entrar com a conta nova e observar o aviso; fechar e entrar novamente para confirmar que não repete; abrir um canal; vencer o prazo com o utilitário; usar “Já paguei / verificar acesso” ou aguardar a consulta periódica (até um minuto); confirmar que vídeo e áudio param, a tela de Assinaturas aparece e Voltar não reabre o player; reinstalar e confirmar que o mesmo UID permanece bloqueado. Pagamento e liberação devem ser verificados separadamente pelo fluxo oficial do Mercado Pago. Não alterar o relógio do celular para esse teste.
 
 Visual do aviso aprovado por Lucas: menino de corpo inteiro fazendo um coração com as mãos, painel escuro com borda dourada, preços mensais/anuais e botão verde. O personagem é um asset com transparência; títulos, valores e botões são widgets reais. O diálogo tem rolagem para telas pequenas. A imagem fictícia inteira não é usada como tela do aplicativo.
+
+## Auditoria real de uma conta já assinante
+
+`billing/tools/check-recurring-account.mjs` é um diagnóstico administrativo somente de leitura: usa o UID informado, consulta o e-mail verificado no Firebase, procura os dois planos configurados, confere faturas e compara o vínculo persistido. Não cancela, cobra, cria assinatura ou grava no Firestore. Requer credencial administrativa já autorizada e `MP_ACCESS_TOKEN` fornecido de forma segura ao processo; nunca colocar o token na linha de comando, no Git ou nesta conversa.
+
+```
+node billing/tools/check-recurring-account.mjs --project PROJECT_ID --uid TEST_UID --collector COLLECTOR_ID --monthly-plan MONTHLY_PLAN_ID --annual-plan ANNUAL_PLAN_ID --live
+```
+
+Nesta correção passaram 27 casos novos de assinaturas recorrentes, além dos testes anteriores. A API do Mercado Pago e as transações Firestore são simuladas nesses testes. A consulta da conta real da irmã e a liberação física do APK continuam pendentes até disponibilizar acesso ao servidor/credenciais; uma captura de adesão não comprova vínculo no Firebase.

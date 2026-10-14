@@ -75,4 +75,17 @@ void main() {
     await controller.refresh();
     expect(controller.allowed, isFalse);
   });
+  test('commercial checkout accepts only the existing Mercado Pago short links', () async {
+    for (final link in ['https://mpago.la/2E7yjF4', 'https://mpago.la/2b9hitF']) {
+      final repository = HttpBillingRepository(endpoint: 'https://example.com/billing',
+        tokenProvider: () async => 'synthetic-token', client: MockClient((_) async =>
+          http.Response(jsonEncode({'checkoutUrl': link}), 200)));
+      expect((await repository.checkout('monthly')).toString(), link);
+    }
+    final invalid = HttpBillingRepository(endpoint: 'https://example.com/billing',
+      tokenProvider: () async => 'synthetic-token', client: MockClient((_) async =>
+        http.Response(jsonEncode({'checkoutUrl': 'https://mpago.la/unknown'}), 200)));
+    await expectLater(invalid.checkout('monthly'), throwsA(isA<BillingFailure>()));
+  });
+
 }

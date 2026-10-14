@@ -24,9 +24,13 @@ class BillingController extends ChangeNotifier {
     if (error != null) return error!;
     if (checking && _grant == null) return 'Confirmando seu acesso…';
     if (_grant?.state == 'trial' && allowed) {
-      return '${_grant!.trialRemainingDays} dia(s) restantes de teste grátis.';
+      final prefix = _grant!.subscriptionLinked ? 'Assinatura encontrada no Mercado Pago. ' : '';
+      return '$prefix${_grant!.trialRemainingDays} dia(s) restantes de teste grátis.';
     }
     if (_grant?.state == 'paid' && allowed) return 'Sua assinatura está ativa.';
+    if (_grant?.subscriptionLinked == true) {
+      return 'Assinatura encontrada no Mercado Pago. Ainda não há cobrança aprovada que libere este período. Verifique seu acesso.';
+    }
     return 'Seu período de acesso terminou. Assine para continuar assistindo.';
   }
   Future<void> initialize() {

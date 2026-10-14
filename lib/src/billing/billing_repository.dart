@@ -12,8 +12,11 @@ class BillingAccess {
   final Duration remaining;
   final int trialRemainingDays;
   final DateTime? expiresAt;
+  final bool subscriptionLinked;
+  final bool automaticRenewal;
   const BillingAccess({required this.active, required this.state,
-    required this.remaining, required this.trialRemainingDays, this.expiresAt});
+    required this.remaining, required this.trialRemainingDays, this.expiresAt,
+    this.subscriptionLinked = false, this.automaticRenewal = false});
   factory BillingAccess.fromJson(Map<String, dynamic> data) {
     final state = data['state'];
     final active = data['active'];
@@ -28,7 +31,8 @@ class BillingAccess {
     }
     return BillingAccess(active: active, state: state as String,
       remaining: Duration(milliseconds: active ? (until as int) - serverTime : 0),
-      trialRemainingDays: days,
+      trialRemainingDays: days, subscriptionLinked: data['recognition'] == 'linked',
+      automaticRenewal: data['automaticRenewal'] == true,
       expiresAt: until is int ? DateTime.fromMillisecondsSinceEpoch(until) : null);
   }
 }
@@ -62,6 +66,12 @@ class HttpBillingRepository implements BillingRepository {
       final response = await client.post(endpoint,
         headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
         body: jsonEncode(body)).timeout(const Duration(seconds: 12));
+      if (response.statusCode == 409) {
+        throw const BillingFailure('Sua assinatura já foi encontrada. Toque em verificar acesso.');
+      }
+      if (response.statusCode == 403) {
+        throw const BillingFailure('Confirme o e-mail do login para vincular sua assinatura.');
+      }
       if (response.statusCode != 200) {
         throw const BillingFailure('Não foi possível confirmar sua assinatura. Tente novamente.');
       }
@@ -94,7 +104,8 @@ class HttpBillingRepository implements BillingRepository {
     final data = await _request({'action': 'checkout', 'plan': plan});
     final uri = Uri.tryParse(data['checkoutUrl'] is String ? data['checkoutUrl'] as String : '');
     if (uri == null || uri.scheme != 'https' || uri.userInfo.isNotEmpty ||
-        !['mercadopago.com.br', 'www.mercadopago.com.br'].contains(uri.host)) {
+        (!['mercadopago.com.br', 'www.mercadopago.com.br'].contains(uri.host) &&
+          !['https://mpago.la/2E7yjF4', 'https://mpago.la/2b9hitF'].contains(uri.toString()))) {
       throw const BillingFailure('Não foi possível abrir o pagamento.');
     }
     return uri;
