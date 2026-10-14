@@ -69,6 +69,28 @@ jobs:
       - name: Verify commercial billing configuration
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/validate_billing_config.py
+      - name: Build visual test APK
+        if: github.event_name == 'push' && github.ref_name == 'feat/mercadopago-trial-20261013'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("android/app/build.gradle.kts")
+          text = path.read_text()
+          text = text.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.visualtest"')
+          path.write_text(text)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text()
+          text = text.replace('android:label="Rocha+"', 'android:label="Rocha+ Visual Test"')
+          manifest.write_text(text)
+          PY
+          flutter build apk --debug
+      - name: Upload visual test APK
+        if: github.event_name == 'push' && github.ref_name == 'feat/mercadopago-trial-20261013'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-visual-test
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
       - name: Build universal APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: flutter build apk --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
