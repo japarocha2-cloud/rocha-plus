@@ -54,8 +54,10 @@ class SparkBillingRepository implements BillingRepository {
 
   Future<Map<String, dynamic>> _read() async {
     final response = await _post('batchGet', {'documents': [_document]});
-    if (response.statusCode != 200) throw const BillingFailure(
-      'Não foi possível confirmar o teste gratuito. Confira a conexão e tente novamente.');
+    if (response.statusCode != 200) {
+      throw const BillingFailure(
+        'Não foi possível confirmar o teste gratuito. Confira a conexão e tente novamente.');
+    }
     final decoded = jsonDecode(response.body);
     if (decoded is! List || decoded.length != 1 || decoded.first is! Map<String, dynamic>) {
       throw const BillingFailure('Resposta de acesso inválida.');
@@ -115,7 +117,7 @@ class SparkBillingRepository implements BillingRepository {
       if (accepted.containsKey('timestampValue')) _time(accepted['timestampValue']);
       final paid = paidUntil != null && paidUntil.isAfter(now);
       final trial = trialEnds.isAfter(now);
-      final until = paid ? paidUntil! : trialEnds;
+      final until = paid ? paidUntil : trialEnds;
       final days = (trialEnds.difference(now).inMilliseconds / Duration.millisecondsPerDay).ceil();
       return BillingAccess(active: paid || trial,
         state: paid ? 'paid' : trial ? 'trial' : 'expired',
