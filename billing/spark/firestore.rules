@@ -27,7 +27,11 @@ service cloud.firestore {
         && request.auth.token.firebase.identities['google.com'][0] == accountId;
     }
     match /rochaSparkAccounts/{accountId} {
-      // Verified admin may inspect a single trial by exact Google subject.\n      // Never allow admin list or writes from the mobile application.\n      allow get: if sparkOwner(accountId) || (request.auth != null\n        && request.auth.token.email_verified == true\n        && request.auth.token.rochaAdmin == true);
+      // Verified admin may inspect a single trial by exact Google subject.
+      // Never allow admin list or writes from the mobile application.
+      allow get: if sparkOwner(accountId) || (request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.rochaAdmin == true);
       allow create: if sparkOwner(accountId)
         && request.resource.data.keys().hasAll(['trialStartedAt', 'welcomeAcceptedAt'])
         && request.resource.data.keys().hasOnly(['trialStartedAt', 'welcomeAcceptedAt'])
