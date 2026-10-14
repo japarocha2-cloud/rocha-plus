@@ -2,7 +2,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { verifyMercadoPagoPayment } = require('./mercadopago_payment_verifier');
-const opts = { accountId: '12345', plan: 'monthly', collectorId: '99', expectedReference: 'rocha-12345-invoice-1' };
+const opts = { accountId: '12345', plan: 'monthly', collectorId: '99', referenceAccountId: '12345', expectedReference: 'rocha-12345-invoice-1' };
 const payment = {
   id: 123, status: 'approved', status_detail: 'accredited', currency_id: 'BRL',
   transaction_amount: 4.90, collector_id: 99, external_reference: opts.expectedReference,
