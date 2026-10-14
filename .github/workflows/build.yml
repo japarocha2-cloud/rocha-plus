@@ -21,8 +21,8 @@ jobs:
     env:
       ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
       ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
-      ROCHA_KEYSTORE_PASSWORD: ${{ ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013')) && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
-      ROCHA_KEY_ALIAS: ${{ ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013')) && secrets.ROCHA_KEY_ALIAS || '' }}
+      ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
+      ROCHA_KEY_ALIAS: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEY_ALIAS || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Prepare signed Firebase build
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         env:
           ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
           ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
@@ -63,47 +63,74 @@ jobs:
         run: flutter test
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
+      - name: Configure isolated visual test app
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle = Path("android/app/build.gradle.kts")
+          text = gradle.read_text()
+          text = text.replace('applicationId = "com.example.rocha_plus"', 'applicationId = "com.rochaplus.visualtest"')
+          text = text.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.visualtest"')
+          gradle.write_text(text)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          if manifest.exists():
+              m = manifest.read_text()
+              m = m.replace('android:label="Rocha+"', 'android:label="Rocha+ Visual Test"')
+              m = m.replace('android:label="rocha_plus"', 'android:label="Rocha+ Visual Test"')
+              manifest.write_text(m)
+          PY
+      - name: Build visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: flutter build apk --debug --dart-define=ROCHA_VISUAL_TEST=true
+      - name: Upload visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-visual-test
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
       - name: Resolve Android version code
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/android_version_code.py
       - name: Verify commercial billing configuration
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/validate_billing_config.py
       - name: Build universal APK
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: flutter build apk --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Build optimized APKs
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: flutter build apk --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
       - name: Build Play Store bundle
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: flutter build appbundle --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Verify release evidence
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/release_evidence.py
       - name: Upload release evidence
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-release-evidence
           path: build/qa/release-evidence.json
           if-no-files-found: error
       - name: Upload universal APK
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-beta-login-universal
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
       - name: Upload ARM64 APK
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-beta-login-arm64
           path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
           if-no-files-found: error
       - name: Upload Play Store AAB
-        if: ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'))
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-beta-login-play-store-aab
@@ -112,7 +139,7 @@ jobs:
       - name: Explain build mode and downloadable artifacts
         if: always()
         env:
-          ROCHA_SIGNED_REQUESTED: ${{ ((github.event_name == 'workflow_dispatch' && inputs.signed_login) || (github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013')) && 'true' || 'false' }}
+          ROCHA_SIGNED_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && 'true' || 'false' }}
         run: |
           if [ "$ROCHA_SIGNED_REQUESTED" = "true" ]; then
             echo "### Rocha+ beta com login Firebase" >> "$GITHUB_STEP_SUMMARY"
