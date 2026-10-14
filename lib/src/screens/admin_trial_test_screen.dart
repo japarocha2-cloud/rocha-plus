@@ -140,6 +140,6 @@ class _AdminTrialTestScreenState extends State<AdminTrialTestScreen> {
           ],
         ),
       ))),
-    )),
+    ),
   );
 }
