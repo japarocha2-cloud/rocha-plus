@@ -31,6 +31,9 @@ class BillingController extends ChangeNotifier {
     if (_grant?.subscriptionLinked == true) {
       return 'Assinatura encontrada no Mercado Pago. Ainda não há cobrança aprovada que libere este período. Verifique seu acesso.';
     }
+    if (_grant?.manualPaymentConfirmation == true) {
+      return 'Seu período de acesso terminou. Nesta versão, a liberação após o pagamento exige confirmação manual.';
+    }
     return 'Seu período de acesso terminou. Assine para continuar assistindo.';
   }
   Future<void> initialize() {

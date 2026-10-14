@@ -15,10 +15,11 @@ class BillingAccess {
   final bool subscriptionLinked;
   final bool automaticRenewal;
   final bool trialWelcomeNoticeAccepted;
+  final bool manualPaymentConfirmation;
   const BillingAccess({required this.active, required this.state,
     required this.remaining, required this.trialRemainingDays, this.expiresAt,
     this.subscriptionLinked = false, this.automaticRenewal = false,
-    this.trialWelcomeNoticeAccepted = false});
+    this.trialWelcomeNoticeAccepted = false, this.manualPaymentConfirmation = false});
   factory BillingAccess.fromJson(Map<String, dynamic> data) {
     final state = data['state'];
     final active = data['active'];

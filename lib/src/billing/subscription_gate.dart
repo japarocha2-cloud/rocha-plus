@@ -8,6 +8,7 @@ import '../screens/subscription_screen.dart';
 import 'billing_controller.dart';
 import 'billing_repository.dart';
 import 'trial_welcome_dialog.dart';
+import 'spark_billing_repository.dart';
 
 class SubscriptionGate extends StatefulWidget {
   final String uid;
@@ -28,7 +29,9 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    controller = BillingController(widget.repository ?? HttpBillingRepository.forAccount(widget.uid));
+    controller = BillingController(widget.repository ?? (SparkBillingRepository.enabled
+      ? SparkBillingRepository.forAccount(widget.uid)
+      : HttpBillingRepository.forAccount(widget.uid)));
     controller.addListener(checkAccess);
     unawaited(controller.initialize());
   }

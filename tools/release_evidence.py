@@ -51,6 +51,8 @@ report = {
     "signing": "production signing configured" if signed_release else "development candidate; production signing not configured",
     "firebase_auth_configured": firebase_release,
     "physical_validation": "pending",
+    "billing_mode": "spark_trial" if os.environ.get("ROCHA_SPARK_TRIAL") == "true" else "http",
+    "automatic_payments": os.environ.get("ROCHA_SPARK_TRIAL") != "true",
     "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
     "outputs": outputs,
 }

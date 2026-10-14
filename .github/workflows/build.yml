@@ -19,6 +19,8 @@ jobs:
   android:
     runs-on: ubuntu-latest
     env:
+      ROCHA_SPARK_TRIAL: ${{ vars.ROCHA_SPARK_TRIAL }}
+      ROCHA_SPARK_FIREBASE_PROJECT_ID: rocha-plus
       ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
       ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
@@ -98,13 +100,13 @@ jobs:
         run: python3 tools/validate_billing_config.py
       - name: Build universal APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build apk --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Build optimized APKs
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
+        run: flutter build apk --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
       - name: Build Play Store bundle
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build appbundle --release --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build appbundle --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Verify release evidence
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/release_evidence.py
@@ -165,6 +167,10 @@ jobs:
           cache-dependency-path: billing/package-lock.json
       - run: npm ci --prefix billing
       - run: npm --prefix billing test
+      - name: Test Spark Firestore access rules
+        run: |
+          npm ci --prefix billing/spark
+          npm --prefix billing/spark test
       - run: npm --prefix billing audit --omit=dev --audit-level=high
       - run: node --test platforms/shared/account.test.js
       - run: python3 tools/sync_platform_baseline.py --check

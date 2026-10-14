@@ -9,3 +9,9 @@ class BillingConfigTests(unittest.TestCase):
     def test_https_services_are_accepted_without_embedding_credentials(self):
         validate({'ROCHA_BILLING_API_URL':'https://project.cloudfunctions.net/mercadoBilling',
                   'ROCHA_ROKU_PAIRING_ENDPOINT':'https://project.cloudfunctions.net/rokuPairing'})
+
+    def test_spark_requires_confirmed_project_and_explicit_mode(self):
+        validate({'ROCHA_SPARK_TRIAL':'true', 'ROCHA_SPARK_FIREBASE_PROJECT_ID':'rocha-plus'})
+        for project in ('', 'other-project'):
+            with self.assertRaises(ValueError):
+                validate({'ROCHA_SPARK_TRIAL':'true', 'ROCHA_SPARK_FIREBASE_PROJECT_ID':project})
