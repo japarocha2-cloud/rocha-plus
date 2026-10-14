@@ -31,3 +31,14 @@ test('rejects malformed payment id', () => assert.equal(
   verifyMercadoPagoPayment({ ...payment, id: 'not-a-payment' }, opts), false));
 test('rejects a different Firebase identity', () => assert.equal(
   verifyMercadoPagoPayment(payment, { ...opts, accountId: '99999' }), false));
+
+test('accepts opaque checkout reference when server owner mapping matches', () => {
+  const opaque = 'checkout_6f2a0eeab93';
+  assert.equal(verifyMercadoPagoPayment(
+    { ...payment, external_reference: opaque },
+    { ...opts, expectedReference: opaque }), true);
+});
+test('rejects server checkout mapping owned by another account', () => {
+  assert.equal(verifyMercadoPagoPayment(payment,
+    { ...opts, referenceAccountId: '99999' }), false);
+});
