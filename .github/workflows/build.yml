@@ -159,8 +159,17 @@ jobs:
           from pathlib import Path
           gradle = Path("android/app/build.gradle.kts")
           s = gradle.read_text()
-          s = s.replace('com.rochaplus.app', 'com.rochaplus.triallab')
-          s = s.replace('com.example.rocha_plus', 'com.rochaplus.triallab')
+          # Keep the Kotlin/Android namespace unchanged: MainActivity lives there.
+          # Change only the install ID so the laboratory APK remains separate.
+          import re
+          s, count = re.subn(
+              r'(applicationId\\s*=\\s*")[^"]+(")',
+              r'\\g<1>com.rochaplus.triallab\\g<2>',
+              s,
+              count=1,
+          )
+          if count != 1:
+              raise RuntimeError("Android applicationId not found")
           gradle.write_text(s)
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           s = manifest.read_text().replace('android:label="Rocha+"', 'android:label="Rocha+ Laboratório"')
