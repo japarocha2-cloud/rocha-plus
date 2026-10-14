@@ -69,7 +69,7 @@ class _TrialWelcomeDialogState extends State<TrialWelcomeDialog>
     if (_closing) return;
     setState(() => _closing = true);
     await _celebration.forward();
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop(true);
   }
 
   Widget _star(double left, double top, double phase, double size) {
@@ -119,10 +119,6 @@ class _TrialWelcomeDialogState extends State<TrialWelcomeDialog>
           child: SingleChildScrollView(
             child: Padding(padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                Align(alignment: Alignment.topRight,
-                  child: IconButton(tooltip: 'Fechar aviso',
-                    onPressed: _closing ? null : () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close, color: RochaColors.silver))),
                 Image.asset('branding/rocha-wordmark-antennas.webp', height: 42,
                   excludeFromSemantics: true),
                 const SizedBox(height: 12),
