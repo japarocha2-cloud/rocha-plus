@@ -51,17 +51,20 @@ void main() {
     expect((await repo.loadBrazilPublicDirectory()).single.name, 'OK');
   });
 
-  test('rejected URL survives a fresh repository and session reset', () async {
+  test('playback errors and legacy failure cache cannot hide approved channels', () async {
     final entries = [approved('Canal', 'https://example.com/live')];
+    SharedPreferences.setMockInitialValues({
+      'rocha_rejected_channel_urls_v1': ['https://example.com/live'],
+    });
     final first = repository(entries);
     await first.loadBrazilPublicDirectory();
     await first.reportPlaybackFailure('https://example.com/live');
     ChannelRepository.resetSessionHealthForTests();
     final second = repository(entries);
-    expect(await second.loadBrazilPublicDirectory(), isEmpty);
+    expect((await second.loadBrazilPublicDirectory()).single.name, 'Canal');
     second.reportPlaybackSuccess('https://example.com/live');
     await second.restoreUserBlockedChannels();
-    expect(await second.loadBrazilPublicDirectory(forceRefresh: true), isEmpty);
+    expect((await second.loadBrazilPublicDirectory(forceRefresh: true)).single.name, 'Canal');
   });
 
   test('concurrent loads share asset reads and preserve the original URL', () async {

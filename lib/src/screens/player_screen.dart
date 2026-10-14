@@ -82,8 +82,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _onPlayerChanged();
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
-      unawaited(_channelRepository.reportPlaybackFailure(widget.channel.url)
-          .catchError((Object _) { debugPrint('Não foi possível persistir a exclusão do sinal.'); }));
       await controller.dispose();
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
@@ -97,8 +95,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (controller == null || !mounted || _failed) return;
     final value = controller.value;
     if (value.hasError) {
-      unawaited(_channelRepository.reportPlaybackFailure(widget.channel.url)
-          .catchError((Object _) { debugPrint('Não foi possível persistir a exclusão do sinal.'); }));
       setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
       return;
     }

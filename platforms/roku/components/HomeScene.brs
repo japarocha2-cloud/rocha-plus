@@ -8,8 +8,6 @@ sub init()
   m.channelIndex = 0
   m.playing = false
   m.registry = CreateObject("roRegistrySection", "RochaPlus")
-  m.rejectedUrls = ParseJson(m.registry.Read("rejected_channel_urls_v1"))
-  if type(m.rejectedUrls) <> "roArray" then m.rejectedUrls = []
   m.favorites = ParseJson(m.registry.Read("favorites"))
   if m.favorites = invalid then m.favorites = []
   m.allChannels = []
@@ -110,7 +108,7 @@ sub loadApprovedCatalogue()
       isApproved = (item.approved = true and item.status = "approved")
       if isApproved and item.blocked <> true and item.quarantined <> true then
         if type(item.url) = "roString" and type(item.name) = "roString" then
-          if (left(item.url, 8) = "https://" and not isRejected(item.url)) and instr(1, lcase(item.url), ".m3u8") > 0 then
+          if (left(item.url, 8) = "https://") and instr(1, lcase(item.url), ".m3u8") > 0 then
             m.channels.push(item)
             m.approvedCount = m.approvedCount + 1
           end if
@@ -198,8 +196,7 @@ sub onVideoStateChanged()
   if state = "playing" then
     m.timer.control = "stop"
   else if state = "error" then
-    m.status.text = "Falha de reprodução. Canal removido deste aparelho."
-    rejectSelectedChannel()
+    m.status.text = "Falha de reprodução. Tente abrir o canal novamente."
     stopPlayback()
   else if state = "buffering" then
     m.timer.control = "start"
@@ -211,7 +208,6 @@ end sub
 sub onVideoError()
   if m.playing
     m.status.text = "Erro no canal selecionado."
-    rejectSelectedChannel()
     stopPlayback()
   end if
 end sub
@@ -263,27 +259,6 @@ sub filterCategory(category as integer)
  m.channels = filtered
  m.channelIndex = 0
  renderChannelState()
-end sub
-
-function isRejected(url as string) as boolean
- for each rejected in m.rejectedUrls
-  if rejected = url then return true
- end for
- return false
-end function
-sub rejectSelectedChannel()
- if m.channels.count() = 0 then return
- url = m.channels[m.channelIndex].url
- if not isRejected(url) then m.rejectedUrls.push(url)
- m.registry.Write("rejected_channel_urls_v1",FormatJson(m.rejectedUrls))
- m.registry.Flush()
- available = []
- for each item in m.allChannels
-  if not isRejected(item.url) then available.push(item)
- end for
- m.allChannels = available
- m.channels = available
- m.channelIndex = 0
 end sub
 
 sub initIntro()

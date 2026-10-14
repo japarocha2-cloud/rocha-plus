@@ -17,14 +17,13 @@ menu.forEach((b,i)=>b.addEventListener('click',()=>{zone='menu';menuIndex=i;focu
 let approvedChannels=[];
 let experimentalMode=false;
 const categories={'FUTEBOL AO VIVO':'Esportes','NOITE DE CINEMA':'TV ao Vivo','MUNDO INFANTIL':'Infantil','NOTÍCIAS AGORA':'Notícias','Início':'TV ao Vivo'};
-const rejectedUrls=new Set(JSON.parse(localStorage.getItem('rocha_rejected_channel_urls_v1')||'[]'));
 let account=null;
 let favoriteUrls=new Set();
 function safeChannel(entry){
   if(!entry||typeof entry.name!=='string'||!entry.name.trim()||typeof entry.url!=='string')return false;
   try{const u=new URL(entry.url);const e=entry.evidence;
     return u.protocol==='https:'&&!u.username&&!u.password&&entry.approved===true&&entry.status==='approved'&&
-      !entry.blocked&&!entry.quarantined&&!rejectedUrls.has(entry.url)&&e&&e.decoded_seconds>=29&&
+      !entry.blocked&&!entry.quarantined&&e&&e.decoded_seconds>=29&&
       typeof e.video_codec==='string'&&e.video_codec&&typeof e.audio_codec==='string'&&e.audio_codec;
   }catch{return false;}
 }
@@ -34,12 +33,8 @@ async function loadApproved(){
     approvedChannels=Array.isArray(data)?data.filter(safeChannel):[];
   }catch(_){approvedChannels=[];showStatus('Catálogo indisponível.');}
 }
-function rejectPlaying(){
-  const url=document.getElementById('channel-player').dataset.channelUrl;
-  if(!url)return;rejectedUrls.add(url);
-  localStorage.setItem('rocha_rejected_channel_urls_v1',JSON.stringify([...rejectedUrls]));
-  approvedChannels=approvedChannels.filter(c=>!rejectedUrls.has(c.url));
-  closePlayer();showStatus('Este canal foi removido deste aparelho após falha.');
+function playbackFailed(){
+  closePlayer();showStatus('Não foi possível reproduzir. Tente abrir o canal novamente.');
 }
 function toggleFavorite(item){
   if(!account||!account.allowed)return;
@@ -69,7 +64,7 @@ function playApproved(item){
 }
 function closePlayer(){const v=document.getElementById('channel-player');v.pause();v.removeAttribute('src');v.load();document.getElementById('player-shell').hidden=true;zone='channels';focusZone()}
 document.getElementById('close-player').addEventListener('click',closePlayer);
-document.getElementById('channel-player').addEventListener('error',rejectPlaying);
+document.getElementById('channel-player').addEventListener('error',playbackFailed);
 (async()=>{
   try{const config=await(await fetch('config.json')).json();
     account=new RochaAccount(config,{onChange:event=>{
