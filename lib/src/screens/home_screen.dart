@@ -371,23 +371,48 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             padding: EdgeInsets.fromLTRB(5, selected == page % 3 ? 0 : 20,
               5, selected == page % 3 ? 0 : 20),
             child: switch (page % 3) {
-              0 => _FeatureCategory(
-                key: const ValueKey('feature-sports'),
-                icon: Icons.sports_soccer_outlined,
-                label: 'Esportes ao vivo',
-                onTap: () => widget.onOpen('Esportes')),
-              1 => _OfficialHero(wide: widget.wide,
-                onWatch: () => widget.onOpen('TV ao Vivo')),
-              _ => _FeatureCategory(
-                key: const ValueKey('feature-kids'),
-                icon: Icons.toys_outlined,
-                label: 'Espaço infantil',
-                onTap: () => widget.onOpen('Infantil')),
+              0 => const _SponsoredPlaceholder(
+                key: ValueKey('sponsor-slot-1'),
+                title: 'Sua marca aqui', icon: Icons.campaign_outlined),
+              1 => const _SponsoredPlaceholder(
+                key: ValueKey('sponsor-slot-2'),
+                title: 'Publicidade Rocha+', icon: Icons.stars_outlined),
+              _ => const _SponsoredPlaceholder(
+                key: ValueKey('sponsor-slot-3'),
+                title: 'Divulgue seu negócio', icon: Icons.storefront_outlined),
             },
           ),
         ),
       ))),
   ]);
+}
+
+
+/// Advertising inventory only. No category navigation or third-party redirect.
+class _SponsoredPlaceholder extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  const _SponsoredPlaceholder({super.key, required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(18),
+      gradient: const LinearGradient(begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
+      border: Border.all(color: RochaColors.gold.withValues(alpha: .65))),
+    child: Padding(padding: const EdgeInsets.all(22),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(icon, size: 58, color: RochaColors.gold),
+        const SizedBox(height: 22),
+        Text(title, textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 12),
+        const Text('Espaço publicitário', textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white70, fontSize: 13)),
+      ])),
+  );
 }
 
 class _FeatureCategory extends StatelessWidget {
