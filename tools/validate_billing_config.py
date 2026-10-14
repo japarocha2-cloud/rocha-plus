@@ -10,6 +10,9 @@ def valid_endpoint(value):
             and uri.hostname not in {'localhost', 'example.com', 'example.invalid'})
 
 def validate(values):
+    # A cross-device release must not split the trial between Spark and billing service.
+    if values.get('ROCHA_UNIFIED_RELEASE') == 'true' and values.get('ROCHA_SPARK_TRIAL') == 'true':
+        raise ValueError('Unified Android/TV release requires server billing; Spark trial cannot be mixed with TV')
     if values.get('ROCHA_SPARK_TRIAL') == 'true':
         if values.get('ROCHA_SPARK_FIREBASE_PROJECT_ID') != 'rocha-plus':
             raise ValueError('Spark requires the confirmed rocha-plus Firebase project')
