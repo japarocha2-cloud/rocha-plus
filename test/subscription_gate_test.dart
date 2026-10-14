@@ -50,9 +50,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Você ganhou 7 dias grátis!'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    await tester.ensureVisible(find.text('Começar a assistir'));
-    await tester.tap(find.text('Começar a assistir'));
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.ensureVisible(find.text('Continuar'));
+    await tester.tap(find.text('Continuar'));
+    await tester.pump(const Duration(milliseconds: 1200));
     await tester.pumpWidget(const SizedBox());
     await tester.pumpWidget(gate());
     await tester.pump(const Duration(milliseconds: 500));
