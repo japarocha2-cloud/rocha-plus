@@ -33,13 +33,13 @@ class _TrialWelcomeDialogState extends State<TrialWelcomeDialog>
     );
 
     _jump = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: -14)
+      TweenSequenceItem(tween: Tween<double>(begin: 0, end: -14)
           .chain(CurveTween(curve: Curves.easeOut)), weight: 12),
-      TweenSequenceItem(tween: Tween(begin: -14, end: 0)
+      TweenSequenceItem(tween: Tween<double>(begin: -14, end: 0)
           .chain(CurveTween(curve: Curves.easeIn)), weight: 12),
-      TweenSequenceItem(tween: Tween(begin: 0, end: -11)
+      TweenSequenceItem(tween: Tween<double>(begin: 0, end: -11)
           .chain(CurveTween(curve: Curves.easeOut)), weight: 12),
-      TweenSequenceItem(tween: Tween(begin: -11, end: 0)
+      TweenSequenceItem(tween: Tween<double>(begin: -11, end: 0)
           .chain(CurveTween(curve: Curves.easeIn)), weight: 12),
       TweenSequenceItem(tween: ConstantTween(0), weight: 52),
     ]).animate(_celebration);
