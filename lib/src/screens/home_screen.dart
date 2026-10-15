@@ -13,6 +13,7 @@ import 'live_tv_screen.dart';
 import 'news_screen.dart';
 import 'player_screen.dart';
 import 'subscription_screen.dart';
+import '../ads/ganhebr_destination.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
@@ -382,9 +383,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
                 icon: Icons.toys_outlined, label: 'Espaço infantil',
                 onTap: () => widget.onOpen('Infantil')),
             } : switch (page % 3) {
-              0 => const _SponsoredPlaceholder(
-                key: ValueKey('sponsor-slot-1'),
-                title: 'Sua marca aqui', icon: Icons.campaign_outlined),
+              0 => const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
               1 => const _SponsoredPlaceholder(
                 key: ValueKey('sponsor-slot-2'),
                 title: 'Publicidade Rocha+', icon: Icons.stars_outlined),
@@ -399,7 +398,61 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 }
 
 
-/// Advertising inventory only. No category navigation or third-party redirect.
+/// Mobile-only test banner, displayed only in the phone carousel.
+class _BauTestBanner extends StatelessWidget {
+  const _BauTestBanner({super.key});
+
+  Future<void> _open(BuildContext context) async {
+    final adult = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Publicidade externa'),
+        content: const Text('Você confirma que tem 18 anos ou mais e deseja visitar o site do anunciante?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Confirmar 18+')),
+        ],
+      ),
+    );
+    if (adult != true) return;
+    final launched = await openGanheBrBanner(
+      verifiedAdult: adult == true, mobilePhoneLayout: true);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Não foi possível abrir a página do anunciante.')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: const Color(0xFF100B22),
+    borderRadius: BorderRadius.circular(18),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () => _open(context),
+      child: Container(
+        key: const ValueKey('bau-test-banner'),
+        decoration: BoxDecoration(
+          border: Border.all(color: RochaColors.gold.withValues(alpha: .75)),
+          borderRadius: BorderRadius.circular(18),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
+        ),
+        child: const SizedBox.expand(
+          child: Image(
+            image: AssetImage('branding/ads/bau.png'),
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Other advertising placeholders. No external redirect.
 class _SponsoredPlaceholder extends StatelessWidget {
   final String title;
   final IconData icon;

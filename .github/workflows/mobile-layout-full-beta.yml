@@ -5,6 +5,7 @@ on:
     branches:
       - feat/mobile-home-layout-20261014
       - fix/mobile-category-cover-fit-20261015
+      - feat/mobile-ganhebr-link-20261015
     paths:
       - '.github/workflows/mobile-layout-full-beta.yml'
       - 'branding/categories/mobile/**'
