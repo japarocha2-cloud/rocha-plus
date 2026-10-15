@@ -71,3 +71,19 @@ sozinho a validade usada pelo APK Spark.
 
 O teste de laboratório de dois minutos não substitui a confirmação de bloqueio
 persistente após reabrir, reinstalar e trocar de aparelho.
+
+## Diagnóstico da credencial de teste
+
+O usuário criou a aplicação de Assinaturas e cadastrou a credencial de teste
+como `MP_TEST_ACCESS_TOKEN` nos Secrets do repositório. O job
+`sandbox-credentials` faz somente `GET https://api.mercadopago.com/users/me`
+e compara o ID com o vendedor sandbox exibido no painel desta aplicação.
+Ele não imprime token, cabeçalhos ou corpo da resposta, não cria pagamentos
+e não acessa o Firebase. Recusa credencial de outra conta e não interpreta
+autenticação bem-sucedida como pagamento aprovado.
+
+O segredo só é disponibilizado a esse passo em eventos push da branch
+`feat/spark-payment-confirmation-20261015` no repositório Rocha+; não é enviado
+a jobs de pull requests. Não há instalação de dependências nesse job.
+`test-seller-authenticated` comprova apenas acesso à conta de teste esperada.
+O teste completo de assinatura e a liberação física continuam separados.

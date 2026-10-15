@@ -32,3 +32,20 @@ jobs:
       - name: Verify recurring billing and administrative Spark confirmation
         working-directory: billing
         run: npm test
+
+  sandbox-credentials:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/spark-payment-confirmation-20261015' && github.repository == 'japarocha2-cloud/rocha-plus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Authenticate only the configured Mercado Pago test seller (read-only)
+        env:
+          MP_TEST_ACCESS_TOKEN: ${{ secrets.MP_TEST_ACCESS_TOKEN }}
+          MP_EXPECTED_TEST_SELLER_ID: '3717765439'
+        run: node backend/mercadopago_sandbox_check.js
