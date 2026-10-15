@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'backend/**'
+      - 'billing/**'
       - '.github/workflows/payment-verification.yml'
   pull_request:
     paths:
       - 'backend/**'
+      - 'billing/**'
       - '.github/workflows/payment-verification.yml'
   workflow_dispatch:
 
@@ -24,3 +26,9 @@ jobs:
           node-version: '22'
       - name: Run server-side payment verification tests
         run: node --test backend/*.test.js
+      - name: Install billing dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify recurring billing and administrative Spark confirmation
+        working-directory: billing
+        run: npm test
