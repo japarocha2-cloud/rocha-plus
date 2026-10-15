@@ -418,7 +418,7 @@ class _GanheBrTestBanner extends StatelessWidget {
     );
     if (adult != true) return;
     final launched = await openGanheBrBanner(
-      verifiedAdult: adult, mobilePhoneLayout: true);
+      verifiedAdult: adult == true, mobilePhoneLayout: true);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Não foi possível abrir a página do anunciante.')));
