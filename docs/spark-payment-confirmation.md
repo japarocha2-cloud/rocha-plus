@@ -82,8 +82,18 @@ Ele não imprime token, cabeçalhos ou corpo da resposta, não cria pagamentos
 e não acessa o Firebase. Recusa credencial de outra conta e não interpreta
 autenticação bem-sucedida como pagamento aprovado.
 
-O segredo só é disponibilizado a esse passo em eventos push da branch
+O segredo só é disponibilizado aos passos sandbox em eventos push da branch
 `feat/spark-payment-confirmation-20261015` no repositório Rocha+; não é enviado
 a jobs de pull requests. Não há instalação de dependências nesse job.
 `test-seller-authenticated` comprova apenas acesso à conta de teste esperada.
 O teste completo de assinatura e a liberação física continuam separados.
+
+Após autenticar o vendedor sandbox exato, o próximo passo pesquisa um plano
+de teste identificado como `Rocha Plus - TESTE SANDBOX mensal`. Reutiliza o
+plano existente após conferir valor, moeda, recorrência, recebedor e URL. Se
+não existe, cria somente esse template na conta sandbox, sem cartão, cobrança
+ou assinatura. Um grupo de concorrência impede duas execuções simultâneas.
+O preço de teste é R$ 4,90/mês, sem novo período gratuito; a URL de retorno
+aponta ao repositório Rocha+ somente neste checkout de laboratório. Os planos
+e links comerciais existentes não são alterados. O checkout retornado pelo
+provedor será usado com o comprador e cartão de teste pelo usuário.
