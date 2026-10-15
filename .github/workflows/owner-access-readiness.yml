@@ -1,0 +1,56 @@
+name: Rocha+ Owner Access Readiness
+on:
+  push:
+    branches:
+      - feat/spark-payment-confirmation-20261015
+    paths:
+      - '.github/workflows/owner-access-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  owner-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Firebase Admin
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify owner identity and existing Spark account, read-only
+        working-directory: billing
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {cert, initializeApp} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          import {getFirestore} from 'firebase-admin/firestore';
+          try {
+            const key=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'null');
+            if(key?.type!=='service_account'||key.project_id!=='rocha-plus') throw Error('credential');
+            initializeApp({credential:cert(key),projectId:'rocha-plus'});
+            const user=await getAuth().getUserByEmail('japarocha2@gmail.com');
+            const google=user.providerData?.filter(p=>p.providerId==='google.com');
+            if(user.disabled || !user.emailVerified || google?.length!==1 ||
+               !/^\d{1,128}$/.test(google[0].uid||'')) throw Error('identity');
+            const db=getFirestore();
+            const subject=google[0].uid;
+            const snap=await db.doc('rochaSparkAccounts/'+subject).get();
+            if(!snap.exists||!Number.isFinite(snap.data()?.trialStartedAt?.toMillis?.())) throw Error('spark-account');
+            const projection=await db.doc('rochaSparkBillingProjections/'+subject).get();
+            const paid=snap.data()?.paidUntil;
+            const state=projection.data();
+            if(state && paid?.toMillis?.()!==state.lastPaidUntil) throw Error('projection-review');
+            console.log(JSON.stringify({ok:true,readOnly:true,ownerVerified:true,sparkAccountFound:true,
+              billingProjectionExists:projection.exists}));
+          } catch (_) {
+            console.log(JSON.stringify({ok:false,readOnly:true,code:'owner-readiness-not-confirmed'}));
+            process.exitCode=1;
+          }
+          NODE
