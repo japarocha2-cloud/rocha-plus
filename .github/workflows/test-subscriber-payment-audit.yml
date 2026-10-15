@@ -1,0 +1,28 @@
+name: Rocha+ Test Subscriber Payment Audit
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/test-subscriber-payment-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-subscriber-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/spark-payment-confirmation-20261015
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked billing dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Read-only Firebase and Mercado Pago account cross-check
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node billing/tools/audit-test-subscriber.mjs
