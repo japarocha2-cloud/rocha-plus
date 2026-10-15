@@ -1,8 +1,8 @@
-"""Keep Android update ordering above historical device builds (e.g. 2465)."""
+"""Keep Android update ordering above historical device builds (including 3538)."""
 import os
 from pathlib import Path
 
-VERSION_CODE_BASE = 3000
+VERSION_CODE_BASE = 4000
 MAX_VERSION_CODE = 2_100_000_000
 
 def resolve_version_code(run_number):
