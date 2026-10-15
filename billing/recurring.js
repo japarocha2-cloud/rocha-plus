@@ -5,7 +5,8 @@ export const LINKS = Object.freeze({ monthly: 'https://mpago.la/2E7yjF4', annual
 export function checkedSchedule(schedule, plan) {
   if (!schedule || schedule.currency_id !== 'BRL' ||
       amountCents(schedule.transaction_amount) !== PLANS[plan]?.cents ||
-      schedule.frequency_type !== 'months' || schedule.frequency !== PLANS[plan]?.months) {
+      !((schedule.frequency_type === 'months' && schedule.frequency === PLANS[plan]?.months) ||
+        (plan === 'annual' && schedule.frequency_type === 'years' && schedule.frequency === 1))) {
     throw new Error('subscription-schedule');
   }
 }

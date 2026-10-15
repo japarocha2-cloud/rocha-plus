@@ -8,6 +8,8 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { createStore } from './store.js';
 import { createProvider } from './provider.js';
 import { createRecurringService } from './recurring_service.js';
+import { createSparkRecurringStore } from './spark_recurring_store.js';
+import { Timestamp } from 'firebase-admin/firestore';
 initializeApp();
 const accessToken = defineSecret('MP_ACCESS_TOKEN');
 const webhookSecret = defineSecret('MP_WEBHOOK_SECRET');
@@ -16,10 +18,14 @@ const monthlyPlanId = defineString('MP_MONTHLY_PLAN_ID', { default: '' });
 const annualPlanId = defineString('MP_ANNUAL_PLAN_ID', { default: '' });
 const liveMode = defineBoolean('MP_LIVE_MODE', { default: false });
 const paymentsEnabled = defineBoolean('MP_PAYMENTS_ENABLED', { default: false });
+const sparkSyncEnabled = defineBoolean('ROCHA_SPARK_PAYMENT_SYNC', { default: false });
 function service() {
   const provider = createProvider({ accessToken: accessToken.value(),
     webhookSecret: webhookSecret.value() });
-  return createRecurringService({ store: createStore(getFirestore()), provider,
+  const store = sparkSyncEnabled.value() ? createSparkRecurringStore({ db: getFirestore(), auth: getAuth(),
+    collectorId: collectorId.value(), liveMode: liveMode.value(), timestamp: time => Timestamp.fromMillis(time) })
+    : createStore(getFirestore());
+  return createRecurringService({ store, provider, projectAccess: store.project,
     verifySignature: provider.verifySignature,
     verifyIdentity: (token, revoked) => getAuth().verifyIdToken(token, revoked),
     collectorId: collectorId.value(), planIds: { monthly: monthlyPlanId.value(), annual: annualPlanId.value() }, liveMode: liveMode.value(), paymentsEnabled: paymentsEnabled.value() });
