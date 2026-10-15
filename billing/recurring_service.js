@@ -2,7 +2,8 @@ import { access, addMonths, PLANS } from './policy.js';
 import { checkedPlan, checkedSubscription, checkedRecurringPayment, LINKS,
   normalizeEmail, recurringStatus, subscriptionIdValid } from './recurring.js';
 export function createRecurringService({ store, provider, verifyIdentity, verifySignature,
-  collectorId, planIds, liveMode = false, paymentsEnabled = false, now = Date.now }) {
+  collectorId, planIds, liveMode = false, paymentsEnabled = false, now = Date.now,
+  projectAccess = async () => {} }) {
   const config = time => ({ collectorId, planIds, liveMode, now: time });
   const configured = () => collectorId && Object.keys(PLANS).every(p => subscriptionIdValid(planIds?.[p]))
     && planIds.monthly !== planIds.annual;
@@ -24,7 +25,8 @@ export function createRecurringService({ store, provider, verifyIdentity, verify
       const payment = await provider.payment(paymentId);
       if (String(payment.id) !== paymentId) throw new Error('payment-resource');
       await store.apply({ id: subscription.id, uid: owner.uid, plan: subscription.plan }, paymentId,
-        checkedRecurringPayment(invoice, payment, subscription, config(time)), time);
+        { ...checkedRecurringPayment(invoice, payment, subscription, config(time)),
+          verifiedCollectorId: String(collectorId), verifiedLiveMode: liveMode }, time);
     }
   }
   async function syncKnown(value, owner, time, invoices) {
@@ -58,6 +60,7 @@ export function createRecurringService({ store, provider, verifyIdentity, verify
         await applyInvoices(subscription, { uid }, time, await provider.invoices(subscription.id));
       }
     }
+    await projectAccess(uid, time);
     return store.user(uid, time, email || null);
   }
   async function handle({ method, authorization, body }) {
@@ -116,9 +119,16 @@ export function createRecurringService({ store, provider, verifyIdentity, verify
         const value = await provider.subscription(id);
         if (value.id !== id) throw new Error('subscription-resource');
         await syncKnown(value, owner, time, invoices?.filter(i => i.preapproval_id === id));
+        await projectAccess(owner.uid, time);
       }
       return { status: 200, body: { received: true } };
     } catch (_) { return { status: 503, body: { error: 'notification-unavailable' } }; }
   }
-  return { handle, webhook };
+  // Trusted server runner only; never routed from an HTTP body. The caller must
+  // resolve identities with Firebase Admin before invoking this method.
+  async function reconcileAccount(uid, email) {
+    if (!uid || !normalizeEmail(email) || !configured()) throw new Error('subscriptions-not-configured');
+    return reconcile(uid, normalizeEmail(email), now());
+  }
+  return { handle, webhook, reconcileAccount };
 }

@@ -1,5 +1,9 @@
 # Confirmação administrativa de pagamento no APK Spark
 
+A preparação da sincronização automática recorrente está descrita em
+[spark-automatic-payments.md](spark-automatic-payments.md). O comando deste
+documento permanece administrativo, separado da automação e de sua ativação.
+
 O APK 4005 aprovado permanece congelado. Ele já lê `paidUntil` em
 `rochaSparkAccounts/{googleSubject}`. O comando abaixo permite registrar uma
 fatura realmente paga nesse documento, após conferência administrativa na API
@@ -65,9 +69,9 @@ estornos posteriores nem acompanha novas cobranças. Não é suficiente para
 anunciar desbloqueio automático ou comercializar sem operação administrativa.
 Automação depende de acesso Mercado Pago, credenciais, webhook publicado,
 reconciliação de renovação/estorno e uma autoridade comum para Spark e TVs.
-O serviço recorrente existente em `billing/recurring_service.js` deve ser
-reaproveitado nessa etapa; ele ainda grava outra coleção e não sincroniza
-sozinho a validade usada pelo APK Spark.
+O serviço recorrente em `billing/recurring_service.js` foi reaproveitado na ponte
+opcional descrita acima. A sincronização depende da ativação explícita e de
+execução confiável; o serviço antigo isoladamente ainda grava outra coleção.
 
 O teste de laboratório de dois minutos não substitui a confirmação de bloqueio
 persistente após reabrir, reinstalar e trocar de aparelho.
