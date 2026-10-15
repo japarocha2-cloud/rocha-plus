@@ -1,4 +1,5 @@
 name: Rocha+ Spark Payment Readiness (read-only)
+# Read-only diagnostic: never pass --apply in this workflow.
 on:
   push:
     branches:
