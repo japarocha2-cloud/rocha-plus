@@ -12,11 +12,10 @@ const millis = value => value?.toMillis?.() ?? (value instanceof Date ? value.ge
 
 try {
   const { values } = parseArgs({ options: {
-    project: { type: 'string' }, uid: { type: 'string' },
+    project: { type: 'string' },
     apply: { type: 'boolean', default: false },
   } });
-  if (values.project !== 'rocha-plus' || !values.uid ||
-      !/^[A-Za-z0-9_-]{1,128}$/.test(values.uid)) throw Error('configuration');
+  if (values.project !== 'rocha-plus') throw Error('configuration');
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   if (!raw) throw Error('secret-unavailable');
   const key = JSON.parse(raw);
@@ -25,9 +24,9 @@ try {
       !key.client_email?.endsWith('@rocha-plus.iam.gserviceaccount.com')) throw Error('invalid-secret');
   initializeApp({ credential: cert(key), projectId: values.project });
   const auth = getAuth(), db = getFirestore();
-  const user = await auth.getUser(values.uid);
+  const user = await auth.getUserByEmail(OWNER_EMAIL);
   const google = user.providerData?.filter(p => p.providerId === 'google.com');
-  if (user.disabled || !user.emailVerified ||
+  if (!user.uid || user.disabled || !user.emailVerified ||
       user.email?.trim().toLowerCase() !== OWNER_EMAIL ||
       google?.length !== 1 || !/^\d{1,128}$/.test(google[0].uid ?? '')) {
     throw Error('verified-owner-identity-required');
