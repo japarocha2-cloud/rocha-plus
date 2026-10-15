@@ -12,13 +12,16 @@ async function verifySandboxReceipt({ token, sellerId, buyerId, paymentId, reque
       method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000),
       headers: { Authorization: `Bearer ${token.trim()}`, Accept: 'application/json' },
     });
-    if (response.status !== 200) return failure;
+    if (response.status !== 200) return { ...failure, code: 'sandbox-payment-api-unavailable',
+      httpStatus: Number.isInteger(response.status) ? response.status : null };
     const p = await response.json();
-    if (String(p?.id) !== paymentId || String(p.collector_id) !== sellerId ||
-        String(p.payer?.id) !== buyerId || p.live_mode !== false || p.status !== 'approved' ||
-        p.currency_id !== 'BRL' || Number(p.transaction_amount) !== 4.9 ||
-        Number(p.transaction_amount_refunded) !== 0 || !p.date_approved ||
-        !Number.isFinite(Date.parse(p.date_approved))) return failure;
+    const checks = { paymentMatches: String(p?.id) === paymentId,
+      sellerMatches: String(p?.collector_id) === sellerId, buyerMatches: String(p?.payer?.id) === buyerId,
+      sandboxMode: p?.live_mode === false, approved: p?.status === 'approved',
+      currencyMatches: p?.currency_id === 'BRL', amountMatches: Number(p?.transaction_amount) === 4.9,
+      unrefunded: Number(p?.transaction_amount_refunded) === 0,
+      approvalDateValid: !!p?.date_approved && Number.isFinite(Date.parse(p.date_approved)) };
+    if (!Object.values(checks).every(Boolean)) return { ...failure, checks };
     return { ok: true, code: 'sandbox-payment-approved', readOnly: true,
       paymentId, amount: 4.9, currency: 'BRL', liveMode: false, appAccessGranted: false };
   } catch (_) { return failure; }
