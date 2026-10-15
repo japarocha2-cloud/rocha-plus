@@ -135,3 +135,19 @@ test('unscoped legacy ledger cannot be projected without provider reconciliation
   delete f.db.data.get('rochaBillingUsers/' + userKey('A')).payments['123'].verifiedCollectorId;
   await assert.rejects(f.store.project('A', now), /verification-scope/);
 });
+
+test('expired approved billing cycle never grants current access', async () => {
+  const f = fixture();
+  const old = now - 70 * 86400000;
+  f.invoice.debit_date = new Date(old).toISOString();
+  f.payment.date_approved = new Date(old).toISOString();
+  f.payment.date_last_updated = new Date(old).toISOString();
+  await f.run();
+  assert.ok(f.paid() === undefined || f.paid() <= now);
+});
+
+test('sandbox seller cannot unlock an existing real account', async () => {
+  const f = fixture({ collectorId: '3717765439' });
+  await assert.rejects(f.run(), /production-required/);
+  assert.equal(f.paid(), undefined);
+});
