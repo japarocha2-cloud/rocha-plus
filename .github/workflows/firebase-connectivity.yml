@@ -49,7 +49,7 @@ jobs:
               return;
             }
             try {
-              await getFirestore().doc('rochaSparkAccounts/__connectivity_probe_nonexistent__').get();
+              await getFirestore().doc('rochaSparkAccounts/connectivityProbeMissing20261015').get();
             } catch(e) {
               console.log(JSON.stringify({ok:false,readOnly:true,stage:'firestore',code:e.code || 'firestore-permission-or-api-error'}));
               process.exitCode=1;
