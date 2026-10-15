@@ -31,18 +31,22 @@ jobs:
           import {cert, initializeApp} from 'firebase-admin/app';
           import {getAuth} from 'firebase-admin/auth';
           import {getFirestore} from 'firebase-admin/firestore';
+          let stage='credential';
           try {
             const key=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'null');
             if(key?.type!=='service_account'||key.project_id!=='rocha-plus') throw Error('credential');
             initializeApp({credential:cert(key),projectId:'rocha-plus'});
+            stage='owner-identity';
             const user=await getAuth().getUserByEmail('japarocha2@gmail.com');
             const google=user.providerData?.filter(p=>p.providerId==='google.com');
             if(user.disabled || !user.emailVerified || google?.length!==1 ||
                !/^\d{1,128}$/.test(google[0].uid||'')) throw Error('identity');
             const db=getFirestore();
             const subject=google[0].uid;
+            stage='spark-account';
             const snap=await db.doc('rochaSparkAccounts/'+subject).get();
             if(!snap.exists||!Number.isFinite(snap.data()?.trialStartedAt?.toMillis?.())) throw Error('spark-account');
+            stage='billing-projection';
             const projection=await db.doc('rochaSparkBillingProjections/'+subject).get();
             const paid=snap.data()?.paidUntil;
             const state=projection.data();
@@ -50,7 +54,7 @@ jobs:
             console.log(JSON.stringify({ok:true,readOnly:true,ownerVerified:true,sparkAccountFound:true,
               billingProjectionExists:projection.exists}));
           } catch (_) {
-            console.log(JSON.stringify({ok:false,readOnly:true,code:'owner-readiness-not-confirmed'}));
+            console.log(JSON.stringify({ok:false,readOnly:true,code:'owner-readiness-not-confirmed',stage}));
             process.exitCode=1;
           }
           NODE
