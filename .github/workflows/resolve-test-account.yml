@@ -19,6 +19,7 @@ jobs:
         working-directory: billing
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify configured test identity without modifying data
+        working-directory: billing
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: |
