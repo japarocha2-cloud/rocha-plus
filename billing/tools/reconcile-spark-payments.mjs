@@ -9,6 +9,7 @@ import { checkedPlan, subscriptionIdValid } from '../recurring.js';
 import { createRecurringService } from '../recurring_service.js';
 import { createSparkRecurringStore, sparkIdentity } from '../spark_recurring_store.js';
 
+let stage = 'configuration';
 try {
   const { values } = parseArgs({ options: { project: { type: 'string' }, uid: { type: 'string' },
     all: { type: 'boolean', default: false }, apply: { type: 'boolean', default: false },
@@ -18,6 +19,7 @@ try {
       !!values.uid === values.all || !Object.values(planIds).every(subscriptionIdValid) ||
       planIds.monthly === planIds.annual || !process.env.MP_ACCESS_TOKEN?.trim()) throw Error('configuration');
   const token = process.env.MP_ACCESS_TOKEN.trim();
+  stage = 'merchant';
   const response = await fetch('https://api.mercadopago.com/users/me', {
     method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000),
     headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } });
@@ -27,7 +29,10 @@ try {
       merchant.tags?.includes('test_user')) throw Error('merchant');
   const provider = createProvider({ accessToken: token, webhookSecret: '' });
   const config = { collectorId: values.collector, liveMode: true, planIds, now: Date.now() };
-  for (const plan of Object.keys(planIds)) checkedPlan(await provider.plan(planIds[plan]), plan, config);
+  for (const plan of Object.keys(planIds)) {
+    stage = 'plan-' + plan;
+    checkedPlan(await provider.plan(planIds[plan]), plan, config);
+  }
   // A GitHub Actions secret may supply the service account without writing its key to disk.
   // Never print credentials or service-account fields in logs.
   let firebaseCredential = applicationDefault();
@@ -44,6 +49,7 @@ try {
     }
     firebaseCredential = cert(serviceAccount);
   }
+  stage = 'firebase-initialize';
   initializeApp({ credential: firebaseCredential, projectId: values.project });
   const auth = getAuth(), db = getFirestore();
   const store = createSparkRecurringStore({ db, auth, collectorId: values.collector,
@@ -59,6 +65,7 @@ try {
       if (values.apply) { await service.reconcileAccount(uid, identity.email); counts.reconciled++; }
     } catch (_) { counts.notConfirmed++; }
   }
+  stage = 'account-readiness';
   if (values.uid) await visit(values.uid);
   else {
     let pageToken;
@@ -79,5 +86,5 @@ try {
   if (counts.notConfirmed) process.exitCode = 1;
 } catch (_) {
   // A failure may follow partial commits. Never claim the database is unchanged.
-  console.error(JSON.stringify({ code: 'spark-reconciliation-not-confirmed' })); process.exitCode = 1;
+  console.error(JSON.stringify({ code: 'spark-reconciliation-not-confirmed', stage, readOnly: !process.argv.includes('--apply') })); process.exitCode = 1;
 }
