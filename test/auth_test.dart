@@ -16,6 +16,7 @@ class FakeAuth extends AuthRepository {
   LoginFailure? initializationFailure;
   LoginFailure? signInFailure;
   bool logoutFails = false;
+  Completer<void>? signOutGate;
   int attempts = 0;
   Completer<void>? gate;
   @override
@@ -43,6 +44,7 @@ class FakeAuth extends AuthRepository {
   }
   @override
   Future<void> signOut() async {
+    if (signOutGate != null) await signOutGate!.future;
     if (logoutFails) throw StateError('network');
     changes.add(null);
   }
@@ -119,6 +121,19 @@ void main() {
     expect(controller.error, isNotNull);
     repository.logoutFails = false;
     await controller.signOut();
+    expect(controller.account, isNull);
+  });
+  test('sign-out immediately revokes access and ignores late provider events', () async {
+    repository.initial = const AuthAccount(uid: 'A');
+    await initialize(controller);
+    repository.signOutGate = Completer<void>();
+    final pending = controller.signOut();
+    expect(controller.account, isNull);
+    repository.changes.add(const AuthAccount(uid: 'A'));
+    await Future<void>.delayed(Duration.zero);
+    expect(controller.account, isNull);
+    repository.signOutGate!.complete();
+    await pending;
     expect(controller.account, isNull);
   });
   testWidgets('login has no guest bypass and errors stay on login', (tester) async {
