@@ -188,6 +188,23 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     }
   });
+  testWidgets('lease deadline removes player while the next server reply is delayed', (tester) async {
+    final r = ControlledBilling()..response = grant(remaining: const Duration(seconds: 5));
+    await tester.pumpWidget(gate('A', r));
+    await settle(tester);
+    Navigator.of(tester.element(find.byType(HomeScreen))).push(
+      MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Private player'))));
+    await settle(tester);
+    r.response = null;
+    await tester.pump(const Duration(seconds: 5));
+    await settle(tester);
+    expect(find.text('Private player'), findsNothing);
+    noCheckoutOrHome();
+    r.requests.single.complete(grant(state: 'expired'));
+    await settle(tester);
+    expect(find.byType(SubscriptionScreen), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('resume refresh removes nested player when expired', (tester) async {
     final r = ControlledBilling()..response = grant(state: 'paid');
     await tester.pumpWidget(gate('A', r));
