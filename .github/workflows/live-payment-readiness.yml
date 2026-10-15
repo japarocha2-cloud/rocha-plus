@@ -55,3 +55,31 @@ jobs:
             break;
           }
           NODE
+
+      - name: Inspect official monthly plan checkout and permitted payment methods (read-only)
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+        run: |
+          node --input-type=module <<'NODE'
+          const response = await fetch('https://api.mercadopago.com/preapproval_plan/search?limit=100&offset=0',
+            {headers:{Authorization:'Bearer '+process.env.MP_ACCESS_TOKEN,Accept:'application/json'},
+             redirect:'error',signal:AbortSignal.timeout(20000)});
+          if(!response.ok) throw Error('plan-search-not-confirmed');
+          const page=await response.json();
+          const matches=page.results?.filter(p=>p.id==='0b66f85cf2914aa88b9f1eadfa8b81a9');
+          if(matches?.length!==1 || String(matches[0].collector_id)!=='1981204845') throw Error('plan-not-confirmed');
+          const plan=matches[0];
+          let checkout=null;
+          if(plan.init_point) {
+            const url=new URL(plan.init_point);
+            if(url.protocol==='https:' &&
+               ['www.mercadopago.com.br','mercadopago.com.br'].includes(url.hostname) &&
+               url.searchParams.get('preapproval_plan_id')===plan.id) checkout=url.href;
+          }
+          const a=plan.auto_recurring||{};
+          console.log(JSON.stringify({readOnly:true,status:plan.status,
+            amount:a.transaction_amount,currency:a.currency_id,frequency:a.frequency,
+            frequencyType:a.frequency_type,freeTrial:a.free_trial??null,
+            paymentMethodsAllowed:plan.payment_methods_allowed??null,
+            officialMonthlyCheckout:checkout}));
+          NODE
