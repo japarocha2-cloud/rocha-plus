@@ -46,10 +46,21 @@ try {
       }
       const old = doc.data().paidUntil;
       if (old != null && !Number.isFinite(millis(old))) throw Error('invalid-paid-until');
-      // Any externally changed projection needs review, never silently overwrite.
-      const state = (await tx.get(db.doc('rochaSparkBillingProjections/' + google[0].uid))).data();
-      if (state && (millis(old) !== state.lastPaidUntil)) throw Error('billing-projection-review-required');
-      tx.update(ref, { paidUntil: Timestamp.fromMillis(Math.max(millis(old) || 0, EXPIRY)) });
+      // Keep an existing billing projection consistent with the administrative grant.
+      // Never overwrite an externally modified paidUntil or change a subscription ledger.
+      const projectionRef = db.doc('rochaSparkBillingProjections/' + google[0].uid);
+      const state = (await tx.get(projectionRef)).data();
+      const currentMillis = old == null ? null : millis(old);
+      if (state && (state.googleSubject !== google[0].uid || state.uid !== user.uid ||
+          currentMillis !== state.lastPaidUntil)) throw Error('billing-projection-review-required');
+      const target = Math.max(currentMillis || 0, EXPIRY);
+      tx.update(ref, { paidUntil: Timestamp.fromMillis(target) });
+      if (state) {
+        tx.update(projectionRef, {
+          baselinePaidUntil: Math.max(state.baselinePaidUntil || 0, target),
+          lastPaidUntil: target,
+        });
+      }
     });
   }
   console.log(JSON.stringify({ ok:true, mode: values.apply ? 'owner-access-applied' : 'owner-readiness',
