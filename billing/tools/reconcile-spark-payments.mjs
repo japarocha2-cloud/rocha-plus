@@ -33,7 +33,21 @@ try {
     stage = 'plan-fetch-' + plan;
     const commercialPlan = await provider.plan(planIds[plan]);
     stage = 'plan-validate-' + plan;
-    checkedPlan(commercialPlan, plan, config);
+    try { checkedPlan(commercialPlan, plan, config); }
+    catch (_) {
+      const s = commercialPlan?.auto_recurring;
+      const issues = {
+        id: commercialPlan?.id !== planIds[plan],
+        collector: String(commercialPlan?.collector_id) !== String(config.collectorId),
+        status: commercialPlan?.status !== 'active',
+        schedule: !s || s.currency_id !== 'BRL' ||
+          Number(s.transaction_amount) !== (plan === 'monthly' ? 4.9 : 55) ||
+          !((s.frequency_type === 'months' && Number(s.frequency) === (plan === 'monthly' ? 1 : 12)) ||
+             (plan === 'annual' && s.frequency_type === 'years' && Number(s.frequency) === 1))
+      };
+      console.error(JSON.stringify({code:'commercial-plan-mismatch',plan,issues,readOnly:true}));
+      throw Error('plan-validation');
+    }
   }
   // A GitHub Actions secret may supply the service account without writing its key to disk.
   // Never print credentials or service-account fields in logs.
