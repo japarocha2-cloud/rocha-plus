@@ -57,3 +57,10 @@ jobs:
           MP_TEST_ACCESS_TOKEN: ${{ secrets.MP_TEST_ACCESS_TOKEN }}
           MP_EXPECTED_TEST_SELLER_ID: '3717765439'
         run: node backend/mercadopago_sandbox_checkout.js
+      - name: Verify the completed sandbox payment (read-only, no app unlock)
+        env:
+          MP_TEST_ACCESS_TOKEN: ${{ secrets.MP_TEST_ACCESS_TOKEN }}
+          MP_EXPECTED_TEST_SELLER_ID: '3717765439'
+          MP_EXPECTED_TEST_BUYER_ID: '3717765441'
+          MP_TEST_PAYMENT_ID: '184246702490'
+        run: node backend/mercadopago_sandbox_receipt.js
