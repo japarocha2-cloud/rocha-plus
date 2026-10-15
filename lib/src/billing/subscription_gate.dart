@@ -161,7 +161,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   Widget accessScreen(BuildContext context) {
     // No grant is not an expired grant: never show checkout while resolving
     // authentication, server time, trial creation or a failed status request.
-    if (controller.access == null) {
+    if (controller.access == null || (controller.checking && !controller.allowed)) {
       return Scaffold(key: const ValueKey('access-verification'),
         body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           if (controller.error == null) const CircularProgressIndicator(),

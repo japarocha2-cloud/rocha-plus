@@ -119,6 +119,20 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets('expired checkout is hidden while payment status is rechecked', (tester) async {
+    final r = ControlledBilling()..response = grant(state: 'expired');
+    await tester.pumpWidget(gate('A', r));
+    await settle(tester);
+    expect(find.byType(SubscriptionScreen), findsOneWidget);
+    r.response = null;
+    await tester.tap(find.text('Já paguei / verificar acesso'));
+    await settle(tester);
+    noCheckoutOrHome();
+    r.requests.single.complete(grant(state: 'paid'));
+    await settle(tester);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('late account A response cannot grant B access on same gate', (tester) async {
     final a = ControlledBilling(), b = ControlledBilling();
     await tester.pumpWidget(gate('A', a));
