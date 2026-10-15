@@ -383,7 +383,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
                 icon: Icons.toys_outlined, label: 'Espaço infantil',
                 onTap: () => widget.onOpen('Infantil')),
             } : switch (page % 3) {
-              0 => const _GanheBrTestBanner(key: ValueKey('sponsor-slot-1')),
+              0 => const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
               1 => const _SponsoredPlaceholder(
                 key: ValueKey('sponsor-slot-2'),
                 title: 'Publicidade Rocha+', icon: Icons.stars_outlined),
@@ -399,8 +399,8 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 
 
 /// Mobile-only test banner, displayed only in the phone carousel.
-class _GanheBrTestBanner extends StatelessWidget {
-  const _GanheBrTestBanner({super.key});
+class _BauTestBanner extends StatelessWidget {
+  const _BauTestBanner({super.key});
 
   Future<void> _open(BuildContext context) async {
     final adult = await showDialog<bool>(
@@ -433,7 +433,7 @@ class _GanheBrTestBanner extends StatelessWidget {
     child: InkWell(
       onTap: () => _open(context),
       child: Container(
-        key: const ValueKey('ganhebr-test-banner'),
+        key: const ValueKey('bau-test-banner'),
         decoration: BoxDecoration(
           border: Border.all(color: RochaColors.gold.withValues(alpha: .75)),
           borderRadius: BorderRadius.circular(18),
@@ -447,7 +447,7 @@ class _GanheBrTestBanner extends StatelessWidget {
             const Icon(Icons.campaign_outlined, color: RochaColors.gold, size: 52),
             const SizedBox(height: 16),
             const FittedBox(fit: BoxFit.scaleDown,
-              child: Text('GanheBR', style: TextStyle(
+              child: Text('Baú', style: TextStyle(
                 fontSize: 34, fontWeight: FontWeight.w900))),
             const SizedBox(height: 9),
             const Text('Publicidade', textAlign: TextAlign.center,
