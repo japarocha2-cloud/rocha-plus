@@ -7,6 +7,10 @@ on:
       - fix/mobile-category-cover-fit-20261015
     paths:
       - '.github/workflows/mobile-layout-full-beta.yml'
+      - 'branding/categories/mobile/**'
+      - 'lib/src/screens/home_screen.dart'
+      - 'pubspec.yaml'
+      - 'test/mobile_category*'
   workflow_dispatch:
 permissions:
   contents: read
@@ -57,7 +61,7 @@ jobs:
           python3 - <<'PY'
           import os
           from pathlib import Path
-          code = max(4006, 4000 + int(os.environ['GITHUB_RUN_NUMBER']))
+          code = max(4007, 4000 + int(os.environ['GITHUB_RUN_NUMBER']))
           with Path(os.environ['GITHUB_ENV']).open('a') as output:
               output.write(f'ROCHA_ANDROID_VERSION_CODE={code}\n')
           print(f'Category fit candidate versionCode: {code}')

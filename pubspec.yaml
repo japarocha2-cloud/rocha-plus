@@ -37,6 +37,7 @@ flutter:
     - branding/categories/esportes.webp
     - branding/categories/infantil.webp
     - branding/categories/noticias.webp
+    - branding/categories/mobile/
     - branding/rocha-wordmark-antennas.webp
     - catalog/approved.json
     - catalog/quarantine.json

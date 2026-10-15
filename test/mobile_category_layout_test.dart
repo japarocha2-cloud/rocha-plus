@@ -26,6 +26,12 @@ void main() {
           find.byKey(ValueKey('category-$category')), 150,
           scrollable: scroll);
         expect(find.byKey(ValueKey('category-$category')), findsOneWidget);
+        final cover = tester.widget<Image>(find.descendant(
+          of: find.byKey(ValueKey('category-$category')),
+          matching: find.byType(Image)).first);
+        expect((cover.image as AssetImage).assetName,
+          startsWith('branding/categories/mobile/'));
+
       }
       final first = tester.getTopLeft(find.byKey(const ValueKey('category-TV ao Vivo')));
       final last = tester.getTopLeft(find.byKey(const ValueKey('category-Notícias')));
