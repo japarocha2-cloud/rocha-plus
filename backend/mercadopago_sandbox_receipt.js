@@ -5,6 +5,9 @@ const { checkSandboxCredentials } = require('./mercadopago_sandbox_check');
 async function verifySandboxReceipt({ token, sellerId, buyerId, paymentId, request = fetch }) {
   const failure = { ok: false, code: 'sandbox-payment-not-confirmed', readOnly: true };
   if (![sellerId, buyerId, paymentId].every(id => typeof id === 'string' && /^\d{1,30}$/.test(id))) return failure;
+  // Identities verified in this application's Test Accounts panel. Subscriptions use
+  // production-style credentials of TEST accounts; live_mode alone is not a test-account identity.
+  if (sellerId !== '3717765439' || buyerId !== '3717765441') return failure;
   const auth = await checkSandboxCredentials({ token, expectedSellerId: sellerId, request });
   if (!auth.ok) return auth;
   try {
@@ -17,13 +20,14 @@ async function verifySandboxReceipt({ token, sellerId, buyerId, paymentId, reque
     const p = await response.json();
     const checks = { paymentMatches: String(p?.id) === paymentId,
       sellerMatches: String(p?.collector_id) === sellerId, buyerMatches: String(p?.payer?.id) === buyerId,
-      sandboxMode: p?.live_mode === false, approved: p?.status === 'approved',
+      providerModePresent: typeof p?.live_mode === 'boolean', approved: p?.status === 'approved',
       currencyMatches: p?.currency_id === 'BRL', amountMatches: Number(p?.transaction_amount) === 4.9,
       unrefunded: Number(p?.transaction_amount_refunded) === 0,
       approvalDateValid: !!p?.date_approved && Number.isFinite(Date.parse(p.date_approved)) };
     if (!Object.values(checks).every(Boolean)) return { ...failure, checks };
     return { ok: true, code: 'sandbox-payment-approved', readOnly: true,
-      paymentId, amount: 4.9, currency: 'BRL', liveMode: false, appAccessGranted: false };
+      paymentId, amount: 4.9, currency: 'BRL', testAccounts: true,
+      providerLiveMode: p.live_mode, appAccessGranted: false };
   } catch (_) { return failure; }
 }
 module.exports = { verifySandboxReceipt };
