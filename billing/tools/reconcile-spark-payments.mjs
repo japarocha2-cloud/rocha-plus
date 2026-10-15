@@ -30,8 +30,10 @@ try {
   const provider = createProvider({ accessToken: token, webhookSecret: '' });
   const config = { collectorId: values.collector, liveMode: true, planIds, now: Date.now() };
   for (const plan of Object.keys(planIds)) {
-    stage = 'plan-' + plan;
-    checkedPlan(await provider.plan(planIds[plan]), plan, config);
+    stage = 'plan-fetch-' + plan;
+    const commercialPlan = await provider.plan(planIds[plan]);
+    stage = 'plan-validate-' + plan;
+    checkedPlan(commercialPlan, plan, config);
   }
   // A GitHub Actions secret may supply the service account without writing its key to disk.
   // Never print credentials or service-account fields in logs.
