@@ -64,3 +64,41 @@ jobs:
           MP_EXPECTED_TEST_BUYER_ID: '3717765441'
           MP_TEST_PAYMENT_ID: '184246702490'
         run: node backend/mercadopago_sandbox_receipt.js
+
+  production-credentials:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/spark-payment-confirmation-20261015' && github.repository == 'japarocha2-cloud/rocha-plus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify production merchant credentials (read-only)
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+        run: |
+          node <<'NODE'
+          (async () => {
+            const fail = code => { console.log(JSON.stringify({ok: false, code, readOnly: true})); process.exitCode = 1; };
+            const token = process.env.MP_ACCESS_TOKEN?.trim();
+            if (!token) return fail('missing-production-secret');
+            if (/\s/.test(token)) return fail('invalid-production-secret');
+            let response;
+            try {
+              response = await fetch('https://api.mercadopago.com/users/me', {
+                method: 'GET', redirect: 'error', signal: AbortSignal.timeout(15000),
+                headers: {Authorization: 'Bearer ' + token, Accept: 'application/json'}
+              });
+            } catch (_) { return fail('provider-unreachable'); }
+            if (response.status === 401 || response.status === 403) return fail('credentials-rejected');
+            if (response.status !== 200) return fail('provider-unavailable');
+            let merchant;
+            try { merchant = await response.json(); }
+            catch (_) { return fail('invalid-provider-response'); }
+            if (String(merchant?.id) !== '1981204845' || merchant?.site_id !== 'MLB' ||
+                !Array.isArray(merchant?.tags) || merchant.tags.includes('test_user')) {
+              return fail('production-merchant-not-confirmed');
+            }
+            console.log(JSON.stringify({ok: true, code: 'production-merchant-authenticated', readOnly: true}));
+          })().catch(() => { console.log(JSON.stringify({ok: false, code: 'check-unavailable', readOnly: true})); process.exitCode = 1; });
+          NODE
