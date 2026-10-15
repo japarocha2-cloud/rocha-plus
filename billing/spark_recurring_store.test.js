@@ -171,3 +171,12 @@ test('simulated full payment lifecycle unlocks then revokes without changing fav
   assert.equal(f.paid(), 0);
   assert.deepEqual(f.db.data.get('users/A/favorites/channel'), favoritesBefore);
 });
+
+test('administrative owner is never modified by the payment projection', async () => {
+  const f = fixture();
+  f.account.email = 'japarocha2@gmail.com';
+  const previous = new Date('2099-01-01T00:00:00Z');
+  f.db.data.get(f.sparkPath).paidUntil = previous;
+  await assert.rejects(f.run(), /owner-exempt/);
+  assert.equal(f.paid(), previous.getTime());
+});
