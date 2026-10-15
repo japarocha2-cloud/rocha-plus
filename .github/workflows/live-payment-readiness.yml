@@ -83,3 +83,34 @@ jobs:
             paymentMethodsAllowed:plan.payment_methods_allowed??null,
             officialMonthlyCheckout:checkout}));
           NODE
+
+      - name: Inspect recent pilot payment results without exposing payment or card IDs
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+        run: |
+          node --input-type=module <<'NODE'
+          try {
+            const url=new URL('https://api.mercadopago.com/v1/payments/search');
+            for(const [key,value] of Object.entries({sort:'date_created',criteria:'desc',
+              range:'date_created',begin_date:'NOW-1HOURS',end_date:'NOW',limit:'50',offset:'0',
+              'collector.id':'1981204845'})) url.searchParams.set(key,value);
+            const response=await fetch(url,{headers:{Authorization:'Bearer '+process.env.MP_ACCESS_TOKEN,Accept:'application/json'},
+              redirect:'error',signal:AbortSignal.timeout(20000)});
+            if(!response.ok) throw Error('payment-search-unavailable');
+            const page=await response.json();
+            if(!Array.isArray(page.results)) throw Error('invalid-result');
+            const matched=page.results.filter(p=>
+              String(p.collector_id)==='1981204845' &&
+              p.payer?.email?.trim().toLowerCase()==='andressarocha9706@gmail.com' &&
+              Number(p.transaction_amount)===4.9 && p.currency_id==='BRL');
+            console.log(JSON.stringify({readOnly:true,window:'last-hour',
+              complete:Number(page.paging?.total??Infinity)<=50,pilotPaymentCount:matched.length,
+              payments:matched.map(p=>({status:p.status,statusDetail:p.status_detail,
+                amount:p.transaction_amount,currency:p.currency_id,liveMode:p.live_mode,
+                createdAt:p.date_created,titleMatchesMonthlyPlan:
+                String(p.description??'').toLowerCase().includes('rocha')}))}));
+          } catch (_) {
+            console.log(JSON.stringify({readOnly:true,code:'pilot-payment-results-not-confirmed'}));
+            process.exitCode=1;
+          }
+          NODE
