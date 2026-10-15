@@ -10,3 +10,8 @@ test('owner account is excluded from the runner', () => {
   assert.ok(src.includes('identity.email ==='));
   assert.ok(src.includes('counts.skipped++'));
 });
+
+test('production write requires matching Firebase UID confirmation', () => {
+  assert.ok(src.includes("values['confirm-uid'] !== values.uid"));
+  assert.ok(src.includes('uid-confirmation-required'));
+});
