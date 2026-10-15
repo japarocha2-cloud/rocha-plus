@@ -23,4 +23,17 @@ void main() {
       codec.dispose();
     }
   });
+  test('mobile portrait covers match card proportions and have high resolution', () async {
+    for (final name in ['tv_ao_vivo', 'esportes', 'infantil', 'noticias']) {
+      final data = await rootBundle.load('branding/categories/mobile/$name.png');
+      final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+      final frame = await codec.getNextFrame();
+      expect(frame.image.width, greaterThanOrEqualTo(820));
+      expect(frame.image.height, greaterThanOrEqualTo(1000));
+      expect(frame.image.width / frame.image.height, closeTo(.82, .003));
+      frame.image.dispose();
+      codec.dispose();
+    }
+  });
+
 }

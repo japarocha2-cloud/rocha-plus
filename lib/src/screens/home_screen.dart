@@ -217,7 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
-                  label: item.$1, icon: item.$2, onTap: () => _open(item.$1));
+                  label: item.$1, icon: item.$2, mobileArtwork: !wide,
+                  onTap: () => _open(item.$1));
               })),
           if (saved.isNotEmpty) SliverToBoxAdapter(child:
             _row('Minha Lista', saved, () => _open('Favoritos'))),
@@ -525,27 +526,36 @@ class _NavItem extends StatelessWidget {
 }
 
 class _CategoryCard extends StatefulWidget {
+  final bool mobileArtwork;
   final String label;
   final IconData icon;
   final VoidCallback onTap;
-  const _CategoryCard({super.key, required this.label, required this.icon, required this.onTap});
+  const _CategoryCard({super.key, required this.label, required this.icon,
+    required this.onTap, this.mobileArtwork = false});
   @override
   State<_CategoryCard> createState() => _CategoryCardState();
 }
 class _CategoryCardState extends State<_CategoryCard> {
   bool focused = false;
-  // Visual assets are optional until added to the mobile-only asset bundle.
-  // This never changes channel artwork, channel URLs, or player behavior.
-  String? get _coverAsset => switch (widget.label) {
-    'TV ao Vivo' => 'branding/categories/tv_ao_vivo.webp',
-    'Esportes' => 'branding/categories/esportes.webp',
-    'Infantil' => 'branding/categories/infantil.webp',
-    'Notícias' => 'branding/categories/noticias.webp',
-    _ => null,
-  };
+  // Phone-only portrait assets match the existing .82 card ratio.
+  // Wide layouts keep their original landscape artwork.
+  String? get _coverAsset {
+    final name = switch (widget.label) {
+      'TV ao Vivo' => 'tv_ao_vivo',
+      'Esportes' => 'esportes',
+      'Infantil' => 'infantil',
+      'Notícias' => 'noticias',
+      _ => null,
+    };
+    if (name == null) return null;
+    return widget.mobileArtwork
+      ? 'branding/categories/mobile/$name.png'
+      : 'branding/categories/$name.webp';
+  }
   @override
   Widget build(BuildContext context) => AnimatedContainer(
     duration: const Duration(milliseconds: 130),
+    clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),
       gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
         colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
@@ -555,7 +565,9 @@ class _CategoryCardState extends State<_CategoryCard> {
     child: InkWell(onTap: widget.onTap, borderRadius: BorderRadius.circular(14),
       onFocusChange: (v) => setState(() => focused = v),
       child: Stack(fit: StackFit.expand, children: [
-        if (_coverAsset != null) Image.asset(_coverAsset!, fit: BoxFit.cover,
+        // Portrait artwork fills phone buttons without letterboxing.
+        if (_coverAsset != null) Image.asset(_coverAsset!,
+          fit: widget.mobileArtwork ? BoxFit.cover : BoxFit.contain,
           errorBuilder: (_, __, ___) => const SizedBox.shrink()),
         const DecoratedBox(decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topCenter,
