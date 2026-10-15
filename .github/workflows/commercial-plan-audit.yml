@@ -44,8 +44,8 @@ jobs:
               for(const p of page) {
                 if(String(p.collector_id)!=='1981204845') continue;
                 const a=p.auto_recurring||{};
-                if (a.frequency_type==='months' && (Number(a.frequency)===1 || Number(a.frequency)===12)) {
-                  matched.push({id:p.id,periodMonths:Number(a.frequency),amount:a.transaction_amount,currency:a.currency_id,status:p.status,description:p.reason});
+                if ((a.frequency_type==='months' && [1,12].includes(Number(a.frequency))) || (a.frequency_type==='years' && Number(a.frequency)===1)) {
+                  matched.push({id:p.id,periodMonths:a.frequency_type==='years'?12:Number(a.frequency),periodUnit:a.frequency_type,amount:a.transaction_amount,currency:a.currency_id,status:p.status,description:p.reason});
                 }
               }
               count+=page.length;offset+=page.length;
