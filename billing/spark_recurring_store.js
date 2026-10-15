@@ -23,7 +23,9 @@ export function createSparkProjection({ db, auth, collectorId, liveMode,
     // These are the actual merchant and project-specific test accounts. A test
     // account payment may have live_mode=true, so that flag alone is insufficient.
     if (String(collectorId) !== '1981204845' || liveMode !== true || !Number.isFinite(now)) fail('production-required');
-    const { subject } = await sparkIdentity(auth, uid);
+    const { subject, email } = await sparkIdentity(auth, uid);
+    // An administrative entitlement is never managed by the payment projection.
+    if (email === 'japarocha2@gmail.com') fail('owner-exempt');
     return db.runTransaction(async tx => {
       const sparkRef = db.doc('rochaSparkAccounts/' + subject);
       const stateRef = db.doc('rochaSparkBillingProjections/' + subject);
