@@ -1,0 +1,46 @@
+name: Rocha+ Single Account Payment Diagnosis
+
+on:
+  workflow_dispatch:
+    inputs:
+      firebase_uid:
+        description: 'Firebase Auth UID of the test subscriber (never a password or token)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose-one-account:
+    if: github.repository == 'japarocha2-cloud/rocha-plus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout verified payment branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/spark-payment-confirmation-20261015
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked billing dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Diagnose one Firebase account without writes
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          TARGET_UID: ${{ inputs.firebase_uid }}
+        run: |
+          if [[ ! "$TARGET_UID" =~ ^[a-zA-Z0-9_-]{1,128}$ ]]; then
+            echo 'Invalid Firebase UID format'
+            exit 1
+          fi
+          node billing/tools/reconcile-spark-payments.mjs \
+            --project rocha-plus \
+            --uid "$TARGET_UID" \
+            --collector 1981204845 \
+            --monthly-plan 0b66f85cf2914aa88b9f1eadfa8b81a9 \
+            --annual-plan bb0c2c90ff3d45a6a8203b69fbabf871
