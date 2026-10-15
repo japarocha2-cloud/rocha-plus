@@ -1,4 +1,5 @@
 name: Rocha+ Layout Full Beta
+# Rebuild after Android versionCode downgrade fix (installed 3538).
 on:
   push:
     branches:
