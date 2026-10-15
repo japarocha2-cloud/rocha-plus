@@ -23,6 +23,7 @@ jobs:
           node <<'NODE'
           const { createPrivateKey } = require('node:crypto');
           const fail = code => { console.log(JSON.stringify({ok:false,code,readOnly:true})); process.exitCode=1; };
+          function main() {
           try {
             const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
             if (!raw) return fail('missing-firebase-admin-secret');
@@ -41,4 +42,6 @@ jobs:
           } catch (_) {
             fail('firebase-admin-secret-invalid');
           }
+          }
+          main();
           NODE
