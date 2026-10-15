@@ -1,9 +1,10 @@
 name: Rocha+ Layout Full Beta
-# Rebuild after Android versionCode downgrade fix (installed 3538).
+# Separate signed candidate for the category artwork fit correction.
 on:
   push:
     branches:
       - feat/mobile-home-layout-20261014
+      - fix/mobile-category-cover-fit-20261015
     paths:
       - '.github/workflows/mobile-layout-full-beta.yml'
   workflow_dispatch:
@@ -50,8 +51,17 @@ jobs:
         run: flutter test test/mobile_category_layout_test.dart test/home_featured_carousel_test.dart test/mobile_category_assets_test.dart
       - name: Verify channel/favorite regressions
         run: flutter test test/channel_card_regression_test.dart test/channel_repository_health_test.dart test/favorites_account_isolation_test.dart
-      - name: Configure version code
-        run: python3 tools/android_version_code.py
+      - name: Configure version code above frozen APK 4005
+        run: |
+          python3 tools/android_version_code.py
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          code = max(4006, 4000 + int(os.environ['GITHUB_RUN_NUMBER']))
+          with Path(os.environ['GITHUB_ENV']).open('a') as output:
+              output.write(f'ROCHA_ANDROID_VERSION_CODE={code}\n')
+          print(f'Category fit candidate versionCode: {code}')
+          PY
       - name: Build signed full candidate
         run: |
           flutter build apk --release \
