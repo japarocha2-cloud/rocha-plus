@@ -180,3 +180,11 @@ test('administrative owner is never modified by the payment projection', async (
   await assert.rejects(f.run(), /owner-exempt/);
   assert.equal(f.paid(), previous.getTime());
 });
+
+test('administrative owner cannot create billing records during reconciliation', async () => {
+  const f = fixture();
+  f.account.email = 'japarocha2@gmail.com';
+  const existing = structuredClone([...f.db.data.entries()]);
+  await assert.rejects(f.run(), /owner-exempt/);
+  assert.deepEqual([...f.db.data.entries()], existing);
+});
