@@ -43,8 +43,17 @@ jobs:
         run: python3 tools/prepare_signed_build.py
       - name: Flutter dependencies
         run: flutter pub get
-      - name: Complete Flutter regression suite (mock billing only)
-        run: flutter test --reporter expanded
+      - name: Analyze changed access code
+        run: flutter analyze lib/src/app.dart lib/src/auth lib/src/billing/subscription_gate.dart lib/src/billing/trial_welcome_dialog.dart test/access_flow_regression_test.dart test/auth_test.dart test/spark_billing_test.dart
+      - name: Compare full Flutter suites with frozen baseline (no skipped tests)
+        run: python3 tools/verify_access_regressions.py
+      - name: Upload explicit test results including pre-existing layout failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: access-flow-test-evidence
+          path: build/access-flow-evidence.json
+          if-no-files-found: warn
       - name: Configure version code above frozen APK 4005
         run: |
           python3 tools/android_version_code.py
@@ -86,3 +95,23 @@ jobs:
       - name: Delete private signing files
         if: always()
         run: rm -rf -- "$RUNNER_TEMP/rocha-private"
+
+  firestore-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing/spark
+      - name: Verify no trial reset, account isolation, acceptance and client payment denial
+        run: npm test
+        working-directory: billing/spark
