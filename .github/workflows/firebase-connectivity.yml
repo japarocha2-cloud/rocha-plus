@@ -31,6 +31,7 @@ jobs:
           import {cert, initializeApp} from 'firebase-admin/app';
           import {getAuth} from 'firebase-admin/auth';
           import {getFirestore} from 'firebase-admin/firestore';
+          await (async () => {
           try {
             const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
             if (!raw) throw Error('missing-secret');
@@ -40,11 +41,24 @@ jobs:
                !service.client_email?.endsWith('@rocha-plus.iam.gserviceaccount.com')) throw Error('invalid-project-credential');
             initializeApp({credential:cert(service),projectId:'rocha-plus'});
             // Check Auth and Firestore permissions without outputting any personal data.
-            await getAuth().listUsers(1);
-            await getFirestore().doc('rochaSparkAccounts/__connectivity_probe_nonexistent__').get();
+            try {
+              await getAuth().listUsers(1);
+            } catch (e) {
+              console.log(JSON.stringify({ok:false,readOnly:true,stage:'auth',code: e.code || 'auth-permission-or-api-error'}));
+              process.exitCode=1;
+              return;
+            }
+            try {
+              await getFirestore().doc('rochaSparkAccounts/__connectivity_probe_nonexistent__').get();
+            } catch(e) {
+              console.log(JSON.stringify({ok:false,readOnly:true,stage:'firestore',code:e.code || 'firestore-permission-or-api-error'}));
+              process.exitCode=1;
+              return;
+            }
             console.log(JSON.stringify({ok:true,readOnly:true,auth:'reachable',firestore:'reachable'}));
           } catch(e) {
             console.log(JSON.stringify({ok:false,readOnly:true,code:'firebase-connectivity-not-confirmed'}));
             process.exitCode=1;
           }
+          })();
           NODE
