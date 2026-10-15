@@ -555,7 +555,8 @@ class _CategoryCardState extends State<_CategoryCard> {
     child: InkWell(onTap: widget.onTap, borderRadius: BorderRadius.circular(14),
       onFocusChange: (v) => setState(() => focused = v),
       child: Stack(fit: StackFit.expand, children: [
-        if (_coverAsset != null) Image.asset(_coverAsset!, fit: BoxFit.cover,
+        // Category artwork is landscape: show it whole inside the portrait tile.
+        if (_coverAsset != null) Image.asset(_coverAsset!, fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => const SizedBox.shrink()),
         const DecoratedBox(decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topCenter,
