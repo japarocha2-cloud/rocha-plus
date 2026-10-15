@@ -1,5 +1,6 @@
 name: Rocha+ Spark Payment Readiness (read-only)
 # Read-only diagnostic: never pass --apply in this workflow.
+# Separate per-plan API fetching from business-rule validation.
 on:
   push:
     branches:
