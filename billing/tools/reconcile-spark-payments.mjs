@@ -31,7 +31,18 @@ try {
   const config = { collectorId: values.collector, liveMode: true, planIds, now: Date.now() };
   for (const plan of Object.keys(planIds)) {
     stage = 'plan-fetch-' + plan;
-    const commercialPlan = await provider.plan(planIds[plan]);
+    // The verified merchant's plan search is supported by this account.
+    // Search by exact ID, then enforce all existing price, collector and schedule checks.
+    const planResponse = await fetch('https://api.mercadopago.com/preapproval_plan/search?limit=100&offset=0', {
+      method: 'GET', redirect: 'error', signal: AbortSignal.timeout(20000),
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
+    });
+    if (!planResponse.ok) throw Error('plan-search');
+    const planPage = await planResponse.json();
+    if (!Array.isArray(planPage.results) || Number(planPage.paging?.total ?? 0) > 100) throw Error('plan-page');
+    const matches = planPage.results.filter(p => p.id === planIds[plan]);
+    if (matches.length !== 1) throw Error('plan-not-found-or-ambiguous');
+    const commercialPlan = matches[0];
     stage = 'plan-validate-' + plan;
     try { checkedPlan(commercialPlan, plan, config); }
     catch (_) {
