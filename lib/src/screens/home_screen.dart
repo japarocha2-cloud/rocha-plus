@@ -441,23 +441,12 @@ class _BauTestBanner extends StatelessWidget {
             begin: Alignment.topLeft, end: Alignment.bottomRight,
             colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
         ),
-        child: Center(child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.campaign_outlined, color: RochaColors.gold, size: 52),
-            const SizedBox(height: 16),
-            const FittedBox(fit: BoxFit.scaleDown,
-              child: Text('Baú', style: TextStyle(
-                fontSize: 34, fontWeight: FontWeight.w900))),
-            const SizedBox(height: 9),
-            const Text('Publicidade', textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
-            const SizedBox(height: 16),
-            const Text('Toque para visitar o anunciante',
-              textAlign: TextAlign.center, style: TextStyle(
-                color: RochaColors.gold, fontSize: 13)),
-          ]),
-        )),
+        child: const SizedBox.expand(
+          child: Image(
+            image: AssetImage('branding/ads/bau.png'),
+            fit: BoxFit.contain,
+          ),
+        ),
       ),
     ),
   );
