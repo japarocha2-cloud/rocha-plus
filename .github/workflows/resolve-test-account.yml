@@ -1,0 +1,38 @@
+name: Rocha+ Resolve Test Account (read-only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/spark-payment-confirmation-20261015
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Firebase dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify configured test identity without modifying data
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node --input-type=module <<'JS'
+          import {initializeApp,cert} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          import {getFirestore} from 'firebase-admin/firestore';
+          const k=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+          if(k.project_id!=='rocha-plus'||k.type!=='service_account') throw Error('invalid-project');
+          initializeApp({credential:cert(k),projectId:'rocha-plus'});
+          const u=await getAuth().getUserByEmail('andressarocha9706@gmail.com');
+          const g=u.providerData.filter(p=>p.providerId==='google.com');
+          if(u.disabled||!u.emailVerified||g.length!==1) throw Error('test-identity-not-ready');
+          const snap=await getFirestore().doc('rochaSparkAccounts/'+g[0].uid).get();
+          if(!snap.exists) throw Error('spark-account-not-found');
+          console.log(JSON.stringify({ok:true,readOnly:true,accountFound:true,googleLinked:true,hasSparkAccount:true}));
+          JS
