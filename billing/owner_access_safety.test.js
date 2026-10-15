@@ -26,3 +26,11 @@ test('cannot silently change existing paid projection',()=>{
   assert.match(src,/billing-projection-review-required/);
   assert.match(src,/existing-spark-account-required/);
 });
+
+test('owner exemption keeps an existing billing projection synchronized',()=>{
+  assert.match(src,/state\.googleSubject !== google\[0\]\.uid/);
+  assert.match(src,/state\.uid !== user\.uid/);
+  assert.match(src,/currentMillis !== state\.lastPaidUntil/);
+  assert.match(src,/baselinePaidUntil: Math\.max\(state\.baselinePaidUntil \|\| 0, target\)/);
+  assert.match(src,/lastPaidUntil: target/);
+});
