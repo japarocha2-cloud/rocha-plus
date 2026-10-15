@@ -19,6 +19,7 @@ class ControlledBilling implements BillingRepository {
   final List<Completer<BillingAccess>> requests = [];
   BillingAccess? response;
   int claims = 0;
+  Completer<bool>? acceptanceGate;
   @override
   Future<BillingAccess> status() {
     if (response != null) return Future.value(response);
@@ -27,7 +28,10 @@ class ControlledBilling implements BillingRepository {
     return request.future;
   }
   @override
-  Future<bool> claimTrialWelcomeNotice() async { claims++; return true; }
+  Future<bool> claimTrialWelcomeNotice() async {
+    claims++;
+    return acceptanceGate == null ? true : await acceptanceGate!.future;
+  }
   @override
   Future<Uri> checkout(String plan) => throw StateError('No checkout in access tests');
 }
@@ -59,6 +63,28 @@ void main() {
     await settle(tester);
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(r.claims, 1);
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('trial Home waits for server acceptance and retries without repeating notice', (tester) async {
+    final r = ControlledBilling()..response = grant(accepted: false)
+      ..acceptanceGate = Completer<bool>();
+    await tester.pumpWidget(gate('A', r));
+    await settle(tester);
+    tester.widget<TrialWelcomeDialog>(find.byType(TrialWelcomeDialog)).onAccepted!();
+    await settle(tester);
+    noCheckoutOrHome();
+    expect(find.byType(TrialWelcomeDialog), findsNothing);
+    r.acceptanceGate!.completeError(const BillingFailure('Offline'));
+    await settle(tester);
+    noCheckoutOrHome();
+    r.acceptanceGate = Completer<bool>();
+    await tester.tap(find.text('Tentar novamente'));
+    await settle(tester);
+    noCheckoutOrHome();
+    r.acceptanceGate!.complete(true);
+    await settle(tester);
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(TrialWelcomeDialog), findsNothing);
     await tester.pumpWidget(const SizedBox());
   });
   for (final state in ['trial', 'paid', 'expired']) {

@@ -27,6 +27,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   bool noticePending = false;
   bool welcomeRequired = false;
   bool accepting = false;
+  bool acceptancePending = false;
   String? welcomeError;
   int generation = 0;
 
@@ -53,7 +54,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
     controller.dispose();
     unawaited(stopCast());
     navigationKey = GlobalKey<NavigatorState>();
-    previouslyAllowed = noticeChecked = noticePending = welcomeRequired = accepting = false;
+    previouslyAllowed = noticeChecked = noticePending = welcomeRequired = accepting = acceptancePending = false;
     initializeAccount();
   }
   Future<void> stopCast() async {
@@ -74,14 +75,15 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
   bool isCurrent(int ticket, BillingController source) =>
       mounted && ticket == generation && identical(source, controller);
 
-  Future<void> syncAcceptance(SharedPreferences prefs, BillingRepository repository,
+  Future<bool> syncAcceptance(SharedPreferences prefs, BillingRepository repository,
       String pendingKey) async {
-    if (prefs.getBool(pendingKey) != true) return;
+    if (prefs.getBool(pendingKey) != true) return true;
     try {
       await repository.claimTrialWelcomeNotice();
       await prefs.remove(pendingKey);
+      return true;
     } catch (_) {
-      // Retry on a future status refresh. Local acceptance is account-specific.
+      return false;
     }
   }
   Future<void> resolveWelcome(int ticket, BillingController source, String uid) async {
@@ -96,7 +98,18 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
         await prefs.setBool(acceptedKey, true);
         await prefs.remove(pendingKey);
       } else if (accepted) {
-        unawaited(syncAcceptance(prefs, source.repository, pendingKey));
+        // A local receipt never replaces the per-account server acknowledgement.
+        await prefs.setBool(pendingKey, true);
+        final synced = await syncAcceptance(prefs, source.repository, pendingKey);
+        if (!isCurrent(ticket, source)) return;
+        if (!synced) {
+          setState(() {
+            noticeChecked = true;
+            acceptancePending = true;
+            welcomeError = 'Não foi possível confirmar a aceitação. Tente novamente.';
+          });
+          return;
+        }
       }
       if (!isCurrent(ticket, source)) return;
       setState(() {
@@ -114,17 +127,28 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
     final ticket = generation;
     final source = controller;
     final uid = widget.uid;
-    setState(() => accepting = true);
+    setState(() {
+      accepting = true;
+      acceptancePending = true;
+      welcomeError = null;
+    });
     try {
       final prefs = await SharedPreferences.getInstance();
       if (!isCurrent(ticket, source)) return;
       await prefs.setBool('trial-welcome-pending:$uid', true);
       await prefs.setBool('trial-welcome-accepted:$uid', true);
+      final synced = await syncAcceptance(prefs, source.repository, 'trial-welcome-pending:$uid');
       if (!isCurrent(ticket, source)) return;
-      setState(() => welcomeRequired = false);
-      unawaited(syncAcceptance(prefs, source.repository, 'trial-welcome-pending:$uid'));
+      setState(() {
+        if (synced) {
+          welcomeRequired = false;
+          acceptancePending = false;
+        } else {
+          welcomeError = 'Não foi possível confirmar a aceitação. Tente novamente.';
+        }
+      });
     } catch (_) {
-      // Keep the notice visible until acceptance can be persisted.
+      if (isCurrent(ticket, source)) setState(() => welcomeError = 'Não foi possível salvar a aceitação.');
     } finally {
       if (isCurrent(ticket, source)) setState(() => accepting = false);
     }
@@ -151,6 +175,17 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
     }
     if (!controller.allowed) return subscription(context);
     if (controller.access?.state == 'trial') {
+      if (acceptancePending) {
+        return Scaffold(key: const ValueKey('access-verification'),
+          body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            if (welcomeError == null) const CircularProgressIndicator(),
+            Text(welcomeError ?? 'Confirmando sua aceitação…', textAlign: TextAlign.center),
+            if (welcomeError != null)
+              TextButton(onPressed: accepting ? null : acceptWelcome,
+                child: const Text('Tentar novamente')),
+            TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
+          ])));
+      }
       if (!noticeChecked) {
         return Scaffold(key: const ValueKey('access-verification'),
           body: Center(child: welcomeError == null ? const CircularProgressIndicator()
