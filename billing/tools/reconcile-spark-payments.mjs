@@ -89,9 +89,9 @@ try {
     try {
       const identity = await sparkIdentity(auth, uid);
       // The verified owner is exempt from billing and must not be reconciled.
-      if (identity.email === 'japarocha2@gmail.com') { counts.skipped++; return; }
+      if (identity.email === 'japarocha2@gmail.com') { if (values.uid) throw Error('owner-exempt'); counts.skipped++; return; }
       const spark = (await db.doc('rochaSparkAccounts/' + identity.subject).get()).data();
-      if (!spark) { counts.skipped++; return; }
+      if (!spark) { if (values.uid) throw Error('target-account-missing'); counts.skipped++; return; }
       counts.checked++;
       if (values.apply) { await service.reconcileAccount(uid, identity.email); counts.reconciled++; }
     } catch (_) { counts.notConfirmed++; }
@@ -114,7 +114,7 @@ try {
   }
   console.log(JSON.stringify({ code: values.apply ? 'spark-reconciliation-pass' : 'spark-readiness-check',
     readOnly: !values.apply, ...counts }));
-  if (counts.notConfirmed) process.exitCode = 1;
+  if (counts.notConfirmed || (values.uid && counts.checked !== 1)) process.exitCode = 1;
 } catch (_) {
   // A failure may follow partial commits. Never claim the database is unchanged.
   console.error(JSON.stringify({ code: 'spark-reconciliation-not-confirmed', stage, readOnly: !process.argv.includes('--apply') })); process.exitCode = 1;
