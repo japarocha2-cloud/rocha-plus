@@ -1,0 +1,57 @@
+name: Live Payment Pilot Readiness (read-only)
+on:
+  push:
+    branches: [test/live-payment-pilot-20261015]
+    paths: ['.github/workflows/live-payment-readiness.yml']
+permissions:
+  contents: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 86bdabe25cf53f74d59c1061d95e500ee9fb4f6b
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Read current subscriber state without writes
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node billing/tools/audit-test-subscriber.mjs
+      - name: Verify merchant and plans and preview access projection without writes
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node billing/tools/reconcile-test-subscriber.mjs
+      - name: Inspect only official monthly checkout redirects (no payment)
+        run: |
+          node --input-type=module <<'NODE'
+          let target = new URL('https://mpago.la/2E7yjF4');
+          let hops = 0;
+          while (hops++ < 6) {
+            if (target.protocol !== 'https:' ||
+                !['mpago.la','mercadopago.com','www.mercadopago.com','mercadopago.com.br','www.mercadopago.com.br'].includes(target.hostname)) {
+              throw Error('unexpected-checkout-destination');
+            }
+            const response = await fetch(target, {redirect:'manual',signal:AbortSignal.timeout(20000)});
+            const location = response.headers.get('location');
+            if (response.status >= 300 && response.status < 400 && location) {
+              target = new URL(location, target);
+              await response.body?.cancel();
+              continue;
+            }
+            await response.body?.cancel();
+            console.log(JSON.stringify({readOnly:true,host:target.hostname,
+              subscriptionCheckout:target.pathname.includes('subscriptions'),
+              paymentCheckout:target.pathname.includes('checkout/v1'),
+              matchesMonthlyPlan:target.searchParams.get('preapproval_plan_id')==='0b66f85cf2914aa88b9f1eadfa8b81a9',
+              responseStatus:response.status}));
+            break;
+          }
+          NODE
