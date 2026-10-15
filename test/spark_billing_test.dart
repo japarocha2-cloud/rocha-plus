@@ -88,4 +88,42 @@ void main() {
       found('2026-10-22T12:00:00Z', paidUntil: '2026-11-22T12:00:00Z')]), 200)));
     expect((await r.status()).state, 'paid');
   });
+  test('concurrent trial creation re-reads existing server record after conflict', () async {
+    var reads = 0, writes = 0;
+    final r = repo(MockClient((request) async {
+      if (request.url.path.endsWith(':commit')) {
+        writes++;
+        return http.Response('{}', 409);
+      }
+      reads++;
+      return http.Response(jsonEncode([reads == 1
+        ? {'missing': name, 'readTime': '2026-10-16T12:00:00Z'}
+        : found('2026-10-16T12:00:00Z', accepted: true)]), 200);
+    }));
+    final access = await r.status();
+    expect(access.trialRemainingDays, 5);
+    expect(access.trialWelcomeNoticeAccepted, true);
+    expect(writes, 1);
+  });
+  test('reopening and recreating repository cannot restart expired trial', () async {
+    final client = MockClient((request) async {
+      expect(request.url.path.endsWith(':batchGet'), true);
+      return http.Response(jsonEncode([found('2026-10-22T12:00:00Z', accepted: true)]), 200);
+    });
+    for (var attempt = 0; attempt < 3; attempt++) {
+      final access = await repo(client).status();
+      expect(access.active, false);
+      expect(access.trialRemainingDays, 0);
+      expect(access.trialWelcomeNoticeAccepted, true);
+    }
+  });
+  test('account B cannot reuse the server trial response of A', () async {
+    final r = SparkBillingRepository(projectId: 'rocha-plus', accountId: '222',
+      tokenProvider: () async => 'synthetic-B', client: MockClient((request) async {
+        expect(jsonDecode(request.body), {'documents': [name.replaceAll('/111', '/222')]});
+        return http.Response(jsonEncode([found(start)]), 200);
+      }));
+    await expectLater(r.status(), throwsA(isA<BillingFailure>()));
+  });
+
 }

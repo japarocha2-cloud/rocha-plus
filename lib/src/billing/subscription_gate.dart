@@ -20,20 +20,41 @@ class SubscriptionGate extends StatefulWidget {
   State<SubscriptionGate> createState() => _SubscriptionGateState();
 }
 class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBindingObserver {
-  late final BillingController controller;
+  late BillingController controller;
   GlobalKey<NavigatorState> navigationKey = GlobalKey<NavigatorState>();
   bool previouslyAllowed = false;
-  bool noticePending = false;
   bool noticeChecked = false;
+  bool noticePending = false;
+  bool welcomeRequired = false;
+  bool accepting = false;
+  String? welcomeError;
+  int generation = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    initializeAccount();
+  }
+  void initializeAccount() {
     controller = BillingController(widget.repository ?? (SparkBillingRepository.enabled
       ? SparkBillingRepository.forAccount(widget.uid)
       : HttpBillingRepository.forAccount(widget.uid)));
     controller.addListener(checkAccess);
     unawaited(controller.initialize());
+  }
+  @override
+  void didUpdateWidget(covariant SubscriptionGate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.uid == widget.uid && oldWidget.repository == widget.repository) return;
+    generation++;
+    welcomeError = null;
+    controller.removeListener(checkAccess);
+    controller.dispose();
+    unawaited(stopCast());
+    navigationKey = GlobalKey<NavigatorState>();
+    previouslyAllowed = noticeChecked = noticePending = welcomeRequired = accepting = false;
+    initializeAccount();
   }
   Future<void> stopCast() async {
     try { await GoogleCastSessionManager.instance.endSessionAndStopCasting(); } catch (_) {}
@@ -47,66 +68,113 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
     if (allowed && !controller.checking && controller.error == null &&
         controller.access?.state == 'trial' && !noticeChecked && !noticePending) {
       noticePending = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(showWelcomeNotice()));
+      unawaited(resolveWelcome(generation, controller, widget.uid));
     }
   }
-  String get _acceptedKey => 'trial-welcome-accepted:${widget.uid}';
-  String get _pendingKey => 'trial-welcome-pending:${widget.uid}';
+  bool isCurrent(int ticket, BillingController source) =>
+      mounted && ticket == generation && identical(source, controller);
 
-  Future<void> _syncAcceptance(SharedPreferences prefs) async {
-    if (prefs.getBool(_pendingKey) != true) return;
+  Future<void> syncAcceptance(SharedPreferences prefs, BillingRepository repository,
+      String pendingKey) async {
+    if (prefs.getBool(pendingKey) != true) return;
     try {
-      // The authenticated server binds this acknowledgement to the account.
-      await controller.repository.claimTrialWelcomeNotice();
-      await prefs.remove(_pendingKey);
+      await repository.claimTrialWelcomeNotice();
+      await prefs.remove(pendingKey);
     } catch (_) {
-      // Keep the local acknowledgement and retry on the next status refresh.
+      // Retry on a future status refresh. Local acceptance is account-specific.
     }
   }
-
-  Future<void> showWelcomeNotice() async {
+  Future<void> resolveWelcome(int ticket, BillingController source, String uid) async {
+    final acceptedKey = 'trial-welcome-accepted:$uid';
+    final pendingKey = 'trial-welcome-pending:$uid';
     try {
       final prefs = await SharedPreferences.getInstance();
-      if (!mounted) return;
-      if (controller.access?.trialWelcomeNoticeAccepted == true) {
-        await prefs.setBool(_acceptedKey, true);
-        await prefs.remove(_pendingKey);
+      if (!isCurrent(ticket, source)) return;
+      final serverAccepted = source.access?.trialWelcomeNoticeAccepted == true;
+      final accepted = serverAccepted || prefs.getBool(acceptedKey) == true;
+      if (serverAccepted) {
+        await prefs.setBool(acceptedKey, true);
+        await prefs.remove(pendingKey);
+      } else if (accepted) {
+        unawaited(syncAcceptance(prefs, source.repository, pendingKey));
+      }
+      if (!isCurrent(ticket, source)) return;
+      setState(() {
         noticeChecked = true;
-        return;
-      }
-      if (prefs.getBool(_acceptedKey) == true) {
-        await _syncAcceptance(prefs);
-        noticeChecked = prefs.getBool(_pendingKey) != true;
-        return;
-      }
-      if (!controller.allowed || controller.access?.state != 'trial') return;
-      noticeChecked = true;
-      final accepted = await showTrialWelcomeDialog(context);
-      if (accepted == true) {
-        // The dialog has already closed; storage/network never delay the click.
-        await prefs.setBool(_pendingKey, true);
-        await prefs.setBool(_acceptedKey, true);
-        await _syncAcceptance(prefs);
-        noticeChecked = prefs.getBool(_pendingKey) != true;
-      } else {
-        noticeChecked = false;
-      }
+        welcomeRequired = !accepted;
+      });
     } catch (_) {
-      noticeChecked = false;
+      if (isCurrent(ticket, source)) setState(() => welcomeError = 'Não foi possível carregar seu aviso de teste.');
     } finally {
-      noticePending = false;
+      if (isCurrent(ticket, source)) noticePending = false;
+    }
+  }
+  Future<void> acceptWelcome() async {
+    if (accepting) return;
+    final ticket = generation;
+    final source = controller;
+    final uid = widget.uid;
+    setState(() => accepting = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!isCurrent(ticket, source)) return;
+      await prefs.setBool('trial-welcome-pending:$uid', true);
+      await prefs.setBool('trial-welcome-accepted:$uid', true);
+      if (!isCurrent(ticket, source)) return;
+      setState(() => welcomeRequired = false);
+      unawaited(syncAcceptance(prefs, source.repository, 'trial-welcome-pending:$uid'));
+    } catch (_) {
+      // Keep the notice visible until acceptance can be persisted.
+    } finally {
+      if (isCurrent(ticket, source)) setState(() => accepting = false);
     }
   }
   Widget subscription(BuildContext context) => AnimatedBuilder(animation: controller,
     builder: (_, __) => SubscriptionScreen(checkout: controller.checkout,
       statusMessage: controller.message, onRefresh: controller.refresh,
       onSignOut: widget.onSignOut, busy: controller.checking || controller.openingCheckout));
+
+  Widget accessScreen(BuildContext context) {
+    // No grant is not an expired grant: never show checkout while resolving
+    // authentication, server time, trial creation or a failed status request.
+    if (controller.access == null) {
+      return Scaffold(key: const ValueKey('access-verification'),
+        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          if (controller.error == null) const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(controller.error ?? 'Confirmando seu acesso…', textAlign: TextAlign.center),
+          if (controller.error != null) ...[
+            TextButton(onPressed: controller.refresh, child: const Text('Tentar novamente')),
+            TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
+          ],
+        ])));
+    }
+    if (!controller.allowed) return subscription(context);
+    if (controller.access?.state == 'trial') {
+      if (!noticeChecked) {
+        return Scaffold(key: const ValueKey('access-verification'),
+          body: Center(child: welcomeError == null ? const CircularProgressIndicator()
+            : TextButton(onPressed: () {
+                setState(() => welcomeError = null);
+                checkAccess();
+              }, child: const Text('Tentar novamente'))));
+      }
+      if (welcomeRequired) {
+        // Keep the approved artwork, but contain the notice inside this account's
+        // gate. It cannot outlive sign-out or expose Home before acceptance.
+        return Scaffold(body: TrialWelcomeDialog(onAccepted: () => unawaited(acceptWelcome())));
+      }
+    }
+    return HomeScreen(accountId: widget.uid, onSignOut: widget.onSignOut,
+      subscriptionBuilder: subscription);
+  }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) unawaited(controller.refresh());
   }
   @override
   void dispose() {
+    generation++;
     WidgetsBinding.instance.removeObserver(this);
     controller.removeListener(checkAccess);
     controller.dispose();
@@ -122,10 +190,7 @@ class _SubscriptionGateState extends State<SubscriptionGate> with WidgetsBinding
       },
       child: Navigator(key: navigationKey,
         onGenerateRoute: (_) => MaterialPageRoute(builder: (_) => AnimatedBuilder(
-          animation: controller, builder: (context, _) => controller.allowed
-            ? HomeScreen(accountId: widget.uid, onSignOut: widget.onSignOut,
-                subscriptionBuilder: subscription)
-            : subscription(context))),
+          animation: controller, builder: (context, _) => accessScreen(context))),
       ),
     ));
 }

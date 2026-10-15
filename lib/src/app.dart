@@ -68,7 +68,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                           : null)
               : controller.account!.isAdmin
               ? AdminHomeScreen(onSignOut: () => controller.signOut())
-              : SubscriptionGate(uid: controller.account!.uid, repository: widget.billingRepository, onSignOut: () async {
+              : SubscriptionGate(key: ValueKey(controller.account!.uid), uid: controller.account!.uid, repository: widget.billingRepository, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
           }),

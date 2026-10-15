@@ -110,12 +110,12 @@ void main() {
     expect(controller.error, 'Sem conexão');
     expect(controller.busy, isFalse);
   });
-  test('failed logout preserves session; successful logout clears it', () async {
+  test('logout revokes local private access even when provider cleanup fails', () async {
     repository.initial = const AuthAccount(uid: 'verified');
     await initialize(controller);
     repository.logoutFails = true;
     await controller.signOut();
-    expect(controller.account?.uid, 'verified');
+    expect(controller.account, isNull);
     expect(controller.error, isNotNull);
     repository.logoutFails = false;
     await controller.signOut();

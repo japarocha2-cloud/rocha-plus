@@ -43,6 +43,7 @@ class FirebaseAuthRepository implements AuthRepository {
     if (providers.contains('password') &&
         user.email?.toLowerCase() == _adminEmail && user.emailVerified) {
       final claims = (await user.getIdTokenResult()).claims;
+      if (_auth!.currentUser?.uid != user.uid) return null;
       if (claims?['rochaAdmin'] == true) {
         return AuthAccount(uid: user.uid, displayName: user.displayName, isAdmin: true);
       }
