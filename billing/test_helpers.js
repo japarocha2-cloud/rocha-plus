@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 export function memoryDb() {
   const data = new Map(); let queue = Promise.resolve();
-  return { data, doc: path => ({path, get: async()=>({data:()=>data.get(path)})}),
+  return { data, doc: path => ({path, get: async()=>({exists:data.has(path),
+    data:()=>data.has(path)?structuredClone(data.get(path)):undefined})}),
     runTransaction(fn) {
       const run = queue.then(async()=>{
         const writes=[];

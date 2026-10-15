@@ -8,11 +8,13 @@ import { createProvider } from '../provider.js';
 import { checkedPlan, subscriptionIdValid } from '../recurring.js';
 import { createRecurringService } from '../recurring_service.js';
 import { createSparkRecurringStore, sparkIdentity } from '../spark_recurring_store.js';
+import { readOnlyFirestore } from '../read_only_firestore.js';
 
 let stage = 'configuration';
 try {
   const { values } = parseArgs({ options: { project: { type: 'string' }, uid: { type: 'string' },
     all: { type: 'boolean', default: false }, apply: { type: 'boolean', default: false },
+    preview: { type: 'boolean', default: false },
     'confirm-uid': { type: 'string' },
     collector: { type: 'string' }, 'monthly-plan': { type: 'string' }, 'annual-plan': { type: 'string' } } });
   const planIds = { monthly: values['monthly-plan'], annual: values['annual-plan'] };
@@ -21,6 +23,7 @@ try {
       planIds.monthly === planIds.annual || !process.env.MP_ACCESS_TOKEN?.trim()) throw Error('configuration');
   // Production writes require an explicitly selected UID. Never mass-apply from --all.
   if (values.apply && values.all) throw Error('bulk-apply-disabled');
+  if (values.preview && (values.apply || values.all)) throw Error('preview-requires-one-account');
   // Explicitly confirm the same exact Firebase UID when making production writes.
   if (values.apply && (!values.uid || values['confirm-uid'] !== values.uid)) throw Error('uid-confirmation-required');
   const token = process.env.MP_ACCESS_TOKEN.trim();
@@ -83,11 +86,17 @@ try {
   }
   stage = 'firebase-initialize';
   initializeApp({ credential: firebaseCredential, projectId: values.project });
-  const auth = getAuth(), db = getFirestore();
+  const auth = getAuth(), db = values.preview ? readOnlyFirestore(getFirestore()) : getFirestore();
   const store = createSparkRecurringStore({ db, auth, collectorId: values.collector,
     liveMode: true, timestamp: time => Timestamp.fromMillis(time) });
-  const service = createRecurringService({ store, provider, ...config, now: Date.now, projectAccess: store.project });
-  const counts = { checked: 0, reconciled: 0, skipped: 0, notConfirmed: 0 };
+  let projectionPreview;
+  const service = createRecurringService({ store, provider, ...config, now: Date.now,
+    projectAccess: async (uid, time) => {
+      const result = await store.project(uid, time);
+      if (values.preview) projectionPreview = result;
+      return result;
+    } });
+  const counts = { checked: 0, reconciled: 0, previewed: 0, skipped: 0, notConfirmed: 0 };
   async function visit(uid) {
     try {
       const identity = await sparkIdentity(auth, uid);
@@ -97,6 +106,7 @@ try {
       if (!spark) { if (values.uid) throw Error('target-account-missing'); counts.skipped++; return; }
       counts.checked++;
       if (values.apply) { await service.reconcileAccount(uid, identity.email); counts.reconciled++; }
+      if (values.preview) { await service.reconcileAccount(uid, identity.email); counts.previewed++; }
     } catch (_) { counts.notConfirmed++; }
   }
   stage = 'account-readiness';
@@ -115,8 +125,10 @@ try {
       if (page === 9) throw Error('account-limit');
     }
   }
-  console.log(JSON.stringify({ code: values.apply ? 'spark-reconciliation-pass' : 'spark-readiness-check',
-    readOnly: !values.apply, ...counts }));
+  console.log(JSON.stringify({ code: values.apply ? 'spark-reconciliation-pass'
+    : values.preview ? 'spark-reconciliation-preview' : 'spark-readiness-check',
+    readOnly: !values.apply, ...counts,
+    ...(values.preview ? { ...db.summary(), projectionPreview } : {}) }));
   if (counts.notConfirmed || (values.uid && counts.checked !== 1)) process.exitCode = 1;
 } catch (_) {
   // A failure may follow partial commits. Never claim the database is unchanged.

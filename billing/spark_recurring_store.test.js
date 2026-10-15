@@ -5,12 +5,13 @@ import { userKey } from './store.js';
 import { addMonths } from './policy.js';
 import { createRecurringService } from './recurring_service.js';
 import { createSparkRecurringStore } from './spark_recurring_store.js';
+import { readOnlyFirestore } from './read_only_firestore.js';
 
 const now = Date.parse('2026-10-23T12:00:00Z'), debit = now - 86400000;
 const collectorId = '1981204845';
 const planIds = { monthly: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', annual: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' };
 const subId = 'cccccccccccccccccccccccccccccccc';
-function fixture(extra = {}) {
+function fixture(extra = {}, preview = false) {
   const db = memoryDb(), sparkPath = 'rochaSparkAccounts/123456';
   db.data.set(sparkPath, { trialStartedAt: new Date(now - 10 * 86400000),
     welcomeAcceptedAt: new Date(now - 9 * 86400000) });
@@ -32,7 +33,8 @@ function fixture(extra = {}) {
     subscription: async () => structuredClone(sub), invoice: async () => structuredClone(invoice),
     invoices: async () => structuredClone(invoices), invoicesForPayment: async () => structuredClone(invoices),
     payment: async () => structuredClone(payment) };
-  const store = createSparkRecurringStore({ db, auth, collectorId, liveMode: true, ...extra });
+  const store = createSparkRecurringStore({ db: preview ? readOnlyFirestore(db) : db,
+    auth, collectorId, liveMode: true, ...extra });
   const service = createRecurringService({ store, provider, collectorId, liveMode: true, planIds,
     projectAccess: store.project, now: () => now, verifySignature: () => {},
     verifyIdentity: async () => ({ uid: 'A', email: account.email, email_verified: true }) });
@@ -42,6 +44,20 @@ function fixture(extra = {}) {
     noInvoice: () => { invoices = []; }, fail: () => { unavailable = true; },
     webhook: () => service.webhook({ method: 'POST', dataId: '123', body: { type: 'payment', data: { id: '123' } } }) };
 }
+test('read-only rehearsal verifies approval with the real service and leaves every source document unchanged', async () => {
+  const f = fixture({}, true), before = structuredClone([...f.db.data.entries()]);
+  const user = await f.run();
+  assert.equal(user.payments['123'].periodEnd, addMonths(debit, 1));
+  assert.equal(user.payments['123'].status, 'approved');
+  await f.run();
+  assert.deepEqual([...f.db.data.entries()], before);
+});
+test('read-only rehearsal rejects a wrong seller and keeps the entire source unchanged', async () => {
+  const f = fixture({}, true), before = structuredClone([...f.db.data.entries()]);
+  f.payment.collector_id = 3717765439;
+  await assert.rejects(f.run());
+  assert.deepEqual([...f.db.data.entries()], before);
+});
 test('scheduled reconciliation grants existing Spark account without touching trial, welcome or favorites', async () => {
   const f = fixture(), before = structuredClone(f.db.data.get(f.sparkPath)); await f.run();
   assert.equal(f.paid(), addMonths(debit, 1));

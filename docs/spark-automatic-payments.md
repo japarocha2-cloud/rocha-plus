@@ -45,7 +45,15 @@ node billing/tools/reconcile-spark-payments.mjs --project rocha-plus \
   --monthly-plan MONTHLY_PLAN_ID --annual-plan ANNUAL_PLAN_ID
 ```
 
-Adicionar `--apply` executa uma passagem real. Usar `--all` em vez de `--uid`
+Adicionar `--preview` ensaia o serviço e a projeção completos para um único UID:
+consulta documentos e APIs reais, mas guarda todas as escritas apenas em memória.
+Não chama transações de escrita no Firestore. Não comprova desbloqueio no APK e
+não é um snapshot consistente contra alterações concorrentes. Uma execução real
+sempre consulta e valida os dados novamente. Não combinar com `--all` ou `--apply`.
+
+Adicionar `--apply --confirm-uid FIREBASE_UID` executa uma passagem real.
+O UID confirmado deve ser exatamente igual ao selecionado. `--all --apply` é
+bloqueado antes de qualquer consulta. Usar `--all` em vez de `--uid`
 percorre no máximo mil usuários, em páginas de cem; ignora contas sem documento
 Spark. Retorna somente contagens, sem e-mails ou tokens. A prontidão não simula
 pagamentos nem comprova vínculo. Falhas parciais podem ocorrer após gravações.
@@ -59,6 +67,28 @@ O flag `ROCHA_SPARK_PAYMENT_SYNC=true` habilita a mesma projeção no servidor H
 existente, se publicado em infraestrutura autorizada. O padrão é false. Webhooks
 assinados atualizam somente vínculos já estabelecidos; o runner descobre os novos.
 Não configurar webhook para URL ainda não publicada.
+
+## Piloto limitado a uma conta
+
+`node billing/tools/reconcile-test-subscriber.mjs` resolve somente
+`andressarocha9706@gmail.com` e executa o ensaio sem escritas. Rejeita identidade
+desabilitada, e-mail não verificado e conta sem vínculo Google válido. Os logs
+contêm apenas contagens, sem UID, e-mail ou credenciais. O ensaio pode preparar
+um ledger vazio em memória quando não há assinatura; isso não comprova pagamento.
+
+O workflow `spark-single-account-sync.yml` roda esse ensaio no push das alterações
+relacionadas. Seu disparo manual mantém `apply=false` por padrão. Para uma futura
+passagem real, exige seleção explícita de `apply` e o UID Firebase exato repetido
+nos dois campos; a identidade é novamente resolvida pelo e-mail fixo. Nenhuma
+assinatura, plano ou cobrança é criada. A passagem real pode gravar o ledger e
+os vínculos mesmo sem fatura paga, mas somente pagamentos validados podem
+acrescentar validade. Estornos podem retirar a parcela gerenciada.
+
+GitHub só disponibiliza o disparo manual quando o arquivo do workflow também
+existe na branch padrão. O push da branch da PR já executa o ensaio. Não foi
+adicionado agendamento de escrita; a auditoria diária existente permanece somente
+leitura. Antes da ativação comercial é necessário homologar pagamento e APK,
+escolher intervalo e limites compatíveis com as cotas Spark e monitorar falhas.
 
 ## Ativação pendente
 
