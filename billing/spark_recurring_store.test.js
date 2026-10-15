@@ -151,3 +151,23 @@ test('sandbox seller cannot unlock an existing real account', async () => {
   await assert.rejects(f.run(), /production-required/);
   assert.equal(f.paid(), undefined);
 });
+
+test('simulated full payment lifecycle unlocks then revokes without changing favorites', async () => {
+  const f = fixture();
+  const favoritesBefore = structuredClone(f.db.data.get('users/A/favorites/channel'));
+  f.payment.status = 'pending';
+  f.payment.date_approved = null;
+  await f.run();
+  assert.equal(f.paid(), undefined);
+  f.payment.status = 'approved';
+  f.payment.date_approved = new Date(debit).toISOString();
+  f.payment.date_last_updated = new Date(now).toISOString();
+  await f.run();
+  assert.equal(f.paid(), addMonths(debit, 1));
+  f.payment.status = 'refunded';
+  f.payment.transaction_amount_refunded = 4.9;
+  f.payment.date_last_updated = new Date(now + 1000).toISOString();
+  await f.run();
+  assert.equal(f.paid(), 0);
+  assert.deepEqual(f.db.data.get('users/A/favorites/channel'), favoritesBefore);
+});
