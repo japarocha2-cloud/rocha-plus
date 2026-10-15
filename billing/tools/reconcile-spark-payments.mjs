@@ -18,6 +18,8 @@ try {
   if (values.project !== 'rocha-plus' || values.collector !== '1981204845' ||
       !!values.uid === values.all || !Object.values(planIds).every(subscriptionIdValid) ||
       planIds.monthly === planIds.annual || !process.env.MP_ACCESS_TOKEN?.trim()) throw Error('configuration');
+  // Production writes require an explicitly selected UID. Never mass-apply from --all.
+  if (values.apply && values.all) throw Error('bulk-apply-disabled');
   const token = process.env.MP_ACCESS_TOKEN.trim();
   stage = 'merchant';
   const response = await fetch('https://api.mercadopago.com/users/me', {
@@ -86,6 +88,8 @@ try {
   async function visit(uid) {
     try {
       const identity = await sparkIdentity(auth, uid);
+      // The verified owner is exempt from billing and must not be reconciled.
+      if (identity.email === 'japarocha2@gmail.com') { counts.skipped++; return; }
       const spark = (await db.doc('rochaSparkAccounts/' + identity.subject).get()).data();
       if (!spark) { counts.skipped++; return; }
       counts.checked++;
