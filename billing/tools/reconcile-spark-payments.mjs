@@ -13,6 +13,7 @@ let stage = 'configuration';
 try {
   const { values } = parseArgs({ options: { project: { type: 'string' }, uid: { type: 'string' },
     all: { type: 'boolean', default: false }, apply: { type: 'boolean', default: false },
+    'confirm-uid': { type: 'string' },
     collector: { type: 'string' }, 'monthly-plan': { type: 'string' }, 'annual-plan': { type: 'string' } } });
   const planIds = { monthly: values['monthly-plan'], annual: values['annual-plan'] };
   if (values.project !== 'rocha-plus' || values.collector !== '1981204845' ||
@@ -20,6 +21,8 @@ try {
       planIds.monthly === planIds.annual || !process.env.MP_ACCESS_TOKEN?.trim()) throw Error('configuration');
   // Production writes require an explicitly selected UID. Never mass-apply from --all.
   if (values.apply && values.all) throw Error('bulk-apply-disabled');
+  // Explicitly confirm the same exact Firebase UID when making production writes.
+  if (values.apply && (!values.uid || values['confirm-uid'] !== values.uid)) throw Error('uid-confirmation-required');
   const token = process.env.MP_ACCESS_TOKEN.trim();
   stage = 'merchant';
   const response = await fetch('https://api.mercadopago.com/users/me', {
