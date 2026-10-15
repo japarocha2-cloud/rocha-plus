@@ -94,6 +94,8 @@ export function createSparkRecurringStore(options) {
   return { ...source,
     async user(uid, now, email) {
       const identity = await sparkIdentity(options.auth, uid);
+      // Do not create or modify billing records for the exempt owner.
+      if (identity.email === 'japarocha2@gmail.com') fail('owner-exempt');
       const spark = (await options.db.doc('rochaSparkAccounts/' + identity.subject).get()).data();
       if (!spark || !Number.isFinite(millis(spark.trialStartedAt)) || millis(spark.trialStartedAt) > now ||
           (email && email !== identity.email)) fail('existing-account-required');
