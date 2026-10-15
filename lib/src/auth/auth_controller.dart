@@ -11,6 +11,7 @@ class AuthController extends ChangeNotifier {
   bool busy = false;
   bool ready = false;
   bool _disposed = false;
+  bool _signingOut = false;
   String? error;
 
   bool supports(LoginProvider provider) => ready && repository.supports(provider);
@@ -22,6 +23,7 @@ class AuthController extends ChangeNotifier {
       ready = true;
       _subscription = repository.accountChanges.listen((next) {
         if (_disposed) return;
+        if (_signingOut && next != null) return;
         account = next;
         initializing = false;
         notifyListeners();
@@ -83,6 +85,9 @@ class AuthController extends ChangeNotifier {
     if (busy || _disposed) return;
     busy = true;
     error = null;
+    _signingOut = true;
+    // Close private routes before provider cleanup can await network or plugins.
+    account = null;
     notifyListeners();
     try {
       await repository.signOut();
@@ -90,6 +95,7 @@ class AuthController extends ChangeNotifier {
     } catch (_) {
       if (!_disposed) error = 'Não foi possível sair. Tente novamente.';
     } finally {
+      _signingOut = false;
       if (!_disposed) { busy = false; notifyListeners(); }
     }
   }

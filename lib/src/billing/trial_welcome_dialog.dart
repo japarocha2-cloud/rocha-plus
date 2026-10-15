@@ -11,7 +11,8 @@ Future<bool?> showTrialWelcomeDialog(BuildContext context) =>
 
 /// Displays only the alert from the approved source, without redrawing it.
 class TrialWelcomeDialog extends StatelessWidget {
-  const TrialWelcomeDialog({super.key});
+  final VoidCallback? onAccepted;
+  const TrialWelcomeDialog({super.key, this.onAccepted});
 
   @override
   Widget build(BuildContext context) => PopScope(
@@ -56,13 +57,14 @@ class TrialWelcomeDialog extends StatelessWidget {
                       child: GestureDetector(
                         key: const ValueKey('trial-welcome-accept'),
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context).pop(true),
+                        onTap: onAccepted ?? () => Navigator.of(context).pop(true),
                         child: FocusableActionDetector(
                           autofocus: true,
                           actions: <Type, Action<Intent>>{
                             ActivateIntent: CallbackAction<ActivateIntent>(
                               onInvoke: (_) {
-                                Navigator.of(context).pop(true);
+                                if (onAccepted != null) { onAccepted!(); }
+                                else { Navigator.of(context).pop(true); }
                                 return null;
                               }),
                           },
