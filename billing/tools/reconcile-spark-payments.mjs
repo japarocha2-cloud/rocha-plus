@@ -1,6 +1,6 @@
 // Run on a trusted existing server/cron. No scheduler or paid service is created.
 // Default is a read-only readiness check; --apply performs a reconciliation pass.
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
+import { applicationDefault, cert, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { parseArgs } from 'node:util';
@@ -28,7 +28,23 @@ try {
   const provider = createProvider({ accessToken: token, webhookSecret: '' });
   const config = { collectorId: values.collector, liveMode: true, planIds, now: Date.now() };
   for (const plan of Object.keys(planIds)) checkedPlan(await provider.plan(planIds[plan]), plan, config);
-  initializeApp({ credential: applicationDefault(), projectId: values.project });
+  // A GitHub Actions secret may supply the service account without writing its key to disk.
+  // Never print credentials or service-account fields in logs.
+  let firebaseCredential = applicationDefault();
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+    let serviceAccount;
+    try { serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON); }
+    catch (_) { throw Error('invalid-firebase-secret'); }
+    if (serviceAccount?.type !== 'service_account' ||
+        serviceAccount.project_id !== values.project ||
+        typeof serviceAccount.client_email !== 'string' ||
+        !serviceAccount.client_email.endsWith('@rocha-plus.iam.gserviceaccount.com') ||
+        typeof serviceAccount.private_key !== 'string') {
+      throw Error('invalid-firebase-secret');
+    }
+    firebaseCredential = cert(serviceAccount);
+  }
+  initializeApp({ credential: firebaseCredential, projectId: values.project });
   const auth = getAuth(), db = getFirestore();
   const store = createSparkRecurringStore({ db, auth, collectorId: values.collector,
     liveMode: true, timestamp: time => Timestamp.fromMillis(time) });
