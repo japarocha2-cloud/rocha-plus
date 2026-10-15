@@ -32,7 +32,7 @@ jobs:
             if (String(merchant.id)!=='1981204845' || merchant.site_id!=='MLB' || merchant.tags?.includes('test_user')) {
               throw Error('incorrect-production-merchant');
             }
-            let offset = 0, count = 0, matched = [];
+            let offset = 0, count = 0, matched = [], otherPlans = [];
             while (offset < 200) {
               const url = new URL('https://api.mercadopago.com/preapproval_plan/search');
               url.searchParams.set('limit','100');
@@ -46,12 +46,14 @@ jobs:
                 const a=p.auto_recurring||{};
                 if ((a.frequency_type==='months' && [1,12].includes(Number(a.frequency))) || (a.frequency_type==='years' && Number(a.frequency)===1)) {
                   matched.push({id:p.id,periodMonths:a.frequency_type==='years'?12:Number(a.frequency),periodUnit:a.frequency_type,amount:a.transaction_amount,currency:a.currency_id,status:p.status,description:p.reason});
+                } else {
+                  otherPlans.push({id:p.id,period:Number(a.frequency),periodUnit:a.frequency_type,amount:a.transaction_amount,currency:a.currency_id,status:p.status});
                 }
               }
               count+=page.length;offset+=page.length;
               if(page.length===0 || offset>=Number(data.paging?.total||0)) break;
             }
-            console.log(JSON.stringify({ok:true,readOnly:true,merchantVerified:true,scanned:count,commercialCandidates:matched}));
+            console.log(JSON.stringify({ok:true,readOnly:true,merchantVerified:true,scanned:count,commercialCandidates:matched,otherPlans}));
             if(offset>=200) console.log('WARNING: pagination capped at 200; audit may be incomplete');
           })().catch(e=>{console.log(JSON.stringify({ok:false,readOnly:true,code:e.message}));process.exitCode=1});
           NODE
