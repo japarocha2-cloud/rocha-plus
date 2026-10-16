@@ -75,6 +75,7 @@ jobs:
         run: |
           python3 - <<'PYLABEL'
           import xml.etree.ElementTree as ET
+          ET.register_namespace('android', 'http://schemas.android.com/apk/res/android')
           p = 'android/app/src/main/AndroidManifest.xml'
           tree = ET.parse(p)
           tree.getroot().find('application').set('{http://schemas.android.com/apk/res/android}label', 'Rocha+ Asaas')
