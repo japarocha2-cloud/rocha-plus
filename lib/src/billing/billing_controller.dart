@@ -1,3 +1,4 @@
+import 'commercial_config.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,6 +23,7 @@ class BillingController extends ChangeNotifier {
   BillingAccess? get access => _grant;
   String get message {
     if (error != null) return error!;
+    if (CommercialConfig.asaas && _grant?.active != true) return CommercialConfig.setupMessage;
     if (checking && _grant == null) return 'Confirmando seu acesso…';
     if (_grant?.state == 'trial' && allowed) {
       final prefix = _grant!.subscriptionLinked ? 'Assinatura encontrada no Mercado Pago. ' : '';
@@ -80,7 +82,7 @@ class BillingController extends ChangeNotifier {
     try {
       final uri = await repository.checkout(plan);
       if (_disposed) return;
-      if (!await openUrl(uri)) throw const BillingFailure('Não foi possível abrir o Mercado Pago.');
+      if (!await openUrl(uri)) throw BillingFailure('Não foi possível abrir o ${CommercialConfig.provider}.');
       // Returning from checkout never grants access. Only status() can do that.
     } finally {
       if (!_disposed) { openingCheckout = false; notifyListeners(); }

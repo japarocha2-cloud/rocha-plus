@@ -1,3 +1,4 @@
+import '../billing/commercial_config.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/rocha_theme.dart';
@@ -13,6 +14,7 @@ class SubscriptionScreen extends StatelessWidget {
 
   Future<void> _openPlan(BuildContext context, String plan, Uri legacy) async {
     if (busy) return;
+    if (CommercialConfig.asaas) return;
     try {
       if (checkout != null) {
         await checkout!(plan);
@@ -42,7 +44,7 @@ class SubscriptionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: RochaColors.background,
-    appBar: AppBar(title: const Text('Assinaturas'), actions: [
+    appBar: AppBar(title: const Text(CommercialConfig.asaas ? 'Assinaturas · Asaas' : 'Assinaturas'), actions: [
       if (onSignOut != null) TextButton(onPressed: busy ? null : onSignOut,
         child: const Text('Sair')),
     ]),
@@ -53,7 +55,8 @@ class SubscriptionScreen extends StatelessWidget {
         title: 'Entre em uma nova fase do entretenimento.',
         subtitle: 'TV aberta agora. Filmes e séries no futuro.',
         children: [
-          if (checkout != null) const Text('Ao contratar, você autoriza a renovação recorrente no Mercado Pago. Use o mesmo e-mail do seu login para vincular a assinatura.'),
+          if (CommercialConfig.asaas) const Text(CommercialConfig.setupMessage, key: ValueKey('asaas-setup-status'))
+          else if (checkout != null) const Text('Ao contratar, você autoriza a renovação recorrente no Mercado Pago. Use o mesmo e-mail do seu login para vincular a assinatura.'),
           if (statusMessage != null) Text(statusMessage!,
             key: const ValueKey('subscription-access-status')),
           if (onRefresh != null) OutlinedButton(
@@ -61,19 +64,19 @@ class SubscriptionScreen extends StatelessWidget {
             child: Text(busy ? 'Verificando…' : 'Já paguei / verificar acesso')),
           _PlanCard(
             title: 'Plano Fundador Mensal',
-            price: 'R\$ 4,90',
+            price: CommercialConfig.monthlyPrice,
             period: '/ mês',
             bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
             buttonLabel: 'Assinar mensal',
-            onPressed: () => _openPlan(context, 'monthly', _monthlyCheckout),
+            onPressed: CommercialConfig.asaas || busy ? null : () => _openPlan(context, 'monthly', _monthlyCheckout),
           ),
           _PlanCard(
             title: 'Plano Fundador Anual',
-            price: 'R\$ 55,00',
+            price: CommercialConfig.annualPrice,
             period: '/ ano',
             bullets: const ['7 dias de teste grátis', 'Preço de lançamento', 'Acesso à fase inicial com TV aberta', 'Benefício de fundador'],
             buttonLabel: 'Assinar anual',
-            onPressed: () => _openPlan(context, 'annual', _annualCheckout),
+            onPressed: CommercialConfig.asaas || busy ? null : () => _openPlan(context, 'annual', _annualCheckout),
           ),
           const _FounderBenefit(),
         ],
@@ -119,7 +122,7 @@ class SubscriptionScreen extends StatelessWidget {
 class _PlanCard extends StatelessWidget {
   final String title, price, period, buttonLabel;
   final List<String> bullets;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   const _PlanCard({
     required this.title,
     required this.price,

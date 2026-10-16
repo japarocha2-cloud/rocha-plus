@@ -1,3 +1,4 @@
+import 'commercial_config.dart';
 import 'package:flutter/material.dart';
 
 Future<bool?> showTrialWelcomeDialog(BuildContext context) =>
@@ -41,12 +42,24 @@ class TrialWelcomeDialog extends StatelessWidget {
                       fit: BoxFit.fill,
                       excludeFromSemantics: true),
                   ),
+                  if (CommercialConfig.asaas) Positioned(
+                    left: 42, top: 780, width: 552, height: 50,
+                    child: ExcludeSemantics(child: ColoredBox(
+                      color: Color(0xFF050909),
+                      child: Center(child: Text(
+                        'Mensal ${CommercialConfig.monthlyPrice}  •  Anual ${CommercialConfig.annualPrice}',
+                        key: ValueKey('trial-variant-prices'),
+                        style: TextStyle(color: Color(0xFFFFD45C), fontSize: 24,
+                          fontWeight: FontWeight.w700),
+                      )),
+                    )),
+                  ),
                   Positioned.fill(child: Semantics(
                     label: 'Rocha+. Você ganhou 7 dias grátis! '
                       'Bem-vindo ao Rocha+. Aproveite os canais e recursos '
                       'durante seu período de teste. Depois dos 7 dias, '
                       'escolha um plano para continuar assistindo. '
-                      'Mensal R\$ 4,90. Anual R\$ 55,00. '
+                      'Mensal ${CommercialConfig.monthlyPrice}. Anual ${CommercialConfig.annualPrice}. '
                       'Este aviso aparece uma única vez por conta.',
                     child: const SizedBox.expand(),
                   )),

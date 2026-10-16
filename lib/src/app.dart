@@ -1,3 +1,4 @@
+import 'billing/commercial_config.dart';
 import 'billing/billing_repository.dart';
 import 'billing/subscription_gate.dart';
 import 'dart:async';
@@ -52,7 +53,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
       // Clear every nested channel/player route when the session changes.
       key: ValueKey(controller.account?.uid ??
           (showingLayoutPreview ? 'layout-preview' : 'signed-out')),
-      title: 'Rocha+',
+      title: CommercialConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: RochaTheme.dark,
       home: !introFinished ? IntroScreen(onFinished: () => setState(() => introFinished = true)) :

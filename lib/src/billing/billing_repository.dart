@@ -1,3 +1,4 @@
+import 'commercial_config.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -102,6 +103,7 @@ class HttpBillingRepository implements BillingRepository {
   }
   @override
   Future<Uri> checkout(String plan) async {
+    if (CommercialConfig.asaas) throw const BillingFailure(CommercialConfig.setupMessage);
     if (!['monthly', 'annual'].contains(plan)) {
       throw const BillingFailure('Plano inválido.');
     }

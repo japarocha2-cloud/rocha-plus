@@ -1,3 +1,4 @@
+import 'commercial_config.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -161,6 +162,7 @@ class SparkBillingRepository implements BillingRepository {
 
   @override
   Future<Uri> checkout(String plan) async {
+    if (CommercialConfig.asaas) throw const BillingFailure(CommercialConfig.setupMessage);
     // Existing links are retained. Spark does not verify Mercado Pago payments.
     final link = switch (plan) {
       'monthly' => 'https://mpago.la/2E7yjF4',
