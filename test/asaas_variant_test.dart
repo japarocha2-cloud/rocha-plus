@@ -47,7 +47,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
+
     var accepted = false;
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: TrialWelcomeDialog(
       onAccepted: () => accepted = true,
@@ -58,5 +58,6 @@ void main() {
     await expectLater(find.byType(Scaffold), matchesGoldenFile('asaas_trial_preview.png'));
     await tester.tap(find.byKey(const ValueKey('trial-welcome-accept')));
     expect(accepted, isTrue);
+    semantics.dispose();
   });
 }
