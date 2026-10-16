@@ -27,6 +27,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _loading = true;
   bool _failed = false;
   bool _casting = false;
+  bool _pausedForCast = false;
+  Future<void>? _castRecovery;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -109,6 +111,27 @@ class _PlayerScreenState extends State<PlayerScreen> {
         _isPlaying = value.isPlaying;
         _isBuffering = value.isBuffering;
       });
+    }
+  }
+
+  Future<void> _resumeAfterCast() => _castRecovery ??=
+      _restoreLocalPlayback().whenComplete(() => _castRecovery = null);
+
+  Future<void> _restoreLocalPlayback() async {
+    if (!_pausedForCast || !mounted) return;
+    _pausedForCast = false;
+    final attempt = _attempt;
+    await CastHlsProxy.instance.close();
+    if (!mounted || attempt != _attempt) return;
+    final controller = _controller;
+    if (controller == null || controller.value.hasError) {
+      await _initialize();
+      return;
+    }
+    try {
+      await controller.play();
+    } catch (_) {
+      if (mounted && attempt == _attempt) await _initialize();
     }
   }
 
@@ -221,6 +244,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         final relayUri = await CastHlsProxy.instance.relay(uri);
         await _loadAndConfirmCast(relayUri);
       }
+      _pausedForCast = true;
       await _controller?.pause();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -228,10 +252,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
         );
         await Navigator.push(context, MaterialPageRoute(builder: (_) => CastControlScreen(
           channel: widget.channel, deviceName: device.friendlyName,
-          confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId)));
+          confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId,
+          onSessionEnded: _resumeAfterCast)));
         if (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.disconnected) {
-          await CastHlsProxy.instance.close();
-          await _controller?.play();
+          await _resumeAfterCast();
         }
       }
     } catch (_) {
@@ -241,6 +265,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       } catch (_) {
         // Preserve the original playback failure.
       }
+      await _resumeAfterCast();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),

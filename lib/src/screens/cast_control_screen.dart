@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import '../live/channel.dart';
@@ -8,14 +9,61 @@ class CastControlScreen extends StatefulWidget {
   final Channel channel;
   final String deviceName;
   final String? confirmedContentId;
+  final Future<void> Function()? onSessionEnded;
+  final Stream<bool>? connectionStream;
+  final bool? initiallyConnected;
+  final Stream<GoggleCastMediaStatus?>? statusStream;
   const CastControlScreen({super.key, required this.channel,
-    required this.deviceName, required this.confirmedContentId});
+    required this.deviceName, required this.confirmedContentId, this.onSessionEnded,
+    this.connectionStream, this.initiallyConnected, this.statusStream});
   @override
   State<CastControlScreen> createState() => _CastControlScreenState();
 }
 
 class _CastControlScreenState extends State<CastControlScreen> {
   bool busy = false;
+  bool _connected = false;
+  bool _ending = false;
+  StreamSubscription<bool>? _sessionSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _connected = widget.initiallyConnected ??
+        (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected);
+    _sessionSubscription = (widget.connectionStream ??
+        GoogleCastSessionManager.instance.currentSessionStream.map((session) =>
+          session?.connectionState == GoogleCastConnectState.connected))
+        .listen((connected) {
+          if (!mounted) return;
+          setState(() => _connected = connected);
+          if (!connected) _endLostSession();
+        });
+    // Catch a loss between confirmation on the player and this route opening.
+    if (!_connected) _endLostSession();
+  }
+
+  void _endLostSession() {
+    if (_ending) return;
+    _ending = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try { await widget.onSessionEnded?.call(); }
+      finally {
+        if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.pop(context);
+        }
+      }
+    });
+    WidgetsBinding.instance.scheduleFrame();
+  }
+
+  @override
+  void dispose() {
+    _sessionSubscription?.cancel();
+    super.dispose();
+  }
+
   Future<void> _action(Future<void> Function() action) async {
     if (busy) return;
     setState(() => busy = true);
@@ -29,15 +77,14 @@ class _CastControlScreenState extends State<CastControlScreen> {
   }
   @override
   Widget build(BuildContext context) => StreamBuilder<GoggleCastMediaStatus?>(
-    stream: GoogleCastRemoteMediaClient.instance.mediaStatusStream,
-    initialData: GoogleCastRemoteMediaClient.instance.mediaStatus,
+    stream: widget.statusStream ?? GoogleCastRemoteMediaClient.instance.mediaStatusStream,
+    initialData: widget.statusStream == null ? GoogleCastRemoteMediaClient.instance.mediaStatus : null,
     builder: (context, snapshot) {
       final status = snapshot.data;
       final state = status?.playerState;
       final matches = widget.confirmedContentId != null &&
           status?.mediaInformation?.contentId == widget.confirmedContentId;
-      final connected = GoogleCastSessionManager.instance.connectionState ==
-          GoogleCastConnectState.connected && matches;
+      final connected = _connected && matches;
       final playing = connected && state == CastMediaPlayerState.playing;
       final label = !connected ? 'Sem reprodução confirmada' : switch (state) {
         CastMediaPlayerState.playing => 'Transmitindo agora',
@@ -56,6 +103,7 @@ class _CastControlScreenState extends State<CastControlScreen> {
         }),
         onDisconnect: () => _action(() async {
           await GoogleCastSessionManager.instance.endSessionAndStopCasting();
+          await widget.onSessionEnded?.call();
           if (context.mounted) { Navigator.pop(context); }
         }),
       );
