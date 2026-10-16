@@ -115,60 +115,24 @@ jobs:
           }
           NODE
 
-      - name: Resolve pilot rejection by verified subscriber payer ID and invoice chain (read-only)
-        working-directory: billing
+      - name: Inspect photographed declined operation (GET only)
         env:
           MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
         run: |
           node --input-type=module <<'NODE'
-          import {createProvider} from './provider.js';
-          import {checkedSubscription} from './recurring.js';
-          try {
-            const config={collectorId:'1981204845',liveMode:true,now:Date.now(),planIds:{
-              monthly:'0b66f85cf2914aa88b9f1eadfa8b81a9',annual:'bb0c2c90ff3d45a6a8203b69fbabf871'}};
-            const provider=createProvider({accessToken:process.env.MP_ACCESS_TOKEN,webhookSecret:''});
-            const subscriptions=await provider.subscriptions('andressarocha9706@gmail.com',config.planIds);
-            if(subscriptions.length>10) throw Error('scope-limit');
-            const payers=new Set(),invoiceResults=[];
-            for(const item of subscriptions) {
-              const s=checkedSubscription(item,config);
-              if(s.email!=='andressarocha9706@gmail.com') throw Error('identity-mismatch');
-              payers.add(s.payerId);
-              for(const invoice of await provider.invoices(s.id)) {
-                if(String(invoice.preapproval_id)!==s.id) throw Error('invoice-owner');
-                const id=invoice.payment?.id;
-                if(id) {
-                  const p=await provider.payment(id);
-                  if(String(p.collector_id)!==config.collectorId || String(p.payer?.id)!==s.payerId) throw Error('payment-owner');
-                  invoiceResults.push({status:p.status,statusDetail:p.status_detail,
-                    amount:p.transaction_amount,currency:p.currency_id,createdAt:p.date_created});
-                }
-              }
-            }
-            const found=new Map();let complete=true;
-            for(const payer of payers) {
-              const url=new URL('https://api.mercadopago.com/v1/payments/search');
-              for(const [key,value] of Object.entries({sort:'date_created',criteria:'desc',
-                range:'date_created',begin_date:'NOW-2HOURS',end_date:'NOW',limit:'50',offset:'0',
-                'collector.id':config.collectorId,'payer.id':payer})) url.searchParams.set(key,value);
-              const response=await fetch(url,{headers:{Authorization:'Bearer '+process.env.MP_ACCESS_TOKEN,Accept:'application/json'},
-                redirect:'error',signal:AbortSignal.timeout(20000)});
-              if(!response.ok) throw Error('payment-search-unavailable');
-              const page=await response.json();
-              if(!Array.isArray(page.results)) throw Error('invalid-result');
-              complete=complete&&Number(page.paging?.total??Infinity)<=50;
-              for(const p of page.results) {
-                if(String(p.collector_id)===config.collectorId && String(p.payer?.id)===payer &&
-                   Number(p.transaction_amount)===4.9 && p.currency_id==='BRL')
-                  found.set(String(p.id),{status:p.status,statusDetail:p.status_detail,
-                    amount:p.transaction_amount,currency:p.currency_id,createdAt:p.date_created,
-                    titleMatchesMonthlyPlan:String(p.description??'').toLowerCase().includes('rocha')});
-              }
-            }
-            console.log(JSON.stringify({readOnly:true,verifiedSubscriptions:subscriptions.length,
-              complete,payerMatchedPayments:[...found.values()],invoicePayments:invoiceResults}));
-          } catch (_) {
-            console.log(JSON.stringify({readOnly:true,code:'pilot-rejection-details-not-confirmed'}));
-            process.exitCode=1;
+          const response=await fetch('https://api.mercadopago.com/v1/payments/183399712599',{
+            headers:{Authorization:'Bearer '+process.env.MP_ACCESS_TOKEN,Accept:'application/json'},
+            redirect:'error',signal:AbortSignal.timeout(20000)});
+          if(!response.ok) {
+            console.log(JSON.stringify({readOnly:true,operationLookupHttpStatus:response.status}));
+            process.exit(0);
           }
+          const p=await response.json();
+          if(String(p.collector_id)!=='1981204845' || Number(p.transaction_amount)!==4.9 || p.currency_id!=='BRL') {
+            console.log(JSON.stringify({readOnly:true,operationScopeVerified:false}));process.exit(0);
+          }
+          console.log(JSON.stringify({readOnly:true,operationScopeVerified:true,status:p.status,
+            statusDetail:p.status_detail,amount:p.transaction_amount,currency:p.currency_id,
+            liveMode:p.live_mode,createdAt:p.date_created,
+            titleMatchesMonthlyPlan:String(p.description??'').toLowerCase().includes('rocha')}));
           NODE
