@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
@@ -48,10 +51,20 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     final semantics = tester.ensureSemantics();
 
+    await tester.runAsync(() async {
+      final loader = FontLoader('RochaPreview')
+        ..addFont(File('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf')
+          .readAsBytes().then(ByteData.sublistView));
+      await loader.load();
+    });
     var accepted = false;
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: TrialWelcomeDialog(
+    await tester.pumpWidget(MaterialApp(theme: ThemeData(fontFamily: 'RochaPreview'), home: Scaffold(body: TrialWelcomeDialog(
       onAccepted: () => accepted = true,
     ))));
+    await tester.runAsync(() => precacheImage(
+      const AssetImage('branding/trial-welcome-approved.png'),
+      tester.element(find.byType(TrialWelcomeDialog)),
+    ));
     await tester.pumpAndSettle();
     expect(find.text(r'Mensal R$ 5,50  •  Anual R$ 55,00'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp(r'Mensal R\$ 5,50')), findsOneWidget);
