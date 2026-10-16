@@ -49,7 +49,7 @@ void main() {
     final connections = StreamController<bool>.broadcast();
     var resumed = 0;
     await open(tester, connections.stream, () async { resumed++; });
-    await tester.pumpWidget(const MaterialApp(home: Text('Acesso encerrado')));
+    await tester.pumpWidget(const MaterialApp(key: ValueKey('signed-out'), home: Text('Acesso encerrado')));
     connections.add(false);
     await tester.pumpAndSettle();
     expect(resumed, 0);
@@ -57,3 +57,4 @@ void main() {
     await connections.close();
   });
 }
+
