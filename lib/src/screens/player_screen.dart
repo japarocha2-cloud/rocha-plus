@@ -29,6 +29,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _casting = false;
   bool _pausedForCast = false;
   Future<void>? _castRecovery;
+  StreamSubscription<dynamic>? _castSessionSubscription;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -117,9 +118,23 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Future<void> _resumeAfterCast() => _castRecovery ??=
       _restoreLocalPlayback().whenComplete(() => _castRecovery = null);
 
+  void _watchCastDisconnect() {
+    _castSessionSubscription?.cancel();
+    _castSessionSubscription = GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
+      if (session?.connectionState != GoogleCastConnectState.connected && _pausedForCast) {
+        unawaited(_resumeAfterCast());
+      }
+    });
+    if (GoogleCastSessionManager.instance.connectionState != GoogleCastConnectState.connected) {
+      unawaited(_resumeAfterCast());
+    }
+  }
+
   Future<void> _restoreLocalPlayback() async {
     if (!_pausedForCast || !mounted) return;
     _pausedForCast = false;
+    _castSessionSubscription?.cancel();
+    _castSessionSubscription = null;
     final attempt = _attempt;
     await CastHlsProxy.instance.close();
     if (!mounted || attempt != _attempt) return;
@@ -246,6 +261,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
       _pausedForCast = true;
       await _controller?.pause();
+      if (mounted) _watchCastDisconnect();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
@@ -315,6 +331,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _castSessionSubscription?.cancel();
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);
