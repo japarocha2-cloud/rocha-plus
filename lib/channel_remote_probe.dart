@@ -11,7 +11,8 @@ Future<void> main() async {
     .map((name) => catalog.singleWhere((c) => c.name == name)).toList();
   runApp(MaterialApp(home: PlayerScreen(channel: lineup.first, lineup: lineup,
     controllerFactory: (uri) {
-      final channel = lineup.singleWhere((c) => c.url == uri.toString());
+      // URI parsing normalizes default :443 ports used by the official source.
+      final channel = lineup.singleWhere((c) => Uri.parse(c.url) == uri);
       final controller = VideoPlayerController.networkUrl(uri,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: false));
       Duration? previous;
