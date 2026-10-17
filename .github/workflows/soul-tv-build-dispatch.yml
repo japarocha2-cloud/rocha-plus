@@ -1,0 +1,72 @@
+name: Rocha+ Soul TV APK isolated
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/soul-tv-build-dispatch.yml'
+permissions:
+  contents: read
+jobs:
+  build-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout candidate branch (never main app code)
+        uses: actions/checkout@v4
+        with:
+          ref: feat/soul-tv-candidates-20261016
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Configure Android project
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android/app/build.gradle.kts")
+          p.write_text(p.read_text().replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 37"))
+          PY
+          python3 tools/configure_android.py
+      - name: Isolate app from frozen Rocha+ APK
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("android/app/build.gradle.kts")
+          s=p.read_text()
+          s,n=re.subn(r'(applicationId\s*=\s*")[^"]+(")',r'\g<1>com.rochaplus.soultvtest\g<2>',s,count=1)
+          if n!=1: raise RuntimeError("applicationId not found")
+          p.write_text(s)
+          PY
+      - name: Verify catalog before compiling
+        run: |
+          python3 - <<'PY'
+          import json
+          a=json.load(open("catalog/approved.json"))
+          assert len([x for x in a if "SBC TV" in x.get("name","")])==1
+          assert len([x for x in a if "ISTV" in x.get("name","")])==1
+          print("SBC and ISTV catalog check passed")
+          PY
+      - name: Fetch Flutter dependencies
+        run: flutter pub get
+      - name: Run automated tests
+        run: |
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          flutter analyze
+          flutter test
+      - name: Build independent debug APK
+        run: flutter build apk --debug
+      - name: Check APK output
+        run: test -s build/app/outputs/flutter-apk/app-debug.apk
+      - name: Upload APK for physical tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-soul-tv-teste-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
