@@ -2880,5 +2880,47 @@
       "audio_channels": 2,
       "test_kind": "local sample from latest HLS segments"
     }
+  },
+  {
+    "id": "409bc8c7f8e1b52c",
+    "name": "Kuriakos Kids",
+    "url": "https://w2.manasat.com:443/kkids/smil:kkids.smil/playlist.m3u8",
+    "group": "Infantil",
+    "approved": true,
+    "status": "approved",
+    "experimental": true,
+    "release_scope": "owner_testing_only",
+    "distribution_permission": "unverified",
+    "evidence": {
+      "report": "docs/catalog/infantil-more-candidates-20261017.json",
+      "decoded_seconds": 29.994667,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "audio_channels": 2,
+      "test_kind": "local sample from latest HLS segments"
+    }
+  },
+  {
+    "id": "3e6d656b299f34b9",
+    "name": "3ABN Kids",
+    "url": "https://3abn.bozztv.com/3abn2/Kids_live/smil:Kids_live.smil/playlist.m3u8",
+    "group": "Infantil",
+    "approved": true,
+    "status": "approved",
+    "experimental": true,
+    "release_scope": "owner_testing_only",
+    "distribution_permission": "unverified",
+    "evidence": {
+      "report": "docs/catalog/infantil-more-candidates-20261017.json",
+      "decoded_seconds": 29.996633,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "width": 1280,
+      "height": 720,
+      "audio_channels": 2,
+      "test_kind": "local sample from latest HLS segments"
+    }
   }
 ]

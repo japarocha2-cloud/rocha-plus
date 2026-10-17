@@ -77,7 +77,7 @@ jobs:
       - run: flutter test
       - name: Build signed isolated candidate with Firebase enabled
         run: |
-          flutter build apk --release --build-number=6 --build-name=0.1.0-test-sbc-kids \
+          flutter build apk --release --build-number=7 --build-name=0.1.0-test-infantil \
             --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" \
             --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" \
             --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \

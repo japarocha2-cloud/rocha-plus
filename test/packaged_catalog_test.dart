@@ -13,9 +13,11 @@ void main() {
     expect(channels, isNotEmpty);
     expect(channels.where((c) => c.group == 'Notícias'), hasLength(5));
     expect(channels.where((c) => c.name.startsWith('SBC TV')), hasLength(1));
-    expect(channels, hasLength(192));
-    expect(channels.where((c) => c.group == 'Infantil'), hasLength(3));
+    expect(channels, hasLength(194));
+    expect(channels.where((c) => c.group == 'Infantil'), hasLength(5));
     expect(channels.where((c) => c.name == 'SBC Kids'), hasLength(1));
+    expect(channels.where((c) => c.name == 'Kuriakos Kids'), hasLength(1));
+    expect(channels.where((c) => c.name == '3ABN Kids'), hasLength(1));
     expect(channels.where((c) => c.group == 'TV aberta').length, greaterThan(50));
   });
   testWidgets('News renders the real packaged channels after account preference loading', (tester) async {

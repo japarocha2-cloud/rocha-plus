@@ -6,7 +6,7 @@ from sync_platform_baseline import sync, selected, ROOT
 
 class PlatformBaselineTests(unittest.TestCase):
     def test_platforms_have_exact_reviewed_catalogue_and_no_candidate_fallback(self):
-        self.assertEqual(sync(check=True), 192)
+        self.assertEqual(sync(check=True), 194)
     def test_unreviewed_entry_is_rejected_instead_of_exported(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-17",
   "request": "Pesquisar mais canais infantis; nenhuma nova inclusão solicitada nesta rodada",
-  "catalog_changed": false,
+  "catalog_changed": true,
   "owner_physical_feedback": {
     "version_code": 6,
     "source_commit": "e8b4c057f5a29c4edae6ea81f54f61eeed8f0163",
@@ -12,7 +12,7 @@
   "candidates": [
     {
       "name": "Kuriakos Kids",
-      "approved": false,
+      "approved": true,
       "official_site": "https://kuriakos-kids.com/",
       "official_contact": "https://kuriakos-kids.com/contactos/",
       "url": "https://w2.manasat.com:443/kkids/smil:kkids.smil/playlist.m3u8",
@@ -79,11 +79,13 @@
         "decode_exit": 0,
         "decode_progress": "frame=0\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=426667\nout_time_ms=426667\nout_time=00:00:00.426667\ndup_frames=0\ndrop_frames=0\nspeed=12.9x\nprogress=continue\nframe=387\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=15914667\nout_time_ms=15914667\nout_time=00:00:15.914667\ndup_frames=0\ndrop_frames=0\nspeed=29.3x\nprogress=continue\nframe=749\nfps=735.21\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=29994667\nout_time_ms=29994667\nout_time=00:00:29.994667\ndup_frames=0\ndrop_frames=0\nspeed=29.4x\nprogress=end\n",
         "decode_error": ""
-      }
+      },
+      "status": "owner_experimental_testing",
+      "approval_scope": "technical_candidate_for_owner_testing_only"
     },
     {
       "name": "3ABN Kids",
-      "approved": false,
+      "approved": true,
       "official_site": "https://3abnkids.tv/",
       "official_player": "https://3abnkids.tv/watch_3abnkids.html",
       "url": "https://3abn.bozztv.com/3abn2/Kids_live/smil:Kids_live.smil/playlist.m3u8",
@@ -149,7 +151,9 @@
         "decode_exit": 0,
         "decode_progress": "frame=0\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=337667\nout_time_ms=337667\nout_time=00:00:00.337667\ndup_frames=0\ndrop_frames=0\nspeed=31.6x\nprogress=continue\nframe=623\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=21095000\nout_time_ms=21095000\nout_time=00:00:21.095000\ndup_frames=0\ndrop_frames=0\nspeed=41.2x\nprogress=continue\nframe=900\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=29996633\nout_time_ms=29996633\nout_time=00:00:29.996633\ndup_frames=0\ndrop_frames=0\nspeed=  43x\nprogress=end\n",
         "decode_error": ""
-      }
+      },
+      "status": "owner_experimental_testing",
+      "approval_scope": "technical_candidate_for_owner_testing_only"
     },
     {
       "name": "Kanuca TV",
@@ -185,5 +189,6 @@
     "Distribution agreements were not verified.",
     "Initial ffprobe requests timed out after 25 seconds; fetching recent media segments with an ordinary HTTP client and decoding them locally passed for two sources. Do not infer native-player compatibility from this workaround.",
     "No messages were sent to broadcasters; no live catalog or frozen APK was changed."
-  ]
+  ],
+  "integration_note": "Owner requested physical-test inclusion of the two technically decoded candidates. Native Android validation is performed separately. Distribution agreements remain unverified."
 }
