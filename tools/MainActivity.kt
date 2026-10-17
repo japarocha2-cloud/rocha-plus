@@ -11,8 +11,22 @@ import com.google.android.gms.cast.framework.CastContext
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity() {
+    private var channelKeysEnabled = false
+    private var channelKeys: MethodChannel? = null
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        channelKeys = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
+            "com.rochaplus.app/channel_keys").also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                if (call.method == "setEnabled") {
+                    channelKeysEnabled = call.arguments == true
+                    result.success(null)
+                } else {
+                    result.notImplemented()
+                }
+            }
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
             "com.rochaplus.app/live_cast").setMethodCallHandler { call, result ->
             if (call.method != "loadLive") {
@@ -52,6 +66,15 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val channelKey = event.keyCode == KeyEvent.KEYCODE_CHANNEL_UP ||
+            event.keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN
+        if (channelKey && channelKeysEnabled) {
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                channelKeys?.invokeMethod("switch",
+                    if (event.keyCode == KeyEvent.KEYCODE_CHANNEL_UP) 1 else -1)
+            }
+            return true
+        }
         val volumeKey = event.keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
             event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
             event.keyCode == KeyEvent.KEYCODE_VOLUME_MUTE

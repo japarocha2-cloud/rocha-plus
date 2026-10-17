@@ -10,6 +10,7 @@ on:
       - 'catalog/**'
       - 'pubspec*'
       - 'test/**'
+      - 'tools/MainActivity.kt'
       - '!test/packaged_catalog_test.dart'
   workflow_dispatch:
 

@@ -5,6 +5,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../live/channel_sequence.dart';
+import '../live/native_channel_keys.dart';
 import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
@@ -35,6 +36,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Timer? _channelNoticeTimer;
   bool _channelNoticeVisible = false;
   final _primaryControlFocus = FocusNode(debugLabel: 'player-primary-control');
+  late final _nativeChannelKeys = NativeChannelKeys((direction) {
+    if (mounted && ModalRoute.of(context)?.isCurrent == true) _switchChannel(direction);
+  });
   VideoPlayerController? _controller;
   Future<void>? _controllerDisposal;
   bool _loading = true;
@@ -69,6 +73,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(_nativeChannelKeys.activate());
     _initialize();
   }
 
@@ -455,6 +460,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    unawaited(_nativeChannelKeys.deactivate());
     _channelNoticeTimer?.cancel();
     _primaryControlFocus.dispose();
     _liveRecovery?.dispose();

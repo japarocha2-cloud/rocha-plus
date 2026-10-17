@@ -17,24 +17,40 @@ wait_playing() {
   echo "Native playback was not confirmed for $name" >&2
   return 1
 }
+foreground() {
+  adb shell dumpsys window > /tmp/remote-channel-window.log
+  if ! grep 'mCurrentFocus' /tmp/remote-channel-window.log | grep -q 'com.rochaplus.remoteprobe'; then
+    adb shell wm dismiss-keyguard
+    adb shell am start -n com.rochaplus.remoteprobe/com.rochaplus.app.MainActivity
+    sleep 1
+    adb shell dumpsys window > /tmp/remote-channel-window.log
+  fi
+  grep 'mCurrentFocus' /tmp/remote-channel-window.log | tee -a "$evidence"
+  grep 'mCurrentFocus' /tmp/remote-channel-window.log | grep -q 'com.rochaplus.remoteprobe'
+}
 adb install build/app/outputs/flutter-apk/app-release.apk
 adb logcat -c
+adb shell wm dismiss-keyguard
 adb shell am start -n com.rochaplus.remoteprobe/com.rochaplus.app.MainActivity
 wait_playing 'Kuriakos Kids'
 adb logcat -c
-adb shell input keyevent 166
+foreground
+adb shell input keyboard keyevent 166
 wait_playing '3ABN Kids'
 grep -Fq 'ROCHA_REMOTE_SELECTION name=3ABN Kids' "$log"
 adb logcat -c
-adb shell input keyevent 167
+foreground
+adb shell input keyboard keyevent 167
 wait_playing 'Kuriakos Kids'
 grep -Fq 'ROCHA_REMOTE_SELECTION name=Kuriakos Kids' "$log"
 adb logcat -c
-adb shell input keyevent 19
+foreground
+adb shell input dpad keyevent 19
 wait_playing '3ABN Kids'
 adb logcat -c
-adb shell input keyevent 23
-adb shell input keyevent 20
+foreground
+adb shell input dpad keyevent 23
+adb shell input dpad keyevent 20
 sleep 2
 adb logcat -d > "$log"
 if grep -q 'ROCHA_REMOTE_SELECTION' "$log"; then
