@@ -24,10 +24,13 @@
         "sample_rate": 44100,
         "audio_channels": 2,
         "test_kind": "local sample from newest HLS segments",
-        "android": "not_tested",
+        "android": "native initialization and playing state verified on API 35 emulator",
         "cast": "not_tested",
         "roku": "not_tested",
-        "long_term_stability": "not_tested"
+        "long_term_stability": "not_tested",
+        "android_startup_ms": 4379,
+        "android_run": 39050028687,
+        "android_limits": "Short opening/playback check; reported live position is a timeline offset, not a measured playback duration. Physical device, prolonged stability, Cast and Roku are unverified."
       },
       "contact": "contato@sbcgroup.com.br",
       "approval_scope": "technical_candidate_for_owner_testing_only"
