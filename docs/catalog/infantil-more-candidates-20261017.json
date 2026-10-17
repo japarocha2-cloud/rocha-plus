@@ -84,10 +84,11 @@
       "approval_scope": "technical_candidate_for_owner_testing_only",
       "android_evidence": {
         "run_id": 39051755968,
-        "startup_ms": 3514,
-        "advanced_ms": 10058,
+        "startup_ms": 2134,
+        "advanced_ms": 10959,
         "size": "640x360",
-        "physical_owner_test": "pending"
+        "physical_owner_test": "pending",
+        "job_id": 117454268704
       }
     },
     {
@@ -163,10 +164,11 @@
       "approval_scope": "technical_candidate_for_owner_testing_only",
       "android_evidence": {
         "run_id": 39051755968,
-        "startup_ms": 2224,
-        "advanced_ms": 10877,
+        "startup_ms": 1421,
+        "advanced_ms": 10000,
         "size": "1047x576",
-        "physical_owner_test": "pending"
+        "physical_owner_test": "pending",
+        "job_id": 117454268704
       }
     },
     {
