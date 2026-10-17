@@ -34,9 +34,14 @@ void main() {
 
       }
       final first = tester.getTopLeft(find.byKey(const ValueKey('category-TV ao Vivo')));
+      final second = tester.getTopLeft(find.byKey(const ValueKey('category-Esportes')));
+      final third = tester.getTopLeft(find.byKey(const ValueKey('category-Infantil')));
       final last = tester.getTopLeft(find.byKey(const ValueKey('category-Notícias')));
-      expect((first.dy - last.dy).abs(), lessThan(2));
-      expect(first.dx, lessThan(last.dx));
+      expect((first.dy - second.dy).abs(), lessThan(2));
+      expect((third.dy - last.dy).abs(), lessThan(2));
+      expect((first.dx - third.dx).abs(), lessThan(2));
+      expect(first.dx, lessThan(second.dx));
+      expect(third.dy, greaterThan(first.dy));
       expect(tester.takeException(), isNull);
     });
   }

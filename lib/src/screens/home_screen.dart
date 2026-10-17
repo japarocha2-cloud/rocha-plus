@@ -212,9 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     maxCrossAxisExtent: 220, mainAxisExtent: 120,
                     crossAxisSpacing: 12, mainAxisSpacing: 12)
                 : const SliverGridDelegateWithFixedCrossAxisCount(
-                    // Four category covers on the first row, as in the approved mockup.
-                    crossAxisCount: 4, mainAxisSpacing: 8,
-                    crossAxisSpacing: 7, childAspectRatio: .82),
+                    // Two columns keep the approved portrait covers at their native ratio.
+                    crossAxisCount: 2, mainAxisSpacing: 12,
+                    crossAxisSpacing: 12, childAspectRatio: .82),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
@@ -349,7 +349,9 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
         onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
     ])),
     LayoutBuilder(builder: (context, constraints) => SizedBox(
-      height: widget.wide ? 304 : (constraints.maxWidth * 1.04).clamp(330.0, 540.0),
+      // Each phone page is 84% of the viewport, minus its two 5px gutters.
+      // Match that actual card width to a landscape 16:9 advertising slot.
+      height: widget.wide ? 304 : (constraints.maxWidth * .84 - 10) * 9 / 16,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollStartNotification &&
@@ -466,22 +468,23 @@ class _SponsoredPlaceholder extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
       border: Border.all(color: RochaColors.gold.withValues(alpha: .65))),
-    // Adjacent carousel pages are shorter and can wrap enlarged text onto
-    // more lines. Allow their content to scroll while preserving normal sizing.
     child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(minHeight: box.maxHeight),
-        child: Padding(padding: const EdgeInsets.all(22),
-          child: Column(mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center, children: [
-        Icon(icon, size: 58, color: RochaColors.gold),
-        const SizedBox(height: 22),
-        Text(title, textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12),
-        const Text('Espaço publicitário', textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, fontSize: 13)),
-      ]))),
+        child: Padding(padding: const EdgeInsets.all(14),
+          child: Row(children: [
+            Icon(icon, size: 44, color: RochaColors.gold),
+            const SizedBox(width: 14),
+            Expanded(child: Column(mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 8),
+              const Text('Espaço publicitário',
+                style: TextStyle(color: Colors.white70, fontSize: 13)),
+            ])),
+          ])),
+      ),
     )),
   );
 }

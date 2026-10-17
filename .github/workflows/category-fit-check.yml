@@ -1,7 +1,7 @@
 name: Category Cover Fit Checks
 on:
   push:
-    branches: [fix/mobile-category-cover-fit-20261015]
+    branches: [fix/mobile-category-cover-fit-20261015, feat/layout-proportions-20261017]
 permissions:
   contents: read
 jobs:
