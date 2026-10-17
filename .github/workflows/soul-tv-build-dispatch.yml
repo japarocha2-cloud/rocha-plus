@@ -43,6 +43,8 @@ jobs:
           if n!=1: raise RuntimeError("applicationId not found")
           p.write_text(s)
           PY
+      - name: Print tested candidate revision
+        run: git rev-parse HEAD
       - name: Verify synchronized platform baseline
         run: python3 tools/sync_platform_baseline.py --check
       - name: Verify catalog before compiling
