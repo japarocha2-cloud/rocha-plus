@@ -43,7 +43,13 @@ jobs:
           m=Path('android/app/src/main/AndroidManifest.xml')
           if m.exists():
             t=m.read_text().replace('android:label="Rocha+"','android:label="Rocha+ Canais Teste"')
-            m.write_text(t)
+            import xml.etree.ElementTree as ET
+            tree=ET.ElementTree(ET.fromstring(t))
+            activity=tree.getroot().find('./application/activity')
+            if activity is None: raise RuntimeError('Launcher activity not found')
+            activity.set('{http://schemas.android.com/apk/res/android}name',
+                         'com.rochaplus.app.MainActivity')
+            tree.write(m, encoding='utf-8', xml_declaration=True)
           PY
       - name: Validate catalog (SBC unique, ISTV unique)
         run: |

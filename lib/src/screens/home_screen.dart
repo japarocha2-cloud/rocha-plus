@@ -466,8 +466,14 @@ class _SponsoredPlaceholder extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
       border: Border.all(color: RochaColors.gold.withValues(alpha: .65))),
-    child: Padding(padding: const EdgeInsets.all(22),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    // Adjacent carousel pages are shorter and can wrap enlarged text onto
+    // more lines. Allow their content to scroll while preserving normal sizing.
+    child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: box.maxHeight),
+        child: Padding(padding: const EdgeInsets.all(22),
+          child: Column(mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center, children: [
         Icon(icon, size: 58, color: RochaColors.gold),
         const SizedBox(height: 22),
         Text(title, textAlign: TextAlign.center,
@@ -475,7 +481,8 @@ class _SponsoredPlaceholder extends StatelessWidget {
         const SizedBox(height: 12),
         const Text('Espaço publicitário', textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white70, fontSize: 13)),
-      ])),
+      ]))),
+    )),
   );
 }
 
