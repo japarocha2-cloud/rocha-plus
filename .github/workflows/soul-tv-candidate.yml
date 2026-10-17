@@ -3,11 +3,6 @@ name: Rocha+ Soul TV candidate (isolated debug)
 on:
   push:
     branches: [feat/soul-tv-candidates-20261016]
-    paths:
-      - '.github/workflows/soul-tv-candidate.yml'
-      - 'catalog/**'
-      - 'lib/**'
-      - 'tools/**'
   workflow_dispatch:
 
 permissions:
