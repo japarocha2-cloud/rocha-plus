@@ -468,10 +468,12 @@ class _SponsoredPlaceholder extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
       border: Border.all(color: RochaColors.gold.withValues(alpha: .65))),
-    child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: box.maxHeight),
-        child: Padding(padding: const EdgeInsets.all(14),
+    // Keep vertical gestures with the Home scroll view. Scale only when
+    // enlarged text cannot fit the landscape card's available height.
+    child: LayoutBuilder(builder: (context, box) => Padding(
+      padding: const EdgeInsets.all(14),
+      child: Center(child: FittedBox(fit: BoxFit.scaleDown,
+        child: SizedBox(width: box.maxWidth - 28,
           child: Row(children: [
             Icon(icon, size: 44, color: RochaColors.gold),
             const SizedBox(width: 14),
@@ -484,7 +486,7 @@ class _SponsoredPlaceholder extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 13)),
             ])),
           ])),
-      ),
+      )),
     )),
   );
 }
