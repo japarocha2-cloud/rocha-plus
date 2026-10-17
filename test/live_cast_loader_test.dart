@@ -15,7 +15,7 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     final calls = <MethodCall>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(LiveCastLoader.channel, (call) async { calls.add(call); });
+      .setMockMethodCallHandler(LiveCastLoader.channel, (call) async { calls.add(call); return null; });
     final uri = Uri.parse('https://fixture.example/live.m3u8');
     await LiveCastLoader.load(GoogleCastMediaInformation(contentId: uri.toString(),
       contentUrl: uri, contentType: 'application/x-mpegURL', streamType: CastMediaStreamType.live,

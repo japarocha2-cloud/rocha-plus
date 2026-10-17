@@ -30,6 +30,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _failed = false;
   bool _casting = false;
   bool _pausedForCast = false;
+  int _castGeneration = 0;
   Future<void>? _castRecovery;
   StreamSubscription<dynamic>? _castSessionSubscription;
   StreamSubscription<GoggleCastMediaStatus?>? _castMediaSubscription;
@@ -177,6 +178,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Future<void> _restoreLocalPlayback() async {
     if (!_pausedForCast || !mounted) return;
     _pausedForCast = false;
+    _castGeneration++;
     _liveRecovery?.dispose();
     _castHealthTimer?.cancel();
     _castHealthClock.stop();
@@ -244,12 +246,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
 
     final attempt = _attempt;
+    final castGeneration = _castGeneration;
     await LiveCastLoader.load(media).timeout(const Duration(seconds: 12));
     final progress = CastPlaybackProgress();
 
     for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
-      if (!mounted || attempt != _attempt) throw StateError('Reprodução cancelada.');
+      if (!mounted || attempt != _attempt || castGeneration != _castGeneration) {
+        throw StateError('Reprodução cancelada.');
+      }
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       final info = status?.mediaInformation;
@@ -290,6 +295,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _startCasting(GoogleCastDevice device) async {
     if (_casting) return;
+    _castGeneration++;
+    _liveRecovery?.dispose();
+    _castHealthTimer?.cancel();
+    _castMediaSubscription?.cancel();
+    _castSessionSubscription?.cancel();
     setState(() => _casting = true);
     try {
       final started = await GoogleCastSessionManager.instance
