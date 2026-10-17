@@ -128,10 +128,10 @@ class CastHlsProxy {
       await _validate(target);
       final upstream = http.Request(method, target)..followRedirects = false;
       if (range != null) upstream.headers['Range'] = range;
-      final response = await _client.send(upstream).timeout(const Duration(seconds: 8));
+      final response = await _client.send(upstream).timeout(const Duration(seconds: 20));
       if (response.statusCode >= 300 && response.statusCode < 400) {
         final location = response.headers['location'];
-        await response.stream.drain<void>().timeout(const Duration(seconds: 8));
+        await response.stream.drain<void>().timeout(const Duration(seconds: 20));
         if (location == null) throw StateError('Redirecionamento sem destino.');
         target = target.resolve(location);
         continue;
@@ -176,7 +176,7 @@ class CastHlsProxy {
           result.uri.path.toLowerCase().endsWith('.m3u') || type.toLowerCase().contains('mpegurl');
       if (playlist && request.method == 'GET' && response.statusCode == 200) {
         final bytes = <int>[];
-        await for (final chunk in response.stream.timeout(const Duration(seconds: 8))) {
+        await for (final chunk in response.stream.timeout(const Duration(seconds: 20))) {
           bytes.addAll(chunk);
           if (bytes.length > 1024 * 1024) throw StateError('Playlist muito grande.');
         }
@@ -188,9 +188,9 @@ class CastHlsProxy {
           if (value != null) out.headers.set(name, value);
         }
         if (request.method == 'GET') {
-          await out.addStream(response.stream.timeout(const Duration(seconds: 8)));
+          await out.addStream(response.stream.timeout(const Duration(seconds: 20)));
         } else {
-          await response.stream.drain<void>().timeout(const Duration(seconds: 8));
+          await response.stream.drain<void>().timeout(const Duration(seconds: 20));
         }
       }
     } catch (_) {
