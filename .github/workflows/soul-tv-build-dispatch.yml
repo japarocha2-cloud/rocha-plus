@@ -42,6 +42,16 @@ jobs:
           s,n=re.subn(r'(applicationId\s*=\s*")[^"]+(")',r'\g<1>com.rochaplus.soultvtest\g<2>',s,count=1)
           if n!=1: raise RuntimeError("applicationId not found")
           p.write_text(s)
+          # The test applicationId differs from the Kotlin activity package.
+          # Keep the launcher activity fully qualified so Android can find it.
+          import xml.etree.ElementTree as ET
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          ns = "{http://schemas.android.com/apk/res/android}"
+          tree = ET.parse(manifest)
+          activity = tree.getroot().find("./application/activity")
+          if activity is None: raise RuntimeError("Flutter launcher activity not found")
+          activity.set(ns + "name", "com.rochaplus.app.MainActivity")
+          tree.write(manifest, encoding="utf-8", xml_declaration=True)
           PY
       - name: Print tested candidate revision
         run: git rev-parse HEAD
