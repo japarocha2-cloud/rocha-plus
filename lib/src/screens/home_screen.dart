@@ -627,19 +627,23 @@ class _CategoryCardState extends State<_CategoryCard> {
             end: Alignment.bottomCenter,
             colors: [Color(0x08050409), Color(0xE8050409)]))),
         LayoutBuilder(builder: (context, box) {
-          final compact = box.maxWidth < 120;
+          // Covers remain full-bleed; fit the overlay to tiny 4-column
+          // phone cards and to enlarged accessibility text on TV.
+          final compact = box.maxWidth < 120 || box.maxHeight < 135;
+          final tiny = box.maxHeight < 105;
           return Padding(
-            padding: EdgeInsets.all(compact ? 7 : 15),
+            padding: EdgeInsets.all(tiny ? 4 : (compact ? 7 : 15)),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Align(alignment: Alignment.topRight,
                 child: Icon(widget.icon, color: RochaColors.gold,
-                  size: compact ? 19 : 28)),
+                  size: tiny ? 14 : (compact ? 19 : 28))),
               const Spacer(),
-              Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: compact ? 11 : 17,
+              Text(widget.label, maxLines: tiny ? 1 : 2,
+                overflow: TextOverflow.ellipsis, softWrap: true,
+                style: TextStyle(fontSize: tiny ? 9 : (compact ? 11 : 17),
                   fontWeight: FontWeight.w800)),
-              SizedBox(height: compact ? 4 : 8),
-              Container(height: 2, width: compact ? 22 : 34,
+              SizedBox(height: tiny ? 2 : (compact ? 4 : 8)),
+              Container(height: 2, width: tiny ? 18 : (compact ? 22 : 34),
                 color: RochaColors.gold),
             ]),
           );
