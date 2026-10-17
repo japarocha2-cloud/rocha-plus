@@ -631,8 +631,28 @@ class _CategoryCardState extends State<_CategoryCard> {
           // phone cards and to enlarged accessibility text on TV.
           final compact = box.maxWidth < 120 || box.maxHeight < 135;
           final tiny = box.maxHeight < 105;
+          if (tiny) {
+            // Avoid vertical Flex overflow on narrow four-column phone grids.
+            return Padding(
+              padding: const EdgeInsets.all(4),
+              child: Stack(children: [
+                Align(alignment: Alignment.topRight,
+                  child: Icon(widget.icon, color: RochaColors.gold, size: 14)),
+                Align(alignment: Alignment.bottomLeft,
+                  child: Column(mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(widget.label, maxLines: 1,
+                        overflow: TextOverflow.ellipsis, softWrap: false,
+                        style: const TextStyle(fontSize: 9,
+                          fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 2),
+                      Container(height: 2, width: 18, color: RochaColors.gold),
+                    ])),
+              ]),
+            );
+          }
           return Padding(
-            padding: EdgeInsets.all(tiny ? 4 : (compact ? 7 : 15)),
+            padding: EdgeInsets.all(compact ? 7 : 15),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Align(alignment: Alignment.topRight,
                 child: Icon(widget.icon, color: RochaColors.gold,
