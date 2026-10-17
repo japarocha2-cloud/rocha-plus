@@ -12,6 +12,12 @@ jobs:
   build-candidate:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      ROCHA_SPARK_TRIAL: ${{ vars.ROCHA_SPARK_TRIAL }}
+      ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
+      ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
+      ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+      ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -44,22 +50,32 @@ jobs:
             assert not any(key.lower() in x['name'].lower() for x in items),key+' not yet validated'
           print('catalog guard passed')
           PY
-      - name: Explain isolated debug limitations
-        run: |
-          echo "### Rocha+ teste isolado Soul TV" >> "$GITHUB_STEP_SUMMARY"
-          echo "Aplicação de teste: com.rochaplus.soultvtest. Não substitui com.rochaplus.app (APK 4301)." >> "$GITHUB_STEP_SUMMARY"
-          echo "Esta compilação é DEBUG, não é release homologada. Login Firebase/Google com esse applicationId necessita configuração própria e não é garantido neste build." >> "$GITHUB_STEP_SUMMARY"
-          echo "SBC e ISTV já estão no catálogo. TV Mais Brasil e TV da Quebrada não estão incluídas pois as fontes ainda não foram validadas." >> "$GITHUB_STEP_SUMMARY"
+      - name: Test isolated Firebase configuration guards
+        run: node --test tools/candidate_firebase.test.mjs
+      - name: Restore existing private signing inputs
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
+      - name: Register and verify isolated Firebase app and Google OAuth
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node tools/prepare_candidate_firebase.mjs
       - run: flutter pub get
       - run: python3 -m unittest discover -s tools -p 'test_*.py'
       - run: python3 tools/rocha_quality_guard.py
       - run: flutter analyze
       - run: flutter test
-      - name: Build isolated debug APK (not release)
-        run: flutter build apk --debug
+      - name: Build signed isolated candidate with Firebase enabled
+        run: |
+          flutter build apk --release --build-number=2 --build-name=0.1.0-test-login \
+            --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" \
+            --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" \
+            --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \
+            --dart-define-from-file="$ROCHA_FIREBASE_FILE"
       - name: Verify candidate APK exists
         run: |
-          APK=build/app/outputs/flutter-apk/app-debug.apk
+          APK=build/app/outputs/flutter-apk/app-release.apk
           test -s "$APK"
           AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
           SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
@@ -72,7 +88,10 @@ jobs:
           sha256sum "$APK"
       - uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-soul-tv-teste-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: rocha-plus-soul-tv-teste-login-assinado
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 7
+      - name: Delete private signing and Firebase files
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-private"

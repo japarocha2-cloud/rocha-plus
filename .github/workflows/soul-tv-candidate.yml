@@ -1,8 +1,6 @@
 name: Rocha+ Soul TV candidate (isolated debug)
 
 on:
-  push:
-    branches: [feat/soul-tv-candidates-20261016]
   workflow_dispatch:
 
 permissions:
