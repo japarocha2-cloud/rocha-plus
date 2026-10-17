@@ -1,0 +1,51 @@
+name: Rocha+ Asaas sandbox readiness
+
+on:
+  push:
+    branches: [feat/soul-tv-candidates-20261016]
+    paths:
+      - 'billing/asaas_*.js'
+      - 'billing/test_helpers.js'
+      - 'billing/package*.json'
+      - '.github/workflows/asaas-readiness.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-asaas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked billing dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test Asaas sandbox and existing Mercado Pago billing
+        working-directory: billing
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee asaas-readiness-tests.log
+      - name: Verify static guards and shared catalog
+        run: |
+          python3 tools/rocha_quality_guard.py
+          python3 tools/sync_platform_baseline.py --check
+      - name: Summarize scope
+        if: always()
+        run: |
+          echo '## Asaas readiness — isolated automated tests' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No Asaas credentials, real payments, deployments or production access grants are used.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Sandbox API execution, hosted checkout, authenticated account binding and mobile access synchronization remain pending.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rocha-asaas-readiness-tests
+          path: billing/asaas-readiness-tests.log
+          if-no-files-found: error
+          retention-days: 14
