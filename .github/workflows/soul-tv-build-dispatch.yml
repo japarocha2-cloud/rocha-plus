@@ -2,7 +2,7 @@ name: Rocha+ Soul TV APK isolated
 
 on:
   push:
-    branches: [feat/soul-tv-candidates-20261016]
+    branches: [feat/soul-tv-candidates-20261016, feat/layout-proportions-20261017]
     paths:
       - '.github/workflows/soul-tv-build-dispatch.yml'
       - 'lib/src/**'
@@ -77,7 +77,7 @@ jobs:
       - run: flutter test
       - name: Build signed isolated candidate with Firebase enabled
         run: |
-          flutter build apk --release --build-number=3 --build-name=0.1.0-test-catalog \
+          flutter build apk --release --build-number=4 --build-name=0.1.0-test-layout \
             --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" \
             --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" \
             --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \
