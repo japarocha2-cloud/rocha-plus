@@ -30,6 +30,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _pausedForCast = false;
   Future<void>? _castRecovery;
   StreamSubscription<dynamic>? _castSessionSubscription;
+  StreamSubscription<GoggleCastMediaStatus?>? _castMediaSubscription;
+  String? _castContentId;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -119,6 +121,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _restoreLocalPlayback().whenComplete(() => _castRecovery = null);
 
   void _watchCastDisconnect() {
+    _castMediaSubscription?.cancel();
+    _castMediaSubscription = GoogleCastRemoteMediaClient.instance.mediaStatusStream.listen((status) {
+      if (_pausedForCast && _castContentId != null &&
+          status?.playerState == CastMediaPlayerState.idle &&
+          status?.idleReason == GoogleCastMediaIdleReason.error &&
+          CastPlaybackEvidence.matches(_castContentId!,
+            status?.mediaInformation?.contentId, status?.mediaInformation?.contentUrl)) {
+        unawaited(_resumeAfterCast());
+      }
+    });
     _castSessionSubscription?.cancel();
     _castSessionSubscription = GoogleCastSessionManager.instance.currentSessionStream.listen((session) {
       if (session?.connectionState != GoogleCastConnectState.connected && _pausedForCast) {
@@ -135,6 +147,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _pausedForCast = false;
     _castSessionSubscription?.cancel();
     _castSessionSubscription = null;
+    _castMediaSubscription?.cancel();
+    _castMediaSubscription = null;
     final attempt = _attempt;
     await CastHlsProxy.instance.close();
     if (!mounted || attempt != _attempt) return;
@@ -259,6 +273,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         final relayUri = await CastHlsProxy.instance.relay(uri);
         await _loadAndConfirmCast(relayUri);
       }
+      _castContentId = GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId;
       _pausedForCast = true;
       await _controller?.pause();
       if (mounted) _watchCastDisconnect();
@@ -332,6 +347,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void dispose() {
     _attempt++;
     _castSessionSubscription?.cancel();
+    _castMediaSubscription?.cancel();
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);

@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:rocha_plus/src/live/channel.dart';
 import 'package:rocha_plus/src/screens/cast_control_screen.dart';
 
 void main() {
   const channel = Channel(name: 'Canal de teste', url: 'https://fixture.example/live.m3u8');
   Future<void> open(WidgetTester tester, Stream<bool> connections,
-      Future<void> Function() resume, {bool initiallyConnected = true}) async {
+      Future<void> Function() resume, {bool initiallyConnected = true,
+      Stream<GoggleCastMediaStatus?> statuses = const Stream.empty()}) async {
     await tester.pumpWidget(MaterialApp(home: Builder(builder: (context) =>
       Scaffold(body: TextButton(onPressed: () => Navigator.push(context,
         MaterialPageRoute<void>(builder: (_) => CastControlScreen(
           channel: channel, deviceName: 'TV', confirmedContentId: channel.url,
           connectionStream: connections, initiallyConnected: initiallyConnected,
-          statusStream: const Stream.empty(), onSessionEnded: resume))),
+          statusStream: statuses, onSessionEnded: resume))),
         child: const Text('Abrir controles'))))));
     await tester.tap(find.text('Abrir controles'));
     await tester.pump();
@@ -56,5 +58,27 @@ void main() {
     expect(find.text('Acesso encerrado'), findsOneWidget);
     await connections.close();
   });
-}
+  testWidgets('receiver media ERROR resumes locally even while Cast session is connected', (tester) async {
+    final statuses = StreamController<GoggleCastMediaStatus?>.broadcast();
+    var resumed = 0;
+    await open(tester, const Stream.empty(), () async { resumed++; }, statuses: statuses.stream);
+    GoggleCastMediaStatus status(String id, CastMediaPlayerState state, GoogleCastMediaIdleReason? reason) =>
+      GoggleCastMediaStatus(mediaSessionID: 7, playerState: state, idleReason: reason,
+        playbackRate: 1, volume: 1, isMuted: false, repeatMode: GoogleCastMediaRepeatMode.off,
+        mediaInformation: GoogleCastMediaInformation(contentId: id,
+          contentUrl: Uri.parse(id), contentType: 'application/x-mpegURL', streamType: CastMediaStreamType.live));
+    // Unrelated/stale errors and an intentional pause must not end this playback.
+    statuses.add(status('https://other.example/live.m3u8', CastMediaPlayerState.idle, GoogleCastMediaIdleReason.error));
+    await tester.pump();
+    statuses.add(status(channel.url, CastMediaPlayerState.paused, null));
+    await tester.pump();
+    expect(resumed, 0);
+    statuses.add(status(channel.url, CastMediaPlayerState.idle, GoogleCastMediaIdleReason.error));
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(resumed, 1);
+    expect(find.byType(CastControlScreen), findsNothing);
+    await statuses.close();
+  });
 
+}

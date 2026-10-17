@@ -84,6 +84,10 @@ class _CastControlScreenState extends State<CastControlScreen> {
       final state = status?.playerState;
       final matches = widget.confirmedContentId != null &&
           status?.mediaInformation?.contentId == widget.confirmedContentId;
+      if (matches && state == CastMediaPlayerState.idle &&
+          status?.idleReason == GoogleCastMediaIdleReason.error) {
+        _endLostSession();
+      }
       final connected = _connected && matches;
       final playing = connected && state == CastMediaPlayerState.playing;
       final label = !connected ? 'Sem reprodução confirmada' : switch (state) {
