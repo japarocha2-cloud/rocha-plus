@@ -30,8 +30,13 @@ Future<void> main() async {
       throw StateError('Explicit channel block was lost');
     }
     await repository.restoreUserBlockedChannels();
-    if ((await repository.loadBrazilPublicDirectory()).length != channels.length) {
-      throw StateError('Restoring user-hidden channels failed');
+    final restored = await repository.loadBrazilPublicDirectory();
+    if (restored.length != channels.length) {
+      final before = channels.map((c) => c.url).toSet();
+      final after = restored.map((c) => c.url).toSet();
+      throw StateError('Restoring user-hidden channels failed '
+        'before=${channels.length} after=${restored.length} '
+        'missing=${before.difference(after)} extra=${after.difference(before)}');
     }
     await favoritesRepository.save({});
     // ignore: avoid_print
