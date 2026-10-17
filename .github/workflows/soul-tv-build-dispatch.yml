@@ -61,12 +61,19 @@ jobs:
       - name: Fetch Flutter dependencies
         run: flutter pub get
       - name: Run automated tests (including responsive layout fix)
+        shell: bash
         run: |
-          python3 -m unittest discover -s tools -p 'test_*.py'
-          flutter analyze
-          flutter test
+          set -o pipefail
+          mkdir -p build/diagnostics
+          python3 -m unittest discover -s tools -p 'test_*.py' 2>&1 | tee build/diagnostics/python-tests.log
+          flutter analyze 2>&1 | tee build/diagnostics/flutter-analyze.log
+          flutter test 2>&1 | tee build/diagnostics/flutter-tests.log
       - name: Build independent debug APK
-        run: flutter build apk --debug
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p build/diagnostics
+          flutter build apk --debug 2>&1 | tee build/diagnostics/flutter-build.log
       - name: Check APK output
         run: test -s build/app/outputs/flutter-apk/app-debug.apk
       - name: Capture failure diagnostics
@@ -92,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-soul-tv-failure-diagnostics
-          path: build/diagnostics/build-context.txt
+          path: build/diagnostics/
           if-no-files-found: warn
           retention-days: 7
       - name: Upload APK for physical tests
