@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 /// GanheBR destination for the approved *mobile-only* commercial slot.
 /// Never launches automatically. The caller must confirm adult eligibility
 /// and invoke this only from an intentional tap on the banner artwork.
-const ganheBrReferralUrl = 'http://www.ganhebr35.com/?r=arp0240';
+const ganheBrReferralUrl = 'https://www.ganhebr35.com/?r=arp0240';
 
 Future<bool> openGanheBrBanner({
   required bool verifiedAdult,
