@@ -29,7 +29,7 @@ void main() {
     var switches = 0;
     await tester.pumpWidget(MaterialApp(home: PlayerControlsFocus(
       controlsVisible: false, onShowControls: () {}, onChannelStep: (_) => switches++,
-      child: const SizedBox())));
+      child: const Focus(autofocus: true, child: SizedBox()))));
     await tester.pump();
     await tester.sendKeyDownEvent(LogicalKeyboardKey.channelUp);
     await tester.sendKeyRepeatEvent(LogicalKeyboardKey.channelUp);

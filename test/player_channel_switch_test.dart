@@ -20,6 +20,7 @@ class FakeChannelController extends VideoPlayerController {
   @override
   Future<void> initialize() async {
     if (gate != null) await gate!.future;
+    if (disposals > 0) return;
     if (fail) throw StateError('Unavailable source');
     value = const VideoPlayerValue(duration: Duration(minutes: 1),
       size: Size(1280, 720), isInitialized: true);
@@ -32,7 +33,10 @@ class FakeChannelController extends VideoPlayerController {
   @override
   Future<void> pause() async { value = value.copyWith(isPlaying: false); }
   @override
-  Future<void> dispose() async { disposals++; }
+  Future<void> dispose() async {
+    disposals++;
+    await super.dispose();
+  }
 }
 
 void main() {

@@ -12,8 +12,7 @@ class PlayerControlsFocus extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Focus(
-    autofocus: onChannelStep != null,
-    canRequestFocus: onChannelStep != null,
+    canRequestFocus: false,
     skipTraversal: true,
     onKeyEvent: (_, event) {
       final key = event.logicalKey;

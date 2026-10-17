@@ -498,7 +498,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
         child: _failed
             ? _FailureState(onRetry: _initialize)
             : _loading || controller == null || !controller.value.isInitialized
-                ? const CircularProgressIndicator(color: RochaColors.ruby)
+                ? const Focus(autofocus: true,
+                    child: CircularProgressIndicator(color: RochaColors.ruby))
                 : _fullscreen
                     ? SizedBox.expand(
                         child: _VideoSurface(
