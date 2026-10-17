@@ -1,11 +1,20 @@
 // CI-only: exercises the actual PlayerScreen with native Android key events.
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'src/live/channel_repository.dart';
 import 'src/screens/player_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HardwareKeyboard.instance.addHandler((event) {
+    if (event is KeyDownEvent) {
+      // ignore: avoid_print
+      print('ROCHA_REMOTE_KEY id=${event.logicalKey.keyId.toRadixString(16)} '
+        'focus=${FocusManager.instance.primaryFocus?.debugLabel}');
+    }
+    return false;
+  });
   final catalog = await ChannelRepository().loadBrazilPublicDirectory();
   final lineup = ['Kuriakos Kids', '3ABN Kids', 'SBC Kids']
     .map((name) => catalog.singleWhere((c) => c.name == name)).toList();

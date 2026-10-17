@@ -42,6 +42,54 @@ class FakeChannelController extends VideoPlayerController {
 }
 
 void main() {
+  testWidgets('native-style delayed initialization keeps remote focus after the spinner leaves', (tester) async {
+    final ready = Completer<void>();
+    final created = <String>[];
+    await tester.pumpWidget(MaterialApp(home: PlayerScreen(channel: a, lineup: [a, b],
+      controllerFactory: (uri) {
+        created.add(uri.toString());
+        return FakeChannelController(gate: uri.toString() == a.url ? ready : null);
+      })));
+    await tester.pump(const Duration(seconds: 1));
+    ready.complete();
+    await tester.pumpAndSettle();
+    expect(FocusManager.instance.primaryFocus?.debugLabel, 'player-primary-control');
+    await tester.sendKeyEvent(LogicalKeyboardKey.channelUp);
+    await tester.pumpAndSettle();
+    expect(created, [a.url, b.url]);
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('OK reveals controls first and activates pause on the next press', (tester) async {
+    final controller = FakeChannelController();
+    await tester.pumpWidget(MaterialApp(home: PlayerScreen(channel: a, lineup: [a, b],
+      controllerFactory: (_) => controller)));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(controller.value.isPlaying, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(controller.value.isPlaying, isFalse);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('visible error retry accepts OK immediately and arrows can still change channel', (tester) async {
+    var creations = 0;
+    await tester.pumpWidget(MaterialApp(home: PlayerScreen(channel: a, lineup: [a, b],
+      controllerFactory: (_) {
+        creations++;
+        return FakeChannelController(fail: true);
+      })));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(creations, 2);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(creations, 3);
+    expect(find.text('Infantil B'), findsNWidgets(2));
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('rapid switches wait for a decoder already being disposed', (tester) async {
     final disposal = Completer<void>();
     final old = FakeChannelController(disposalGate: disposal);

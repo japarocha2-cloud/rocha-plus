@@ -5,14 +5,16 @@ class PlayerControlsFocus extends StatelessWidget {
   final bool controlsVisible;
   final VoidCallback onShowControls;
   final ValueChanged<int>? onChannelStep;
+  final bool allowControlsReveal;
   final Widget child;
   const PlayerControlsFocus({
     super.key, required this.controlsVisible, required this.onShowControls,
-    required this.child, this.onChannelStep,
+    required this.child, this.onChannelStep, this.allowControlsReveal = true,
   });
   @override
   Widget build(BuildContext context) => Focus(
-    canRequestFocus: false,
+    autofocus: onChannelStep != null,
+    canRequestFocus: onChannelStep != null,
     skipTraversal: true,
     onKeyEvent: (_, event) {
       final key = event.logicalKey;
@@ -30,7 +32,7 @@ class PlayerControlsFocus extends StatelessWidget {
         LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown,
         LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight,
       ];
-      if (!controlsVisible && event is KeyDownEvent && keys.contains(event.logicalKey)) {
+      if (allowControlsReveal && !controlsVisible && event is KeyDownEvent && keys.contains(event.logicalKey)) {
         onShowControls();
         return KeyEventResult.handled;
       }

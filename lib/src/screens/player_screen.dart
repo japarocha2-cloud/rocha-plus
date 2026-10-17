@@ -34,6 +34,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Channel get _channel => _sequence.current;
   Timer? _channelNoticeTimer;
   bool _channelNoticeVisible = false;
+  final _primaryControlFocus = FocusNode(debugLabel: 'player-primary-control');
   VideoPlayerController? _controller;
   Future<void>? _controllerDisposal;
   bool _loading = true;
@@ -100,6 +101,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await controller.play();
       if (!mounted || attempt != _attempt) return;
       setState(() => _loading = false);
+      _focusPrimaryControl();
       _onPlayerChanged();
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
@@ -107,7 +109,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _controllerDisposal = _disposeController(controller);
       await _controllerDisposal;
       if (mounted && attempt == _attempt) {
-        setState(() { _loading = false; _failed = true; });
+        setState(() { _loading = false; _failed = true; _controlsVisible = false; });
+        _focusPrimaryControl();
       }
     }
   }
@@ -117,12 +120,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
     return controller.dispose();
   }
 
+  void _focusPrimaryControl() {
+    final attempt = _attempt;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || attempt != _attempt || ModalRoute.of(context)?.isCurrent != true) return;
+      if (_primaryControlFocus.context != null) _primaryControlFocus.requestFocus();
+    });
+  }
+
   void _onPlayerChanged() {
     final controller = _controller;
     if (controller == null || !mounted || _failed) return;
     final value = controller.value;
     if (value.hasError) {
-      setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
+      setState(() { _loading = false; _failed = true; _playbackConfirmed = false; _controlsVisible = false; });
+      _focusPrimaryControl();
       return;
     }
     final confirmed = _evidence.observe(position: value.position,
@@ -405,6 +417,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void _showControls() {
     setState(() => _controlsVisible = true);
+    _focusPrimaryControl();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted && _controller?.value.isPlaying == true) {
         setState(() => _controlsVisible = false);
@@ -443,6 +456,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void dispose() {
     _attempt++;
     _channelNoticeTimer?.cancel();
+    _primaryControlFocus.dispose();
     _liveRecovery?.dispose();
     _castHealthTimer?.cancel();
     _castHealthClock.stop();
@@ -470,6 +484,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       },
       child: PlayerControlsFocus(
       controlsVisible: _controlsVisible,
+      allowControlsReveal: !_loading && !_failed,
       onShowControls: _showControls,
       onChannelStep: _switchChannel,
       child: Scaffold(
@@ -503,7 +518,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
       body: Stack(fit: StackFit.expand, children: [Center(
         child: _failed
-            ? _FailureState(onRetry: _initialize)
+            ? _FailureState(onRetry: _initialize, focusNode: _primaryControlFocus)
             : _loading || controller == null || !controller.value.isInitialized
                 ? const Focus(autofocus: true,
                     child: CircularProgressIndicator(color: RochaColors.ruby))
@@ -511,6 +526,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     ? SizedBox.expand(
                         child: _VideoSurface(
                           controller: controller,
+                          playPauseFocus: _primaryControlFocus,
                           controlsVisible: _controlsVisible,
                           fullscreen: _fullscreen,
                           onShowControls: _showControls,
@@ -524,6 +540,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             : 16 / 9,
                         child: _VideoSurface(
                           controller: controller,
+                          playPauseFocus: _primaryControlFocus,
                           controlsVisible: _controlsVisible,
                           fullscreen: _fullscreen,
                           onShowControls: _showControls,
@@ -556,6 +573,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
 class _VideoSurface extends StatelessWidget {
   final VideoPlayerController controller;
+  final FocusNode playPauseFocus;
   final bool controlsVisible;
   final bool fullscreen;
   final VoidCallback onShowControls;
@@ -564,6 +582,7 @@ class _VideoSurface extends StatelessWidget {
 
   const _VideoSurface({
     required this.controller,
+    required this.playPauseFocus,
     required this.controlsVisible,
     required this.fullscreen,
     required this.onShowControls,
@@ -587,6 +606,7 @@ class _VideoSurface extends StatelessWidget {
                 child: IgnorePointer(
                   ignoring: !controlsVisible,
                   child: IconButton.filled(
+                    focusNode: playPauseFocus,
                     autofocus: true,
                     tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
                     iconSize: 42,
@@ -622,7 +642,8 @@ class _VideoSurface extends StatelessWidget {
 
 class _FailureState extends StatelessWidget {
   final VoidCallback onRetry;
-  const _FailureState({required this.onRetry});
+  final FocusNode focusNode;
+  const _FailureState({required this.onRetry, required this.focusNode});
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -635,6 +656,7 @@ class _FailureState extends StatelessWidget {
             const Text('Este sinal está indisponível no momento.', textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton.icon(
+              focusNode: focusNode,
               autofocus: true,
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
