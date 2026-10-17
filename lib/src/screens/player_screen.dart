@@ -154,7 +154,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       if (!mounted || !_pausedForCast || _liveRecovery?.busy == true) return;
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       if (_castContentId == null || !CastPlaybackEvidence.matches(_castContentId!,
-          status?.mediaInformation?.contentId, status?.mediaInformation?.contentUrl)) return;
+          status?.mediaInformation?.contentId, status?.mediaInformation?.contentUrl)) {
+        return;
+      }
       if (![CastMediaPlayerState.playing, CastMediaPlayerState.buffering,
           CastMediaPlayerState.loading, CastMediaPlayerState.paused].contains(status?.playerState)) {
         _castWatchdog.reset();
