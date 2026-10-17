@@ -45,6 +45,8 @@ jobs:
           PY
       - name: Print tested candidate revision
         run: git rev-parse HEAD
+      - name: Verify small-card layout regression fix is checked out
+        run: grep -q 'Avoid vertical Flex overflow on narrow four-column phone grids' lib/src/screens/home_screen.dart
       - name: Verify synchronized platform baseline
         run: python3 tools/sync_platform_baseline.py --check
       - name: Verify catalog before compiling
