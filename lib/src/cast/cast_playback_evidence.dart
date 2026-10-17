@@ -16,7 +16,9 @@ class CastPlaybackProgress {
   bool observe({required String requested, String? contentId, Uri? contentUrl,
       required bool playing, required Duration position}) {
     if (!CastPlaybackEvidence.confirms(requested: requested, contentId: contentId,
-        contentUrl: contentUrl, playing: playing)) return false;
+        contentUrl: contentUrl, playing: playing)) {
+      return false;
+    }
     _first ??= position;
     return position - _first! >= const Duration(milliseconds: 500);
   }
