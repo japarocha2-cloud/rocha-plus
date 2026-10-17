@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
+import '../live/channel_sequence.dart';
 import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
@@ -19,12 +20,20 @@ import 'cast_control_screen.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
-  const PlayerScreen({super.key, required this.channel});
+  final List<Channel> lineup;
+  final ValueChanged<Channel>? onChannelChanged;
+  final VideoPlayerController Function(Uri)? controllerFactory;
+  const PlayerScreen({super.key, required this.channel, this.lineup = const [],
+    this.onChannelChanged, this.controllerFactory});
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  late final _sequence = ChannelSequence(widget.channel, widget.lineup);
+  Channel get _channel => _sequence.current;
+  Timer? _channelNoticeTimer;
+  bool _channelNoticeVisible = false;
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
@@ -71,19 +80,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
 
-    final controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.channel.url),
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: false),
-    );
+    final uri = Uri.parse(_channel.url);
+    final controller = widget.controllerFactory?.call(uri) ??
+      VideoPlayerController.networkUrl(uri,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: false));
     _controller = controller;
     try {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
       await controller.initialize().timeout(const Duration(seconds: 8));
-      if (!mounted || attempt != _attempt) {
-        await controller.dispose();
-        return;
-      }
+      // A newer attempt (or dispose) already owns cleanup of this controller.
+      if (!mounted || attempt != _attempt) return;
       _evidence.reset(controller.value.position);
       controller.addListener(_onPlayerChanged);
       // Dispara a reprodução imediatamente após a preparação do decoder.
@@ -94,8 +101,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _onPlayerChanged();
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
-      await controller.dispose();
       if (_controller == controller) _controller = null;
+      controller.removeListener(_onPlayerChanged);
+      await controller.dispose();
       if (mounted && attempt == _attempt) {
         setState(() { _loading = false; _failed = true; });
       }
@@ -113,7 +121,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final confirmed = _evidence.observe(position: value.position,
         isPlaying: value.isPlaying, isBuffering: value.isBuffering, hasError: value.hasError);
     if (confirmed) {
-      _channelRepository.reportPlaybackSuccess(widget.channel.url);
+      _channelRepository.reportPlaybackSuccess(_channel.url);
     }
     if (confirmed || _isPlaying != value.isPlaying || _isBuffering != value.isBuffering) {
       setState(() {
@@ -244,7 +252,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       contentUrl: uri,
       contentType: _castContentType(uri),
       streamType: CastMediaStreamType.live,
-      metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
+      metadata: GoogleCastMovieMediaMetadata(title: _channel.name),
     );
 
     final attempt = _attempt;
@@ -309,7 +317,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
       await CastHlsProxy.instance.close();
-      final uri = Uri.parse(widget.channel.url);
+      final uri = Uri.parse(_channel.url);
       var activeUri = uri;
       var usedRelay = false;
       try {
@@ -344,7 +352,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
         await Navigator.push(context, MaterialPageRoute(builder: (_) => CastControlScreen(
-          channel: widget.channel, deviceName: device.friendlyName,
+          channel: _channel, deviceName: device.friendlyName,
           confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId,
           onSessionEnded: _resumeAfterCast, onMediaFailure: _recoverRemotePlayback,
           currentContentId: () => _castContentId)));
@@ -368,6 +376,24 @@ class _PlayerScreenState extends State<PlayerScreen> {
     } finally {
       if (mounted) setState(() => _casting = false);
     }
+  }
+
+  void _switchChannel(int direction) {
+    // Cast has its own receiver/session controls; only switch local playback.
+    if (_sequence.channels.length < 2 || _casting || _pausedForCast) return;
+    setState(() {
+      _sequence.move(direction);
+      _loading = true;
+      _failed = false;
+      _controlsVisible = false;
+      _channelNoticeVisible = true;
+    });
+    _channelNoticeTimer?.cancel();
+    _channelNoticeTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _channelNoticeVisible = false);
+    });
+    widget.onChannelChanged?.call(_channel);
+    unawaited(_initialize());
   }
 
   void _showControls() {
@@ -409,6 +435,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _channelNoticeTimer?.cancel();
     _liveRecovery?.dispose();
     _castHealthTimer?.cancel();
     _castHealthClock.stop();
@@ -434,6 +461,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _fullscreen) _toggleFullscreen();
       },
+      child: PlayerControlsFocus(
+      controlsVisible: _controlsVisible,
+      onShowControls: _showControls,
+      onChannelStep: _switchChannel,
       child: Scaffold(
       backgroundColor: Colors.black,
       appBar: _fullscreen
@@ -443,7 +474,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(_channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
                     _playbackConfirmed
                         ? (_isBuffering ? 'Carregando…' : _isPlaying ? 'Reproduzindo' : 'Pausado')
@@ -463,7 +494,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
               ],
             ),
-      body: Center(
+      body: Stack(fit: StackFit.expand, children: [Center(
         child: _failed
             ? _FailureState(onRetry: _initialize)
             : _loading || controller == null || !controller.value.isInitialized
@@ -493,6 +524,23 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         ),
                       ),
       ),
+      if (_channelNoticeVisible) Positioned(
+        left: 24, right: 24, top: 24,
+        child: IgnorePointer(child: SafeArea(child: Align(
+          alignment: Alignment.topLeft,
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: RochaColors.surface,
+              borderRadius: BorderRadius.circular(12)),
+            child: Padding(padding: const EdgeInsets.all(16),
+              child: Text(_channel.name, key: const ValueKey('channel-notice'),
+                maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontSize: 20,
+                  fontWeight: FontWeight.bold))),
+          ),
+        ))),
+      ),
+      ]),
+      ),
       ),
     );
   }
@@ -516,10 +564,7 @@ class _VideoSurface extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PlayerControlsFocus(
-        controlsVisible: controlsVisible,
-        onShowControls: onShowControls,
-        child: GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onShowControls,
         onDoubleTap: onToggleFullscreen,
@@ -563,7 +608,6 @@ class _VideoSurface extends StatelessWidget {
               ),
             ),
           ],
-        ),
         ),
       );
 }

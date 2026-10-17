@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
           channel: items[i], favorite: favorites.contains(items[i].url),
           onFavorite: () => _favorite(items[i]),
           onOpen: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerScreen(channel: items[i])));
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerScreen(channel: items[i], lineup: items)));
             if (mounted) _load();
           })),
       )),

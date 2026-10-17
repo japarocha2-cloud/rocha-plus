@@ -12,6 +12,10 @@ sub init()
   if m.favorites = invalid then m.favorites = []
   m.allChannels = []
   m.video = m.top.findNode("channelVideo")
+  m.switchingChannel = false
+  m.video.observeField("channelStep", "onRemoteChannelStep")
+  m.noticeTimer = m.top.findNode("channelNoticeTimer")
+  m.noticeTimer.observeField("fire", "hideChannelNotice")
   m.video.observeField("state", "onVideoStateChanged")
   m.video.observeField("errorMsg", "onVideoError")
   loadApprovedCatalogue()
@@ -177,9 +181,34 @@ sub startPlayback()
   m.timer.control = "start"
   m.video.control = "play"
   m.video.setFocus(true)
+  m.top.findNode("channelNoticeName").text = c.name
+  m.top.findNode("channelNotice").visible = true
+  m.noticeTimer.control = "stop"
+  m.noticeTimer.control = "start"
+end sub
+
+sub hideChannelNotice()
+  m.top.findNode("channelNotice").visible = false
+end sub
+
+sub onRemoteChannelStep()
+  if not m.playing or m.channels.count() < 2 then return
+  if not m.authorized or not hasBillingAccess()
+    onBillingExpiry()
+    return
+  end if
+  direction = m.video.channelStep
+  if direction <> 1 and direction <> -1 then return
+  m.switchingChannel = true
+  m.video.control = "stop"
+  m.channelIndex = wrappedChannelIndex(m.channelIndex, direction, m.channels.count())
+  startPlayback()
 end sub
 
 sub stopPlayback()
+  m.switchingChannel = false
+  m.noticeTimer.control = "stop"
+  hideChannelNotice()
   m.timer.control = "stop"
   m.video.control = "stop"
   m.video.visible = false
@@ -194,19 +223,21 @@ sub onVideoStateChanged()
   if not m.playing then return
   state = m.video.state
   if state = "playing" then
+    m.switchingChannel = false
     m.timer.control = "stop"
   else if state = "error" then
     m.status.text = "Falha de reprodução. Tente abrir o canal novamente."
     stopPlayback()
   else if state = "buffering" then
+    m.switchingChannel = false
     m.timer.control = "start"
   else if state = "finished" or state = "stopped" then
-    stopPlayback()
+    if not m.switchingChannel then stopPlayback()
   end if
 end sub
 
 sub onVideoError()
-  if m.playing
+  if m.playing and m.video.state = "error"
     m.status.text = "Erro no canal selecionado."
     stopPlayback()
   end if

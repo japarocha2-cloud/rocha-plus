@@ -10,8 +10,10 @@ class RochaChannelCard extends StatefulWidget {
   final VoidCallback onFavorite;
   final VoidCallback? onHide;
   final String? availability;
+  final FocusNode? focusNode;
   const RochaChannelCard({super.key, required this.channel, required this.onOpen,
-    required this.onFavorite, this.favorite = false, this.onHide, this.availability});
+    required this.onFavorite, this.favorite = false, this.onHide, this.availability,
+    this.focusNode});
   @override
   State<RochaChannelCard> createState() => _RochaChannelCardState();
 }
@@ -31,6 +33,7 @@ class _RochaChannelCardState extends State<RochaChannelCard> {
     ),
     clipBehavior: Clip.antiAlias,
     child: InkWell(
+      focusNode: widget.focusNode,
       onTap: widget.onOpen,
       onFocusChange: (value) => setState(() => focused = value),
       focusColor: RochaColors.cosmicPurple.withValues(alpha: .15),

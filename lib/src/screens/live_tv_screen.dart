@@ -23,6 +23,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Map<String, ChannelReachability> reachability = {};
   late final favoritesRepository = FavoritesRepository(accountId: widget.accountId);
   final search = TextEditingController();
+  final _gridScroll = ScrollController();
+  final _channelFocus = <String, FocusNode>{};
   List<Channel> channels = const [];
   Set<String> favorites = {};
   bool loading = true;
@@ -104,6 +106,10 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   void dispose() {
     search.dispose();
+    _gridScroll.dispose();
+    for (final node in _channelFocus.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -228,6 +234,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                       : LayoutBuilder(builder: (context, constraints) {
                           final columns = (constraints.maxWidth / 230).floor().clamp(2, 7);
                           return GridView.builder(
+                            controller: _gridScroll,
                             key: const ValueKey('channel-grid'),
                             padding: const EdgeInsets.all(16),
                             itemCount: visible.length,
@@ -237,15 +244,28 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                             itemBuilder: (_, i) {
                               final channel = visible[i];
                               return RochaChannelCard(
+                                key: ValueKey(channel.url),
+                                focusNode: _channelFocus.putIfAbsent(channel.url, FocusNode.new),
                                 channel: channel, favorite: favorites.contains(channel.url),
                                 availability: reachability[channel.url] == ChannelReachability.unavailable
                                     ? 'Endereço indisponível na última verificação' : null,
                                 onFavorite: () => toggleFavorite(channel),
                                 onHide: () => hideChannel(channel),
                                 onOpen: () async {
+                                  var lastChannel = channel;
                                   await Navigator.push(context, MaterialPageRoute(
-                                    builder: (_) => PlayerScreen(channel: channel)));
-                                  if (mounted) setState(() {});
+                                    builder: (_) => PlayerScreen(channel: channel, lineup: visible,
+                                      onChannelChanged: (next) => lastChannel = next)));
+                                  if (!mounted) return;
+                                  setState(() {});
+                                  final index = visible.indexWhere((c) => c.url == lastChannel.url);
+                                  if (index >= 0 && _gridScroll.hasClients) {
+                                    final tileWidth = (constraints.maxWidth - 32 - (columns - 1) * 12) / columns;
+                                    final offset = (index ~/ columns) * (tileWidth / .70 + 12);
+                                    _gridScroll.jumpTo(offset.clamp(0.0, _gridScroll.position.maxScrollExtent).toDouble());
+                                    await WidgetsBinding.instance.endOfFrame;
+                                    if (mounted) _channelFocus[lastChannel.url]?.requestFocus();
+                                  }
                                 });
                             },
                           );

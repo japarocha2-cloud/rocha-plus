@@ -1,0 +1,82 @@
+name: Rocha+ TV remote channel switching
+on:
+  push:
+    branches: [feat/soul-tv-candidates-20261016]
+    paths:
+      - 'lib/src/screens/player_screen.dart'
+      - 'lib/src/widgets/player_controls_focus.dart'
+      - 'lib/src/live/channel_sequence.dart'
+      - 'lib/channel_remote_probe.dart'
+      - 'test/player_channel_switch_test.dart'
+      - 'test/channel_sequence_test.dart'
+      - 'test/player_controls_focus_test.dart'
+      - 'platforms/roku/components/**'
+      - 'tools/roku_channel_keys_test.brs'
+      - 'tools/remote_channel_emulator.sh'
+      - '.github/workflows/tv-remote-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  roku:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile experimental Roku package
+        run: npx --yes --package brighterscript@0.73.7 bsc --project platforms/roku/bsconfig.json
+      - name: Exercise actual BrightScript remote key and list-boundary functions
+        run: |
+          set -o pipefail
+          npx --yes --package brs@0.45.0 brs --root platforms/roku platforms/roku/components/ChannelKeys.brs tools/roku_channel_keys_test.brs | tee /tmp/roku-remote-tests.log
+          grep -q 'ROCHA_ROKU_CHANNEL_KEYS_OK' /tmp/roku-remote-tests.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-roku-controle-experimental
+          path: build/roku/RochaPlus-Roku.zip
+          if-no-files-found: error
+  android-remote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Test source switching, focus, stale decoder cleanup and fullscreen
+        run: flutter test --reporter expanded test/channel_sequence_test.dart test/player_controls_focus_test.dart test/player_channel_switch_test.dart
+      - name: Build actual player diagnostic (never distributed)
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 tools/isolate_test_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle.kts')
+          p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion','compileSdk = 37').replace('com.rochaplus.soultvtest','com.rochaplus.remoteprobe'))
+          PY
+          flutter build apk --release --target lib/channel_remote_probe.dart
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Switch real HLS streams using Android CH and D-pad keycodes
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: bash tools/remote_channel_emulator.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remote-channel-runtime-diagnostics
+          path: /tmp/remote-channel-*.log
+          if-no-files-found: ignore
