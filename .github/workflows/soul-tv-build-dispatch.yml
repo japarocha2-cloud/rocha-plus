@@ -58,7 +58,7 @@ jobs:
           PY
       - name: Fetch Flutter dependencies
         run: flutter pub get
-      - name: Run automated tests (including account adapter parity)
+      - name: Run automated tests (including responsive layout fix)
         run: |
           python3 -m unittest discover -s tools -p 'test_*.py'
           flutter analyze
