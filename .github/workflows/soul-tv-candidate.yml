@@ -1,0 +1,75 @@
+name: Rocha+ Soul TV candidate (isolated debug)
+
+on:
+  push:
+    branches: [feat/soul-tv-candidates-20261016]
+    paths:
+      - '.github/workflows/soul-tv-candidate.yml'
+      - 'catalog/**'
+      - 'lib/**'
+      - 'tools/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Configure Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("android/app/build.gradle.kts")
+          s=path.read_text().replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 37")
+          path.write_text(s)
+          PY
+          python3 tools/configure_android.py
+      - name: Isolate test installation from frozen APK
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('android/app/build.gradle.kts')
+          s=p.read_text()
+          s,n=re.subn(r'(applicationId\s*=\s*")[^"]+(")',r'\g<1>com.rochaplus.soultvtest\g<2>',s,count=1)
+          if n!=1: raise RuntimeError('applicationId not found')
+          p.write_text(s)
+          m=Path('android/app/src/main/AndroidManifest.xml')
+          if m.exists():
+            t=m.read_text().replace('android:label="Rocha+"','android:label="Rocha+ Canais Teste"')
+            m.write_text(t)
+          PY
+      - name: Validate catalog (SBC unique, ISTV unique)
+        run: |
+          python3 - <<'PY'
+          import json
+          items=json.load(open('catalog/approved.json'))
+          for key in ['SBC TV','ISTV']:
+            matches=[x for x in items if key.lower() in x['name'].lower()]
+            assert len(matches)==1,(key,len(matches))
+          for key in ['TV Mais Brasil','TV da Quebrada']:
+            assert not any(key.lower() in x['name'].lower() for x in items),key+' not yet validated'
+          print('catalog guard passed')
+          PY
+      - run: flutter pub get
+      - run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - run: python3 tools/rocha_quality_guard.py
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build isolated debug APK (not release)
+        run: flutter build apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-soul-tv-candidate-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
