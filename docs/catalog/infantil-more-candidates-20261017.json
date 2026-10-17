@@ -1,6 +1,6 @@
 {
   "date": "2026-10-17",
-  "request": "Pesquisar mais canais infantis; nenhuma nova inclusão solicitada nesta rodada",
+  "request": "Adicionar Kuriakos Kids e 3ABN Kids na APK experimental para teste físico do titular",
   "catalog_changed": true,
   "owner_physical_feedback": {
     "version_code": 6,
@@ -19,7 +19,7 @@
       "content_profile": "Programação infantil cristã; site oferece desenhos e conteúdos educativos. Página Superbook informa versão em português de Portugal.",
       "official_program_reference": "https://kuriakos-kids.com/superbook/",
       "distribution_permission": "unverified",
-      "android": "not_tested",
+      "android": "native_release_playback_verified_20261017",
       "cast": "not_tested",
       "roku": "not_tested",
       "decoded_seconds": 29.994667,
@@ -81,7 +81,14 @@
         "decode_error": ""
       },
       "status": "owner_experimental_testing",
-      "approval_scope": "technical_candidate_for_owner_testing_only"
+      "approval_scope": "technical_candidate_for_owner_testing_only",
+      "android_evidence": {
+        "run_id": 39051755968,
+        "startup_ms": 3514,
+        "advanced_ms": 10058,
+        "size": "640x360",
+        "physical_owner_test": "pending"
+      }
     },
     {
       "name": "3ABN Kids",
@@ -91,7 +98,7 @@
       "url": "https://3abn.bozztv.com/3abn2/Kids_live/smil:Kids_live.smil/playlist.m3u8",
       "content_profile": "Programação infantil cristã. Site em inglês; idioma da amostra sonora não foi identificado neste teste.",
       "distribution_permission": "unverified",
-      "android": "not_tested",
+      "android": "native_release_playback_verified_20261017",
       "cast": "not_tested",
       "roku": "not_tested",
       "decoded_seconds": 29.996633,
@@ -153,7 +160,14 @@
         "decode_error": ""
       },
       "status": "owner_experimental_testing",
-      "approval_scope": "technical_candidate_for_owner_testing_only"
+      "approval_scope": "technical_candidate_for_owner_testing_only",
+      "android_evidence": {
+        "run_id": 39051755968,
+        "startup_ms": 2224,
+        "advanced_ms": 10877,
+        "size": "1047x576",
+        "physical_owner_test": "pending"
+      }
     },
     {
       "name": "Kanuca TV",
