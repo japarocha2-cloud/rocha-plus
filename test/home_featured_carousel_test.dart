@@ -32,6 +32,12 @@ void main() {
       expect(find.byKey(ValueKey(size.width >= 900 ? 'official-hero' : 'sponsor-slot-2')), findsOneWidget);
       expect(find.byKey(const ValueKey('tv-galaxy-background')), size.width >= 900 ? findsOneWidget : findsNothing);
       expect(find.text('Explore o Rocha+'), findsWidgets);
+      if (size.width < 900) {
+        final carousel = tester.getSize(
+          find.byKey(const ValueKey('home-featured-carousel')));
+        expect((carousel.width * .84 - 10) / carousel.height,
+          closeTo(16 / 9, .001));
+      }
       // Category labels stay below the carousel and remain independent of ads.
       expect(tester.takeException(), isNull);
 

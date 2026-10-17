@@ -212,9 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     maxCrossAxisExtent: 220, mainAxisExtent: 120,
                     crossAxisSpacing: 12, mainAxisSpacing: 12)
                 : const SliverGridDelegateWithFixedCrossAxisCount(
-                    // Four category covers on the first row, as in the approved mockup.
-                    crossAxisCount: 4, mainAxisSpacing: 8,
-                    crossAxisSpacing: 7, childAspectRatio: .82),
+                    // Two columns keep the approved portrait covers at their native ratio.
+                    crossAxisCount: 2, mainAxisSpacing: 12,
+                    crossAxisSpacing: 12, childAspectRatio: .82),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
@@ -349,7 +349,9 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
         onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
     ])),
     LayoutBuilder(builder: (context, constraints) => SizedBox(
-      height: widget.wide ? 304 : (constraints.maxWidth * 1.04).clamp(330.0, 540.0),
+      // Each phone page is 84% of the viewport, minus its two 5px gutters.
+      // Match that actual card width to a landscape 16:9 advertising slot.
+      height: widget.wide ? 304 : (constraints.maxWidth * .84 - 10) * 9 / 16,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollStartNotification &&
@@ -386,6 +388,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
               0 => const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
               1 => const _SponsoredPlaceholder(
                 key: ValueKey('sponsor-slot-2'),
+                artwork: 'branding/ads/publicidade_jornal.png',
                 title: 'Publicidade Rocha+', icon: Icons.stars_outlined),
               _ => const _SponsoredPlaceholder(
                 key: ValueKey('sponsor-slot-3'),
@@ -456,7 +459,9 @@ class _BauTestBanner extends StatelessWidget {
 class _SponsoredPlaceholder extends StatelessWidget {
   final String title;
   final IconData icon;
-  const _SponsoredPlaceholder({super.key, required this.title, required this.icon});
+  final String? artwork;
+  const _SponsoredPlaceholder({super.key, required this.title, required this.icon,
+    this.artwork});
 
   @override
   Widget build(BuildContext context) => Container(
@@ -466,23 +471,36 @@ class _SponsoredPlaceholder extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
       border: Border.all(color: RochaColors.gold.withValues(alpha: .65))),
-    // Adjacent carousel pages are shorter and can wrap enlarged text onto
-    // more lines. Allow their content to scroll while preserving normal sizing.
-    child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: box.maxHeight),
-        child: Padding(padding: const EdgeInsets.all(22),
-          child: Column(mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center, children: [
-        Icon(icon, size: 58, color: RochaColors.gold),
-        const SizedBox(height: 22),
-        Text(title, textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12),
-        const Text('Espaço publicitário', textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, fontSize: 13)),
-      ]))),
+    clipBehavior: Clip.antiAlias,
+    child: Stack(fit: StackFit.expand, children: [
+      if (artwork != null) ...[
+        Image.asset(artwork!, fit: BoxFit.cover, excludeFromSemantics: true),
+        const DecoratedBox(decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x44050409), Color(0xCC050409)]))),
+      ],
+    // Keep vertical gestures with the Home scroll view. Scale only when
+    // enlarged text cannot fit the landscape card's available height.
+    LayoutBuilder(builder: (context, box) => Padding(
+      padding: const EdgeInsets.all(14),
+      child: Center(child: FittedBox(fit: BoxFit.scaleDown,
+        child: SizedBox(width: box.maxWidth - 28,
+          child: Row(children: [
+            Icon(icon, size: 44, color: RochaColors.gold),
+            const SizedBox(width: 14),
+            Expanded(child: Column(mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 8),
+              const Text('Espaço publicitário',
+                style: TextStyle(color: Colors.white70, fontSize: 13)),
+            ])),
+          ])),
+      )),
     )),
+    ]),
   );
 }
 
@@ -597,8 +615,7 @@ class _CategoryCard extends StatefulWidget {
 }
 class _CategoryCardState extends State<_CategoryCard> {
   bool focused = false;
-  // Phone-only portrait assets match the existing .82 card ratio.
-  // Wide layouts keep their original landscape artwork.
+  // The approved illustrations are shared by phone and TV without resizing cards.
   String? get _coverAsset {
     final name = switch (widget.label) {
       'TV ao Vivo' => 'tv_ao_vivo',
@@ -608,9 +625,7 @@ class _CategoryCardState extends State<_CategoryCard> {
       _ => null,
     };
     if (name == null) return null;
-    return widget.mobileArtwork
-      ? 'branding/categories/mobile/$name.png'
-      : 'branding/categories/$name.webp';
+    return 'branding/categories/mobile/$name.png';
   }
   @override
   Widget build(BuildContext context) => AnimatedContainer(
@@ -625,9 +640,12 @@ class _CategoryCardState extends State<_CategoryCard> {
     child: InkWell(onTap: widget.onTap, borderRadius: BorderRadius.circular(14),
       onFocusChange: (v) => setState(() => focused = v),
       child: Stack(fit: StackFit.expand, children: [
-        // Portrait artwork fills phone buttons without letterboxing.
+        // Keep the frozen card geometry; frame the presenter/ball on the right.
         if (_coverAsset != null) Image.asset(_coverAsset!,
           fit: widget.mobileArtwork ? BoxFit.cover : BoxFit.contain,
+          alignment: widget.mobileArtwork &&
+              (widget.label == 'TV ao Vivo' || widget.label == 'Esportes')
+            ? Alignment.centerRight : Alignment.center,
           errorBuilder: (_, __, ___) => const SizedBox.shrink()),
         const DecoratedBox(decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topCenter,
