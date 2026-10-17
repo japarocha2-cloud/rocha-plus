@@ -13,6 +13,8 @@ Future<bool> openGanheBrBanner({
   if (!verifiedAdult || !mobilePhoneLayout || kIsWeb) return false;
   final uri = Uri.parse(ganheBrReferralUrl);
   if (uri.host != 'www.ganhebr35.com' ||
-      uri.queryParameters['r'] != 'arp0240') return false;
+      uri.queryParameters['r'] != 'arp0240') {
+    return false;
+  }
   return launchUrl(uri, mode: LaunchMode.externalApplication);
 }
