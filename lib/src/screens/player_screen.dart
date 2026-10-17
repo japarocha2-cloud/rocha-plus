@@ -163,7 +163,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       autoPlay: true,
       playPosition: Duration.zero,
       playbackRate: 1.0,
-    ).timeout(const Duration(seconds: 8));
+    ).timeout(const Duration(seconds: 20));
     await GoogleCastRemoteMediaClient.instance.play().timeout(const Duration(seconds: 5));
 
     for (var i = 0; i < 40; i++) {
@@ -214,7 +214,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
           .startSessionWithDevice(device).timeout(const Duration(seconds: 8));
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
-      await CastHlsProxy.instance.close();
+      // Mantenha o relay anterior até iniciar o novo canal, evitando
+      // fechar uma transmissão ainda ativa antes da troca.
       final uri = Uri.parse(widget.channel.url);
       try {
         await _loadAndConfirmCast(uri);
