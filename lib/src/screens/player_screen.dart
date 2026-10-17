@@ -67,7 +67,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
-      await controller.initialize().timeout(const Duration(seconds: 8));
+      await controller.initialize().timeout(const Duration(seconds: 25));
       if (!mounted || attempt != _attempt) {
         await controller.dispose();
         return;
