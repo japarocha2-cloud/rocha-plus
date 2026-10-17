@@ -64,22 +64,22 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p build/diagnostics
-          python3 -m unittest discover -s tools -p 'test_*.py' 2>&1 | tee build/diagnostics/python-tests.log
-          flutter analyze 2>&1 | tee build/diagnostics/flutter-analyze.log
-          flutter test 2>&1 | tee build/diagnostics/flutter-tests.log
+          mkdir -p .ci-diagnostics
+          python3 -m unittest discover -s tools -p 'test_*.py' 2>&1 | tee .ci-diagnostics/python-tests.log
+          flutter analyze 2>&1 | tee .ci-diagnostics/flutter-analyze.log
+          flutter test 2>&1 | tee .ci-diagnostics/flutter-tests.log
       - name: Build independent debug APK
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p build/diagnostics
-          flutter build apk --debug 2>&1 | tee build/diagnostics/flutter-build.log
+          mkdir -p .ci-diagnostics
+          flutter build apk --debug 2>&1 | tee .ci-diagnostics/flutter-build.log
       - name: Check APK output
         run: test -s build/app/outputs/flutter-apk/app-debug.apk
       - name: Capture failure diagnostics
         if: failure()
         run: |
-          mkdir -p build/diagnostics
+          mkdir -p .ci-diagnostics
           {
             echo "=== TESTED CANDIDATE ==="
             git rev-parse HEAD
@@ -93,13 +93,13 @@ jobs:
             grep -nE 'applicationId|compileSdk|namespace' android/app/build.gradle.kts || true
             echo "=== APK OUTPUTS ==="
             ls -lah build/app/outputs/flutter-apk/ || true
-          } > build/diagnostics/build-context.txt 2>&1
+          } > .ci-diagnostics/build-context.txt 2>&1
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-soul-tv-failure-diagnostics
-          path: build/diagnostics/
+          path: .ci-diagnostics/
           if-no-files-found: warn
           retention-days: 7
       - name: Upload APK for physical tests
