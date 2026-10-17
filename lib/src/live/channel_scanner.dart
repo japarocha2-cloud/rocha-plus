@@ -22,7 +22,7 @@ class ChannelScanner {
         }
         try {
           final request = http.Request('HEAD', uri)..followRedirects = false;
-          final response = await client.send(request).timeout(const Duration(seconds: 20));
+          final response = await client.send(request).timeout(const Duration(seconds: 30));
           await response.stream.listen((_) {}).cancel();
           results[channel.url] = response.statusCode >= 200 && response.statusCode < 300
               ? ChannelReachability.reachable
