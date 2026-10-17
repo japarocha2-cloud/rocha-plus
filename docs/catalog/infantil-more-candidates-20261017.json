@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-17",
+  "request": "Pesquisar mais canais infantis; nenhuma nova inclusão solicitada nesta rodada",
+  "catalog_changed": false,
+  "owner_physical_feedback": {
+    "version_code": 6,
+    "source_commit": "e8b4c057f5a29c4edae6ea81f54f61eeed8f0163",
+    "approved": true,
+    "user_statement": "Perfeito gostei! Já testei... Aprovado",
+    "specific_cast_or_long_duration_results": "not_specified"
+  },
+  "candidates": [
+    {
+      "name": "Kuriakos Kids",
+      "approved": false,
+      "official_site": "https://kuriakos-kids.com/",
+      "official_contact": "https://kuriakos-kids.com/contactos/",
+      "url": "https://w2.manasat.com:443/kkids/smil:kkids.smil/playlist.m3u8",
+      "content_profile": "Programação infantil cristã; site oferece desenhos e conteúdos educativos. Página Superbook informa versão em português de Portugal.",
+      "official_program_reference": "https://kuriakos-kids.com/superbook/",
+      "distribution_permission": "unverified",
+      "android": "not_tested",
+      "cast": "not_tested",
+      "roku": "not_tested",
+      "decoded_seconds": 29.994667,
+      "frames": 749,
+      "technical_test": {
+        "name": "kuriakos",
+        "url": "https://w2.manasat.com:443/kkids/smil:kkids.smil/playlist.m3u8",
+        "approved": false,
+        "test": "latest HLS segments decoded locally",
+        "distribution_permission": "unverified",
+        "android_test": "not_run",
+        "manifest_seconds": 30.12,
+        "segments": 3,
+        "probe_exit": 0,
+        "probe": {
+          "programs": [
+            {
+              "streams": [
+                {
+                  "codec_name": "timed_id3",
+                  "codec_type": "data"
+                },
+                {
+                  "codec_name": "h264",
+                  "codec_type": "video",
+                  "width": 1920,
+                  "height": 1080
+                },
+                {
+                  "codec_name": "aac",
+                  "codec_type": "audio",
+                  "sample_rate": "48000",
+                  "channels": 2
+                }
+              ]
+            }
+          ],
+          "streams": [
+            {
+              "codec_name": "timed_id3",
+              "codec_type": "data"
+            },
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1920,
+              "height": 1080
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 2
+            }
+          ]
+        },
+        "decode_exit": 0,
+        "decode_progress": "frame=0\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=426667\nout_time_ms=426667\nout_time=00:00:00.426667\ndup_frames=0\ndrop_frames=0\nspeed=12.9x\nprogress=continue\nframe=387\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=15914667\nout_time_ms=15914667\nout_time=00:00:15.914667\ndup_frames=0\ndrop_frames=0\nspeed=29.3x\nprogress=continue\nframe=749\nfps=735.21\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=29994667\nout_time_ms=29994667\nout_time=00:00:29.994667\ndup_frames=0\ndrop_frames=0\nspeed=29.4x\nprogress=end\n",
+        "decode_error": ""
+      }
+    },
+    {
+      "name": "3ABN Kids",
+      "approved": false,
+      "official_site": "https://3abnkids.tv/",
+      "official_player": "https://3abnkids.tv/watch_3abnkids.html",
+      "url": "https://3abn.bozztv.com/3abn2/Kids_live/smil:Kids_live.smil/playlist.m3u8",
+      "content_profile": "Programação infantil cristã. Site em inglês; idioma da amostra sonora não foi identificado neste teste.",
+      "distribution_permission": "unverified",
+      "android": "not_tested",
+      "cast": "not_tested",
+      "roku": "not_tested",
+      "decoded_seconds": 29.996633,
+      "frames": 900,
+      "technical_test": {
+        "name": "3abn",
+        "url": "https://3abn.bozztv.com/3abn2/Kids_live/smil:Kids_live.smil/playlist.m3u8",
+        "approved": false,
+        "test": "latest HLS segments decoded locally",
+        "distribution_permission": "unverified",
+        "android_test": "not_run",
+        "manifest_seconds": 36.036,
+        "segments": 6,
+        "probe_exit": 0,
+        "probe": {
+          "programs": [
+            {
+              "streams": [
+                {
+                  "codec_name": "timed_id3",
+                  "codec_type": "data"
+                },
+                {
+                  "codec_name": "h264",
+                  "codec_type": "video",
+                  "width": 1280,
+                  "height": 720
+                },
+                {
+                  "codec_name": "aac",
+                  "codec_type": "audio",
+                  "sample_rate": "48000",
+                  "channels": 2
+                }
+              ]
+            }
+          ],
+          "streams": [
+            {
+              "codec_name": "timed_id3",
+              "codec_type": "data"
+            },
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1280,
+              "height": 720
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "sample_rate": "48000",
+              "channels": 2
+            }
+          ]
+        },
+        "decode_exit": 0,
+        "decode_progress": "frame=0\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=337667\nout_time_ms=337667\nout_time=00:00:00.337667\ndup_frames=0\ndrop_frames=0\nspeed=31.6x\nprogress=continue\nframe=623\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=21095000\nout_time_ms=21095000\nout_time=00:00:21.095000\ndup_frames=0\ndrop_frames=0\nspeed=41.2x\nprogress=continue\nframe=900\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=29996633\nout_time_ms=29996633\nout_time=00:00:29.996633\ndup_frames=0\ndrop_frames=0\nspeed=  43x\nprogress=end\n",
+        "decode_error": ""
+      }
+    },
+    {
+      "name": "Kanuca TV",
+      "approved": false,
+      "official_site": "https://kanuca.ao/",
+      "contact": "kanucatv@gmail.com",
+      "content_profile": "Canal infantil angolano. Site oferece conteúdos educativos e remete ao canal oficial do YouTube.",
+      "status": "pending_official_native_live_source",
+      "technical_test": "No broadcaster-native HLS URL confirmed; no decode test performed"
+    },
+    {
+      "name": "TV Kidmais",
+      "approved": false,
+      "official_group": "https://atitudenew.com/atitudenew/",
+      "official_reference": "https://atitudenew.com/grupo-atitudenew-estreia-seus-canais-na-life-fibra-para-marilia-e-regiao/",
+      "official_channel_site": "https://canais.atitudenew.com/index.php/tv-kidmais/",
+      "content_profile": "Canal infantil do Grupo AtitudeNew, com programação educativa e desenhos.",
+      "status": "pending_confirmation_of_official_source",
+      "technical_test": "Official channel page returned 503. A third-party page indicated a feed named novafamilia01, not confirmed with the broadcaster and not approved."
+    },
+    {
+      "name": "DM Kids TV",
+      "approved": false,
+      "platform_reference": "https://www.soultv.com.br/channel/247",
+      "content_profile": "Listed by Soul TV as an infant channel; retrieved page description and program names were in Spanish.",
+      "status": "pending_broadcaster_source_and_language_confirmation",
+      "technical_test": "No independent broadcaster-native source confirmed; no decode test performed"
+    }
+  ],
+  "limits": [
+    "These are candidates, not new approved runtime channels.",
+    "Short local sample decoding does not prove direct Android opening, continuous stability, Cast or Roku compatibility.",
+    "Distribution agreements were not verified.",
+    "Initial ffprobe requests timed out after 25 seconds; fetching recent media segments with an ordinary HTTP client and decoding them locally passed for two sources. Do not infer native-player compatibility from this workaround.",
+    "No messages were sent to broadcasters; no live catalog or frozen APK was changed."
+  ]
+}
