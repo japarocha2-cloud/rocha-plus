@@ -16,6 +16,7 @@ permissions:
 jobs:
   android-debug:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -61,6 +62,12 @@ jobs:
             assert not any(key.lower() in x['name'].lower() for x in items),key+' not yet validated'
           print('catalog guard passed')
           PY
+      - name: Explain isolated debug limitations
+        run: |
+          echo "### Rocha+ teste isolado Soul TV" >> "$GITHUB_STEP_SUMMARY"
+          echo "Aplicação de teste: com.rochaplus.soultvtest. Não substitui com.rochaplus.app (APK 4301)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Esta compilação é DEBUG, não é release homologada. Login Firebase/Google com esse applicationId necessita configuração própria e não é garantido neste build." >> "$GITHUB_STEP_SUMMARY"
+          echo "SBC e ISTV já estão no catálogo. TV Mais Brasil e TV da Quebrada não estão incluídas pois as fontes ainda não foram validadas." >> "$GITHUB_STEP_SUMMARY"
       - run: flutter pub get
       - run: python3 -m unittest discover -s tools -p 'test_*.py'
       - run: python3 tools/rocha_quality_guard.py
@@ -68,8 +75,11 @@ jobs:
       - run: flutter test
       - name: Build isolated debug APK (not release)
         run: flutter build apk --debug
+      - name: Verify candidate APK exists
+        run: test -s build/app/outputs/flutter-apk/app-debug.apk
       - uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-soul-tv-candidate-debug
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
+          retention-days: 7
