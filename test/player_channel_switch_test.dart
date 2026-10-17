@@ -13,10 +13,11 @@ const c = Channel(name: 'Infantil C', url: 'https://example.com/c');
 
 class FakeChannelController extends VideoPlayerController {
   final Completer<void>? gate;
+  final Completer<void>? disposalGate;
   final bool fail;
   int disposals = 0;
   int plays = 0;
-  FakeChannelController({this.gate, this.fail = false}) : super.asset('fake.mp4');
+  FakeChannelController({this.gate, this.disposalGate, this.fail = false}) : super.asset('fake.mp4');
   @override
   Future<void> initialize() async {
     if (gate != null) await gate!.future;
@@ -35,11 +36,33 @@ class FakeChannelController extends VideoPlayerController {
   @override
   Future<void> dispose() async {
     disposals++;
+    if (disposalGate != null) await disposalGate!.future;
     await super.dispose();
   }
 }
 
 void main() {
+  testWidgets('rapid switches wait for a decoder already being disposed', (tester) async {
+    final disposal = Completer<void>();
+    final old = FakeChannelController(disposalGate: disposal);
+    final created = <String>[];
+    await tester.pumpWidget(MaterialApp(home: PlayerScreen(channel: a, lineup: [a, b, c],
+      controllerFactory: (uri) {
+        created.add(uri.toString());
+        return uri.toString() == a.url ? old : FakeChannelController();
+      })));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.channelUp);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.channelUp);
+    await tester.pump();
+    expect(created, [a.url], reason: 'Old audio must finish disposing before a new decoder exists');
+    disposal.complete();
+    await tester.pumpAndSettle();
+    expect(created, [a.url, c.url]);
+    expect(old.disposals, 1);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('CH switches the actual source, wraps, disposes old decoder and shows the name', (tester) async {
     final created = <Uri>[];
     final controllers = <FakeChannelController>[];

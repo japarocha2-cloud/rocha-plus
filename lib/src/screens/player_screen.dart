@@ -35,6 +35,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Timer? _channelNoticeTimer;
   bool _channelNoticeVisible = false;
   VideoPlayerController? _controller;
+  Future<void>? _controllerDisposal;
   bool _loading = true;
   bool _failed = false;
   bool _casting = false;
@@ -74,8 +75,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final attempt = ++_attempt;
     final old = _controller;
     _controller = null;
-    old?.removeListener(_onPlayerChanged);
-    await old?.dispose();
+    if (old != null) _controllerDisposal = _disposeController(old);
+    // A second key press must wait even when the first already detached old.
+    await _controllerDisposal;
     if (!mounted || attempt != _attempt) return;
 
     setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
@@ -102,12 +104,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
       if (_controller == controller) _controller = null;
-      controller.removeListener(_onPlayerChanged);
-      await controller.dispose();
+      _controllerDisposal = _disposeController(controller);
+      await _controllerDisposal;
       if (mounted && attempt == _attempt) {
         setState(() { _loading = false; _failed = true; });
       }
     }
+  }
+
+  Future<void> _disposeController(VideoPlayerController controller) {
+    controller.removeListener(_onPlayerChanged);
+    return controller.dispose();
   }
 
   void _onPlayerChanged() {
@@ -443,8 +450,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _castMediaSubscription?.cancel();
     final controller = _controller;
     if (controller != null) {
-      controller.removeListener(_onPlayerChanged);
-      controller.dispose();
+      _controllerDisposal = _disposeController(controller);
+      unawaited(_controllerDisposal);
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
