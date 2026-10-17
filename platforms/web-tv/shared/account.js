@@ -80,9 +80,10 @@
       try {
         const started=this.clock();
         const data=await this.post(this.config.billingEndpoint,{action:'status'},this.idToken);
-        const remaining=Number(data.accessUntil)-Number(data.serverTime)-(this.clock()-started);
+        const validTimestamps=Number.isSafeInteger(data.serverTime)&&Number.isSafeInteger(data.accessUntil);
+        const remaining=validTimestamps?data.accessUntil-data.serverTime-(this.clock()-started):0;
         this.lastCheck=this.clock();
-        if(data.active!==true||!['trial','paid'].includes(data.state)||!Number.isFinite(remaining)||remaining<=0) {
+        if(data.active!==true||!['trial','paid'].includes(data.state)||!validTimestamps||!Number.isFinite(remaining)||remaining<=0||remaining>366*86400000) {
           this.lock('Seu período de acesso terminou. Assine no celular com a mesma conta.');return;
         }
         clearTimeout(this.expiry);
