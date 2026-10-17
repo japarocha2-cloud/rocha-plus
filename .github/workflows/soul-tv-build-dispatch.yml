@@ -3,6 +3,14 @@ name: Rocha+ Soul TV APK isolated
 on:
   push:
     branches: [feat/soul-tv-candidates-20261016]
+    paths:
+      - '.github/workflows/soul-tv-build-dispatch.yml'
+      - 'lib/src/**'
+      - 'lib/main.dart'
+      - 'catalog/**'
+      - 'pubspec*'
+      - 'test/**'
+      - '!test/packaged_catalog_test.dart'
   workflow_dispatch:
 
 permissions:
@@ -10,6 +18,7 @@ permissions:
 
 jobs:
   build-candidate:
+    if: ${{ !startsWith(github.event.head_commit.message, 'diagnostic:') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
