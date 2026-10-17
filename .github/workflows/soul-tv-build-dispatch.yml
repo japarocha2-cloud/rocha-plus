@@ -103,6 +103,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Upload APK for physical tests
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-soul-tv-teste-debug
