@@ -13,6 +13,8 @@ import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
 import '../cast/cast_playback_evidence.dart';
 import '../cast/cast_hls_proxy.dart';
+import '../cast/live_cast_loader.dart';
+import '../cast/cast_live_recovery.dart';
 import 'cast_control_screen.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -32,6 +34,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
   StreamSubscription<dynamic>? _castSessionSubscription;
   StreamSubscription<GoggleCastMediaStatus?>? _castMediaSubscription;
   String? _castContentId;
+  CastLiveRecovery? _liveRecovery;
+  Timer? _castHealthTimer;
+  final _castHealthClock = Stopwatch();
+  final _castWatchdog = CastStallWatchdog();
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -128,7 +134,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           status?.idleReason == GoogleCastMediaIdleReason.error &&
           CastPlaybackEvidence.matches(_castContentId!,
             status?.mediaInformation?.contentId, status?.mediaInformation?.contentUrl)) {
-        unawaited(_resumeAfterCast());
+        unawaited(_recoverRemotePlayback());
       }
     });
     _castSessionSubscription?.cancel();
@@ -140,11 +146,40 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (GoogleCastSessionManager.instance.connectionState != GoogleCastConnectState.connected) {
       unawaited(_resumeAfterCast());
     }
+    _castHealthTimer?.cancel();
+    _castHealthClock..reset()..start();
+    _castWatchdog.reset();
+    _castHealthTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || !_pausedForCast || _liveRecovery?.busy == true) return;
+      final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
+      if (_castContentId == null || !CastPlaybackEvidence.matches(_castContentId!,
+          status?.mediaInformation?.contentId, status?.mediaInformation?.contentUrl)) return;
+      if (![CastMediaPlayerState.playing, CastMediaPlayerState.buffering,
+          CastMediaPlayerState.loading, CastMediaPlayerState.paused].contains(status?.playerState)) {
+        _castWatchdog.reset();
+        return;
+      }
+      if (_castWatchdog.observe(position: GoogleCastRemoteMediaClient.instance.playerPosition,
+          now: _castHealthClock.elapsed, paused: status?.playerState == CastMediaPlayerState.paused)) {
+        unawaited(_recoverRemotePlayback());
+      }
+    });
+  }
+
+  Future<bool> _recoverRemotePlayback() async {
+    final recovery = _liveRecovery;
+    if (recovery == null || !mounted || !_pausedForCast) return false;
+    final recovered = await recovery.recover();
+    _castWatchdog.reset();
+    return recovered;
   }
 
   Future<void> _restoreLocalPlayback() async {
     if (!_pausedForCast || !mounted) return;
     _pausedForCast = false;
+    _liveRecovery?.dispose();
+    _castHealthTimer?.cancel();
+    _castHealthClock.stop();
     _castSessionSubscription?.cancel();
     _castSessionSubscription = null;
     _castMediaSubscription?.cancel();
@@ -208,23 +243,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
       metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
     );
 
-    await GoogleCastRemoteMediaClient.instance.loadMedia(
-      media,
-      autoPlay: true,
-      playPosition: Duration.zero,
-      playbackRate: 1.0,
-    ).timeout(const Duration(seconds: 8));
-    await GoogleCastRemoteMediaClient.instance.play().timeout(const Duration(seconds: 5));
+    final attempt = _attempt;
+    await LiveCastLoader.load(media).timeout(const Duration(seconds: 12));
+    final progress = CastPlaybackProgress();
 
     for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted || attempt != _attempt) throw StateError('Reprodução cancelada.');
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       final info = status?.mediaInformation;
       final matches = CastPlaybackEvidence.matches(uri.toString(), info?.contentId, info?.contentUrl);
-      if (CastPlaybackEvidence.confirms(
-          requested: uri.toString(), contentId: info?.contentId,
-          contentUrl: info?.contentUrl, playing: state == CastMediaPlayerState.playing)) {
+      if (progress.observe(requested: uri.toString(), contentId: info?.contentId,
+          contentUrl: info?.contentUrl, playing: state == CastMediaPlayerState.playing,
+          position: GoogleCastRemoteMediaClient.instance.playerPosition)) {
         return;
       }
       if (matches && state == CastMediaPlayerState.idle && status?.idleReason != null) {
@@ -266,14 +298,32 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await _waitForCastSession();
       await CastHlsProxy.instance.close();
       final uri = Uri.parse(widget.channel.url);
+      var activeUri = uri;
+      var usedRelay = false;
       try {
         await _loadAndConfirmCast(uri);
       } catch (_) {
         if (_castContentType(uri) != 'application/x-mpegURL' || !device.isOnLocalNetwork) rethrow;
-        final relayUri = await CastHlsProxy.instance.relay(uri);
-        await _loadAndConfirmCast(relayUri);
+        activeUri = await CastHlsProxy.instance.relay(uri);
+        usedRelay = true;
+        await _loadAndConfirmCast(activeUri);
       }
-      _castContentId = GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId;
+      _castContentId = activeUri.toString();
+      _liveRecovery?.dispose();
+      _liveRecovery = CastLiveRecovery(current: activeUri,
+        canRecover: () => mounted && _pausedForCast &&
+          GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.connected,
+        reload: (target) async {
+          _castContentId = target.toString();
+          await _loadAndConfirmCast(target);
+        },
+        relay: !usedRelay && device.isOnLocalNetwork && _castContentType(uri) == 'application/x-mpegURL'
+          ? () => CastHlsProxy.instance.relay(uri) : null,
+        giveUp: () async {
+          try { await GoogleCastSessionManager.instance.endSessionAndStopCasting(); }
+          catch (_) { /* Local playback must still resume. */ }
+          await _resumeAfterCast();
+        });
       _pausedForCast = true;
       await _controller?.pause();
       if (mounted) _watchCastDisconnect();
@@ -284,7 +334,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
         await Navigator.push(context, MaterialPageRoute(builder: (_) => CastControlScreen(
           channel: widget.channel, deviceName: device.friendlyName,
           confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId,
-          onSessionEnded: _resumeAfterCast)));
+          onSessionEnded: _resumeAfterCast, onMediaFailure: _recoverRemotePlayback,
+          currentContentId: () => _castContentId)));
         if (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.disconnected) {
           await _resumeAfterCast();
         }
@@ -346,6 +397,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _liveRecovery?.dispose();
+    _castHealthTimer?.cancel();
+    _castHealthClock.stop();
     _castSessionSubscription?.cancel();
     _castMediaSubscription?.cancel();
     final controller = _controller;

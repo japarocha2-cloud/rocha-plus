@@ -9,13 +9,14 @@ void main() {
   const channel = Channel(name: 'Canal de teste', url: 'https://fixture.example/live.m3u8');
   Future<void> open(WidgetTester tester, Stream<bool> connections,
       Future<void> Function() resume, {bool initiallyConnected = true,
-      Stream<GoggleCastMediaStatus?> statuses = const Stream.empty()}) async {
+      Stream<GoggleCastMediaStatus?> statuses = const Stream.empty(),
+      Future<bool> Function()? recover}) async {
     await tester.pumpWidget(MaterialApp(home: Builder(builder: (context) =>
       Scaffold(body: TextButton(onPressed: () => Navigator.push(context,
         MaterialPageRoute<void>(builder: (_) => CastControlScreen(
           channel: channel, deviceName: 'TV', confirmedContentId: channel.url,
           connectionStream: connections, initiallyConnected: initiallyConnected,
-          statusStream: statuses, onSessionEnded: resume))),
+          statusStream: statuses, onSessionEnded: resume, onMediaFailure: recover))),
         child: const Text('Abrir controles'))))));
     await tester.tap(find.text('Abrir controles'));
     await tester.pump();
@@ -78,6 +79,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(resumed, 1);
     expect(find.byType(CastControlScreen), findsNothing);
+    await statuses.close();
+  });
+
+  testWidgets('media recovery keeps TV controls open and does not resume phone while retrying', (tester) async {
+    final statuses = StreamController<GoggleCastMediaStatus?>.broadcast();
+    final recovery = Completer<bool>();
+    var localResumes = 0;
+    var remoteRetries = 0;
+    await open(tester, const Stream.empty(), () async { localResumes++; },
+      statuses: statuses.stream, recover: () { remoteRetries++; return recovery.future; });
+    statuses.add(GoggleCastMediaStatus(mediaSessionID: 7, playerState: CastMediaPlayerState.idle,
+      idleReason: GoogleCastMediaIdleReason.error, playbackRate: 0, volume: 1, isMuted: false,
+      repeatMode: GoogleCastMediaRepeatMode.off,
+      mediaInformation: GoogleCastMediaInformation(contentId: channel.url,
+        contentUrl: Uri.parse(channel.url), contentType: 'application/x-mpegURL', streamType: CastMediaStreamType.live)));
+    await tester.pump();
+    await tester.pump();
+    expect(remoteRetries, 1);
+    expect(localResumes, 0);
+    expect(find.text('Reconectando na TV…'), findsOneWidget);
+    recovery.complete(true);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(CastControlScreen), findsOneWidget);
+    expect(localResumes, 0);
+    expect(remoteRetries, 1);
+    await tester.pumpWidget(const SizedBox());
     await statuses.close();
   });
 

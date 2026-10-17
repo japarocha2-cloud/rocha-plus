@@ -10,12 +10,15 @@ class CastControlScreen extends StatefulWidget {
   final String deviceName;
   final String? confirmedContentId;
   final Future<void> Function()? onSessionEnded;
+  final Future<bool> Function()? onMediaFailure;
+  final String? Function()? currentContentId;
   final Stream<bool>? connectionStream;
   final bool? initiallyConnected;
   final Stream<GoggleCastMediaStatus?>? statusStream;
   const CastControlScreen({super.key, required this.channel,
     required this.deviceName, required this.confirmedContentId, this.onSessionEnded,
-    this.connectionStream, this.initiallyConnected, this.statusStream});
+    this.connectionStream, this.initiallyConnected, this.statusStream,
+    this.onMediaFailure, this.currentContentId});
   @override
   State<CastControlScreen> createState() => _CastControlScreenState();
 }
@@ -24,6 +27,8 @@ class _CastControlScreenState extends State<CastControlScreen> {
   bool busy = false;
   bool _connected = false;
   bool _ending = false;
+  bool _recoveringMedia = false;
+  int? _lastFailedMediaSession;
   StreamSubscription<bool>? _sessionSubscription;
 
   @override
@@ -82,15 +87,30 @@ class _CastControlScreenState extends State<CastControlScreen> {
     builder: (context, snapshot) {
       final status = snapshot.data;
       final state = status?.playerState;
-      final matches = widget.confirmedContentId != null &&
-          status?.mediaInformation?.contentId == widget.confirmedContentId;
+      final expected = widget.currentContentId?.call() ?? widget.confirmedContentId;
+      final matches = expected != null &&
+          (status?.mediaInformation?.contentId == expected ||
+           status?.mediaInformation?.contentUrl?.toString() == expected);
       if (matches && state == CastMediaPlayerState.idle &&
           status?.idleReason == GoogleCastMediaIdleReason.error) {
-        _endLostSession();
+        if (widget.onMediaFailure == null) {
+          _endLostSession();
+        } else if (!_recoveringMedia && _lastFailedMediaSession != status?.mediaSessionID) {
+          _lastFailedMediaSession = status?.mediaSessionID;
+          _recoveringMedia = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!mounted) return;
+            final recovered = await widget.onMediaFailure!();
+            if (!mounted) return;
+            setState(() => _recoveringMedia = false);
+            if (!recovered) _endLostSession();
+          });
+          WidgetsBinding.instance.scheduleFrame();
+        }
       }
       final connected = _connected && matches;
       final playing = connected && state == CastMediaPlayerState.playing;
-      final label = !connected ? 'Sem reprodução confirmada' : switch (state) {
+      final label = _recoveringMedia ? 'Reconectando na TV…' : !connected ? 'Sem reprodução confirmada' : switch (state) {
         CastMediaPlayerState.playing => 'Transmitindo agora',
         CastMediaPlayerState.paused => 'Pausado na TV',
         CastMediaPlayerState.buffering => 'Carregando na TV',
@@ -99,7 +119,7 @@ class _CastControlScreenState extends State<CastControlScreen> {
       };
       return CastControlView(
         channel: widget.channel, deviceName: widget.deviceName,
-        status: label, connected: connected, playing: playing, busy: busy,
+        status: label, connected: connected, playing: playing, busy: busy || _recoveringMedia,
         onBack: () => Navigator.pop(context),
         onToggle: () => _action(() async {
           if (playing) { await GoogleCastRemoteMediaClient.instance.pause(); }
