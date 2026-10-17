@@ -63,7 +63,9 @@ class ChannelRepository {
 
   void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
 
-  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+  // Falha temporária é diagnóstico, não evidência de canal fora do ar.
+  // Nunca esconda canais automaticamente só por timeout/erro na sessão.
+  bool isQuarantined(String url) => false;
 
   Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
       ChannelScanner(_client).scan(channels);
@@ -77,7 +79,6 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
-        .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
@@ -92,7 +93,6 @@ class ChannelRepository {
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
       channels
-          .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -137,8 +137,8 @@ class ChannelRepository {
 
     // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
     // são carregadas; a validação profunda não bloqueia mais centenas de
-    // canais antes de a interface aparecer. Falhas reais do player entram
-    // em quarentena durante a sessão por reportPlaybackFailure().
+    // canais antes de a interface aparecer. Erros passageiros do player
+    // são registrados para diagnóstico, mas não ocultam os canais.
     final ordered = _orderSportsFirst(
       merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
     );
