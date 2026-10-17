@@ -1,8 +1,8 @@
-name: Cast Live Continuity Candidate
+name: SBC Catalog Candidate
 on:
   push:
-    branches: [fix/cast-live-continuity-20261016]
-    paths: ['lib/**', 'test/**', 'tools/**', '.github/workflows/cast-live-candidate.yml']
+    branches: [feat/sbc-catalog-20261016]
+    paths: ['catalog/**', 'lib/**', 'test/**', 'tools/**', '.github/workflows/cast-live-candidate.yml']
 permissions:
   contents: read
 jobs:
@@ -73,10 +73,10 @@ jobs:
           name: cast-live-full-regression-evidence
           path: build/access-flow-evidence.json
           if-no-files-found: warn
-      - name: Build isolated signed candidate 4301
+      - name: Build isolated signed candidate 4302
         run: |
           flutter build apk --release \
-            --build-number=4301 --build-name=0.1.0-cast4301 \
+            --build-number=4302 --build-name=0.1.0-cast4302 \
             --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" \
             --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" \
             --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \
@@ -88,13 +88,13 @@ jobs:
           SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
           "$AAPT" dump badging "$APK" > /tmp/rocha-badging.txt
           grep "^package:" /tmp/rocha-badging.txt
-          grep -q "name='com.rochaplus.app' versionCode='4301'" /tmp/rocha-badging.txt
+          grep -q "name='com.rochaplus.app' versionCode='4302'" /tmp/rocha-badging.txt
           "$SIGNER" verify --verbose --print-certs "$APK"
           unzip -t "$APK" >/dev/null
           sha256sum "$APK"
       - uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-cast-live-4301-candidate
+          name: rocha-plus-cast-live-4302-candidate
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
       - name: Remove private signing files

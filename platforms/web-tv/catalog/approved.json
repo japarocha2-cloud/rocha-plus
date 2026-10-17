@@ -2845,5 +2845,19 @@
       "audio_codec": "aac"
     },
     "logo": "https://i.imgur.com/LcfzmG0.png"
+  },
+  {
+    "id": "b2fe49ecc165f9dc",
+    "name": "SBC TV (1080p)",
+    "url": "https://video01.brascast.com/rede1250/rede1250/playlist.m3u8",
+    "group": "TV aberta",
+    "approved": true,
+    "status": "approved",
+    "evidence": {
+      "report": "docs/catalog/sbc-20261016.json",
+      "decoded_seconds": 29.977007,
+      "video_codec": "h264",
+      "audio_codec": "aac"
+    }
   }
 ]
