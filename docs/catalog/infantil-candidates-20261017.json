@@ -1,12 +1,12 @@
 {
   "date": "2026-10-17",
   "frozen_commit": "82c3bbc3204b6d4921c3f2948d14cde073cff037",
-  "catalog_changed": false,
+  "catalog_changed": true,
   "candidates": [
     {
       "name": "SBC Kids",
-      "approved": false,
-      "status": "pending_distribution_confirmation_and_android_validation",
+      "approved": true,
+      "status": "owner_experimental_testing",
       "official_page": "https://www.sbcgroup.com.br/sbckids",
       "official_site": "https://sbckids.com.br/",
       "provider_player": "https://live.brascast.com/player/rede1220/1",
@@ -29,7 +29,8 @@
         "roku": "not_tested",
         "long_term_stability": "not_tested"
       },
-      "contact": "contato@sbcgroup.com.br"
+      "contact": "contato@sbcgroup.com.br",
+      "approval_scope": "technical_candidate_for_owner_testing_only"
     },
     {
       "name": "DumDum",
@@ -122,5 +123,6 @@
     "decode_exit": 0,
     "decode_progress": "frame=0\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=325011\nout_time_ms=325011\nout_time=00:00:00.325011\ndup_frames=0\ndrop_frames=0\nspeed=7.74x\nprogress=continue\nframe=435\nfps=0.00\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=14813991\nout_time_ms=14813991\nout_time=00:00:14.813991\ndup_frames=0\ndrop_frames=0\nspeed=27.3x\nprogress=continue\nframe=900\nfps=855.91\nstream_0_0_q=-0.0\nbitrate=N/A\ntotal_size=N/A\nout_time_us=29977007\nout_time_ms=29977007\nout_time=00:00:29.977007\ndup_frames=0\ndrop_frames=0\nspeed=28.5x\nprogress=end\n",
     "decode_error": ""
-  }
+  },
+  "integration_note": "Owner explicitly requested experimental inclusion after investigation. No distribution agreement is claimed. Frozen APK v5 and production remain unchanged."
 }

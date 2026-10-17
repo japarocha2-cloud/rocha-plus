@@ -2859,5 +2859,26 @@
       "video_codec": "h264",
       "audio_codec": "aac"
     }
+  },
+  {
+    "id": "12dddc2da96c87bb",
+    "name": "SBC Kids",
+    "url": "https://video01.brascast.com/rede1220/rede1220/playlist.m3u8",
+    "group": "Infantil",
+    "approved": true,
+    "status": "approved",
+    "experimental": true,
+    "release_scope": "owner_testing_only",
+    "distribution_permission": "unverified",
+    "evidence": {
+      "report": "docs/catalog/infantil-candidates-20261017.json",
+      "decoded_seconds": 29.977007,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "audio_channels": 2,
+      "test_kind": "local sample from latest HLS segments"
+    }
   }
 ]

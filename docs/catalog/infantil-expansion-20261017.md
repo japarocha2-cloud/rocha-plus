@@ -53,3 +53,9 @@ Manter approved=false. Antes de integrar: confirmar com o canal a fonte autoriza
 ## Resultado
 
 Uma nova candidata infantil com amostra de vídeo e áudio decodificada: SBC Kids. Aprovação de distribuição e validação Android/Cast permanecem pendentes. DumDum, Box Kids e Pluto têm caminhos oficiais de contato identificados. Nenhuma mensagem foi enviada a terceiros. Nenhuma APK nova foi gerada, pois nenhuma candidata reuniu todos os critérios para integrar o catálogo.
+
+## Atualização após a investigação — inclusão experimental solicitada
+
+Lucas pediu explicitamente adicionar SBC Kids após receber os resultados acima. A candidata foi adicionada somente à branch experimental, para APK 6, mantendo as 191 entradas anteriores byte a byte em seus objetos e todas as funções da APK 5. São 192 canais, três infantis. A aprovação neste contexto é técnica para teste pelo titular; distribution_permission continua unverified e não há declaração de acordo de distribuição. O sinal ainda exige teste físico pelo titular e não foi promovido à produção.
+
+As cópias de catálogo Roku e web-TV foram sincronizadas, sem alegar homologação física nessas plataformas. O workflow sbc-kids-runtime-check testa separadamente abertura e avanço da posição de vídeo usando o plugin nativo Android e o limite de inicialização de 8 segundos do player atual; sua APK diagnóstica não é distribuída. Consultar os logs dessa execução para o resultado, sem confundir decodificação local FFmpeg com reprodução nativa.
