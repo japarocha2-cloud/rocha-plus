@@ -34,14 +34,20 @@ void main() {
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     });
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
   }
   Future<void> settleHome(WidgetTester tester) async {
     await tester.pump();
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     });
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
   }
   testWidgets('lab requires a confirmed session; popup completion alone grants no access', (tester) async {
     await showApp(tester);
@@ -49,7 +55,10 @@ void main() {
     expect(find.byType(HomeScreen), findsNothing);
     expect(find.text('Visualizar layout de teste'), findsNothing);
     await tester.tap(find.text('Entrar com Google'));
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(repository.attempts, 1);
     expect(find.byType(HomeScreen), findsNothing);
     repository.changes.add(const AuthAccount(uid: 'verified-lab-user'));
@@ -76,9 +85,15 @@ void main() {
     expect(home, findsOneWidget);
     unawaited(Navigator.of(tester.element(home)).push(MaterialPageRoute<void>(
       builder: (_) => const Scaffold(body: Text('Private player route')))));
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     repository.changes.add(null);
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Private player route'), findsNothing);
     expect(find.byType(HomeScreen), findsNothing);
     expect(find.byType(LoginScreen), findsOneWidget);
@@ -86,7 +101,10 @@ void main() {
     await settleHome(tester);
     expect(tester.widget<HomeScreen>(find.byType(HomeScreen)).accountId, 'B');
     await tester.widget<HomeScreen>(find.byType(HomeScreen)).onSignOut!();
-    await tester.pumpAndSettle();
+    // Check route/session transitions without waiting for unrelated asset I/O
+    // under the widget test's fake clock (Home rendering is tested separately).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(LoginScreen), findsOneWidget);
     expect(find.byType(HomeScreen), findsNothing);
     expect(tester.takeException(), isNull);

@@ -17,6 +17,7 @@ jobs:
         with:
           flutter-version: '3.47.6'
           channel: stable
+          cache: true
       - run: flutter pub get
       - name: Analyze
         run: flutter analyze
@@ -39,6 +40,7 @@ jobs:
         with:
           flutter-version: '3.47.6'
           channel: stable
+          cache: true
       - name: Prepare Android
         run: |
           flutter create --platforms=android .
@@ -115,7 +117,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
   login-apk:
-    needs: [audit, build]
+    needs: audit
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
