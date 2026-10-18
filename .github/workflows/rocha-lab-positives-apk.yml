@@ -45,10 +45,11 @@ jobs:
           from pathlib import Path
           p = Path('android/app/build.gradle.kts')
           s = p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
-          s = s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.labpositivos"')
+          s = s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.labaudit20261018"')
           p.write_text(s)
           m = Path('android/app/src/main/AndroidManifest.xml')
           s = m.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
+          s = s.replace('android:label="Rocha+"', 'android:label="Rocha+ TESTE R.L"')
           m.write_text(s)
           PY
       - name: Audit experimental catalog and build isolation
@@ -69,7 +70,7 @@ jobs:
           assert "if (labTestBuild)" in repo
           assert "catalog/rl_positives_experimental.json" in Path('pubspec.yaml').read_text()
           gradle=Path('android/app/build.gradle.kts').read_text()
-          assert 'applicationId = "com.rochaplus.labpositivos"' in gradle, 'APK package is not isolated'
+          assert 'applicationId = "com.rochaplus.labaudit20261018"' in gradle, 'APK package is not isolated'
           import xml.etree.ElementTree as ET
           manifest = ET.parse('android/app/src/main/AndroidManifest.xml').getroot()
           android = '{http://schemas.android.com/apk/res/android}'

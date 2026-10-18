@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 void installLabDiagnostics() {
   if (!const bool.fromEnvironment('ROCHA_LAB_TEST')) return;
   final directory = Platform.isAndroid
-      ? '/data/data/com.rochaplus.labpositivos/cache'
+      ? '/data/data/com.rochaplus.labaudit20261018/cache'
       : Directory.systemTemp.path;
   final file = File('$directory/rocha_lab_errors.log');
   void record(String error) {
