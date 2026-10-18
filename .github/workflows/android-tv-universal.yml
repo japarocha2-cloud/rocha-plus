@@ -1,0 +1,84 @@
+name: Rocha+ Android TV universal
+
+on:
+  push:
+    branches: [feat/android-tv-universal-20261018]
+  workflow_dispatch:
+    inputs:
+      signed_release:
+        description: 'Gerar APK universal assinado (requer Firebase e cobrança unificada ativos)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  universal:
+    runs-on: ubuntu-latest
+    env:
+      ROCHA_UNIFIED_RELEASE: 'true'
+      ROCHA_SPARK_TRIAL: 'false'
+      ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
+      ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
+      ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+      ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Reuse universal Android and Android TV manifest
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37'))
+          PY
+          python3 tools/configure_android.py
+      - name: Check frozen-baseline catalogue and TV features
+        run: |
+          python3 tools/sync_platform_baseline.py --check
+          python3 tools/test_platform_baseline.py
+          python3 -m unittest discover -s tools -p 'test_configure_android.py'
+          python3 tools/rocha_quality_guard.py
+      - run: flutter pub get
+      - run: flutter analyze
+      - name: Test TV navigation and existing application
+        run: flutter test
+      - name: Build unsigned-for-production Android TV diagnostic
+        if: ${{ !inputs.signed_release }}
+        run: flutter build apk --debug --dart-define=ROCHA_SPARK_TRIAL=false
+      - name: Download debug diagnostic
+        if: ${{ !inputs.signed_release }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-android-tv-universal-diagnostic
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+      - name: Restore existing release signature and Firebase configuration
+        if: ${{ inputs.signed_release }}
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
+      - name: Require the real unified billing backend
+        if: ${{ inputs.signed_release }}
+        run: python3 tools/validate_billing_config.py
+      - name: Resolve version without overwriting frozen APK
+        if: ${{ inputs.signed_release }}
+        run: python3 tools/android_version_code.py
+      - name: Build signed universal Android / Android TV APK
+        if: ${{ inputs.signed_release }}
+        run: flutter build apk --release --dart-define=ROCHA_SPARK_TRIAL=false --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" --dart-define-from-file="$ROCHA_FIREBASE_FILE"
+      - name: Upload signed universal APK
+        if: ${{ inputs.signed_release }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-android-tv-universal-signed
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
