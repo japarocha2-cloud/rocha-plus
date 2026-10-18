@@ -66,8 +66,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final attempt = ++_attempt;
     final old = _controller;
     _controller = null;
-    old?.removeListener(_onPlayerChanged);
-    await old?.dispose();
+    if (old != null) unawaited(_releaseController(old));
     if (!mounted || attempt != _attempt) return;
 
     setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
@@ -82,7 +81,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       // transcodificação nem redução de resolução no aparelho.
       await controller.initialize().timeout(Duration(seconds: _labTestBuild ? 25 : 8));
       if (!mounted || attempt != _attempt) {
-        await controller.dispose();
+        unawaited(_releaseController(controller));
         return;
       }
       _evidence.reset(controller.value.position);
@@ -95,11 +94,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _onPlayerChanged();
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
-      await controller.dispose();
       if (_controller == controller) _controller = null;
+      unawaited(_releaseController(controller));
       if (mounted && attempt == _attempt) {
         setState(() { _loading = false; _failed = true; });
       }
+    }
+  }
+
+  // Native decoder cleanup can remain pending after a failed initialization.
+  // Detach listeners immediately; cleanup must not hold the retry/error UI.
+  Future<void> _releaseController(VideoPlayerController controller) async {
+    controller.removeListener(_onPlayerChanged);
+    try {
+      await controller.dispose();
+    } catch (_) {
+      // The replaced/disposed player cannot update the current screen.
     }
   }
 
@@ -417,8 +427,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _castMediaSubscription?.cancel();
     final controller = _controller;
     if (controller != null) {
-      controller.removeListener(_onPlayerChanged);
-      controller.dispose();
+      unawaited(_releaseController(controller));
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(

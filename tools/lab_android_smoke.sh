@@ -22,7 +22,8 @@ for i,line in enumerate(lines):
   print('\n'.join(lines[max(0,i-3):i+65]))
 PY
 else
-  if rg -q 'debugNeedsLayout|EXCEPTION CAUGHT BY|FATAL EXCEPTION|A RenderFlex overflowed' smoke-evidence/logcat.txt; then
+  test -s smoke-evidence/flutter-errors.txt
+  if [ "$(wc -l < smoke-evidence/flutter-errors.txt)" -gt 1 ] || rg -q 'debugNeedsLayout|EXCEPTION CAUGHT BY|FATAL EXCEPTION|A RenderFlex overflowed' smoke-evidence/logcat.txt; then
     tail -250 smoke-evidence/logcat.txt
     exit 1
   fi

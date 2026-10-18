@@ -8,6 +8,7 @@ import 'package:rocha_plus/src/screens/player_screen.dart';
 
 class LabVideoPlatform extends VideoPlayerPlatform {
   bool initializeVideos = true;
+  Completer<void>? disposalGate;
   final sources = <String?>[];
   final events = <int, StreamController<VideoEvent>>{};
   final disposed = <int>[];
@@ -33,6 +34,7 @@ class LabVideoPlatform extends VideoPlayerPlatform {
   @override
   Future<void> dispose(int playerId) async {
     disposed.add(playerId);
+    await disposalGate?.future;
     await events[playerId]!.close();
   }
   @override
@@ -57,6 +59,7 @@ void main() {
   late LabVideoPlatform platform;
   setUp(() { platform = LabVideoPlatform(); VideoPlayerPlatform.instance = platform; });
   tearDown(() async {
+    if (platform.disposalGate?.isCompleted == false) platform.disposalGate!.complete();
     for (final stream in platform.events.values) { await stream.close(); }
   });
   const channel = Channel(name: 'Teste local', url: 'https://example.com/test.m3u8');
@@ -73,6 +76,7 @@ void main() {
   }
 
   testWidgets('player starts selected URL, handles decoder error and manual reconnection', (tester) async {
+    platform.disposalGate = Completer<void>();
     await open(tester);
     expect(platform.sources, [channel.url]);
     expect(platform.playing, [0]);
