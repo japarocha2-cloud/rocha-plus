@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 /// This does not intercept errors or change red-screen rendering in production.
 void installLabDiagnostics() {
   if (!const bool.fromEnvironment('ROCHA_LAB_TEST')) return;
+  const package = String.fromEnvironment('ROCHA_LAB_ANDROID_PACKAGE',
+      defaultValue: 'com.rochaplus.labaudit20261018');
   final directory = Platform.isAndroid
-      ? '/data/data/com.rochaplus.labaudit20261018/cache'
+      ? '/data/data/$package/cache'
       : Directory.systemTemp.path;
   final file = File('$directory/rocha_lab_errors.log');
   void record(String error) {

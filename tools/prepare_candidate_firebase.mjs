@@ -51,6 +51,8 @@ async function main() {
   const {access_token: token} = await tokenResponse.json();
   if (!token) throw Error('admin-auth-no-token');
   const api = async (path, method='GET', body) => {
+    if (process.env.ROCHA_CANDIDATE_READ_ONLY === 'true' && method !== 'GET')
+      throw Error('read-only-mode-rejects-firebase-mutation');
     if (!/^(projects\/rocha-plus\/androidApps(?:\/|\?|$)|operations\/)/.test(path))
       throw Error('resource-outside-candidate-project');
     const response = await fetch(base + path, {method,
@@ -70,7 +72,9 @@ async function main() {
       (page ? '&pageToken=' + encodeURIComponent(page) : ''));
     apps.push(...(result.apps || [])); page = result.nextPageToken;
   } while (page);
+  const readOnly = process.env.ROCHA_CANDIDATE_READ_ONLY === 'true';
   let app = apps.find(a => a.packageName === candidatePackage);
+  if (!app && readOnly) throw Error('existing-candidate-registration-required');
   if (!app) {
     console.log('Registering isolated test package; production registration unchanged.');
     let op = await api('projects/rocha-plus/androidApps', 'POST', {
@@ -93,8 +97,10 @@ async function main() {
   if (!sha1 || !sha256) throw Error('signing-certificate-unavailable');
   const existing = (await api(name+'/sha')).certificates || [];
   for (const [certType, shaHash] of [['SHA_1',sha1],['SHA_256',sha256]]) {
-    if (!existing.some(c => c.certType === certType && normalized(c.shaHash) === normalized(shaHash)))
+    if (!existing.some(c => c.certType === certType && normalized(c.shaHash) === normalized(shaHash))) {
+      if (readOnly) throw Error('existing-candidate-signing-certificate-required');
       await api(name+'/sha','POST',{certType,shaHash});
+    }
   }
   let defines;
   for (let i=0;i<10;i++) {

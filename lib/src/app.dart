@@ -24,6 +24,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   bool introFinished = false;
   bool showingLayoutPreview = false;
   static const _labTestBuild = bool.fromEnvironment('ROCHA_LAB_TEST', defaultValue: false);
+  static const _labRequireLogin = bool.fromEnvironment('ROCHA_LAB_REQUIRE_LOGIN', defaultValue: true);
   static const _previewBuild = bool.fromEnvironment('ROCHA_LAYOUT_PREVIEW');
   static const _visualTestBuild = bool.fromEnvironment('ROCHA_VISUAL_TEST');
   bool get _mayPreview => _previewBuild && !FirebaseAuthRepository.isConfigured;
@@ -31,7 +32,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   void initState() {
     super.initState();
     controller = widget.authController ?? AuthController(FirebaseAuthRepository());
-    if (!_labTestBuild && controller.initializing) unawaited(controller.initialize());
+    if ((!_labTestBuild || _labRequireLogin) && controller.initializing) unawaited(controller.initialize());
   }
   @override
   void dispose() {
@@ -41,18 +42,25 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Isolated owner-only channel test: no Firebase credentials or billing involved.
-    // Normal production builds always keep the existing authentication gate.
+    // Channel experiments remain isolated from the commercial subscription gate.
+    // Local entry is opt-in for automated rendering tests only.
     if (_labTestBuild) {
-      return MaterialApp(
+      return AnimatedBuilder(animation: controller, builder: (_, __) => MaterialApp(
+        key: ValueKey(_labRequireLogin ? controller.account?.uid ?? 'lab-signed-out' : 'lab-local'),
         title: 'Rocha+ Teste de Canais',
         debugShowCheckedModeBanner: false,
         theme: RochaTheme.dark,
-        // Flutter 3.47.6 can retain a tooltip overlay behind an opaque route
-        // and assert on Android metric/orientation updates. Lab-only mitigation.
+        // Flutter 3.47.6 can retain a tooltip behind an opaque route on resize.
         builder: (context, child) => TooltipVisibility(visible: false, child: child!),
-        home: const HomeScreen(accountId: 'rl-test-local'),
-      );
+        home: !_labRequireLogin
+            ? const HomeScreen(accountId: 'rl-test-local')
+            : controller.initializing
+                ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+                : controller.account == null
+                    ? LoginScreen(controller: controller)
+                    : HomeScreen(accountId: controller.account!.uid,
+                        onSignOut: () => controller.signOut()),
+      ));
     }
     if (_visualTestBuild) {
       return MaterialApp(

@@ -23,9 +23,12 @@ jobs:
       - name: Official build tests (lab disabled)
         if: always()
         run: flutter test --reporter expanded
+      - name: Authenticated laboratory session regression
+        if: always()
+        run: flutter test test/lab_auth_runtime_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
       - name: Laboratory render and catalog regression
         if: always()
-        run: flutter test test/lab_catalog_runtime_test.dart test/lab_player_runtime_test.dart test/lab_overlay_resize_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
+        run: flutter test test/lab_catalog_runtime_test.dart test/lab_player_runtime_test.dart test/lab_overlay_resize_test.dart --dart-define=ROCHA_LAB_TEST=true --dart-define=ROCHA_LAB_REQUIRE_LOGIN=false --reporter expanded
   build:
     needs: audit
     runs-on: ubuntu-latest
@@ -66,7 +69,7 @@ jobs:
           app=Path('lib/src/app.dart').read_text()
           repo=Path('lib/src/live/channel_repository.dart').read_text()
           assert "if (_labTestBuild)" in app
-          assert "home: const HomeScreen(accountId: 'rl-test-local')" in app
+          assert "bool.fromEnvironment('ROCHA_LAB_REQUIRE_LOGIN', defaultValue: true)" in app
           assert "if (labTestBuild)" in repo
           assert "catalog/rl_positives_experimental.json" in Path('pubspec.yaml').read_text()
           gradle=Path('android/app/build.gradle.kts').read_text()
@@ -85,7 +88,7 @@ jobs:
       - name: Fetch packages
         run: flutter pub get
       - name: Build owner-only test APK
-        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true --dart-define=ROCHA_LAB_REQUIRE_LOGIN=false
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -105,9 +108,95 @@ jobs:
         with:
           name: RochaPlus-Android-Verification
           path: smoke-evidence/
-      - name: Publish experimental APK
+      - name: Preserve local rendering test APK
         uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-RL-Positivos-TESTE
+          name: RochaPlus-LOCAL-SEM-LOGIN-apenas-regressao
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
+  login-apk:
+    needs: [audit, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+      ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+      - name: Prepare isolated registered Android package
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 tools/isolate_test_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37'))
+          p = Path('android/app/src/main/AndroidManifest.xml')
+          p.write_text(p.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"').replace('android:label="Rocha+ Canais Teste"', 'android:label="Rocha+ R.L Login TESTE"'))
+          PY
+      - name: Restore existing signing and public Firebase build inputs
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
+      - name: Read existing test registration and verify OAuth and signing (no Firebase changes)
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          ROCHA_CANDIDATE_READ_ONLY: 'true'
+        run: node tools/prepare_candidate_firebase.mjs
+      - name: Test Firebase configuration guards
+        run: node --test tools/candidate_firebase.test.mjs
+      - run: flutter pub get
+      - name: Build signed experimental APK with required login
+        run: |
+          flutter build apk --release --build-number=6001 --build-name=0.1.0-rl-login \
+            --dart-define=ROCHA_LAB_TEST=true \
+            --dart-define=ROCHA_LAB_REQUIRE_LOGIN=true \
+            --dart-define=ROCHA_LAB_ANDROID_PACKAGE=com.rochaplus.soultvtest \
+            --dart-define-from-file="$ROCHA_FIREBASE_FILE"
+      - name: Verify isolated APK identity and signature
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$AAPT" dump badging "$APK" > /tmp/lab-login-badging.txt
+          grep "^package:" /tmp/lab-login-badging.txt
+          grep -q "name='com.rochaplus.soultvtest'" /tmp/lab-login-badging.txt
+          "$SIGNER" verify --verbose "$APK"
+          sha256sum "$APK"
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Verify signed APK opens login and enables Google
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: python3 tools/lab_login_android_smoke.py build/app/outputs/flutter-apk/app-release.apk
+      - name: Preserve login verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-LOGIN-Android-Verification
+          path: login-evidence/
+      - name: Publish signed APK with login
+        uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-RL-LOGIN-TESTE
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+      - name: Remove private signing and Firebase files
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-private"
