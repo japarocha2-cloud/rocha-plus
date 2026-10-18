@@ -51,32 +51,32 @@ jobs:
       - name: Test TV navigation and existing application
         run: flutter test
       - name: Build unsigned-for-production Android TV diagnostic
-        if: ${{ !inputs.signed_release }}
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.signed_release }}
         run: flutter build apk --debug --dart-define=ROCHA_SPARK_TRIAL=false
       - name: Download debug diagnostic
-        if: ${{ !inputs.signed_release }}
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.signed_release }}
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-android-tv-universal-diagnostic
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
       - name: Restore existing release signature and Firebase configuration
-        if: ${{ inputs.signed_release }}
+        if: ${{ github.event_name == 'push' || inputs.signed_release }}
         env:
           ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
           ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
         run: python3 tools/prepare_signed_build.py
       - name: Require the real unified billing backend
-        if: ${{ inputs.signed_release }}
+        if: ${{ github.event_name == 'push' || inputs.signed_release }}
         run: python3 tools/validate_billing_config.py
       - name: Resolve version without overwriting frozen APK
-        if: ${{ inputs.signed_release }}
+        if: ${{ github.event_name == 'push' || inputs.signed_release }}
         run: python3 tools/android_version_code.py
       - name: Build signed universal Android / Android TV APK
-        if: ${{ inputs.signed_release }}
+        if: ${{ github.event_name == 'push' || inputs.signed_release }}
         run: flutter build apk --release --dart-define=ROCHA_SPARK_TRIAL=false --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" --dart-define-from-file="$ROCHA_FIREBASE_FILE"
       - name: Upload signed universal APK
-        if: ${{ inputs.signed_release }}
+        if: ${{ github.event_name == 'push' || inputs.signed_release }}
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-android-tv-universal-signed
