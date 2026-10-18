@@ -1,4 +1,4 @@
-name: Rocha+ Channel Lab APK
+name: R.L Laboratorio Android
 on:
   push:
     branches:
@@ -31,6 +31,10 @@ jobs:
           s=m.read_text().replace('android:usesCleartextTraffic="false"','android:usesCleartextTraffic="true"')
           m.write_text(s)
           PY
+      - name: Set R.L app name and launcher icon
+        run: |
+          python3 -m pip install Pillow
+          python3 tools/create_lab_icon.py android
       - name: Install packages
         run: flutter pub get
       - name: Compile standalone debug APK
@@ -38,6 +42,6 @@ jobs:
       - name: Publish test APK
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-channel-lab-debug
+          name: RL-Laboratorio-Android
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
