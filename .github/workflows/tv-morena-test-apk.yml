@@ -52,7 +52,9 @@ jobs:
           print('TV Morena candidates:', len(items))
           PY
       - name: Build signed release with real Firebase login
-        run: flutter build apk --release --dart-define-from-file="$ROCHA_FIREBASE_FILE" --build-number=4999
+        env:
+          ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
+        run: flutter build apk --release --dart-define-from-file="$ROCHA_FIREBASE_FILE" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --build-number=5000
       - name: Upload signed TV Morena test APK
         uses: actions/upload-artifact@v4
         with:
