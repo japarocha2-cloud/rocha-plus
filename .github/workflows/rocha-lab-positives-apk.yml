@@ -1,0 +1,43 @@
+name: Rocha+ R.L Positivos - Teste Android
+on:
+  push:
+    branches:
+      - feat/rocha-lab-positives-test-20261018
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+      - name: Prepare Android
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          s = p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
+          s = s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.labpositivos"')
+          p.write_text(s)
+          m = Path('android/app/src/main/AndroidManifest.xml')
+          s = m.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
+          m.write_text(s)
+          PY
+      - name: Fetch packages
+        run: flutter pub get
+      - name: Build owner-only test APK
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true
+      - name: Publish experimental APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-RL-Positivos-TESTE
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
