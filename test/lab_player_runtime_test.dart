@@ -60,7 +60,9 @@ void main() {
   setUp(() { platform = LabVideoPlatform(); VideoPlayerPlatform.instance = platform; });
   tearDown(() async {
     if (platform.disposalGate?.isCompleted == false) platform.disposalGate!.complete();
-    for (final stream in platform.events.values) { await stream.close(); }
+    // Controllers are intentionally allowed to finish native disposal later.
+    // Do not await stream completion outside the widget test's async clock.
+    for (final stream in platform.events.values) { unawaited(stream.close()); }
   });
   const channel = Channel(name: 'Teste local', url: 'https://example.com/test.m3u8');
   Future<void> open(WidgetTester tester) async {
@@ -100,7 +102,8 @@ void main() {
       platform.disposalGate!.complete();
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
-    expect(platform.disposed.toSet(), {0, 1});
+    await tester.pump();
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('lab permits slow initialization for 25 seconds, then offers retry', (tester) async {

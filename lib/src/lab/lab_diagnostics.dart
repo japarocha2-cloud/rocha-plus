@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 /// Local, credential-free diagnostics for the separately packaged lab APK.
