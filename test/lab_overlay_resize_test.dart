@@ -15,7 +15,7 @@ void main() {
     });
     await tester.pump(const Duration(milliseconds: 500));
     final tooltip = find.byTooltip('Abrir canais para transmitir');
-    final tooltipState = tester.state<TooltipState>(tooltip);
+    final tooltipState = tester.state<RawTooltipState>(tooltip);
     tooltipState.ensureTooltipVisible();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));

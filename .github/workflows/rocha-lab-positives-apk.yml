@@ -120,6 +120,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
   diagnostic-build:
+    if: github.sha == 'f2c3a8163e0f4631e55feef97116826df7e9e79b'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

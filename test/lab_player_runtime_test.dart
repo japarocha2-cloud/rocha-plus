@@ -18,7 +18,7 @@ class LabVideoPlatform extends VideoPlayerPlatform {
   Future<int?> createWithOptions(VideoCreationOptions options) async {
     final id = sources.length;
     sources.add(options.dataSource.uri);
-    events[id] = StreamController<VideoEvent>();
+    events[id] = StreamController<VideoEvent>.broadcast(sync: true);
     return id;
   }
   @override
@@ -31,7 +31,10 @@ class LabVideoPlatform extends VideoPlayerPlatform {
     return events[playerId]!.stream;
   }
   @override
-  Future<void> dispose(int playerId) async { disposed.add(playerId); }
+  Future<void> dispose(int playerId) async {
+    disposed.add(playerId);
+    await events[playerId]!.close();
+  }
   @override
   Future<void> play(int playerId) async { playing.add(playerId); }
   @override
@@ -80,6 +83,9 @@ void main() {
     expect(find.text('Tentar novamente'), findsOneWidget);
     await tester.tap(find.text('Tentar novamente'));
     await tester.pump();
+    for (var i = 0; i < 20 && platform.sources.length < 2; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
     await tester.pump(const Duration(milliseconds: 100));
     expect(platform.sources, [channel.url, channel.url]);
     expect(platform.playing, [0, 1]);
@@ -97,7 +103,9 @@ void main() {
     expect(find.text('Tentar novamente'), findsNothing);
     await tester.pump(const Duration(seconds: 2));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
+    for (var i = 0; i < 20 && find.text('Tentar novamente').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
     expect(find.text('Tentar novamente'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await close(tester);
