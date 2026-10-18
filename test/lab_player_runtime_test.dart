@@ -76,6 +76,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
     platform.events[0]!.addError(PlatformException(code: 'VideoError', message: 'Test disconnect'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Tentar novamente'), findsOneWidget);
     await tester.tap(find.text('Tentar novamente'));
     await tester.pump();
@@ -96,6 +97,7 @@ void main() {
     expect(find.text('Tentar novamente'), findsNothing);
     await tester.pump(const Duration(seconds: 2));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('Tentar novamente'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await close(tester);

@@ -8,6 +8,8 @@ adb logcat -c
 adb shell am start -W -n com.rochaplus.labpositivos/com.rochaplus.app.MainActivity
 sleep 20
 adb logcat -d > smoke-evidence/logcat.txt
+adb shell run-as com.rochaplus.labpositivos cat cache/rocha_lab_errors.log > smoke-evidence/flutter-errors.txt || true
+cat smoke-evidence/flutter-errors.txt
 adb exec-out screencap -p > smoke-evidence/home.png
 if [ "$mode" = baseline ]; then
   # Diagnostic run records the original APK, even when it reproduces the bug.

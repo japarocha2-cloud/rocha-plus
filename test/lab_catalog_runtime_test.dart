@@ -39,7 +39,7 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       // Preload actual assets using real async I/O, then exercise the same
       // asynchronous preferences/catalogue transition that runs on Android.
-      await tester.runAsync(() => rootBundle.loadString('catalog/approved.json'));
+      await tester.runAsync(() => ChannelRepository().loadBrazilPublicDirectory());
       await tester.pumpWidget(const RochaPlusApp());
       await tester.runAsync(() async {
         await Future<void>.delayed(const Duration(milliseconds: 100));
