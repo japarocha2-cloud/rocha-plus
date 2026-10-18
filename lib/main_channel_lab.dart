@@ -113,6 +113,47 @@ class _ChannelLabState extends State<ChannelLab> {
       if (mounted) setState(() => message = 'Exportados ${good.length} canais positivos.');
     } catch (e) { if (mounted) setState(() => message = 'Falha ao exportar: $e'); }
   }
+  Future<bool> _confirmRemoval(String title, String description) async {
+    if (!mounted) return false;
+    return await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Text(description),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Excluir')),
+        ],
+      ),
+    ) ?? false;
+  }
+  Future<void> _removeOne(LabChannel item) async {
+    if (!await _confirmRemoval('Excluir canal?', 'Remover ${item.name} da lista de testes?')) return;
+    if (!mounted) return;
+    setState(() {
+      entries.remove(item);
+      message = 'Canal excluído da lista.';
+    });
+    await _save();
+  }
+  Future<void> _clearReviewed() async {
+    final count = entries.where((item) => item.verdict != 'pendente').length;
+    if (count == 0) {
+      setState(() => message = 'Nenhum canal classificado para limpar.');
+      return;
+    }
+    if (!await _confirmRemoval('Limpar canais já testados?',
+        'Excluir $count canais classificados (positivos, às vezes e falhas)? '
+        'Exporte seus positivos antes. Canais pendentes serão mantidos.')) return;
+    if (!mounted) return;
+    setState(() {
+      entries.removeWhere((item) => item.verdict != 'pendente');
+      message = '$count canais classificados removidos.';
+    });
+    await _save();
+  }
   @override Widget build(BuildContext context) {
     final shown = entries.where((e) => filter == 'todos' || e.verdict == filter).toList();
     final positive = entries.where((e) => e.verdict == 'positivo').length;
@@ -127,6 +168,8 @@ class _ChannelLabState extends State<ChannelLab> {
           FilledButton(onPressed: _manual, child: const Text('Adicionar link')),
           OutlinedButton(onPressed: _import, child: const Text('Importar arquivo .m3u')),
           FilledButton.tonal(onPressed: _export, child: Text('Exportar positivos ($positive)')),
+          OutlinedButton.icon(onPressed: _clearReviewed, icon: const Icon(Icons.delete_sweep),
+            label: const Text('Limpar já testados')),
         ]),
         if (message.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(message)),
         Wrap(spacing: 6, children: [
@@ -144,6 +187,8 @@ class _ChannelLabState extends State<ChannelLab> {
               TextButton(onPressed: () => _mark(item, 'positivo'), child: const Text('✅ Positivo')),
               TextButton(onPressed: () => _mark(item, 'as vezes'), child: const Text('⚠️ Às vezes')),
               TextButton(onPressed: () => _mark(item, 'falha'), child: const Text('❌ Falha')),
+              IconButton(tooltip: 'Excluir este canal', onPressed: () => _removeOne(item),
+                icon: const Icon(Icons.delete_outline)),
             ]),
           ]))),
       ]),
