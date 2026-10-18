@@ -1,4 +1,4 @@
-name: Rocha+ Channel Lab Windows
+name: R.L Laboratorio Windows
 on:
   push:
     branches:
@@ -20,6 +20,10 @@ jobs:
         run: flutter config --enable-windows-desktop
       - name: Generate Windows runner
         run: flutter create --platforms=windows .
+      - name: Set R.L name and desktop icon
+        run: |
+          python -m pip install Pillow
+          python tools/create_lab_icon.py windows
       - name: Install packages
         run: flutter pub get
       - name: Build Windows laboratory
@@ -27,10 +31,10 @@ jobs:
       - name: Pack Windows exe and required DLLs
         shell: pwsh
         run: |
-          Compress-Archive -Path 'build/windows/x64/runner/Release/*' -DestinationPath 'rocha-plus-lab-windows.zip'
+          Compress-Archive -Path 'build/windows/x64/runner/Release/*' -DestinationPath 'RL-Laboratorio-Windows.zip'
       - name: Upload Windows desktop ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-lab-windows-desktop
+          name: RL-Laboratorio-Windows
           path: rocha-plus-lab-windows.zip
           if-no-files-found: error
