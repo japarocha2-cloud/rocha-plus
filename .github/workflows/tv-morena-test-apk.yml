@@ -53,8 +53,18 @@ jobs:
           PY
       - name: Build signed release with real Firebase login
         env:
-          ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
-        run: flutter build apk --release --dart-define-from-file="$ROCHA_FIREBASE_FILE" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --build-number=5000
+          ROCHA_BILLING_API_URL: ${{ secrets.ROCHA_BILLING_API_URL || vars.ROCHA_BILLING_API_URL }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from urllib.parse import urlsplit
+          value = os.getenv('ROCHA_BILLING_API_URL','').strip()
+          parts = urlsplit(value)
+          if parts.scheme != 'https' or not parts.hostname or parts.username or parts.password:
+              raise SystemExit('ERRO: Configure ROCHA_BILLING_API_URL em Secrets ou Variables. APK não será publicado sem assinatura funcional.')
+          print('URL de assinatura configurada, sem exibir valor.')
+          PY
+          flutter build apk --release --dart-define-from-file="$ROCHA_FIREBASE_FILE" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --build-number=5001
       - name: Upload signed TV Morena test APK
         uses: actions/upload-artifact@v4
         with:
