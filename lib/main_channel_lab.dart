@@ -6,8 +6,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_player_media_kit/video_player_media_kit.dart';
 
-void main() { WidgetsFlutterBinding.ensureInitialized(); runApp(const MaterialApp(home: ChannelLab())); }
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows) VideoPlayerMediaKit.ensureInitialized(windows: true);
+  runApp(const MaterialApp(home: ChannelLab()));
+}
 
 class LabChannel {
   String name, url, verdict;
