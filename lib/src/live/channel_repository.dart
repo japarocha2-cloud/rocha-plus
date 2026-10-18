@@ -7,6 +7,8 @@ import 'channel_scanner.dart';
 import 'package:flutter/services.dart';
 
 class ChannelRepository {
+  // Explicit owner-only build flag. Production APK never loads the lab file.
+  static const bool labTestBuild = bool.fromEnvironment('ROCHA_LAB_TEST', defaultValue: false);
   static final http.Client _defaultClient = http.Client();
   final http.Client _client;
   Future<List<Channel>>? _pendingLoad;
@@ -144,6 +146,23 @@ class ChannelRepository {
               logoUri.host.isNotEmpty && logoUri.userInfo.isEmpty ? logo : null,
           group: item['group'] is String ? item['group'] as String : 'TV aberta');
       if (!_isPermanentlyBlocked(channel)) channels.add(channel);
+    }
+    if (labTestBuild) {
+      final rawLab = jsonDecode(await rootBundle.loadString('catalog/rl_positives_experimental.json'));
+      if (rawLab is! List) throw const FormatException('Catálogo experimental inválido.');
+      for (final item in rawLab) {
+        if (item is! Map || item['experimental'] != true ||
+            item['name'] is! String || item['url'] is! String) continue;
+        final name = (item['name'] as String).trim();
+        final url = (item['url'] as String).trim();
+        final uri = Uri.tryParse(url);
+        if (name.isEmpty || uri == null ||
+            (uri.scheme != 'https' && uri.scheme != 'http') ||
+            uri.host.isEmpty || uri.userInfo.isNotEmpty || !seen.add(url)) continue;
+        final channel = Channel(name: name, url: url,
+            group: item['group'] == 'TV aberta' ? 'TV aberta' : 'Infantil');
+        if (!_isPermanentlyBlocked(channel)) channels.add(channel);
+      }
     }
     _reviewedCache = List.unmodifiable(channels);
     return _visibleReviewedChannels(_reviewedCache!);
