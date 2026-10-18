@@ -16,6 +16,9 @@ dependencies:
   # Keep the Pigeon channel backend verified by catalog-runtime-check.yml.
   shared_preferences_android: 2.4.28
   video_player: ^2.9.2
+  file_picker: ^10.3.3
+  share_plus: ^12.0.1
+  path_provider: ^2.1.5
   firebase_core: ^4.15.0
   firebase_auth: ^6.7.0
   google_sign_in: ^7.2.0
