@@ -31,6 +31,27 @@ jobs:
           s = m.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
           m.write_text(s)
           PY
+      - name: Audit experimental catalog and build isolation
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          items=json.loads(Path('catalog/rl_positives_experimental.json').read_text())
+          assert len(items)==20, f'Expected 20 candidate sources, got {len(items)}'
+          urls=[c['url'] for c in items]
+          assert len(urls)==len(set(urls)), 'Duplicate URLs'
+          assert all(c['experimental'] is True for c in items)
+          assert all(c['lab_video_audio_report']=='user_confirmed' for c in items)
+          app=Path('lib/src/app.dart').read_text()
+          repo=Path('lib/src/live/channel_repository.dart').read_text()
+          assert "if (_labTestBuild)" in app
+          assert "home: const HomeScreen(accountId: 'rl-test-local')" in app
+          assert "if (labTestBuild)" in repo
+          assert "catalog/rl_positives_experimental.json" in Path('pubspec.yaml').read_text()
+          gradle=Path('android/app/build.gradle.kts').read_text()
+          assert 'com.rochaplus.labpositivos' in gradle, 'APK package is not isolated'
+          print('PASS: 20 distinct test streams, local home, isolated APK package.')
+          PY
       - name: Fetch packages
         run: flutter pub get
       - name: Build owner-only test APK
