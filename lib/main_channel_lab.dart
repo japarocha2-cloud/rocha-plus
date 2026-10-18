@@ -11,7 +11,7 @@ import 'package:video_player_media_kit/video_player_media_kit.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows) VideoPlayerMediaKit.ensureInitialized(windows: true);
-  runApp(const MaterialApp(home: ChannelLab()));
+  runApp(const MaterialApp(title: 'R.L Laboratorio', home: ChannelLab()));
 }
 
 class LabChannel {
@@ -106,7 +106,7 @@ class _ChannelLabState extends State<ChannelLab> {
     final shown = entries.where((e) => filter == 'todos' || e.verdict == filter).toList();
     final positive = entries.where((e) => e.verdict == 'positivo').length;
     return Scaffold(
-      appBar: AppBar(title: const Text('Rocha+ Lab • Teste de canais')),
+      appBar: AppBar(title: const Text('R.L • Laboratório de Canais')),
       body: ListView(padding: const EdgeInsets.all(12), children: [
         const Text('Aplicativo local de testes. Não altera o catálogo oficial.'),
         const SizedBox(height: 8),
