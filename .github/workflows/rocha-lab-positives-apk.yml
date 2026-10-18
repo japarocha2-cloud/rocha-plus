@@ -7,7 +7,26 @@ on:
 permissions:
   contents: read
 jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+      - run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Official build tests (lab disabled)
+        if: always()
+        run: flutter test --reporter expanded
+      - name: Laboratory render and catalog regression
+        if: always()
+        run: flutter test test/lab_catalog_runtime_test.dart test/home_featured_carousel_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
   build:
+    needs: audit
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
