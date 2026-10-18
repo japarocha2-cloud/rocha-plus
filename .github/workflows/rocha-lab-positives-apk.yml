@@ -26,38 +26,6 @@ jobs:
       - name: Laboratory render and catalog regression
         if: always()
         run: flutter test test/lab_catalog_runtime_test.dart test/lab_player_runtime_test.dart test/lab_overlay_resize_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
-  baseline-android:
-    if: github.sha == 'a3c6072f998df313a752da6f24ba344da0f96f27'
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download original failing APK for diagnosis
-        uses: actions/download-artifact@v4
-        with:
-          name: RochaPlus-RL-Positivos-TESTE
-          run-id: 39097093957
-          github-token: ${{ github.token }}
-          path: baseline-apk
-      - name: Enable emulator acceleration
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-      - name: Reproduce original Home on Android
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          arch: x86_64
-          profile: pixel_2
-          disable-animations: true
-          script: bash tools/lab_android_smoke.sh baseline-apk/app-debug.apk baseline
-      - name: Preserve Android diagnosis
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: RochaPlus-Baseline-Android-Diagnosis
-          path: smoke-evidence/
   build:
     needs: audit
     runs-on: ubuntu-latest
@@ -109,93 +77,36 @@ jobs:
           assert any(p.get(android + 'name') == 'android.permission.INTERNET' for p in manifest.findall('uses-permission'))
           print('PASS: 20 distinct test streams, local home, isolated APK package.')
           PY
+      - name: Verify protected development is unchanged
+        run: |
+          git fetch --depth=1 origin e8b4c057f5a29c4edae6ea81f54f61eeed8f0163
+          git diff --exit-code e8b4c057f5a29c4edae6ea81f54f61eeed8f0163 HEAD -- lib/src/auth lib/src/billing lib/src/live/favorites_repository.dart branding catalog/approved.json catalog/quarantine.json billing backend
       - name: Fetch packages
         run: flutter pub get
       - name: Build owner-only test APK
-        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true
-      - name: Publish experimental APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: RochaPlus-RL-Positivos-TESTE
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          if-no-files-found: error
-  diagnostic-build:
-    if: github.sha == 'f2c3a8163e0f4631e55feef97116826df7e9e79b'
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.47.6'
-          channel: stable
-      - name: Prepare Android
-        run: |
-          flutter create --platforms=android .
-          rm -f test/widget_test.dart
-          python3 tools/configure_android.py
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('android/app/build.gradle.kts')
-          s = p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
-          s = s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.labpositivos"')
-          p.write_text(s)
-          m = Path('android/app/src/main/AndroidManifest.xml')
-          s = m.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
-          m.write_text(s)
-          PY
-      - name: Audit experimental catalog and build isolation
-        run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          items=json.loads(Path('catalog/rl_positives_experimental.json').read_text())
-          assert len(items)==20, f'Expected 20 candidate sources, got {len(items)}'
-          urls=[c['url'] for c in items]
-          assert len(urls)==len(set(urls)), 'Duplicate URLs'
-          assert all(c['experimental'] is True for c in items)
-          assert all(c['lab_video_audio_report']=='user_confirmed' for c in items)
-          app=Path('lib/src/app.dart').read_text()
-          repo=Path('lib/src/live/channel_repository.dart').read_text()
-          assert "if (_labTestBuild)" in app
-          assert "home: const HomeScreen(accountId: 'rl-test-local')" in app
-          assert "if (labTestBuild)" in repo
-          assert "catalog/rl_positives_experimental.json" in Path('pubspec.yaml').read_text()
-          gradle=Path('android/app/build.gradle.kts').read_text()
-          assert 'applicationId = "com.rochaplus.labpositivos"' in gradle, 'APK package is not isolated'
-          import xml.etree.ElementTree as ET
-          manifest = ET.parse('android/app/src/main/AndroidManifest.xml').getroot()
-          android = '{http://schemas.android.com/apk/res/android}'
-          assert manifest.find('application').get(android + 'usesCleartextTraffic') == 'true'
-          assert any(p.get(android + 'name') == 'android.permission.INTERNET' for p in manifest.findall('uses-permission'))
-          print('PASS: 20 distinct test streams, local home, isolated APK package.')
-          PY
-      - name: Fetch packages
-        run: flutter pub get
-      - name: Build internal diagnostic APK
         run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Capture Flutter failure on Android
+      - name: Verify Home and kids navigation on Android
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
           arch: x86_64
           profile: pixel_2
           disable-animations: true
-          script: bash tools/lab_android_smoke.sh build/app/outputs/flutter-apk/app-debug.apk baseline
-      - name: Preserve diagnostic trace
+          script: bash tools/lab_android_smoke.sh build/app/outputs/flutter-apk/app-debug.apk current
+      - name: Preserve Android evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-Android-Trace
+          name: RochaPlus-Android-Verification
           path: smoke-evidence/
-      - name: Preserve internal diagnostic APK
+      - name: Publish experimental APK
         uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-INTERNAL-DIAGNOSIS
+          name: RochaPlus-RL-Positivos-TESTE
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error

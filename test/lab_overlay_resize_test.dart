@@ -14,8 +14,9 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 200));
     });
     await tester.pump(const Duration(milliseconds: 500));
-    final tooltip = find.byTooltip('Abrir canais para transmitir');
-    final tooltipState = tester.state<RawTooltipState>(tooltip);
+    final tooltip = find.byWidgetPredicate((widget) => widget is Tooltip &&
+      widget.message == 'Abrir canais para transmitir');
+    final tooltipState = tester.state<TooltipState>(tooltip);
     tooltipState.ensureTooltipVisible();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../tv/roku_pairing_service.dart';
 import '../tv/roku_pairing_screen.dart';
@@ -134,8 +135,16 @@ class _HomeScreenState extends State<HomeScreen> {
     ]),
   );
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
-    final wide = constraints.maxWidth >= 900;
+  Widget build(BuildContext context) {
+    // Derive the same approved geometry during build. Deferred LayoutBuilder
+    // callbacks can be invalidated twice by Android metrics/catalog updates.
+    final media = MediaQuery.of(context);
+    final wide = media.size.width >= 900;
+    final contentWidth = media.size.width - media.padding.horizontal - (wide ? 218 : 0);
+    final gridWidth = math.max(0.0, contentWidth - 44);
+    final columns = wide ? math.max(1, (gridWidth / 232).ceil()) : 2;
+    final tileWidth = math.max(0.0, (gridWidth - 12 * (columns - 1)) / columns);
+    final tileSize = Size(tileWidth, wide ? 120 : tileWidth / .82);
     final live = channels.where((c) => c.group == 'TV aberta' &&
       !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
     final saved = channels.where((c) => favorites.contains(c.url) &&
@@ -196,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
               key: ValueKey('home-preview-notice'),
               style: TextStyle(color: RochaColors.gold, fontWeight: FontWeight.w700)))),
           SliverToBoxAdapter(child: _FeaturedCarousel(
-            wide: wide, onOpen: (section) { _open(section); })),
+            wide: wide, availableWidth: contentWidth, onOpen: (section) { _open(section); })),
           SliverToBoxAdapter(child: Padding(
             padding: const EdgeInsets.fromLTRB(22, 22, 22, 12),
             child: Row(children: [
@@ -218,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
-                  label: item.$1, icon: item.$2, mobileArtwork: !wide,
+                  label: item.$1, icon: item.$2, mobileArtwork: !wide, tileSize: tileSize,
                   onTap: () => _open(item.$1));
               })),
           if (saved.isNotEmpty) SliverToBoxAdapter(child:
@@ -238,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ])),
       ])),
     );
-  });
+  }
   Widget _row(String title, List<Channel> items, VoidCallback onAll) => Column(
     crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(padding: const EdgeInsets.fromLTRB(22, 20, 22, 10),
@@ -275,8 +284,9 @@ class RochaBrand extends StatelessWidget {
 /// Navigation-only featured carousel: the approved artwork and palette stay intact.
 class _FeaturedCarousel extends StatefulWidget {
   final bool wide;
+  final double availableWidth;
   final ValueChanged<String> onOpen;
-  const _FeaturedCarousel({required this.wide, required this.onOpen});
+  const _FeaturedCarousel({required this.wide, required this.availableWidth, required this.onOpen});
 
   @override
   State<_FeaturedCarousel> createState() => _FeaturedCarouselState();
@@ -348,10 +358,10 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
       IconButton(tooltip: 'Próximo destaque',
         onPressed: () => _move(1), icon: const Icon(Icons.chevron_right)),
     ])),
-    LayoutBuilder(builder: (context, constraints) => SizedBox(
+    SizedBox(
       // Each phone page is 84% of the viewport, minus its two 5px gutters.
       // Match that actual card width to a landscape 16:9 advertising slot.
-      height: widget.wide ? 304 : (constraints.maxWidth * .84 - 10) * 9 / 16,
+      height: widget.wide ? 304 : math.max(0.0, (widget.availableWidth * .84 - 10) * 9 / 16),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollStartNotification &&
@@ -386,17 +396,19 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
                 onTap: () => widget.onOpen('Infantil')),
             } : switch (page % 3) {
               0 => const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
-              1 => const _SponsoredPlaceholder(
-                key: ValueKey('sponsor-slot-2'),
+              1 => _SponsoredPlaceholder(
+                key: const ValueKey('sponsor-slot-2'),
+                cardWidth: widget.availableWidth * .84 - 10,
                 artwork: 'branding/ads/publicidade_jornal.png',
                 title: 'Publicidade Rocha+', icon: Icons.stars_outlined),
-              _ => const _SponsoredPlaceholder(
-                key: ValueKey('sponsor-slot-3'),
+              _ => _SponsoredPlaceholder(
+                key: const ValueKey('sponsor-slot-3'),
+                cardWidth: widget.availableWidth * .84 - 10,
                 title: 'Divulgue seu negócio', icon: Icons.storefront_outlined),
             },
           ),
         ),
-      ))),
+      )),
   ]);
 }
 
@@ -460,8 +472,9 @@ class _SponsoredPlaceholder extends StatelessWidget {
   final String title;
   final IconData icon;
   final String? artwork;
+  final double cardWidth;
   const _SponsoredPlaceholder({super.key, required this.title, required this.icon,
-    this.artwork});
+    this.artwork, required this.cardWidth});
 
   @override
   Widget build(BuildContext context) => Container(
@@ -482,10 +495,10 @@ class _SponsoredPlaceholder extends StatelessWidget {
       ],
     // Keep vertical gestures with the Home scroll view. Scale only when
     // enlarged text cannot fit the landscape card's available height.
-    LayoutBuilder(builder: (context, box) => Padding(
+    Padding(
       padding: const EdgeInsets.all(14),
       child: Center(child: FittedBox(fit: BoxFit.scaleDown,
-        child: SizedBox(width: box.maxWidth - 28,
+        child: SizedBox(width: math.max(0.0, cardWidth - 30),
           child: Row(children: [
             Icon(icon, size: 44, color: RochaColors.gold),
             const SizedBox(width: 14),
@@ -499,7 +512,7 @@ class _SponsoredPlaceholder extends StatelessWidget {
             ])),
           ])),
       )),
-    )),
+    ),
     ]),
   );
 }
@@ -604,12 +617,13 @@ class _NavItem extends StatelessWidget {
 }
 
 class _CategoryCard extends StatefulWidget {
+  final Size tileSize;
   final bool mobileArtwork;
   final String label;
   final IconData icon;
   final VoidCallback onTap;
   const _CategoryCard({super.key, required this.label, required this.icon,
-    required this.onTap, this.mobileArtwork = false});
+    required this.onTap, required this.tileSize, this.mobileArtwork = false});
   @override
   State<_CategoryCard> createState() => _CategoryCardState();
 }
@@ -651,11 +665,12 @@ class _CategoryCardState extends State<_CategoryCard> {
           gradient: LinearGradient(begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Color(0x08050409), Color(0xE8050409)]))),
-        LayoutBuilder(builder: (context, box) {
+        Builder(builder: (context) {
           // Covers remain full-bleed; fit the overlay to tiny 4-column
           // phone cards and to enlarged accessibility text on TV.
-          final compact = box.maxWidth < 120 || box.maxHeight < 135;
-          final tiny = box.maxHeight < 105;
+          final inset = focused ? 4 : 2;
+          final compact = widget.tileSize.width - inset < 120 || widget.tileSize.height - inset < 135;
+          final tiny = widget.tileSize.height - inset < 105;
           if (tiny) {
             // Avoid vertical Flex overflow on narrow four-column phone grids.
             return Padding(

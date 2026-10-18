@@ -96,6 +96,10 @@ void main() {
     expect(find.text('Tentar novamente'), findsNothing);
     expect(tester.takeException(), isNull);
     await close(tester);
+    await tester.runAsync(() async {
+      platform.disposalGate!.complete();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    });
     expect(platform.disposed.toSet(), {0, 1});
   });
 

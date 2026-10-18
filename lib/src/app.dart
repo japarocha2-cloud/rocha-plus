@@ -48,6 +48,9 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
         title: 'Rocha+ Teste de Canais',
         debugShowCheckedModeBanner: false,
         theme: RochaTheme.dark,
+        // Flutter 3.47.6 can retain a tooltip overlay behind an opaque route
+        // and assert on Android metric/orientation updates. Lab-only mitigation.
+        builder: (context, child) => TooltipVisibility(visible: false, child: child!),
         home: const HomeScreen(accountId: 'rl-test-local'),
       );
     }
