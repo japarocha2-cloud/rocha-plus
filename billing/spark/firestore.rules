@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owns(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /users/{uid}/favorites/{id} {
+      allow read, delete: if owns(uid);
+      allow create, update: if owns(uid) && id.matches('^[a-f0-9]{64}$')
+        && request.resource.data.keys().hasAll(['name', 'url', 'group', 'logo', 'addedAt'])
+        && request.resource.data.keys().hasOnly(['name', 'url', 'group', 'logo', 'addedAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 300
+        && request.resource.data.url is string
+        && request.resource.data.url.size() <= 4096
+        && request.resource.data.url.matches('^https?://.+')
+        && request.resource.data.group is string && request.resource.data.group.size() <= 300
+        && (request.resource.data.logo == null ||
+          (request.resource.data.logo is string && request.resource.data.logo.size() <= 4096
+            && request.resource.data.logo.matches('^https?://.+')))
+        && request.resource.data.addedAt == request.time;
+    }
+    // A stable Google subject keeps the trial across reinstalls and UID recreation.
+    function sparkOwner(accountId) {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && ('google.com' in request.auth.token.firebase.identities)
+        && request.auth.token.firebase.identities['google.com'].size() > 0
+        && request.auth.token.firebase.identities['google.com'][0] == accountId;
+    }
+    match /rochaSparkAccounts/{accountId} {
+      // Verified admin may inspect a single trial by exact Google subject.
+      // Never allow admin list or writes from the mobile application.
+      allow get: if sparkOwner(accountId) || (request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.rochaAdmin == true);
+      allow create: if sparkOwner(accountId)
+        && request.resource.data.keys().hasAll(['trialStartedAt', 'welcomeAcceptedAt'])
+        && request.resource.data.keys().hasOnly(['trialStartedAt', 'welcomeAcceptedAt'])
+        && request.resource.data.trialStartedAt == request.time
+        && request.resource.data.welcomeAcceptedAt == null;
+      allow update: if sparkOwner(accountId)
+        && resource.data.welcomeAcceptedAt == null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['welcomeAcceptedAt'])
+        && request.resource.data.welcomeAcceptedAt == request.time;
+      // No client list/delete, date reset, payment grant, or paidUntil change.
+    }
+  }
+}

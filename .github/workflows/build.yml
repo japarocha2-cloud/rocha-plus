@@ -1,0 +1,210 @@
+name: Build Rocha+
+
+on:
+  push:
+    branches: [main, feat/mercadopago-trial-20261013, feat/admin-login-firebase-20261014, feat/admin-trial-test-apk-20261014]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      signed_login:
+        description: Gerar beta com login real (requer 4 Secrets de assinatura/Firebase)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    env:
+      ROCHA_SPARK_TRIAL: ${{ vars.ROCHA_SPARK_TRIAL }}
+      ROCHA_UNIFIED_RELEASE: ${{ vars.ROCHA_UNIFIED_RELEASE }}
+      ROCHA_SPARK_FIREBASE_PROJECT_ID: rocha-plus
+      ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
+      ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
+      ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
+      ROCHA_KEY_ALIAS: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEY_ALIAS || '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Generate Android scaffold
+        run: |-
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("android/app/build.gradle.kts")
+          text = path.read_text()
+          text = text.replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 37")
+          path.write_text(text)
+          PY
+      - name: Configure Android phone and TV
+        run: python3 tools/configure_android.py
+      - name: Test Android configuration
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Prepare signed Firebase build
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Rocha+ Quality Guard
+        run: python3 tools/rocha_quality_guard.py
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test
+      - name: Rocha+ Quality Guard (post-tests)
+        run: python3 tools/rocha_quality_guard.py
+      - name: Configure isolated visual test app
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle = Path("android/app/build.gradle.kts")
+          text = gradle.read_text()
+          text = text.replace('applicationId = "com.example.rocha_plus"', 'applicationId = "com.rochaplus.visualtest"')
+          text = text.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.visualtest"')
+          gradle.write_text(text)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          if manifest.exists():
+              m = manifest.read_text()
+              m = m.replace('android:label="Rocha+"', 'android:label="Rocha+ Visual Test"')
+              m = m.replace('android:label="rocha_plus"', 'android:label="Rocha+ Visual Test"')
+              manifest.write_text(m)
+          PY
+      - name: Build visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        run: flutter build apk --debug --dart-define=ROCHA_VISUAL_TEST=true
+      - name: Upload visual test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/mercadopago-trial-20261013'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-visual-test
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+      - name: Resolve Android version code
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/android_version_code.py
+      - name: Verify commercial billing configuration
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/validate_billing_config.py
+      - name: Build universal APK
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: flutter build apk --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+      - name: Build optimized APKs
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: flutter build apk --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
+      - name: Build Play Store bundle
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: flutter build appbundle --release --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+      - name: Verify release evidence
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/release_evidence.py
+      - name: Upload release evidence
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-release-evidence
+          path: build/qa/release-evidence.json
+          if-no-files-found: error
+      - name: Upload universal APK
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-beta-login-universal
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+      - name: Upload ARM64 APK
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-beta-login-arm64
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          if-no-files-found: error
+      - name: Upload Play Store AAB
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-beta-login-play-store-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+      - name: Explain build mode and downloadable artifacts
+        if: always()
+        env:
+          ROCHA_SIGNED_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && 'true' || 'false' }}
+        run: |
+          if [ "$ROCHA_SIGNED_REQUESTED" = "true" ]; then
+            echo "### Rocha+ beta com login Firebase" >> "$GITHUB_STEP_SUMMARY"
+            echo "Somente se esta execucao tiver sucesso: baixe rocha-plus-beta-login-universal." >> "$GITHUB_STEP_SUMMARY"
+            echo "A conexao ao Google ainda exige teste no aparelho e SHA da assinatura registrado no Firebase." >> "$GITHUB_STEP_SUMMARY"
+            echo "Se houver falha em Prepare signed Firebase build, confira os Secrets no GitHub; nunca os publique." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Rocha+ validacao de codigo (sem APK)" >> "$GITHUB_STEP_SUMMARY"
+            echo "Esta execucao testa codigo, mas nao gera APK para entrega. Para APK completo use Actions > Build Rocha+ > Run workflow > signed_login=true." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Prepare isolated 2-minute laboratory application
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle = Path("android/app/build.gradle.kts")
+          s = gradle.read_text()
+          # Keep the Kotlin/Android namespace unchanged: MainActivity lives there.
+          # Change only the install ID so the laboratory APK remains separate.
+          import re
+          s, count = re.subn(
+              r'(applicationId\s*=\s*")[^"]+(")',
+              r'\g<1>com.rochaplus.triallab\g<2>',
+              s,
+              count=1,
+          )
+          if count != 1:
+              raise RuntimeError("Android applicationId not found")
+          gradle.write_text(s)
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          s = manifest.read_text().replace('android:label="Rocha+"', 'android:label="Rocha+ Laboratório"')
+          manifest.write_text(s)
+          PY
+      - name: Build isolated 2-minute APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        run: flutter build apk --debug --target lib/trial_lab_main.dart
+      - name: Upload isolated 2-minute APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/admin-trial-test-apk-20261014'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-laboratorio-2-minutos
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+      - name: Remove private build inputs
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-private"
+
+  billing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: billing/package-lock.json
+      - run: npm ci --prefix billing
+      - run: npm --prefix billing test
+      - name: Test Spark Firestore access rules
+        run: |
+          npm ci --prefix billing/spark
+          npm --prefix billing/spark test
+      - run: npm --prefix billing audit --omit=dev --audit-level=high
+      - run: node --test platforms/shared/account.test.js
+      - run: python3 tools/sync_platform_baseline.py --check

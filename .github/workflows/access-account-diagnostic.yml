@@ -1,0 +1,66 @@
+name: Access Trial Account Diagnostic (read-only)
+on:
+  push:
+    branches: [fix/login-trial-access-race-20261015]
+    paths: ['.github/workflows/access-account-diagnostic.yml']
+permissions:
+  contents: read
+jobs:
+  read-account:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Read only requested account trial and authoritative server time
+        working-directory: billing
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {cert, initializeApp} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          import {getFirestore} from 'firebase-admin/firestore';
+          let stage='credential';
+          try {
+            const key=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'null');
+            if(key?.type!=='service_account'||key.project_id!=='rocha-plus') throw Error('credential');
+            initializeApp({credential:cert(key),projectId:'rocha-plus'});
+            stage='identity';
+            const user=await getAuth().getUserByEmail('andressarocha9706@gmail.com');
+            const google=user.providerData?.filter(p=>p.providerId==='google.com');
+            if(user.disabled || !user.emailVerified || google?.length!==1 ||
+               !/^\d{1,128}$/.test(google[0].uid||'')) throw Error('identity');
+            stage='trial-record';
+            const snap=await getFirestore().doc('rochaSparkAccounts/'+google[0].uid).get();
+            if(!snap.exists) {
+              console.log(JSON.stringify({ok:true,readOnly:true,recordFound:false,
+                state:'no-server-trial-record',laboratoryTwoMinutes:false}));
+            } else {
+              const data=snap.data();
+              const started=data.trialStartedAt?.toMillis?.();
+              const now=snap.readTime?.toMillis?.();
+              const paid=data.paidUntil?.toMillis?.() ?? null;
+              if(!Number.isFinite(started)||!Number.isFinite(now)||started>now||
+                 (paid!==null&&!Number.isFinite(paid))) throw Error('invalid-time');
+              const ends=started+7*86400000;
+              console.log(JSON.stringify({ok:true,readOnly:true,recordFound:true,
+                state:paid>now?'paid':ends>now?'trial':'expired',
+                trialStartedAt:new Date(started).toISOString(),
+                trialEndsAt:new Date(ends).toISOString(),serverTime:new Date(now).toISOString(),
+                trialRemainingSeconds:Math.max(0,Math.ceil((ends-now)/1000)),
+                paidUntil:paid===null?null:new Date(paid).toISOString(),
+                welcomeAccepted:!!data.welcomeAcceptedAt?.toMillis?.(),
+                laboratoryTwoMinutes:false}));
+            }
+          } catch (_) {
+            console.log(JSON.stringify({ok:false,readOnly:true,stage,code:'account-not-confirmed'}));
+            process.exitCode=1;
+          }
+          NODE

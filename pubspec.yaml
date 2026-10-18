@@ -1,0 +1,49 @@
+name: rocha_plus
+description: Rocha+ streaming player for public and authorized channels.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  html: ^0.15.7
+  flutter_chrome_cast: 1.5.0
+  shared_preferences: ^2.5.3
+  # 2.5.0's new JNI backend fails getAll in Android release (runtime regression).
+  # Keep the Pigeon channel backend verified by catalog-runtime-check.yml.
+  shared_preferences_android: 2.4.28
+  video_player: ^2.9.2
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  google_sign_in: ^7.2.0
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - branding/trial-welcome-approved.png
+    - branding/trial-welcome-boy.webp
+    - branding/rocha_plus_icon.webp
+    - branding/dashboard-reference.png
+    - branding/cast-reference.png
+    - branding/home-tv-galaxy.png
+    - branding/intro-rocha-plus.mp4
+    - branding/categories/tv_ao_vivo.webp
+    - branding/categories/esportes.webp
+    - branding/categories/infantil.webp
+    - branding/categories/noticias.webp
+    - branding/categories/mobile/
+    - branding/ads/
+    - branding/rocha-wordmark-antennas.webp
+    - catalog/rl_positives_experimental.json
+    - catalog/approved.json
+    - catalog/quarantine.json

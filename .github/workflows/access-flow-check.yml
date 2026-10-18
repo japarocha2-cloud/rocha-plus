@@ -1,0 +1,121 @@
+name: Login Trial Access Regression Checks
+# Isolated access-flow candidate. Frozen refs are never updated.
+on:
+  push:
+    branches: [fix/login-trial-access-race-20261015]
+    paths: ['lib/**', 'test/**', 'tools/**', '.github/workflows/access-flow-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  signed-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ROCHA_SPARK_TRIAL: 'true'
+      ROCHA_BILLING_API_URL: ${{ vars.ROCHA_BILLING_API_URL }}
+      ROCHA_ROKU_PAIRING_ENDPOINT: ${{ vars.ROCHA_ROKU_PAIRING_ENDPOINT }}
+      ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+      ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Generate Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          s = p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
+          p.write_text(s)
+          PY
+      - name: Configure official Android app
+        run: python3 tools/configure_android.py
+      - name: Android scaffold configuration tests
+        run: python3 -m unittest discover -s tools -p 'test_configure_android.py'
+      - name: Prepare private signing and Firebase config
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
+      - name: Flutter dependencies
+        run: flutter pub get
+      - name: Analyze changed access code
+        run: flutter analyze lib/src/app.dart lib/src/auth lib/src/billing/subscription_gate.dart lib/src/billing/trial_welcome_dialog.dart test/access_flow_regression_test.dart test/auth_test.dart test/spark_billing_test.dart
+      - name: Compare full Flutter suites with frozen baseline (no skipped tests)
+        run: python3 tools/verify_access_regressions.py
+      - name: Upload explicit test results including pre-existing layout failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: access-flow-test-evidence
+          path: build/access-flow-evidence.json
+          if-no-files-found: warn
+      - name: Configure version code above frozen APK 4005
+        run: |
+          python3 tools/android_version_code.py
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          code = max(4100, 4100 + int(os.environ['GITHUB_RUN_NUMBER']))
+          with Path(os.environ['GITHUB_ENV']).open('a') as output:
+              output.write(f'ROCHA_ANDROID_VERSION_CODE={code}\n')
+          print(f'Category fit candidate versionCode: {code}')
+          PY
+      - name: Build signed full candidate
+        run: |
+          flutter build apk --release \
+            --dart-define="ROCHA_SPARK_TRIAL=$ROCHA_SPARK_TRIAL" \
+            --dart-define="ROCHA_BILLING_API_URL=$ROCHA_BILLING_API_URL" \
+            --dart-define="ROCHA_ROKU_PAIRING_ENDPOINT=$ROCHA_ROKU_PAIRING_ENDPOINT" \
+            --build-number="$ROCHA_ANDROID_VERSION_CODE" \
+            --dart-define-from-file="$ROCHA_FIREBASE_FILE"
+      - name: Verify release APK installability metadata and signature
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          test -s "$APK"
+          SDK="$ANDROID_HOME/build-tools"
+          AAPT="$(find "$SDK" -name aapt -type f | sort -V | tail -1)"
+          APKSIGNER="$(find "$SDK" -name apksigner -type f | sort -V | tail -1)"
+          test -x "$AAPT" && test -x "$APKSIGNER"
+          "$AAPT" dump badging "$APK" | tee /tmp/rocha-apk-badging.txt
+          grep -q "^package: name='com.rochaplus.app'" /tmp/rocha-apk-badging.txt
+          grep -q "^sdkVersion:" /tmp/rocha-apk-badging.txt
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          unzip -t "$APK" >/dev/null
+      - name: Upload candidate (never publish as production)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-access-flow-candidate
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+      - name: Delete private signing files
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-private"
+
+  firestore-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing/spark
+      - name: Verify no trial reset, account isolation, acceptance and client payment denial
+        run: npm test
+        working-directory: billing/spark

@@ -1,0 +1,15 @@
+{
+  "channel": "SBC TV",
+  "official_page": "https://sbctv.com.br/",
+  "official_player": "https://live.brascast.com/player/rede1250/1",
+  "stream_url": "https://video01.brascast.com/rede1250/rede1250/playlist.m3u8",
+  "test": "FFmpeg decode 30 seconds requested; 900 video frames; H264 Main 1920x1080 30fps and AAC LC stereo 44100Hz",
+  "decoded_seconds": 29.977007,
+  "result": "passed",
+  "limits": [
+    "Short server-side decode only; not a continuous physical Chromecast test",
+    "Startup was slow from this environment",
+    "No claim of redistribution agreement verified"
+  ],
+  "base_commit": "40f5de75400f7d65c6df896e2b815b4a9edf6449"
+}

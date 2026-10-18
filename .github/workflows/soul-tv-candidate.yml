@@ -1,0 +1,76 @@
+name: Rocha+ Soul TV candidate (isolated debug)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Configure Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("android/app/build.gradle.kts")
+          s=path.read_text().replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 37")
+          path.write_text(s)
+          PY
+          python3 tools/configure_android.py
+      - name: Isolate test installation from frozen APK
+        run: python3 tools/isolate_test_android.py
+      - name: Validate catalog (SBC unique, ISTV unique)
+        run: |
+          python3 - <<'PY'
+          import json
+          items=json.load(open('catalog/approved.json'))
+          for key in ['SBC TV','ISTV']:
+            matches=[x for x in items if key.lower() in x['name'].lower()]
+            assert len(matches)==1,(key,len(matches))
+          for key in ['TV Mais Brasil','TV da Quebrada']:
+            assert not any(key.lower() in x['name'].lower() for x in items),key+' not yet validated'
+          print('catalog guard passed')
+          PY
+      - name: Explain isolated debug limitations
+        run: |
+          echo "### Rocha+ teste isolado Soul TV" >> "$GITHUB_STEP_SUMMARY"
+          echo "Aplicação de teste: com.rochaplus.soultvtest. Não substitui com.rochaplus.app (APK 4301)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Esta compilação é DEBUG, não é release homologada. Login Firebase/Google com esse applicationId necessita configuração própria e não é garantido neste build." >> "$GITHUB_STEP_SUMMARY"
+          echo "SBC e ISTV já estão no catálogo. TV Mais Brasil e TV da Quebrada não estão incluídas pois as fontes ainda não foram validadas." >> "$GITHUB_STEP_SUMMARY"
+      - run: flutter pub get
+      - run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - run: python3 tools/rocha_quality_guard.py
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build isolated debug APK (not release)
+        run: flutter build apk --debug
+      - name: Verify candidate APK exists
+        run: |
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$APK"
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$AAPT" dump badging "$APK" > /tmp/candidate-badging.txt
+          grep "^package:" /tmp/candidate-badging.txt
+          grep -q "name='com.rochaplus.soultvtest'" /tmp/candidate-badging.txt
+          grep -q "launchable-activity: name='com.rochaplus.app.MainActivity'" /tmp/candidate-badging.txt
+          "$SIGNER" verify --verbose "$APK"
+          unzip -t "$APK" >/dev/null
+          sha256sum "$APK"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-soul-tv-candidate-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

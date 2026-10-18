@@ -1,0 +1,33 @@
+name: Roku Requirements and Cast Continuity Audit
+on:
+  push:
+    branches: [fix/cast-disconnect-resume-20261016]
+    paths: ['lib/src/screens/player_screen.dart', 'lib/src/screens/cast_control_screen.dart', 'test/cast_disconnect_resume_test.dart', 'test/cast_continuity_audit_test.dart', 'test/cast_hls_continuity_audit_test.dart', '.github/workflows/roku-cast-audit.yml']
+permissions:
+  contents: read
+jobs:
+  automated-cast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze lib/src/screens/player_screen.dart lib/src/screens/cast_control_screen.dart test/cast_disconnect_resume_test.dart test/cast_continuity_audit_test.dart test/cast_hls_continuity_audit_test.dart
+      - name: Verify virtual time and synthetic relay continuity (no physical device)
+        run: |
+          set -o pipefail
+          mkdir -p build/continuity-audit
+          flutter test --reporter expanded test/cast_disconnect_resume_test.dart test/cast_continuity_audit_test.dart test/cast_hls_continuity_audit_test.dart test/cast_readiness_test.dart test/cast_device_picker_test.dart test/cast_hls_proxy_test.dart test/cast_playback_evidence_test.dart test/playback_evidence_test.dart test/roku_pairing_test.dart test/access_flow_regression_test.dart | tee build/continuity-audit/flutter-tests.txt
+      - name: Pairing server unit tests (no Firebase or payment writes)
+        run: node --test billing/pairing/service.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cast-continuity-automated-evidence
+          path: build/continuity-audit/
+          if-no-files-found: warn

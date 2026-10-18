@@ -1,0 +1,13 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { validateAccessResponse } = require('./entitlement_contract');
+const grant = { state: 'paid', active: true, serverTime: 1000, accessUntil: 62000 };
+test('paid access gets bounded lease', () => assert.deepEqual(validateAccessResponse(grant), { allowed: true, leaseMs: 60000 }));
+test('trial uses same server contract', () => assert.equal(validateAccessResponse({ ...grant, state:'trial' }).allowed, true));
+test('expired blocked', () => assert.equal(validateAccessResponse({ ...grant, state:'expired', active: false }).allowed, false));
+test('expired timestamp blocked', () => assert.equal(validateAccessResponse({ ...grant, accessUntil:999 }).allowed, false));
+test('unverified state blocked', () => assert.equal(validateAccessResponse({ ...grant, state:'unknown' }).allowed, false));
+test('missing response blocked', () => assert.equal(validateAccessResponse(null).allowed, false));
+test('invalid remaining time blocked', () => assert.equal(validateAccessResponse({ ...grant, accessUntil:'999999' }).allowed, false));
+test('no indefinite grant', () => assert.equal(validateAccessResponse({ ...grant, accessUntil:1000 + 400 * 86400000 }).allowed, false));

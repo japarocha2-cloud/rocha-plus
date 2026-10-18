@@ -1,0 +1,14 @@
+{
+  "rootDir": ".",
+  "files": [
+    "source/**/*",
+    "components/**/*",
+    "catalog/**/*",
+    "manifest",
+    "README.md",
+    "config/**/*",
+    "images/*.jpg"
+  ],
+  "outFile": "../../build/roku/RochaPlus-Roku.zip",
+  "createPackage": true
+}

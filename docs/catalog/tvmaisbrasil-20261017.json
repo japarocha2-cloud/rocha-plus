@@ -1,0 +1,29 @@
+{
+  "channel": "TV Mais Brasil",
+  "soul_channel": 193,
+  "official_page": "https://tvmaisbrasil.com.br/",
+  "official_player": "https://playerv.samcast.com.br/video/tvmaisbrasil/2/true/true/YzNSdGRqZ3VjMkZ0WTJGemRDNWpiMjB1WW5JPSta/16:9//nao/nao",
+  "stream_url": "https://stmv8.samcast.com.br/tvmaisbrasil/tvmaisbrasil/playlist.m3u8",
+  "checked_date": "2026-10-17",
+  "manifest_http_status": 200,
+  "decode": {
+    "tool": "ffmpeg",
+    "exit_code": 0,
+    "decoded_seconds": 29.994,
+    "video_frames": 899,
+    "video_codec": "h264",
+    "video_profile": "High",
+    "resolution": "1920x1080",
+    "fps": 30,
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "audio_channels": 2
+  },
+  "approved": false,
+  "status": "candidate",
+  "distribution_permission": "not_verified",
+  "physical_android_test": "pending",
+  "physical_cast_test": "pending",
+  "long_duration_stability": "pending",
+  "catalog_changed": false
+}

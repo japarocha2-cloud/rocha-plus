@@ -1,0 +1,64 @@
+name: Rocha+ Firebase Read-only Connectivity
+on:
+  push:
+    branches:
+      - feat/spark-payment-confirmation-20261015
+    paths:
+      - '.github/workflows/firebase-connectivity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  connectivity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Firebase Admin dependencies
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify Firebase Admin API authentication without writes
+        working-directory: billing
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {cert, initializeApp} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          import {getFirestore} from 'firebase-admin/firestore';
+          await (async () => {
+          try {
+            const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!raw) throw Error('missing-secret');
+            const service=JSON.parse(raw);
+            if(service.type!=='service_account' || service.project_id!=='rocha-plus' ||
+               typeof service.private_key!=='string' ||
+               !service.client_email?.endsWith('@rocha-plus.iam.gserviceaccount.com')) throw Error('invalid-project-credential');
+            initializeApp({credential:cert(service),projectId:'rocha-plus'});
+            // Check Auth and Firestore permissions without outputting any personal data.
+            try {
+              await getAuth().listUsers(1);
+            } catch (e) {
+              console.log(JSON.stringify({ok:false,readOnly:true,stage:'auth',code: e.code || 'auth-permission-or-api-error'}));
+              process.exitCode=1;
+              return;
+            }
+            try {
+              await getFirestore().doc('rochaSparkAccounts/connectivityProbeMissing20261015').get();
+            } catch(e) {
+              console.log(JSON.stringify({ok:false,readOnly:true,stage:'firestore',code:e.code || 'firestore-permission-or-api-error'}));
+              process.exitCode=1;
+              return;
+            }
+            console.log(JSON.stringify({ok:true,readOnly:true,auth:'reachable',firestore:'reachable'}));
+          } catch(e) {
+            console.log(JSON.stringify({ok:false,readOnly:true,code:'firebase-connectivity-not-confirmed'}));
+            process.exitCode=1;
+          }
+          })();
+          NODE

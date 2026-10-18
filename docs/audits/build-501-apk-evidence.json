@@ -1,0 +1,20 @@
+{
+  "commit": "2b9255514bffc93f1b418dd07596e08c1b735689",
+  "build": 501,
+  "artifact": 11848751275,
+  "apk_sha256": "2e38343f2e17534b1570dd3d7abca686740bae9a09295ecb77970c3ea2c43481",
+  "size_bytes": 65369314,
+  "package": "com.rochaplus.app",
+  "version_code": "501",
+  "min_sdk": "24",
+  "signature_v2_cryptographic_verification": true,
+  "certificate_sha256": [
+    "8c83b088b0964d7e8bc81b32562e9191f319e0d58cffaa1e5f27f7567b919d22"
+  ],
+  "debuggable": "false",
+  "cleartext_allowed": "false",
+  "backup_default_enabled": "true",
+  "sensitive_pattern_findings": [],
+  "security_scan_scope": "ZIP entry names and selected private-key/credential patterns; not a proof that no secrets exist",
+  "physical_test": "pending"
+}

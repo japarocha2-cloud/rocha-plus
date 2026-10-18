@@ -1,0 +1,63 @@
+name: Rocha+ packaged catalog Android release check
+on:
+  push:
+    branches: [feat/soul-tv-candidates-20261016]
+    paths:
+      - '.github/workflows/catalog-runtime-check.yml'
+      - 'lib/catalog_probe.dart'
+      - 'test/packaged_catalog_test.dart'
+      - 'lib/src/live/**'
+      - 'pubspec.yaml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  catalog-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Verify actual bundled catalogue on Dart VM
+        run: flutter test --reporter expanded test/packaged_catalog_test.dart
+      - name: Build diagnostic release (never uploaded as an app)
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 tools/isolate_test_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle.kts')
+          p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion','compileSdk = 37').replace('com.rochaplus.soultvtest','com.rochaplus.catalogprobe'))
+          PY
+          flutter build apk --release --target lib/catalog_probe.dart
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Exercise real assets and real Android preferences in release mode
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            adb install build/app/outputs/flutter-apk/app-release.apk
+            adb logcat -c
+            adb shell am start -n com.rochaplus.catalogprobe/com.rochaplus.app.MainActivity
+            for attempt in $(seq 1 60); do adb logcat -d > /tmp/catalog-runtime.log; if grep -q 'ROCHA_CATALOG_PROBE_' /tmp/catalog-runtime.log; then break; fi; sleep 1; done
+            cat /tmp/catalog-runtime.log
+            grep -q 'ROCHA_CATALOG_PROBE_OK' /tmp/catalog-runtime.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: catalog-runtime-diagnostics
+          path: /tmp/catalog-runtime.log
+          if-no-files-found: ignore
