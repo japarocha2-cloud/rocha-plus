@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,6 +85,10 @@ class AmambaiNewsRepository {
       _now().difference(_cached!.publishedAt) <= const Duration(days: 7)
       ? _cached : null;
 
+  void _trace(String value) {
+    if (const bool.fromEnvironment('ROCHA_LAB_TEST')) debugPrint('[RochaNews] $value');
+  }
+
   Future<NewsHeadline?> _load() async {
     _lastAttempt = _now();
     SharedPreferences? prefs;
@@ -105,6 +110,7 @@ class AmambaiNewsRepository {
     try {
       final request = http.Request('GET', homepage)..followRedirects = false;
       final response = await _client.send(request).timeout(const Duration(seconds: 8));
+      _trace('http=${response.statusCode}');
       if (response.statusCode != 200) return _freshCache();
       final bytes = <int>[];
       await for (final chunk in response.stream.timeout(const Duration(seconds: 8))) {
@@ -112,11 +118,15 @@ class AmambaiNewsRepository {
         if (bytes.length > 2 * 1024 * 1024) throw const FormatException('News preview too large');
       }
       final result = parseHomepage(utf8.decode(bytes), _now());
+      _trace('bytes=${bytes.length} parsed=${result != null} clock=${_now().toIso8601String()}');
       if (result != null) {
         _cached = result;
         try { await prefs?.setString(_cacheKey, jsonEncode(result.toJson())); } catch (_) {}
       }
-    } catch (_) { /* Keep the last valid preview; no error dialog or route changes. */ }
+    } catch (error) {
+      _trace('load-failure=${error.runtimeType}: $error');
+      // Keep the last valid preview; no error dialog or route changes.
+    }
     return _freshCache();
   }
 }

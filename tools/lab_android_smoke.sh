@@ -18,7 +18,7 @@ adb shell run-as com.rochaplus.labaudit20261018 cat cache/rocha_lab_errors.log >
 cat smoke-evidence/flutter-errors.txt
 if [ "$mode" = current ]; then
   test -s smoke-evidence/flutter-errors.txt
-  if [ "$(wc -l < smoke-evidence/flutter-errors.txt)" -gt 1 ] || rg -q 'debugNeedsLayout|EXCEPTION CAUGHT BY|FATAL EXCEPTION|A RenderFlex overflowed' smoke-evidence/logcat.txt; then
+  if [ "$(wc -l < smoke-evidence/flutter-errors.txt)" -gt 1 ] || grep -Eq 'debugNeedsLayout|EXCEPTION CAUGHT BY|FATAL EXCEPTION|A RenderFlex overflowed' smoke-evidence/logcat.txt; then
     tail -250 smoke-evidence/logcat.txt
     exit 1
   fi

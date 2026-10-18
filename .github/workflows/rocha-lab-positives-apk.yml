@@ -27,6 +27,11 @@ jobs:
       - name: Authenticated laboratory session regression
         if: always()
         run: flutter test test/lab_auth_runtime_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
+      - name: Check live publisher HTML contract
+        if: always()
+        run: |
+          curl --fail --silent --show-error --max-time 30 'https://www.amambainoticias.com.br/' -o "$RUNNER_TEMP/amambai-home.html"
+          ROCHA_NEWS_HTML_FIXTURE="$RUNNER_TEMP/amambai-home.html" flutter test test/news_origin_contract_test.dart --reporter expanded
       - name: News first-slot regression
         if: always()
         run: flutter test test/amambai_news_test.dart --dart-define=ROCHA_NEWS_CAROUSEL=true --reporter expanded
