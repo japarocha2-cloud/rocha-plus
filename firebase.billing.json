@@ -1,3 +1,0 @@
-{
-  "functions": [{"source": "billing", "codebase": "rocha-mercadopago", "runtime": "nodejs22"}]
-}

@@ -1,6 +1,0 @@
-.dart_tool/
-build/
-node_modules/
-__pycache__/
-.env*
-*.log
