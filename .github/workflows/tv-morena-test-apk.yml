@@ -1,4 +1,4 @@
-name: TV Morena isolated test APK
+name: TV Morena signed login test APK
 on:
   push:
     branches:
@@ -12,7 +12,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
+    env:
+      ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+      ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -29,10 +32,13 @@ jobs:
           from pathlib import Path
           p=Path('android/app/build.gradle.kts')
           s=p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
-          s=s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.morenatest"')
-          s=s.replace('applicationId = "com.example.rocha_plus"', 'applicationId = "com.rochaplus.morenatest"')
           p.write_text(s)
           PY
+      - name: Prepare existing signed Firebase login
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+        run: python3 tools/prepare_signed_build.py
       - name: Install dependencies
         run: flutter pub get
       - name: Verify TV Morena is only in test catalog
@@ -45,11 +51,11 @@ jobs:
           assert all(x.get('experimental') and x.get('release_scope')=='owner_testing_only' for x in items)
           print('TV Morena candidates:', len(items))
           PY
-      - name: Build unsigned debug test APK
-        run: flutter build apk --debug
-      - name: Upload independent test APK
+      - name: Build signed release with real Firebase login
+        run: flutter build apk --release --dart-define-from-file="$ROCHA_FIREBASE_FILE" --build-number=4999
+      - name: Upload signed TV Morena test APK
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-tv-morena-test-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: rocha-plus-tv-morena-test-signed
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
