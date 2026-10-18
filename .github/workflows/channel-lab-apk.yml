@@ -1,0 +1,43 @@
+name: Rocha+ Channel Lab APK
+on:
+  push:
+    branches:
+      - feat/channel-lab-import-export-20261017
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+      - name: Configure independent Android lab
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle.kts')
+          s=p.read_text().replace('compileSdk = flutter.compileSdkVersion','compileSdk = 37')
+          s=s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.channellab"')
+          p.write_text(s)
+          m=Path('android/app/src/main/AndroidManifest.xml')
+          s=m.read_text().replace('android:usesCleartextTraffic="false"','android:usesCleartextTraffic="true"')
+          m.write_text(s)
+          PY
+      - name: Install packages
+        run: flutter pub get
+      - name: Compile standalone debug APK
+        run: flutter build apk --debug --target=lib/main_channel_lab.dart
+      - name: Publish test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-channel-lab-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
