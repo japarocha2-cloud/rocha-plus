@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -24,7 +25,38 @@ jobs:
         run: flutter test --reporter expanded
       - name: Laboratory render and catalog regression
         if: always()
-        run: flutter test test/lab_catalog_runtime_test.dart test/home_featured_carousel_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
+        run: flutter test test/lab_catalog_runtime_test.dart test/lab_player_runtime_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
+  baseline-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download original failing APK for diagnosis
+        uses: actions/download-artifact@v4
+        with:
+          name: RochaPlus-RL-Positivos-TESTE
+          run-id: 39097093957
+          github-token: ${{ github.token }}
+          path: baseline-apk
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Reproduce original Home on Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: bash tools/lab_android_smoke.sh baseline-apk/app-debug.apk baseline
+      - name: Preserve Android diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-Baseline-Android-Diagnosis
+          path: smoke-evidence/
   build:
     needs: audit
     runs-on: ubuntu-latest
@@ -68,7 +100,12 @@ jobs:
           assert "if (labTestBuild)" in repo
           assert "catalog/rl_positives_experimental.json" in Path('pubspec.yaml').read_text()
           gradle=Path('android/app/build.gradle.kts').read_text()
-          assert 'com.rochaplus.labpositivos' in gradle, 'APK package is not isolated'
+          assert 'applicationId = "com.rochaplus.labpositivos"' in gradle, 'APK package is not isolated'
+          import xml.etree.ElementTree as ET
+          manifest = ET.parse('android/app/src/main/AndroidManifest.xml').getroot()
+          android = '{http://schemas.android.com/apk/res/android}'
+          assert manifest.find('application').get(android + 'usesCleartextTraffic') == 'true'
+          assert any(p.get(android + 'name') == 'android.permission.INTERNET' for p in manifest.findall('uses-permission'))
           print('PASS: 20 distinct test streams, local home, isolated APK package.')
           PY
       - name: Fetch packages

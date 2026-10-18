@@ -24,7 +24,9 @@ void main() {
     expect(entries, hasLength(20));
     expect(urls, hasLength(20));
     expect(entries.every((e) => e['distribution_permission'] == 'unverified'), isTrue);
-    final channels = await ChannelRepository().loadBrazilPublicDirectory();
+    final channels = await ChannelRepository(
+      catalogLoader: () async => '[]', quarantineLoader: () async => '[]',
+    ).loadBrazilPublicDirectory();
     final loaded = channels.map((c) => c.url).toSet();
     expect(loaded.intersection(urls), lab ? urls : isEmpty);
     expect(channels.length, loaded.length);
@@ -56,7 +58,7 @@ void main() {
       await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')),
         150, scrollable: scroll);
       await tester.tap(find.byKey(const ValueKey('category-Infantil')));
-      await tester.pumpAndSettle();
+      await tester.pump();
       await tester.runAsync(() async {
         await Future<void>.delayed(const Duration(milliseconds: 100));
       });
