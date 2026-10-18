@@ -23,6 +23,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   late final AuthController controller;
   bool introFinished = false;
   bool showingLayoutPreview = false;
+  static const _labTestBuild = bool.fromEnvironment('ROCHA_LAB_TEST', defaultValue: false);
   static const _previewBuild = bool.fromEnvironment('ROCHA_LAYOUT_PREVIEW');
   static const _visualTestBuild = bool.fromEnvironment('ROCHA_VISUAL_TEST');
   bool get _mayPreview => _previewBuild && !FirebaseAuthRepository.isConfigured;
@@ -30,7 +31,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   void initState() {
     super.initState();
     controller = widget.authController ?? AuthController(FirebaseAuthRepository());
-    if (controller.initializing) unawaited(controller.initialize());
+    if (!_labTestBuild && controller.initializing) unawaited(controller.initialize());
   }
   @override
   void dispose() {
@@ -40,6 +41,16 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Isolated owner-only channel test: no Firebase credentials or billing involved.
+    // Normal production builds always keep the existing authentication gate.
+    if (_labTestBuild) {
+      return MaterialApp(
+        title: 'Rocha+ Teste de Canais',
+        debugShowCheckedModeBanner: false,
+        theme: RochaTheme.dark,
+        home: const HomeScreen(accountId: 'rl-test-local'),
+      );
+    }
     if (_visualTestBuild) {
       return MaterialApp(
         title: 'Rocha+ Visual Test',
