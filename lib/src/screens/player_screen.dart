@@ -25,6 +25,7 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  static const _labTestBuild = bool.fromEnvironment('ROCHA_LAB_TEST', defaultValue: false);
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
@@ -79,7 +80,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
-      await controller.initialize().timeout(const Duration(seconds: 8));
+      await controller.initialize().timeout(Duration(seconds: _labTestBuild ? 25 : 8));
       if (!mounted || attempt != _attempt) {
         await controller.dispose();
         return;
