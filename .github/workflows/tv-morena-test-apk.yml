@@ -1,0 +1,55 @@
+name: TV Morena isolated test APK
+on:
+  push:
+    branches:
+      - test/tv-morena-source-review-20261017
+    paths:
+      - '.github/workflows/tv-morena-test-apk.yml'
+      - 'catalog/approved.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Prepare Android app
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          python3 tools/configure_android.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle.kts')
+          s=p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37')
+          s=s.replace('applicationId = "com.rochaplus.app"', 'applicationId = "com.rochaplus.morenatest"')
+          s=s.replace('applicationId = "com.example.rocha_plus"', 'applicationId = "com.rochaplus.morenatest"')
+          p.write_text(s)
+          PY
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Verify TV Morena is only in test catalog
+        run: |
+          python3 - <<'PY'
+          import json
+          data=json.load(open('catalog/approved.json'))
+          items=[x for x in data if x['name'].startswith('TV Morena')]
+          assert len(items)==3, f'Expected 3 TV Morena entries, got {len(items)}'
+          assert all(x.get('experimental') and x.get('release_scope')=='owner_testing_only' for x in items)
+          print('TV Morena candidates:', len(items))
+          PY
+      - name: Build unsigned debug test APK
+        run: flutter build apk --debug
+      - name: Upload independent test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-tv-morena-test-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
