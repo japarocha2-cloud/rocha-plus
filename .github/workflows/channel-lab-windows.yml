@@ -1,0 +1,36 @@
+name: Rocha+ Channel Lab Windows
+on:
+  push:
+    branches:
+      - feat/channel-lab-import-export-20261017
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+      - name: Generate Windows runner
+        run: flutter create --platforms=windows .
+      - name: Install packages
+        run: flutter pub get
+      - name: Build Windows laboratory
+        run: flutter build windows --release --target=lib/main_channel_lab.dart
+      - name: Pack Windows exe and required DLLs
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'build/windows/x64/runner/Release/*' -DestinationPath 'rocha-plus-lab-windows.zip'
+      - name: Upload Windows desktop ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-lab-windows-desktop
+          path: rocha-plus-lab-windows.zip
+          if-no-files-found: error
