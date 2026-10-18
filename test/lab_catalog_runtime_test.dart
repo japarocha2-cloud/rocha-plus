@@ -67,7 +67,8 @@ void main() {
       expect(find.byKey(const ValueKey('channel-grid')), findsOneWidget);
       expect(find.text('Não foi possível carregar os canais.'), findsNothing);
       expect(tester.takeException(), isNull);
-      await tester.pageBack();
+      final navigator = tester.state<NavigatorState>(find.byType(Navigator).first);
+      navigator.pop();
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(tester.takeException(), isNull);

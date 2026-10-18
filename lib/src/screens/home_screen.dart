@@ -135,12 +135,12 @@ class _HomeScreenState extends State<HomeScreen> {
     ]),
   );
   @override
-  Widget build(BuildContext context) {
-    // Derive the same approved geometry during build. Deferred LayoutBuilder
-    // callbacks can be invalidated twice by Android metrics/catalog updates.
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
+    // Resolve parent constraints once. Nested cards receive finite dimensions
+    // instead of scheduling more deferred layout callbacks during updates.
     final media = MediaQuery.of(context);
-    final wide = media.size.width >= 900;
-    final contentWidth = media.size.width - media.padding.horizontal - (wide ? 218 : 0);
+    final wide = constraints.maxWidth >= 900;
+    final contentWidth = constraints.maxWidth - media.padding.horizontal - (wide ? 218 : 0);
     final gridWidth = math.max(0.0, contentWidth - 44);
     final columns = wide ? math.max(1, (gridWidth / 232).ceil()) : 2;
     final tileWidth = math.max(0.0, (gridWidth - 12 * (columns - 1)) / columns);
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ])),
       ])),
     );
-  }
+  });
   Widget _row(String title, List<Channel> items, VoidCallback onAll) => Column(
     crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(padding: const EdgeInsets.fromLTRB(22, 20, 22, 10),
