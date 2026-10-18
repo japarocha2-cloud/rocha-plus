@@ -65,6 +65,9 @@ void main() {
       Uri? opened;
       final repo = AmambaiNewsRepository(now: () => now,
         client: MockClient((_) async => http.Response(fixture, 200, headers: {'content-type': 'text/html; charset=utf-8'})));
+      // Resolve the HTTP/cache fixture before testing geometry and click routing.
+      // pumpAndSettle alone does not wait for an external stream with no frames.
+      expect(await tester.runAsync(() => repo.load()), isNotNull);
       await tester.pumpWidget(MaterialApp(theme: RochaTheme.dark,
         home: MediaQuery(data: const MediaQueryData(textScaler: TextScaler.linear(1.8)),
           child: Scaffold(body: Center(child: SizedBox(width: width, height: width * 9 / 16,

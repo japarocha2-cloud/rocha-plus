@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
@@ -42,7 +41,7 @@ class AmambaiNewsRepository {
     } else if (!RegExp(r'^/20\d\d/\d\d/\d\d/[^/]+/$').hasMatch(uri.path)) {
       return null;
     }
-    return uri.replace(query: '', fragment: '');
+    return Uri(scheme: 'https', host: uri.host, path: uri.path);
   }
 
   static String _clean(String value, int maxWords) => value
