@@ -95,10 +95,21 @@ class _ChannelLabState extends State<ChannelLab> {
     if (good.isEmpty) { setState(() => message = 'Marque pelo menos um canal como positivo.'); return; }
     final text = '#EXTM3U\n${good.map((e) => '#EXTINF:-1 group-title="Rocha+ Lab aprovados",${e.name}\n${e.url}\n').join()}';
     try {
-      final dir = await getTemporaryDirectory();
-      final out = File('${dir.path}/rocha_lab_positivos.m3u');
-      await out.writeAsString(text, flush: true);
-      await SharePlus.instance.share(ShareParams(files: [XFile(out.path)], text: 'Canais positivos do Rocha+ Lab'));
+      if (Platform.isWindows) {
+        final destination = await FilePicker.platform.saveFile(
+          dialogTitle: 'Salvar canais aprovados',
+          fileName: 'RL_canais_positivos.m3u',
+          type: FileType.custom,
+          allowedExtensions: ['m3u'],
+        );
+        if (destination == null) return;
+        await File(destination).writeAsString(text, flush: true);
+      } else {
+        final dir = await getTemporaryDirectory();
+        final out = File('${dir.path}/RL_canais_positivos.m3u');
+        await out.writeAsString(text, flush: true);
+        await SharePlus.instance.share(ShareParams(files: [XFile(out.path)], text: 'Canais positivos do R.L'));
+      }
       if (mounted) setState(() => message = 'Exportados ${good.length} canais positivos.');
     } catch (e) { if (mounted) setState(() => message = 'Falha ao exportar: $e'); }
   }
