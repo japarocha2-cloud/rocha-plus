@@ -43,5 +43,6 @@ flutter:
     - branding/categories/mobile/
     - branding/ads/
     - branding/rocha-wordmark-antennas.webp
+    - catalog/rl_positives_experimental.json
     - catalog/approved.json
     - catalog/quarantine.json
