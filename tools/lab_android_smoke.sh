@@ -10,6 +10,7 @@ sleep 20
 adb exec-out screencap -p > smoke-evidence/home.png
 navigation_failed=0
 if [ "$mode" = current ]; then
+  python3 tools/news_android_preview.py || navigation_failed=1
   python3 tools/lab_android_navigation.py || navigation_failed=1
 fi
 adb logcat -d > smoke-evidence/logcat.txt

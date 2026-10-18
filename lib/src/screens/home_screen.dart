@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../news/news_carousel_card.dart';
 import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../tv/roku_pairing_service.dart';
@@ -296,11 +297,12 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
     with WidgetsBindingObserver {
   static const autoAdvanceInterval = Duration(seconds: 6);
   static const transitionDuration = Duration(milliseconds: 400);
-  static const initialPage = 3001; // Middle item (Home), with room for backward swipes.
+  static const newsEnabled = bool.fromEnvironment('ROCHA_NEWS_CAROUSEL');
+  int get initialPage => newsEnabled && !widget.wide ? 3000 : 3001;
 
   late final PageController controller;
   Timer? _autoTimer;
-  int currentPage = initialPage;
+  late int currentPage;
   int selected = 1;
   bool _dragging = false;
   bool _appActive = true;
@@ -309,6 +311,8 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    currentPage = initialPage;
+    selected = initialPage % 3;
     controller = PageController(initialPage: initialPage, viewportFraction: .84);
     _restartAuto();
   }
@@ -395,8 +399,12 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
                 icon: Icons.toys_outlined, label: 'Espaço infantil',
                 onTap: () => widget.onOpen('Infantil')),
             } : switch (page % 3) {
-              0 => const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
-              1 => _SponsoredPlaceholder(
+              0 => newsEnabled
+                  ? const NewsCarouselCard(key: ValueKey('sponsor-slot-1'))
+                  : const _BauTestBanner(key: ValueKey('sponsor-slot-1')),
+              1 => newsEnabled
+                  ? const _BauTestBanner(key: ValueKey('sponsor-slot-2'))
+                  : _SponsoredPlaceholder(
                 key: const ValueKey('sponsor-slot-2'),
                 cardWidth: widget.availableWidth * .84 - 10,
                 artwork: 'branding/ads/publicidade_jornal.png',

@@ -1,8 +1,8 @@
-name: Rocha+ R.L Positivos - Teste Android
+name: Rocha+ Amambai Noticias - Teste Android
 on:
   push:
     branches:
-      - feat/rocha-lab-positives-test-20261018
+      - feat/amambai-news-carousel-20261018
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,6 +27,9 @@ jobs:
       - name: Authenticated laboratory session regression
         if: always()
         run: flutter test test/lab_auth_runtime_test.dart --dart-define=ROCHA_LAB_TEST=true --reporter expanded
+      - name: News first-slot regression
+        if: always()
+        run: flutter test test/amambai_news_test.dart --dart-define=ROCHA_NEWS_CAROUSEL=true --reporter expanded
       - name: Laboratory render and catalog regression
         if: always()
         run: flutter test test/lab_catalog_runtime_test.dart test/lab_player_runtime_test.dart test/lab_overlay_resize_test.dart --dart-define=ROCHA_LAB_TEST=true --dart-define=ROCHA_LAB_REQUIRE_LOGIN=false --reporter expanded
@@ -90,7 +93,7 @@ jobs:
       - name: Fetch packages
         run: flutter pub get
       - name: Build owner-only test APK
-        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true --dart-define=ROCHA_LAB_REQUIRE_LOGIN=false
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_TEST=true --dart-define=ROCHA_LAB_REQUIRE_LOGIN=false --dart-define=ROCHA_NEWS_CAROUSEL=true
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -141,7 +144,7 @@ jobs:
           p = Path('android/app/build.gradle.kts')
           p.write_text(p.read_text().replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 37'))
           p = Path('android/app/src/main/AndroidManifest.xml')
-          p.write_text(p.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"').replace('android:label="Rocha+ Canais Teste"', 'android:label="Rocha+ R.L Login TESTE"'))
+          p.write_text(p.read_text().replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"').replace('android:label="Rocha+ Canais Teste"', 'android:label="Rocha+ Jornal TESTE"'))
           PY
       - name: Restore existing signing and public Firebase build inputs
         env:
@@ -158,9 +161,10 @@ jobs:
       - run: flutter pub get
       - name: Build signed experimental APK with required login
         run: |
-          flutter build apk --release --build-number=6001 --build-name=0.1.0-rl-login \
+          flutter build apk --release --build-number=6002 --build-name=0.1.0-amambai-news \
             --dart-define=ROCHA_LAB_TEST=true \
             --dart-define=ROCHA_LAB_REQUIRE_LOGIN=true \
+            --dart-define=ROCHA_NEWS_CAROUSEL=true \
             --dart-define=ROCHA_LAB_ANDROID_PACKAGE=com.rochaplus.soultvtest \
             --dart-define-from-file="$ROCHA_FIREBASE_FILE"
       - name: Verify isolated APK identity and signature
@@ -196,7 +200,7 @@ jobs:
       - name: Publish signed APK with login
         uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-RL-LOGIN-TESTE
+          name: RochaPlus-AMAMBAI-LOGIN-TESTE
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
       - name: Remove private signing and Firebase files
