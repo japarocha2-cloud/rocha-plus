@@ -26,6 +26,13 @@ jobs:
           python tools/create_lab_icon.py windows
       - name: Install packages
         run: flutter pub get
+      - name: Allow deprecated coroutine header used by Windows plugin
+        shell: pwsh
+        run: |
+          $cmake = 'windows/CMakeLists.txt'
+          $content = Get-Content $cmake -Raw
+          $content = "add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)`n" + $content
+          Set-Content $cmake $content
       - name: Build Windows laboratory
         run: flutter build windows --release --target=lib/main_channel_lab.dart
       - name: Pack Windows exe and required DLLs
@@ -36,5 +43,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RL-Laboratorio-Windows
-          path: rocha-plus-lab-windows.zip
+          path: RL-Laboratorio-Windows.zip
           if-no-files-found: error
