@@ -20,6 +20,8 @@ void main() {
       await tester.pumpWidget(app(const HomeScreen()));
       await tester.pump();
       expect(tester.takeException(), isNull);
+      expect(find.byKey(const ValueKey('roku-tv-welcome')),
+        size.width >= 1100 ? findsOneWidget : findsNothing);
       await tester.scrollUntilVisible(find.byKey(const ValueKey('category-Infantil')), 200,
         scrollable: find.descendant(of: find.byKey(const ValueKey('home-scroll')),
           matching: find.byType(Scrollable)).first);
