@@ -619,7 +619,7 @@ class _NavItemState extends State<_NavItem> {
       gradient: !widget.tv && widget.selected ? const LinearGradient(
         colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
       child: Material(type: MaterialType.transparency, child: ListTile(
-        autofocus: widget.tv && widget.selected,
+        // Leave initial focus to the existing Watch action; D-pad can reach this menu.
         onFocusChange: (value) => setState(() => focused = value),
         minTileHeight: widget.tv ? 58 : null,
         leading: Icon(widget.icon, color: widget.tv && (focused || widget.selected)
