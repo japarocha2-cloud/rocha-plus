@@ -17,6 +17,12 @@ merged = ET.parse(manifests[0]).getroot()
 app = merged.find("application")
 assert app is not None
 assert app.get(android + "usesCleartextTraffic") == "false"
+assert app.get(android + "networkSecurityConfig") == "@xml/rocha_network_security"
+security_file = root / "android/app/src/main/res/xml/rocha_network_security.xml"
+security = ET.parse(security_file).getroot()
+assert security.find("base-config").get("cleartextTrafficPermitted") == "false"
+allowed_hosts = [element.text for element in security.findall("domain-config/domain")]
+assert allowed_hosts and all(allowed_hosts)
 assert app.get(android + "debuggable", "false") != "true"
 permissions = sorted(node.get(android + "name") for node in merged.findall("uses-permission"))
 assert "android.permission.INTERNET" in permissions
@@ -45,7 +51,8 @@ report = {
     "commit": os.environ["GITHUB_SHA"],
     "build_number": os.environ["GITHUB_RUN_NUMBER"],
     "permissions": permissions,
-    "cleartext_allowed": False,
+    "cleartext_allowed": "reviewed_hosts_only",
+    "cleartext_host_count": len(allowed_hosts),
     "debuggable": False,
     "signing": "production signing configured" if signed_release else "development candidate; production signing not configured",
     "firebase_auth_configured": firebase_release,

@@ -1,0 +1,26 @@
+# HTTP stream origins observed in the October 2026 lab candidates.
+# These are candidates for testing, not a license or approval to redistribute.
+# New origins require an explicit review and an updated APK build.
+45.162.64.114
+170.83.16.50
+170.83.49.66
+45.177.114.115
+181.78.197.59
+79.127.238.228
+45.177.114.114
+play.canalsete.com.br
+hls1.sua.tv
+wz3.dnip.com.br
+200.194.238.229
+200.77.176.130
+187.102.210.46
+46.151.196.223
+185.228.163.146
+200.189.113.201
+wz4.dnip.com.br
+streaming.procergs.com.br
+45.134.141.161
+195.23.211.179
+50.7.120.34
+38.75.136.137
+178.124.179.122
