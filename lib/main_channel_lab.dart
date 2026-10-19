@@ -154,6 +154,37 @@ class _ChannelLabState extends State<ChannelLab> {
     });
     await _save();
   }
+  Future<void> _clearPending() async {
+    final count = entries.where((item) => item.verdict == 'pendente').length;
+    if (count == 0) {
+      setState(() => message = 'Nenhum canal não testado para limpar.');
+      return;
+    }
+    if (!await _confirmRemoval('Limpar canais não testados?',
+        'Excluir $count canais pendentes? Os canais já classificados serão mantidos.')) return;
+    if (!mounted) return;
+    setState(() {
+      entries.removeWhere((item) => item.verdict == 'pendente');
+      message = '$count canais não testados removidos.';
+    });
+    await _save();
+  }
+  Future<void> _clearAll() async {
+    final count = entries.length;
+    if (count == 0) {
+      setState(() => message = 'A lista já está vazia.');
+      return;
+    }
+    if (!await _confirmRemoval('Apagar toda a lista?',
+        'Excluir todos os $count canais, inclusive os positivos e já testados? '
+        'Essa ação não pode ser desfeita. Exporte seus positivos antes.')) return;
+    if (!mounted) return;
+    setState(() {
+      entries.clear();
+      message = 'Lista inteira apagada ($count canais).';
+    });
+    await _save();
+  }
   @override Widget build(BuildContext context) {
     final shown = entries.where((e) => filter == 'todos' || e.verdict == filter).toList();
     final positive = entries.where((e) => e.verdict == 'positivo').length;
@@ -170,6 +201,10 @@ class _ChannelLabState extends State<ChannelLab> {
           FilledButton.tonal(onPressed: _export, child: Text('Exportar positivos ($positive)')),
           OutlinedButton.icon(onPressed: _clearReviewed, icon: const Icon(Icons.delete_sweep),
             label: const Text('Limpar já testados')),
+          OutlinedButton.icon(onPressed: _clearPending, icon: const Icon(Icons.filter_alt_off),
+            label: const Text('Limpar não testados')),
+          OutlinedButton.icon(onPressed: _clearAll, icon: const Icon(Icons.delete_forever),
+            label: const Text('Apagar lista inteira')),
         ]),
         if (message.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(message)),
         Wrap(spacing: 6, children: [
