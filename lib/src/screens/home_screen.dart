@@ -113,29 +113,32 @@ class _HomeScreenState extends State<HomeScreen> {
         LiveTvScreen(initialGroup: group, repository: widget.repository, accountId: widget.accountId)));
     if (mounted) { _load(); }
   }
-  Widget _menu({bool drawer = false}) => Container(
+  Widget _menu({bool drawer = false, bool tv = false}) => Container(
     key: const ValueKey('official-sidebar'),
-    width: 218,
-    decoration: const BoxDecoration(
-      color: Color(0xFF07060C),
-      border: Border(right: BorderSide(color: Color(0xFF272032)))),
+    width: tv ? 292 : 218,
+    decoration: BoxDecoration(
+      color: tv ? const Color(0xFF0E0B20) : const Color(0xFF07060C),
+      border: Border(right: BorderSide(color: tv
+        ? const Color(0xFF33233C) : const Color(0xFF272032)))),
     child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
       if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' :
         (widget.previewOnly ? 'Sair da prévia' : 'Sair da conta'), icon: Icons.logout,
-        onTap: _signOut),
-      const SizedBox(height: 174, child: Center(child: RochaBrand())),
-      _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
+        onTap: _signOut, tv: tv),
+      SizedBox(height: tv ? 144 : 174, child: const Center(child: RochaBrand())),
+      _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true, tv: tv,
         onTap: () { if (drawer) Navigator.pop(context); }),
       ...HomeScreen.sections.map((item) => _NavItem(
-        label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1, icon: item.$2,
+        label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1, icon: item.$2, tv: tv,
         onTap: () { if (drawer) Navigator.pop(context); _open(item.$1); })),
-      _NavItem(label: 'Assinaturas', icon: Icons.workspace_premium_outlined,
+      _NavItem(label: 'Assinaturas', icon: Icons.workspace_premium_outlined, tv: tv,
         onTap: () { if (drawer) Navigator.pop(context); _open('Assinaturas'); }),
     ]),
   );
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: (context, constraints) {
     final wide = constraints.maxWidth >= 900;
+    // Match Roku's ten-foot Home only on television-size viewports.
+    final tv = constraints.maxWidth >= 1100 && constraints.maxHeight >= 600;
     final live = channels.where((c) => c.group == 'TV aberta' &&
       !repository.isBlocked(c) && !repository.isQuarantined(c.url)).take(10).toList();
     final saved = channels.where((c) => favorites.contains(c.url) &&
@@ -144,8 +147,16 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: wide ? null : Drawer(backgroundColor: RochaColors.background,
         child: SafeArea(child: _menu(drawer: true))),
       body: SafeArea(child: Row(children: [
-        if (wide) _menu(),
-        Expanded(child: CustomScrollView(key: const ValueKey('home-scroll'), slivers: [
+        if (wide) _menu(tv: tv),
+        Expanded(child: DecoratedBox(decoration: BoxDecoration(
+          image: tv ? const DecorationImage(
+            image: AssetImage('branding/home-tv-galaxy.png'),
+            fit: BoxFit.cover, opacity: .23) : null,
+        ), child: CustomScrollView(key: const ValueKey('home-scroll'), slivers: [
+          if (tv) const SliverToBoxAdapter(child: Padding(
+            padding: EdgeInsets.fromLTRB(30, 28, 24, 0),
+            child: Text('Bem-vindo ao Rocha+', key: ValueKey('roku-tv-welcome'),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800)))),
           SliverToBoxAdapter(child: Padding(
             padding: EdgeInsets.fromLTRB(wide ? 28 : 12, 12, wide ? 28 : 12, 8),
             child: Row(children: [
@@ -235,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text('Nenhum canal aberto disponível no catálogo neste momento.',
                 style: TextStyle(color: Colors.white54)))),
           const SliverToBoxAdapter(child: SizedBox(height: 28)),
-        ])),
+        ]))),
       ])),
     );
   });
@@ -584,22 +595,40 @@ class _OfficialHero extends StatelessWidget {
   );
 }
 
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
   final bool selected;
+  final bool tv;
   const _NavItem({required this.label, required this.icon,
-    required this.onTap, this.selected = false});
+    required this.onTap, this.selected = false, this.tv = false});
+  @override
+  State<_NavItem> createState() => _NavItemState();
+}
+
+class _NavItemState extends State<_NavItem> {
+  bool focused = false;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-    child: Container(decoration: BoxDecoration(
+    padding: EdgeInsets.symmetric(horizontal: widget.tv ? 16 : 8, vertical: widget.tv ? 7 : 3),
+    child: AnimatedContainer(duration: const Duration(milliseconds: 120),
+      decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
-      gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
-      child: Material(type: MaterialType.transparency, child: ListTile(leading: Icon(icon, color: Colors.white70),
-        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-        onTap: onTap))),
+      color: widget.tv && (focused || widget.selected) ? RochaColors.gold : null,
+      gradient: !widget.tv && widget.selected ? const LinearGradient(
+        colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
+      child: Material(type: MaterialType.transparency, child: ListTile(
+        autofocus: widget.tv && widget.selected,
+        onFocusChange: (value) => setState(() => focused = value),
+        minTileHeight: widget.tv ? 58 : null,
+        leading: Icon(widget.icon, color: widget.tv && (focused || widget.selected)
+          ? const Color(0xFF10091F) : Colors.white70),
+        title: Text(widget.label, style: TextStyle(
+          color: widget.tv && (focused || widget.selected)
+            ? const Color(0xFF10091F) : Colors.white70,
+          fontSize: widget.tv ? 18 : 14, fontWeight: widget.tv ? FontWeight.w700 : null)),
+        onTap: widget.onTap))),
   );
 }
 
