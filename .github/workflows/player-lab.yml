@@ -12,7 +12,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: rocha-lab-xvfb-${{ github.event.pull_request.number }}
+  group: rocha-lab-xvfb-pcm-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 jobs:
   build:

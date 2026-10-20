@@ -72,7 +72,7 @@ jobs:
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt
-            ps -eo pid,args | rg 'qemu-system|emulator|Xvfb' > build/lab/android/emulator-processes.txt
+            ps -eo pid,args | grep -E '[q]emu-system|[e]mulator|[X]vfb' > build/lab/android/emulator-processes.txt || true
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
             adb shell settings put system screen_off_timeout 2147483647
