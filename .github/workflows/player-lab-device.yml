@@ -26,26 +26,22 @@ jobs:
       - name: Host evidence tools and dedicated audio sink
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg pulseaudio libasound2-plugins
+          sudo apt-get install -y ffmpeg pulseaudio
           python3 -m pip install pillow numpy
+          export XDG_RUNTIME_DIR="$RUNNER_TEMP/rocha-runtime"
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> "$GITHUB_ENV"
           pulseaudio --start --exit-idle-time=-1
+          test -s "$XDG_RUNTIME_DIR/pulse/pid"
           pactl load-module module-null-sink sink_name=rocha_lab rate=48000 channels=2
           pactl set-default-sink rocha_lab
           pactl set-default-source rocha_lab.monitor
-          pactl load-module module-native-protocol-unix socket="$RUNNER_TEMP/rocha-pulse.sock" auth-anonymous=1
-          echo "PULSE_SERVER=unix:$RUNNER_TEMP/rocha-pulse.sock" >> "$GITHUB_ENV"
-          echo "QEMU_PA_SERVER=unix:$RUNNER_TEMP/rocha-pulse.sock" >> "$GITHUB_ENV"
+          echo "PULSE_SERVER=unix:$XDG_RUNTIME_DIR/pulse/native" >> "$GITHUB_ENV"
+          echo "QEMU_PA_SERVER=unix:$XDG_RUNTIME_DIR/pulse/native" >> "$GITHUB_ENV"
           mkdir -p build/lab/android
-          pactl -s "unix:$RUNNER_TEMP/rocha-pulse.sock" info > build/lab/android/pulse-host.txt
+          pactl -s "unix:$XDG_RUNTIME_DIR/pulse/native" info > build/lab/android/pulse-host.txt
           pactl list short sinks >> build/lab/android/pulse-host.txt
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          server = 'unix:' + os.environ['RUNNER_TEMP'] + '/rocha-pulse.sock'
-          Path.home().joinpath('.asoundrc').write_text(
-              'pcm.!default { type pulse server "' + server + '" }\n'
-              'ctl.!default { type pulse server "' + server + '" }\n')
-          PY
           mkdir -p build/lab/fixture
           ffmpeg -nostdin -loglevel error -f lavfi -i testsrc2=size=320x180:rate=15 -f lavfi -i sine=frequency=440:sample_rate=48000 -t 360 -c:v libx264 -preset ultrafast -pix_fmt yuv420p -c:a aac -movflags +faststart build/lab/fixture/fixture.mp4
           python3 -m http.server 8765 --directory build/lab/fixture > build/lab/fixture-http.log 2>&1 &
@@ -57,9 +53,7 @@ jobs:
       - name: Execute real Android ExoPlayer and LibVLC cohort
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          QEMU_AUDIO_DRV: alsa
-          QEMU_ALSA_DAC_DEV: default
-          QEMU_ALSA_ADC_DEV: default
+          QEMU_AUDIO_DRV: pa
           PULSE_SINK: rocha_lab
           QEMU_PA_SINK: rocha_lab
           QEMU_AUDIO_IN_DRV: none
@@ -69,8 +63,9 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio alsa
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
+            test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt
             adb install -r build/lab/apk/app-debug.apk
