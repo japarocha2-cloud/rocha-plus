@@ -47,6 +47,10 @@ class AndroidConfigurationTest(unittest.TestCase):
             self.assertEqual({node.text for node in security.findall("domain-config/domain")},
                              {"example.com", "192.0.2.15"})
             self.assertEqual(app.get(attr("label")), "Rocha+")
+            gradle_text = gradle.read_text(encoding="utf-8")
+            self.assertEqual(gradle_text.count('applicationIdSuffix = ".lab"'), 1)
+            debug_app = ET.parse(root / "android/app/src/debug/AndroidManifest.xml").getroot().find("application")
+            self.assertEqual(debug_app.get(attr("label")), "Rocha+ LAB")
             self.assertEqual(len(node.findall("uses-permission")), 4)
             self.assertEqual(len(app.findall("service")), 1)
             self.assertEqual(app.find("service").get(attr("exported")), "false")
