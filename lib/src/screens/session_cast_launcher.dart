@@ -31,12 +31,13 @@ Future<void> launchSessionCast(
     return;
   }
   if (!await CastReadiness.ready) {
-    if (context.mounted)
+    if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Google Cast indisponível neste aparelho.'),
         ),
       );
+    }
     return;
   }
   if (!context.mounted) return;
@@ -78,8 +79,10 @@ Future<void> launchSessionCast(
                 ),
               ),
             );
-            if (manager.connectionState == GoogleCastConnectState.disconnected)
+            if (manager.connectionState ==
+                GoogleCastConnectState.disconnected) {
               session.stopCasting();
+            }
           } catch (_) {
             session.stopCasting();
             await CastHlsProxy.instance.close();
@@ -89,7 +92,7 @@ Future<void> launchSessionCast(
             } catch (_) {
               /* original failure */
             }
-            if (context.mounted)
+            if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
@@ -97,6 +100,7 @@ Future<void> launchSessionCast(
                   ),
                 ),
               );
+            }
           }
         },
       ),

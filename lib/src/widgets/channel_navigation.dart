@@ -40,12 +40,13 @@ class ChannelNavigation extends StatelessWidget {
     try {
       await session.step(direction);
     } catch (_) {
-      if (context.mounted)
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Não foi possível trocar de canal. Tente novamente.'),
           ),
         );
+      }
     }
   }
 }

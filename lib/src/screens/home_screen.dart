@@ -109,11 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           loading = false;
           failed = true;
         });
+      }
     }
   }
 

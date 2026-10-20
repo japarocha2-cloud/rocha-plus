@@ -161,8 +161,9 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    if (controller == null)
+    if (controller == null) {
       return const Scaffold(body: Center(child: Text('Reprodução na TV')));
+    }
     final value = controller.value;
     final error = value.errorDescription != VlcPlayerValue.noError;
     return Scaffold(

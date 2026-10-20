@@ -77,8 +77,9 @@ class CastChannelLoader {
       return uri.toString();
     } catch (_) {
       if (contentType(uri) != 'application/x-mpegURL' ||
-          !device.isOnLocalNetwork)
+          !device.isOnLocalNetwork) {
         rethrow;
+      }
       final relayUri = await CastHlsProxy.instance.relay(uri);
       await loadAndConfirm(channel, relayUri);
       return relayUri.toString();

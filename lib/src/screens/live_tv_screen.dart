@@ -66,11 +66,12 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         });
       }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           error = 'Não foi possível carregar os canais.';
           loading = false;
         });
+      }
     }
   }
 
@@ -163,8 +164,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
           final technicalGroup = c.group.contains(';');
           if (technicalGroup ||
               repository.isQuarantined(c.url) ||
-              repository.isBlocked(c))
+              repository.isBlocked(c)) {
             return false;
+          }
           final matchesSearch = channelMatchesSearch(c, q);
           final matchesGroup =
               selectedGroup == 'Todos' ||

@@ -58,8 +58,9 @@ class ChannelPlaybackSession extends ChangeNotifier {
     if (busy ||
         channel.url == current.url ||
         !_allowed(channel) ||
-        !playlist.any((c) => c.url == channel.url))
+        !playlist.any((c) => c.url == channel.url)) {
       return;
+    }
     busy = true;
     _changed();
     try {

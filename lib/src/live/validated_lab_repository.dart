@@ -16,8 +16,9 @@ class ValidatedLabRepository extends ChannelRepository {
   static Future<String> _readSnapshot() async {
     final runtime = await LabRuntime.open();
     final imported = await runtime?.read('validated-catalog.json');
-    if (imported != null && imported['channels'] is List)
+    if (imported != null && imported['channels'] is List) {
       return jsonEncode(imported['channels']);
+    }
     return rootBundle.loadString('branding/lab_approved.json');
   }
 
@@ -33,8 +34,9 @@ class ValidatedLabRepository extends ChannelRepository {
         final row = Map<String, dynamic>.from(value as Map);
         if (row['status'] != 'automatic_audiovisual_pass' ||
             row['blocked'] == true ||
-            row['eligible'] != true)
+            row['eligible'] != true) {
           continue;
+        }
         final result = Map<String, dynamic>.from(row['result'] as Map);
         final record = LabRecord.fromJson(result);
         final confirmation =
@@ -42,8 +44,9 @@ class ValidatedLabRepository extends ChannelRepository {
         if (record.preferred == null ||
             confirmation['changingPixelsObserved'] != true ||
             confirmation['audioOutputObserved'] != true ||
-            record.channelUrl != row['url'])
+            record.channelUrl != row['url']) {
           continue;
+        }
         final channel = Channel(
           name: row['name'] as String,
           url: row['url'] as String,
@@ -60,8 +63,9 @@ class ValidatedLabRepository extends ChannelRepository {
             uri.host.isEmpty ||
             uri.userInfo.isNotEmpty ||
             isBlocked(channel) ||
-            isQuarantined(channel.url))
+            isQuarantined(channel.url)) {
           continue;
+        }
         channels.putIfAbsent(channel.url, () => channel);
       } on Object {
         continue;
