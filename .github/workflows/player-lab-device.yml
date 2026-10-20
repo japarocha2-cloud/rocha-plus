@@ -5,6 +5,12 @@ on:
       stage:
         required: true
         type: string
+      offset:
+        type: number
+        default: 0
+      count:
+        type: number
+        default: 25
 permissions:
   contents: read
 jobs:
@@ -49,12 +55,12 @@ jobs:
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
             adb shell settings put system screen_off_timeout 2147483647
-            python3 tools/lab/run_android.py --stage ${{ inputs.stage }}
+            python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
       - name: Preserve evidence and checkpoints even after failures
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: rocha-lab-evidence-${{ inputs.stage }}
+          name: rocha-lab-evidence-${{ inputs.stage }}-${{ inputs.offset }}
           path: build/lab/
           if-no-files-found: error
           retention-days: 30

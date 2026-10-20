@@ -42,6 +42,32 @@ void main() {
     },
   );
 
+  test('short progress cannot become a preferred confirmed player', () {
+    final short = sample(LabEngine.exoPlayer, progress: 15);
+    final good = LabSample(
+      engine: LabEngine.libVlc,
+      elapsedSeconds: 180,
+      startupMilliseconds: 1500,
+      bufferingMilliseconds: 0,
+      stalls: 0,
+      progressSeconds: 175,
+      videoTrackDetected: true,
+      audioTrackDetected: true,
+    );
+    LabRecord record(LabSample confirmation) => LabRecord(
+      channelName: 'Fixture',
+      channelUrl: 'https://example.org/live',
+      group: 'LAB',
+      testedAt: DateTime.utc(2026),
+      exo: short,
+      vlc: good,
+      confirmation: confirmation,
+    );
+    expect(record(short).preferred, isNull);
+    expect(record(good).preferred, LabEngine.libVlc);
+    expect(record(good).toJson()['productionApproved'], isFalse);
+  });
+
   test('observer records buffering and stalled playback separately', () {
     final observer = LabObserver(LabEngine.libVlc);
     observer.observe(

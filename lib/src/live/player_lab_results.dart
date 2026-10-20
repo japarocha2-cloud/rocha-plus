@@ -46,7 +46,6 @@ class LabSample {
   double get score =>
       (hasProgress ? 100 : 0) +
       (videoTrackDetected ? 12 : 0) +
-      (audioTrackDetected ? 8 : 0) +
       progressSeconds * 2 -
       bufferingMilliseconds / 1000 -
       stalls * 10 -

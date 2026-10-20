@@ -18,6 +18,8 @@ jobs:
     if: github.head_ref == 'feat/dual-player-lab-20261020'
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    outputs:
+      shards: ${{ steps.inventory.outputs.shards }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -26,9 +28,17 @@ jobs:
           flutter-version: '3.47.6'
           cache: true
       - name: Auditable catalogue inventory (all requested sources)
+        id: inventory
         run: |
           python3 tools/lab/catalog.py
           cp build/lab/catalog/candidates.json branding/lab_candidates.json
+          python3 - <<'PY'
+          import json, os
+          rows = json.load(open('branding/lab_candidates.json'))
+          shards = [{'offset': x, 'count': min(25, len(rows)-x)} for x in range(35, len(rows), 25)]
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('shards=' + json.dumps({'include': shards}) + '\n')
+          PY
       - name: Scaffold debug LAB
         run: |
           flutter create --platforms=android .
@@ -71,3 +81,14 @@ jobs:
     uses: ./.github/workflows/player-lab-device.yml
     with:
       stage: batch25
+  remaining:
+    needs: [build, batch25]
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.build.outputs.shards) }}
+    uses: ./.github/workflows/player-lab-device.yml
+    with:
+      stage: batch
+      offset: ${{ matrix.offset }}
+      count: ${{ matrix.count }}

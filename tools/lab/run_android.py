@@ -114,6 +114,7 @@ def cohort(args, name, offset, count, fixture=False):
     adb('shell', 'am', 'start', '-n', PACKAGE + '/com.rochaplus.app.LabActivity',
         '--ez', 'lab_auto', 'true', '--ez', 'lab_fixture', str(fixture).lower(),
         '--es', 'lab_run', name, '--ei', 'lab_limit', str(count), '--ei', 'lab_offset', str(offset))
+    launched_at = time.time()
     seen, last, recorder, audio_path = set(), None, None, None
     deadline = time.monotonic() + count * 330 + 180
     state = {}
@@ -138,6 +139,10 @@ def cohort(args, name, offset, count, fixture=False):
         while time.monotonic() < deadline:
             try:
                 state = read_remote(name, 'status.json')
+                from datetime import datetime
+                if datetime.fromisoformat(state['timestamp'].replace('Z', '+00:00')).timestamp() < launched_at - 2:
+                    time.sleep(3)
+                    continue
                 (out / 'status.json').write_text(json.dumps(state, indent=2))
                 current = (state.get('url'), state.get('phase'))
                 if current != last:
@@ -183,7 +188,9 @@ def cohort(args, name, offset, count, fixture=False):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--output', default='build/lab/android')
-    p.add_argument('--stage', choices=['smoke', 'batch10', 'batch25'], required=True)
+    p.add_argument('--stage', choices=['smoke', 'batch10', 'batch25', 'batch'], required=True)
+    p.add_argument('--offset', type=int, default=0)
+    p.add_argument('--count', type=int, default=25)
     args = p.parse_args()
     Path(args.output).mkdir(parents=True, exist_ok=True)
     Path(args.output, 'device.txt').write_text(adb('shell', 'getprop'))
@@ -203,6 +210,10 @@ def main():
         metrics = json.loads(Path(args.output, 'smoke', positive_hash + '-exo.json').read_text())
         if metrics.get('durationSeconds', 0) < 20 or metrics.get('rmsDbfs', -240) < -60:
             raise RuntimeError('Android output loopback calibration failed; audio remains unverified')
+    elif args.stage == 'batch':
+        if args.offset < 0 or not 1 <= args.count <= 25:
+            raise ValueError('Bounded cohorts require nonnegative offset and 1..25 URLs')
+        cohort(args, f'batch-{args.offset:04d}', args.offset, args.count)
     else:
         cohort(args, args.stage, 0 if args.stage == 'batch10' else 10,
                10 if args.stage == 'batch10' else 25)

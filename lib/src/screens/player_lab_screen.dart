@@ -109,8 +109,9 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
       _phases[channel.url] as Map? ?? {},
     );
     final sample = existing[phase];
-    if (sample != null)
+    if (sample != null) {
       return LabSample.fromJson(Map<String, dynamic>.from(sample as Map));
+    }
     _elapsed = 0;
     await _checkpoint();
     final result = await _runSample(channel, engine, seconds);
@@ -133,11 +134,12 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
   Future<void> _closePlayers() async {
     final exo = _exo;
     final vlc = _vlc;
-    if (mounted)
+    if (mounted) {
       setState(() {
         _exo = null;
         _vlc = null;
       });
+    }
     if (exo != null) await exo.dispose().timeout(const Duration(seconds: 10));
     if (vlc != null) await vlc.dispose().timeout(const Duration(seconds: 10));
   }
@@ -262,6 +264,8 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
         .toList();
     if (pending.isEmpty) {
       setState(() => _status = 'Todos os canais desta lista já têm registro.');
+      await _exportFiles();
+      await _checkpoint(done: true);
       return;
     }
     setState(() {
@@ -464,8 +468,9 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
     if (accepted != true) return;
     final checked = record.withHumanCheck(picture: picture, sound: sound);
     await _results.save(channel, checked);
-    if (mounted)
+    if (mounted) {
       setState(() => _saved[PlayerLabResults.keyFor(channel)] = checked);
+    }
   }
 
   @override
@@ -521,8 +526,9 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
                     onChanged: _running
                         ? null
                         : (value) {
-                            if (value != null)
+                            if (value != null) {
                               setState(() => _batchSize = value);
+                            }
                           },
                   ),
                   FilledButton.icon(
