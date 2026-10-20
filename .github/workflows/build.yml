@@ -112,6 +112,18 @@ jobs:
           name: rocha-plus-layout-preview-no-channels
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+      # Installable Android lab, isolated from Firebase and the frozen release.
+      # Unlike the visual preview, this mode loads real public channel URLs.
+      - name: Build experimental player lab APK
+        if: github.event_name == 'pull_request'
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
+      - name: Upload experimental player lab APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-player-lab-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
       - name: Explain build mode and downloadable artifacts
         if: always()
         env:
