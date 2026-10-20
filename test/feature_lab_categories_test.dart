@@ -15,23 +15,24 @@ class EmptyApprovedRepository extends ChannelRepository {
 }
 
 class MovieRepository extends ChannelRepository {
+  bool includeComedy = true;
   @override
   Future<List<Channel>> loadBrazilPublicDirectory({
     bool forceRefresh = false,
-  }) async => const [
-    Channel(
+  }) async => [
+    if (includeComedy) const Channel(
       name: 'Canal Comédia',
       url: 'https://example.test/comedy',
       group: 'Filmes',
       genres: ['Comédia'],
     ),
-    Channel(
+    const Channel(
       name: 'Canal Ação',
       url: 'https://example.test/action',
       group: 'Filmes',
       genres: ['Ação'],
     ),
-    Channel(
+    const Channel(
       name: 'Canal Sem Gênero',
       url: 'https://example.test/unknown',
       group: 'Filmes',
@@ -118,6 +119,23 @@ void main() {
     await tester.tap(find.text('Sem gênero informado').last);
     await tester.pumpAndSettle();
     expect(find.text('Canal Sem Gênero'), findsOneWidget);
+    expect(find.text('Canal Comédia'), findsNothing);
+  });
+  testWidgets('refresh safely clears a genre that no longer has channels', (tester) async {
+    final repository = MovieRepository();
+    await tester.pumpWidget(MaterialApp(home: LiveTvScreen(
+      initialGroup: 'Filmes', repository: repository, laboratoryFeatures: true)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Comédia').last);
+    await tester.pumpAndSettle();
+    repository.includeComedy = false;
+    await tester.tap(find.byTooltip('Atualizar canais'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Todos os gêneros'), findsOneWidget);
+    expect(find.text('Canal Ação'), findsOneWidget);
     expect(find.text('Canal Comédia'), findsNothing);
   });
 }

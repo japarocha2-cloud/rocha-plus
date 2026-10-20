@@ -159,6 +159,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       for (final c in channels.where((c) => c.group == 'Filmes'))
         ...c.genres.isEmpty ? ['Sem gênero informado'] : c.genres,
     }.toList()..sort();
+    if (selectedGenre != 'Todos os gêneros' && !genres.contains(selectedGenre)) {
+      selectedGenre = 'Todos os gêneros';
+    }
     final visible = channels
         .where((c) {
           final technicalGroup = c.group.contains(';');
