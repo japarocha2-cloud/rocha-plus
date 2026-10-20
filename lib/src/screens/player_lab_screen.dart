@@ -251,9 +251,20 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
         error: failure,
       );
     }
-    final result = observer.finish(watch.elapsedMilliseconds);
-    await _closePlayers();
-    return result;
+    try {
+      await _closePlayers();
+    } catch (error) {
+      observer.observe(
+        milliseconds: watch.elapsedMilliseconds,
+        position: Duration.zero,
+        playing: false,
+        buffering: false,
+        videoTrack: false,
+        audioTrack: false,
+        error: 'Player cleanup failed: $error',
+      );
+    }
+    return observer.finish(watch.elapsedMilliseconds);
   }
 
   Future<void> _start() async {

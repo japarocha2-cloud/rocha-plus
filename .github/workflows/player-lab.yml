@@ -47,6 +47,9 @@ jobs:
           python3 tools/configure_android.py
           python3 tools/lab/configure.py
           flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
+          cp pubspec.lock build/lab/pubspec.lock
+          git rev-parse HEAD > build/lab/source-commit.txt
       - name: Static and unit verification
         run: |
           python3 -m pip install pillow numpy
@@ -109,7 +112,9 @@ jobs:
           pattern: rocha-lab-evidence-*
           path: build/lab/collected
       - name: Consolidate measured results and explicitly pending URLs
-        run: python3 tools/lab/aggregate.py
+        run: |
+          python3 -m pip install pillow numpy
+          python3 tools/lab/aggregate.py
       - uses: actions/upload-artifact@v4
         with:
           name: rocha-lab-consolidated-results

@@ -56,6 +56,9 @@ jobs:
         run: python3 tools/prepare_signed_build.py
       - name: Get dependencies
         run: flutter pub get
+      - name: Verify LAB native/Dart player protocol
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 tools/lab/verify_vlc_protocol.py
       - name: Rocha+ Quality Guard
         run: python3 tools/rocha_quality_guard.py
       - name: Analyze

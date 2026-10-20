@@ -133,3 +133,16 @@ components in multiple captured frames and that the measured audio spectrum
 contains the generated 440 Hz tone. A moving loader or unrelated system sound
 is insufficient to calibrate the measurement path. A widget startup regression
 test covers the debug assertion caused by returning a Future from setState.
+
+VLC dependency pairing is pinned to flutter_vlc_player 7.4.3 and platform
+interface 2.0.5. Version 7.4.4's Android source uses Pigeon 25.2.0, while the
+published 2.0.5 Dart interface uses Pigeon 0.2.1; these have incompatible channel
+names/codecs. The CI verifies source generator versions and initialization/
+create/dispose channel names before building. Failed player cleanup is retained
+as a sample error, so later channels can still run.
+
+Device jobs use the AOSP Android 15/API 35 image to avoid Google/Pixel Launcher
+background ANR dialogs. A frame counts as output evidence only when window
+focus belongs to Rocha+ LAB; obstructed screenshots are saved separately. The
+PulseAudio route uses an explicit private Unix socket, output sink and disabled
+unused audio input.

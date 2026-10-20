@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 import subprocess
 import time
@@ -77,11 +78,20 @@ def capture(run, state, out, seen):
     frame = Image.open(io.BytesIO(raw)).convert('RGB')
     box = tuple(int(rect[k]) for k in ('x', 'y', 'width', 'height'))
     x, y, width, height = box
+    window = adb('shell', 'dumpsys', 'window')
+    focus = re.search(r'mCurrentFocus=([^\n]+)', window)
+    focus_text = focus.group(1) if focus else ''
+    if PACKAGE not in focus_text:
+        blocked = out / 'obstructed'
+        blocked.mkdir(exist_ok=True)
+        frame.save(blocked / f'{stem}.png')
+        (blocked / f'{stem}.json').write_text(json.dumps({'focus': focus_text, 'url': url, 'phase': phase}))
+        return
     crop = frame.crop((x, y, x + width, y + height))
     crop.save(out / f'{stem}.png')
     pixels = np.asarray(crop).astype(float)
     data = {'url': url, 'phase': phase, 'elapsedSeconds': seconds,
-            'rect': rect, 'stddev': float(pixels.std()),
+            'rect': rect, 'stddev': float(pixels.std()), 'focusConfirmed': True, 'focus': focus_text,
             'sha256': hashlib.sha256((out / f'{stem}.png').read_bytes()).hexdigest(),
             'limitation': 'ROI screenshot; inspect frames, track/progress APIs alone do not prove video'}
     (out / f'{stem}.json').write_text(json.dumps(data, indent=2))
@@ -95,7 +105,11 @@ def consolidate(records, out):
         digest = hashlib.sha256(record['channelUrl'].encode()).hexdigest()[:12]
         evidence = {}
         for phase in ['exo', 'vlc', 'confirmation']:
-            frames = sorted(out.glob(f'{digest}-{phase}-*.png'))
+            frames = []
+            for frame in sorted(out.glob(f'{digest}-{phase}-*.png')):
+                metadata = frame.with_suffix('.json')
+                if metadata.exists() and json.loads(metadata.read_text()).get('focusConfirmed') is True:
+                    frames.append(frame)
             differences = []
             for a, b in zip(frames, frames[1:]):
                 first = np.asarray(Image.open(a).convert('RGB')).astype(float)
@@ -177,6 +191,7 @@ def cohort(args, name, offset, count, fixture=False):
                 if current != last:
                     stop_recording()
                     last = current
+                    print(json.dumps({'channel': state.get('channel'), 'phase': state.get('phase'), 'completed': state.get('completed')}), flush=True)
                     if all(current):
                         stem = hashlib.sha256(current[0].encode()).hexdigest()[:12] + '-' + current[1]
                         audio_path = out / f'{stem}.wav'
