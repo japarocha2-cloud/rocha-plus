@@ -14,12 +14,14 @@ class AdaptivePlayerScreen extends StatefulWidget {
   final Channel channel;
   final List<Channel> channels;
   final ValueChanged<Channel>? onChannelChanged;
+  final ValueChanged<bool>? onCastingChanged;
   final bool initiallyFullscreen;
   const AdaptivePlayerScreen({
     super.key,
     required this.channel,
     this.channels = const [],
     this.onChannelChanged,
+    this.onCastingChanged,
     this.initiallyFullscreen = false,
   });
   @override
@@ -66,6 +68,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
   void _changed() {
     if (!mounted) return;
     widget.onChannelChanged?.call(session.current);
+    widget.onCastingChanged?.call(session.casting);
     final choose =
         !session.casting && (wasCasting || lastUrl != session.current.url);
     wasCasting = session.casting;
@@ -93,6 +96,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
             channel: session.current,
             session: session,
             initiallyFullscreen: widget.initiallyFullscreen,
+            onUseExo: () => setState(() => engine = LabEngine.exoPlayer),
           )
         : PlayerScreen(
             channel: session.current,
@@ -106,9 +110,11 @@ class _VlcPlaybackScreen extends StatefulWidget {
   final Channel channel;
   final ChannelPlaybackSession session;
   final bool initiallyFullscreen;
+  final VoidCallback onUseExo;
   const _VlcPlaybackScreen({
     required this.channel,
     required this.session,
+    required this.onUseExo,
     this.initiallyFullscreen = false,
   });
   @override
@@ -211,15 +217,7 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                   const Text('O sinal falhou neste reprodutor.'),
                   const SizedBox(height: 12),
                   FilledButton(
-                    onPressed: () => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PlayerScreen(
-                          channel: widget.channel,
-                          session: widget.session,
-                        ),
-                      ),
-                    ),
+                    onPressed: widget.onUseExo,
                     child: const Text('Tentar no ExoPlayer'),
                   ),
                 ],

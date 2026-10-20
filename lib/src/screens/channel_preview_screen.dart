@@ -18,6 +18,7 @@ class ChannelPreviewScreen extends StatefulWidget {
 
 class _ChannelPreviewScreenState extends State<ChannelPreviewScreen> {
   late Channel selected = widget.channel;
+  bool casting = false;
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Prévia do canal')),
@@ -27,6 +28,12 @@ class _ChannelPreviewScreenState extends State<ChannelPreviewScreen> {
           child: AdaptivePlayerScreen(
             channel: widget.channel,
             channels: widget.channels,
+            onCastingChanged: (value) {
+              if (value == casting) return;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) setState(() => casting = value);
+              });
+            },
             onChannelChanged: (channel) {
               if (channel.url == selected.url) return;
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -41,16 +48,18 @@ class _ChannelPreviewScreenState extends State<ChannelPreviewScreen> {
             autofocus: true,
             icon: const Icon(Icons.fullscreen),
             label: const Text('Assistir em tela cheia'),
-            onPressed: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AdaptivePlayerScreen(
-                  channel: selected,
-                  channels: widget.channels,
-                  initiallyFullscreen: true,
-                ),
-              ),
-            ),
+            onPressed: casting
+                ? null
+                : () => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdaptivePlayerScreen(
+                        channel: selected,
+                        channels: widget.channels,
+                        initiallyFullscreen: true,
+                      ),
+                    ),
+                  ),
           ),
         ),
       ],

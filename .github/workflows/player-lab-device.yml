@@ -26,7 +26,7 @@ jobs:
       - name: Host evidence tools and dedicated audio sink
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg pulseaudio
+          sudo apt-get install -y ffmpeg pulseaudio libasound2-plugins
           python3 -m pip install pillow numpy
           pulseaudio --start --exit-idle-time=-1
           pactl load-module module-null-sink sink_name=rocha_lab rate=48000 channels=2
@@ -38,6 +38,14 @@ jobs:
           mkdir -p build/lab/android
           pactl -s "unix:$RUNNER_TEMP/rocha-pulse.sock" info > build/lab/android/pulse-host.txt
           pactl list short sinks >> build/lab/android/pulse-host.txt
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          server = 'unix:' + os.environ['RUNNER_TEMP'] + '/rocha-pulse.sock'
+          Path.home().joinpath('.asoundrc').write_text(
+              'pcm.!default { type pulse server "' + server + '" }\n'
+              'ctl.!default { type pulse server "' + server + '" }\n')
+          PY
           mkdir -p build/lab/fixture
           ffmpeg -nostdin -loglevel error -f lavfi -i testsrc2=size=320x180:rate=15 -f lavfi -i sine=frequency=440:sample_rate=48000 -t 360 -c:v libx264 -preset ultrafast -pix_fmt yuv420p -c:a aac -movflags +faststart build/lab/fixture/fixture.mp4
           python3 -m http.server 8765 --directory build/lab/fixture > build/lab/fixture-http.log 2>&1 &
@@ -49,7 +57,9 @@ jobs:
       - name: Execute real Android ExoPlayer and LibVLC cohort
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          QEMU_AUDIO_DRV: pa
+          QEMU_AUDIO_DRV: alsa
+          QEMU_ALSA_DAC_DEV: default
+          QEMU_ALSA_ADC_DEV: default
           PULSE_SINK: rocha_lab
           QEMU_PA_SINK: rocha_lab
           QEMU_AUDIO_IN_DRV: none
@@ -59,8 +69,10 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio alsa
           script: |
+            pactl info >> build/lab/android/pulse-host.txt
+            pactl list short sink-inputs >> build/lab/android/pulse-host.txt
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
             adb shell settings put system screen_off_timeout 2147483647
