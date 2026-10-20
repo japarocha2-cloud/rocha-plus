@@ -61,6 +61,6 @@ jobs:
         if: always()
         with:
           name: rocha-lab-evidence-${{ inputs.stage }}-${{ inputs.offset }}
-          path: build/lab/
+          path: build/lab/android/
           if-no-files-found: error
           retention-days: 30

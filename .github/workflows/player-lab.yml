@@ -12,7 +12,7 @@ permissions:
   contents: read
 concurrency:
   group: rocha-lab-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     if: github.head_ref == 'feat/dual-player-lab-20261020'
@@ -49,6 +49,7 @@ jobs:
           flutter pub get
       - name: Static and unit verification
         run: |
+          python3 -m pip install pillow numpy
           python3 -m unittest discover -s tools -p 'test_*.py'
           python3 -m unittest discover -s tools/lab -p 'test_*.py'
           python3 tools/rocha_quality_guard.py
@@ -92,3 +93,25 @@ jobs:
       stage: batch
       offset: ${{ matrix.offset }}
       count: ${{ matrix.count }}
+  aggregate:
+    if: always()
+    needs: [build, smoke, batch10, batch25, remaining]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rocha-lab-catalog
+          path: build/lab/
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: rocha-lab-evidence-*
+          path: build/lab/collected
+      - name: Consolidate measured results and explicitly pending URLs
+        run: python3 tools/lab/aggregate.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-lab-consolidated-results
+          path: build/lab/final/
+          if-no-files-found: error

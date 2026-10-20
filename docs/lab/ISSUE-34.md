@@ -110,3 +110,20 @@ production by this tooling.
 
 Do not label a queued/running workflow, successful build, source HTTP 200,
 track detection or an empty export as completed audiovisual validation.
+
+`tools/lab/aggregate.py` merges recovered measured reports against the frozen
+inventory snapshot, exports complete per-player metric columns and lists
+pending URLs explicitly. It distinguishes failed/inconclusive evidence from
+proven source unavailability. The final aggregate job runs even if a shard
+fails; its M3Us contain only automatic audiovisual passes and never production
+approval. Downloadable evidence excludes duplicate copies of the APK.
+
+Network and geography: GitHub-hosted emulator runners are not guaranteed to be
+in Brazil. A geoblocked/region-dependent response is not evidence that a channel
+is unavailable worldwide. Retain raw errors and test environment details.
+
+Audio analysis trims the first 5 s and last 10 s of recordings longer than 20 s
+to exclude asynchronous player-transition boundaries. File duration and analysed
+duration are reported separately. Consolidation re-measures available WAV/PNG
+artifacts instead of trusting prior pass flags. Updated commits cancel obsolete
+LAB workflow runs; always-upload steps preserve collected checkpoints.

@@ -30,8 +30,16 @@ def pcm_metrics(path):
             raise ValueError('Expected signed 16-bit PCM')
         rate, channels = f.getframerate(), f.getnchannels()
         pcm = np.frombuffer(f.readframes(f.getnframes()), dtype='<i2').astype(float) / 32768
+    full_duration = len(pcm) / (rate * channels)
+    # Driver polls asynchronously: discard boundaries so a successor's sound
+    # cannot establish output evidence for a silent predecessor.
+    if full_duration > 20:
+        pcm = pcm[5 * rate * channels:-10 * rate * channels]
     rms = float(np.sqrt(np.mean(pcm ** 2))) if len(pcm) else 0.0
-    return {'durationSeconds': len(pcm) / (rate * channels),
+    return {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+            'fileDurationSeconds': full_duration,
+            'durationSeconds': len(pcm) / (rate * channels),
+            'edgeTrimSeconds': {'start': 5, 'end': 10} if full_duration > 20 else {'start': 0, 'end': 0},
             'rmsDbfs': 20 * math.log10(max(rms, 1e-12)),
             'peak': float(np.max(np.abs(pcm))) if len(pcm) else 0.0,
             'nonSilentFraction': float(np.mean(np.abs(pcm) > 0.001)) if len(pcm) else 0.0,
@@ -63,7 +71,7 @@ def capture(run, state, out, seen):
     pixels = np.asarray(crop).astype(float)
     data = {'url': url, 'phase': phase, 'elapsedSeconds': seconds,
             'rect': rect, 'stddev': float(pixels.std()),
-            'sha256': hashlib.sha256(raw).hexdigest(),
+            'sha256': hashlib.sha256((out / f'{stem}.png').read_bytes()).hexdigest(),
             'limitation': 'ROI screenshot; inspect frames, track/progress APIs alone do not prove video'}
     (out / f'{stem}.json').write_text(json.dumps(data, indent=2))
 
@@ -84,7 +92,14 @@ def consolidate(records, out):
                 if first.shape == second.shape:
                     differences.append(float(np.mean(np.abs(first - second))))
             audio_path = out / f'{digest}-{phase}.json'
-            audio = json.loads(audio_path.read_text()) if audio_path.exists() else {}
+            wav_path = audio_path.with_suffix('.wav')
+            if wav_path.exists():
+                try:
+                    audio = pcm_metrics(wav_path)
+                except Exception as error:
+                    audio = {'error': str(error)}
+            else:
+                audio = {'error': 'PCM artifact missing; metadata alone cannot verify output'}
             # Screenshots are cropped strictly to the video viewport. Motion
             # proves varying displayed pixels, not programme identity/quality.
             motion = len(frames) >= 3 and sum(d > 1.0 for d in differences) >= 2
