@@ -1,0 +1,97 @@
+{
+  "sourceCommit": "35a9a7edec02e8d5256a2ae4edc03cf7b484581a",
+  "workflowRun": 39409258706,
+  "evidenceArtifact": 12259696869,
+  "continuity": "two_complete_positive_channels_without_process_exit",
+  "audiovisualApproval": false,
+  "physicalDeviceConfirmed": false,
+  "channels": [
+    {
+      "channelName": "LAB controlled A/V fixture",
+      "channelUrl": "http://10.0.2.2:8765/fixture.mp4",
+      "preferred": "exoPlayer",
+      "exo": {
+        "engine": "exoPlayer",
+        "elapsedSeconds": 60,
+        "startupMilliseconds": 2305,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 58,
+        "videoTrackDetected": true,
+        "audioTrackDetected": false,
+        "error": null
+      },
+      "vlc": {
+        "engine": "libVlc",
+        "elapsedSeconds": 60,
+        "startupMilliseconds": 2493,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 55,
+        "videoTrackDetected": true,
+        "audioTrackDetected": true,
+        "error": null
+      },
+      "confirmation": {
+        "engine": "exoPlayer",
+        "elapsedSeconds": 180,
+        "startupMilliseconds": 2109,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 176,
+        "videoTrackDetected": true,
+        "audioTrackDetected": false,
+        "error": null
+      }
+    },
+    {
+      "channelName": "LAB second A/V fixture after channel transition",
+      "channelUrl": "http://10.0.2.2:8765/fixture.mp4?channel=second",
+      "preferred": "exoPlayer",
+      "exo": {
+        "engine": "exoPlayer",
+        "elapsedSeconds": 60,
+        "startupMilliseconds": 1742,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 58,
+        "videoTrackDetected": true,
+        "audioTrackDetected": false,
+        "error": null
+      },
+      "vlc": {
+        "engine": "libVlc",
+        "elapsedSeconds": 61,
+        "startupMilliseconds": 4571,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 54,
+        "videoTrackDetected": true,
+        "audioTrackDetected": true,
+        "error": null
+      },
+      "confirmation": {
+        "engine": "exoPlayer",
+        "elapsedSeconds": 180,
+        "startupMilliseconds": 1915,
+        "bufferingMilliseconds": 0,
+        "stalls": 0,
+        "progressSeconds": 176,
+        "videoTrackDetected": true,
+        "audioTrackDetected": false,
+        "error": null
+      }
+    }
+  ],
+  "fatalMarkers": {
+    "FATAL EXCEPTION": 0,
+    "Fatal signal": 0,
+    "SIGSEGV": 0,
+    "Unhandled Exception": 0
+  },
+  "resultsSha256": "752a4c53f35c515ed6f8577115870e78aa48aeaad7335c5d8412acfd4860c873",
+  "limitations": [
+    "Android API 35 emulator; does not prove the user physical device",
+    "PCM calibration did not pass; no catalogue channel approved"
+  ]
+}

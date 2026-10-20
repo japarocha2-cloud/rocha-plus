@@ -13,6 +13,16 @@ import wave
 PACKAGE = 'com.rochaplus.app.lab'
 
 
+def smoke_records(records):
+    urls = ['http://10.0.2.2:8765/fixture.mp4',
+            'http://10.0.2.2:8765/fixture.mp4?channel=second',
+            'http://10.0.2.2:8765/not-found.m3u8']
+    by_url = {r['channelUrl']: r for r in records}
+    if len(records) != 3 or set(by_url) != set(urls):
+        raise ValueError('Smoke requires exactly two distinct positive fixtures and the negative fixture')
+    return tuple(by_url[url] for url in urls)
+
+
 def adb(*args, timeout=20, binary=False):
     p = subprocess.run(['adb', *args], capture_output=True, timeout=timeout)
     if p.returncode:
@@ -245,7 +255,7 @@ def main():
     Path(args.output, 'device.txt').write_text(adb('shell', 'getprop'))
     if args.stage == 'smoke':
         records = cohort(args, 'smoke', 0, 3, fixture=True)
-        positive, repeated, negative = records
+        positive, repeated, negative = smoke_records(records)
         # Two active channels must complete: this exercises decoder teardown and
         # opening the following channel, rather than ending after a single pass.
         for positive in [positive, repeated]:
