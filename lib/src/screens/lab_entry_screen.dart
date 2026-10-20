@@ -33,7 +33,15 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
   }
 
   void _reload() {
-    setState(() => _loading = loadLabCatalog());
+    setState(
+      () => _loading = loadLabCatalog().catchError((
+        Object error,
+        StackTrace stack,
+      ) {
+        debugPrint('LAB catalogue startup failed: $error');
+        Error.throwWithStackTrace(error, stack);
+      }),
+    );
   }
 
   @override

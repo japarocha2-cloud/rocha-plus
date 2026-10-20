@@ -29,8 +29,10 @@ def configure_lab(root):
         }
         override fun configureFlutterEngine(engine: FlutterEngine) {
             super.configureFlutterEngine(engine)
+            android.util.Log.i("RochaLab", "bridge registered package=$packageName auto=" + intent.getBooleanExtra("lab_auto", false) + " fixture=" + intent.getBooleanExtra("lab_fixture", false))
             MethodChannel(engine.dartExecutor.binaryMessenger, "com.rochaplus.app/lab")
                 .setMethodCallHandler { call, result ->
+                android.util.Log.i("RochaLab", "method=${call.method}")
                     if (!packageName.endsWith(".lab")) {
                         result.error("LAB_ONLY", "Debug laboratory required", null)
                     } else if (call.method == "directory") {

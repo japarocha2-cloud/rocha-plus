@@ -20,7 +20,11 @@ def adb(*args, timeout=20, binary=False):
 
 
 def read_remote(run, name):
-    return json.loads(adb('exec-out', 'run-as', PACKAGE, 'cat', f'files/rocha-lab/{run}/{name}'))
+    raw = adb('exec-out', 'run-as', PACKAGE, 'cat', f'files/rocha-lab/{run}/{name}')
+    try:
+        return json.loads(raw)
+    except ValueError as error:
+        raise ValueError(f'{name}: {raw[:600]!r}') from error
 
 
 def pcm_metrics(path):
@@ -126,13 +130,15 @@ def cohort(args, name, offset, count, fixture=False):
     out = Path(args.output) / name
     out.mkdir(parents=True, exist_ok=True)
     adb('shell', 'am', 'force-stop', PACKAGE)
-    adb('shell', 'am', 'start', '-n', PACKAGE + '/com.rochaplus.app.LabActivity',
+    launch = adb('shell', 'am', 'start', '-n', PACKAGE + '/com.rochaplus.app.LabActivity',
         '--ez', 'lab_auto', 'true', '--ez', 'lab_fixture', str(fixture).lower(),
         '--es', 'lab_run', name, '--ei', 'lab_limit', str(count), '--ei', 'lab_offset', str(offset))
+    (out / 'launch.txt').write_text(launch)
     launched_at = time.time()
     seen, last, recorder, audio_path = set(), None, None, None
     deadline = time.monotonic() + count * 330 + 180
     state = {}
+    last_valid_status = time.monotonic()
     log = (out / 'logcat.txt').open('w')
     logger = subprocess.Popen(['adb', 'logcat', '-v', 'threadtime'], stdout=log, stderr=subprocess.STDOUT)
     def stop_recording():
@@ -154,6 +160,7 @@ def cohort(args, name, offset, count, fixture=False):
         while time.monotonic() < deadline:
             try:
                 state = read_remote(name, 'status.json')
+                last_valid_status = time.monotonic()
                 from datetime import datetime
                 if datetime.fromisoformat(state['timestamp'].replace('Z', '+00:00')).timestamp() < launched_at - 2:
                     time.sleep(3)
@@ -181,6 +188,11 @@ def cohort(args, name, offset, count, fixture=False):
                     break
             except (RuntimeError, ValueError, subprocess.TimeoutExpired) as error:
                 (out / 'driver-errors.txt').open('a').write(str(error) + '\n')
+            if not state and time.monotonic() - last_valid_status > 90:
+                (out / 'startup.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
+                (out / 'app-files.txt').write_text(adb('exec-out', 'run-as', PACKAGE, 'ls', '-R', 'files'))
+                (out / 'activity.txt').write_text(adb('shell', 'dumpsys', 'activity', 'top'))
+                raise RuntimeError('LAB did not produce a status checkpoint within 90 seconds')
             time.sleep(3)
         else:
             raise RuntimeError(f'{name}: deadline reached; checkpoints preserved')
