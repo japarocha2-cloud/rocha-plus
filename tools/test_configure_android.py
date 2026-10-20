@@ -51,6 +51,7 @@ class AndroidConfigurationTest(unittest.TestCase):
             self.assertEqual(gradle_text.count('applicationIdSuffix = ".lab"'), 1)
             debug_app = ET.parse(root / "android/app/src/debug/AndroidManifest.xml").getroot().find("application")
             self.assertEqual(debug_app.get(attr("label")), "Rocha+ LAB")
+            self.assertEqual(debug_app.get('{http://schemas.android.com/tools}replace'), 'android:label')
             self.assertEqual(len(node.findall("uses-permission")), 4)
             self.assertEqual(len(app.findall("service")), 1)
             self.assertEqual(app.find("service").get(attr("exported")), "false")

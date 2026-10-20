@@ -87,8 +87,9 @@ def configure(root):
     debug_manifest = root / "android/app/src/debug/AndroidManifest.xml"
     debug_manifest.parent.mkdir(parents=True, exist_ok=True)
     debug_manifest.write_text(
-        '<manifest xmlns:android="http://schemas.android.com/apk/res/android">'
-        '<application android:label="Rocha+ LAB" /></manifest>',
+        '<manifest xmlns:android="http://schemas.android.com/apk/res/android" '
+        'xmlns:tools="http://schemas.android.com/tools">'
+        '<application android:label="Rocha+ LAB" tools:replace="android:label" /></manifest>',
         encoding="utf-8",
     )
     activity = root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt"
