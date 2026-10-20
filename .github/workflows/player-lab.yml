@@ -8,6 +8,7 @@ on:
       - 'lib/src/live/player_lab_results.dart'
       - 'lib/src/screens/player_lab_screen.dart'
       - '.github/workflows/player-lab.yml'
+      - '.github/workflows/player-lab-device.yml'
 permissions:
   contents: read
 concurrency:

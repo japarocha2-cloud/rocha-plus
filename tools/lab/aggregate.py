@@ -3,9 +3,62 @@
 import argparse
 import csv
 import json
+import unicodedata
 from pathlib import Path
 from catalog import m3u
 from run_android import consolidate
+
+
+CATEGORY_ORDER = ['TV ao Vivo', 'Esportes', 'Infantil', 'Notícias', 'Filmes',
+                  'Séries', 'Documentários', 'Música', 'Educação', 'Cultura',
+                  'Entretenimento', 'Religiosos', 'Futebol', 'Outros']
+
+
+def alphabetical(value):
+    return ''.join(c for c in unicodedata.normalize('NFKD', value.casefold())
+                   if not unicodedata.combining(c))
+
+
+def export_categories(result, out):
+    """Publish evidence-approved LAB catalogues only; keep empty themes explicit."""
+    directory = out / 'categories'
+    directory.mkdir(parents=True, exist_ok=True)
+    # Regeneration must not retain an old catalogue whose channels now fail.
+    for pattern in ('*.json', '*.csv', '*.m3u'):
+        for path in directory.glob(pattern):
+            path.unlink()
+    approved = [r for r in result['channels']
+                if r['status'] == 'automatic_audiovisual_pass'
+                and r.get('eligible') and not r.get('blocked')]
+    groups = CATEGORY_ORDER + sorted({r['group'] for r in approved} - set(CATEGORY_ORDER), key=alphabetical)
+    index = []
+    fields = ['name', 'url', 'group', 'preferred', 'testedAt']
+    for order, group in enumerate(groups, 1):
+        selected = sorted((r for r in approved if r['group'] == group),
+                          key=lambda r: (alphabetical(r['name']), r['url']))
+        entry = {'order': order, 'category': group, 'validatedChannels': len(selected),
+                 'status': 'available' if selected else 'awaiting_validated_channels',
+                 'files': {}, 'productionApproved': False}
+        if selected:
+            stem = f'{order:02d}-' + alphabetical(group).replace(' ', '-')
+            channels = [{**r, 'preferred': r['result'].get('preferred'),
+                         'testedAt': r['result'].get('testedAt')} for r in selected]
+            (directory / f'{stem}.json').write_text(json.dumps(channels, ensure_ascii=False, indent=2))
+            with (directory / f'{stem}.csv').open('w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
+                writer.writeheader()
+                writer.writerows(channels)
+            playlist = m3u(selected).replace('# LAB candidates only; not validated for production',
+                '# LAB automatic pixel/PCM evidence; no production approval')
+            # m3u() has its own sort: restore the same accent-insensitive order.
+            lines = playlist.splitlines()[:2]
+            for row in selected:
+                lines.extend(m3u([row]).splitlines()[2:])
+            (directory / f'{stem}.m3u').write_text('\n'.join(lines) + '\n')
+            entry['files'] = {ext: f'categories/{stem}.{ext}' for ext in ['json', 'csv', 'm3u']}
+        index.append(entry)
+    (out / 'catalog-index.json').write_text(json.dumps(index, ensure_ascii=False, indent=2))
+    return index
 
 
 def aggregate(inventory, reports):
@@ -17,7 +70,7 @@ def aggregate(inventory, reports):
                 tested[url] = record
     rows = []
     for candidate in inventory['candidates']:
-        if not candidate['eligible']:
+        if not candidate['eligible'] or candidate.get('blocked'):
             continue
         result = tested.get(candidate['url'])
         status = 'pending'
@@ -82,6 +135,7 @@ def main():
                     flat[f'{phase}_{metric}'] = record.get(phase, {}).get(metric)
             writer.writerow(flat)
     approved = [r for r in result['channels'] if r['status'] == 'automatic_audiovisual_pass']
+    export_categories(result, out)
     for filename, selected in [('automatic-audiovisual-pass.m3u', approved),
                                ('brazil-portuguese-pass.m3u', [r for r in approved if r['brazilOrPortuguese']]),
                                ('football-multilingual-pass.m3u', [r for r in approved if r['football']])]:

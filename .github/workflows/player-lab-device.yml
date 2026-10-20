@@ -59,7 +59,7 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio-out pa -audio-in none
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0

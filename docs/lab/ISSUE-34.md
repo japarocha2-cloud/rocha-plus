@@ -32,6 +32,18 @@ They are candidate distributions; categories in production are not modified.
 Other existing metadata, including Séries/Cultura and ambiguous Outros, remains
 visible for review rather than being forced into a misleading category.
 
+## Ordered validated catalogues
+
+The consolidated artifact contains `catalog-index.json`, ordered as TV ao Vivo,
+Esportes, Infantil, Notícias, Filmes, Séries, Documentários, Música, Educação,
+Cultura, Entretenimento, Religiosos, Futebol and Outros. The first four retain
+the existing product order. Each category with measured audiovisual passes gets
+its own JSON, CSV and M3U in `categories/`, with channels in accent-insensitive
+alphabetical order and the preferred player in JSON/CSV. Empty categories have
+an explicit pending entry in the index and no playlist. Pending, failed and
+blocked candidates cannot enter these catalogues. Regeneration removes stale
+category exports. These are LAB deliveries; production remains frozen.
+
 ## Android execution
 
 `Rocha LAB Android evidence` builds a debug `com.rochaplus.app.lab` APK without
