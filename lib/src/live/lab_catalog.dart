@@ -19,6 +19,11 @@ Future<List<Channel>> loadLabCatalog() async {
         group: 'LAB',
       ),
       Channel(
+        name: 'LAB second A/V fixture after channel transition',
+        url: 'http://10.0.2.2:8765/fixture.mp4?channel=second',
+        group: 'LAB',
+      ),
+      Channel(
         name: 'LAB deliberate HTTP 404',
         url: 'http://10.0.2.2:8765/not-found.m3u8',
         group: 'LAB',

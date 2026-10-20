@@ -105,7 +105,6 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
     int seconds,
     String phase,
   ) async {
-    _phase = phase;
     final existing = Map<String, dynamic>.from(
       _phases[channel.url] as Map? ?? {},
     );
@@ -113,6 +112,11 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
     if (sample != null) {
       return LabSample.fromJson(Map<String, dynamic>.from(sample as Map));
     }
+    _phase = 'transition';
+    _elapsed = 0;
+    await _checkpoint();
+    await _closePlayers();
+    _phase = phase;
     _elapsed = 0;
     await _checkpoint();
     final result = await _runSample(channel, engine, seconds);
@@ -135,14 +139,24 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
   Future<void> _closePlayers() async {
     final exo = _exo;
     final vlc = _vlc;
-    if (mounted) {
-      setState(() {
-        _exo = null;
-        _vlc = null;
-      });
+    // Stop output while its view still exists, then detach the widget tree.
+    if (exo != null && exo.value.isInitialized) {
+      try { await exo.pause().timeout(const Duration(seconds: 5)); } catch (_) { /* dispose still required */ }
     }
-    if (exo != null) await exo.dispose().timeout(const Duration(seconds: 10));
-    if (vlc != null) await vlc.dispose().timeout(const Duration(seconds: 10));
+    if (vlc != null && vlc.value.isInitialized) {
+      try { await vlc.stop().timeout(const Duration(seconds: 5)); } catch (_) { /* dispose still required */ }
+    }
+    _exo = null;
+    _vlc = null;
+    if (mounted) {
+      setState(() {});
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    try {
+      if (exo != null) await exo.dispose().timeout(const Duration(seconds: 10));
+    } finally {
+      if (vlc != null) await vlc.dispose().timeout(const Duration(seconds: 10));
+    }
   }
 
   Future<LabSample> _runSample(
@@ -150,7 +164,6 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
     LabEngine engine,
     int seconds,
   ) async {
-    await _closePlayers();
     final observer = LabObserver(engine);
     final watch = Stopwatch()..start();
     String? failure;
@@ -252,19 +265,8 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
         error: failure,
       );
     }
-    try {
-      await _closePlayers();
-    } catch (error) {
-      observer.observe(
-        milliseconds: watch.elapsedMilliseconds,
-        position: Duration.zero,
-        playing: false,
-        buffering: false,
-        videoTrack: false,
-        audioTrack: false,
-        error: 'Player cleanup failed: $error',
-      );
-    }
+    // Persist the completed phase before the next transition touches native
+    // decoder/surface resources. A process failure cannot erase this sample.
     return observer.finish(watch.elapsedMilliseconds);
   }
 
@@ -328,6 +330,7 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
           _saved[PlayerLabResults.keyFor(channel)] = record;
           setState(() => _completed++);
           await _exportFiles();
+          await _checkpoint();
         } catch (error) {
           // Infrastructure/player exceptions affect this URL, not the whole lot.
           _failures.add({'url': channel.url, 'error': error.toString()});

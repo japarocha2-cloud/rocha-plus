@@ -205,3 +205,19 @@ from ExoPlayer and LibVLC. These unit/widget tests verify sender behavior only:
 physical Chromecast/TV remote button delivery, network discovery, audiovisual
 Cast quality and reconnection require a real receiver on the same network.
 No receiver is available in the headless Android CI, so physical Cast is pending.
+
+## Player/channel transition regression
+
+The LAB now persists each completed phase before tearing down a native player,
+then persists the complete channel/export before entering the next channel.
+Decoder output is stopped while its surface still exists; the Flutter video
+widget is removed for a frame before controller disposal. The pinned VLC 7.4.3
+native dispose method released its texture before stopping/detaching the decoder.
+`patch_vlc_lifecycle.py` copies that dependency into `build/lab-vlc-plugin` and
+reorders the teardown in the isolated copy. A temporary pubspec override is used
+only in LAB jobs; the package cache and frozen release are not modified. Original
+and patched Java hashes are exported. Unexpected source code rejects the patch.
+The Android smoke gate now uses two positive A/V URLs followed by a negative URL,
+requiring the second full channel to finish after the first rather than only
+checking a single successful channel. A native crash cannot be caught by Dart;
+the saved phases/channel checkpoint is the recovery boundary.

@@ -48,6 +48,8 @@ jobs:
           python3 tools/configure_android.py
           python3 tools/lab/configure.py
           flutter pub get
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
           python3 tools/lab/verify_vlc_protocol.py
           cp pubspec.lock build/lab/pubspec.lock
           git rev-parse HEAD > build/lab/source-commit.txt

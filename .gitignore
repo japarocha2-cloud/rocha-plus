@@ -8,3 +8,5 @@ ios/
 *.iml
 pubspec.lock
 __pycache__/
+
+pubspec_overrides.yaml

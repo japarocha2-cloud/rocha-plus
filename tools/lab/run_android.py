@@ -66,7 +66,7 @@ def capture(run, state, out, seen):
     url, phase = state.get('url'), state.get('phase')
     seconds = state.get('elapsedSeconds', 0)
     rect = state.get('videoRect')
-    if not url or not phase or seconds < 10 or not rect:
+    if not url or phase not in ['exo', 'vlc', 'confirmation'] or seconds < 10 or not rect:
         return
     bucket = seconds // 10
     key = (url, phase, bucket)
@@ -192,7 +192,7 @@ def cohort(args, name, offset, count, fixture=False):
                     stop_recording()
                     last = current
                     print(json.dumps({'channel': state.get('channel'), 'phase': state.get('phase'), 'completed': state.get('completed')}), flush=True)
-                    if all(current):
+                    if current[0] and current[1] in ['exo', 'vlc', 'confirmation']:
                         stem = hashlib.sha256(current[0].encode()).hexdigest()[:12] + '-' + current[1]
                         audio_path = out / f'{stem}.wav'
                         recorder = subprocess.Popen(['ffmpeg', '-nostdin', '-loglevel', 'error', '-y',
@@ -244,36 +244,39 @@ def main():
     Path(args.output).mkdir(parents=True, exist_ok=True)
     Path(args.output, 'device.txt').write_text(adb('shell', 'getprop'))
     if args.stage == 'smoke':
-        records = cohort(args, 'smoke', 0, 2, fixture=True)
-        positive, negative = records
-        if not positive['exo']['progressSeconds'] >= 40 or not positive['vlc']['progressSeconds'] >= 40:
-            raise RuntimeError('Controlled A/V fixture did not play on BOTH engines')
-        if positive.get('preferred') is None or negative.get('preferred') is not None:
-            raise RuntimeError('Smoke gate rejected: positive/negative discrimination failed')
-        for phase in ['exo', 'vlc', 'confirmation']:
-            evidence = positive['measuredEvidence'][phase]
-            # The controlled scene must show the generated RGB bars, rather
-            # than a changing loader or unrelated system animation.
-            from PIL import Image
-            import numpy as np
-            calibrated_frames = 0
-            for filename in evidence['frames']:
-                rgb = np.asarray(Image.open(Path(args.output, 'smoke', filename)).convert('RGB')).astype(float)
-                dominance = [float(np.mean((rgb[:, :, c] > 160) &
-                    (rgb[:, :, c] - np.max(np.delete(rgb, c, axis=2), axis=2) > 60))) for c in range(3)]
-                if min(dominance) > 0.01:
-                    calibrated_frames += 1
-            audio = evidence['audio']
-            calibrated_tone = abs(audio.get('dominantFrequencyHz', 0) - 440) < 5 and audio.get('spectralPeakPowerFraction', 0) > 0.3
-            if calibrated_frames < 3 or not calibrated_tone:
-                raise RuntimeError(f'Known RGB fixture/440 Hz tone not observed for {phase}')
-            if not evidence['changingPixelsObserved'] or not evidence['audioOutputObserved']:
-                raise RuntimeError(f'Controlled A/V output evidence missing for {phase}')
-        # Loopback calibration from the known sine-wave fixture is mandatory.
-        positive_hash = hashlib.sha256(positive['channelUrl'].encode()).hexdigest()[:12]
-        metrics = json.loads(Path(args.output, 'smoke', positive_hash + '-exo.json').read_text())
-        if metrics.get('durationSeconds', 0) < 20 or metrics.get('rmsDbfs', -240) < -60:
-            raise RuntimeError('Android output loopback calibration failed; audio remains unverified')
+        records = cohort(args, 'smoke', 0, 3, fixture=True)
+        positive, repeated, negative = records
+        # Two active channels must complete: this exercises decoder teardown and
+        # opening the following channel, rather than ending after a single pass.
+        for positive in [positive, repeated]:
+            if not positive['exo']['progressSeconds'] >= 40 or not positive['vlc']['progressSeconds'] >= 40:
+                raise RuntimeError('Controlled A/V fixture did not play on BOTH engines')
+            if positive.get('preferred') is None or negative.get('preferred') is not None:
+                raise RuntimeError('Smoke gate rejected: positive/negative discrimination failed')
+            for phase in ['exo', 'vlc', 'confirmation']:
+                evidence = positive['measuredEvidence'][phase]
+                # The controlled scene must show the generated RGB bars, rather
+                # than a changing loader or unrelated system animation.
+                from PIL import Image
+                import numpy as np
+                calibrated_frames = 0
+                for filename in evidence['frames']:
+                    rgb = np.asarray(Image.open(Path(args.output, 'smoke', filename)).convert('RGB')).astype(float)
+                    dominance = [float(np.mean((rgb[:, :, c] > 160) &
+                        (rgb[:, :, c] - np.max(np.delete(rgb, c, axis=2), axis=2) > 60))) for c in range(3)]
+                    if min(dominance) > 0.01:
+                        calibrated_frames += 1
+                audio = evidence['audio']
+                calibrated_tone = abs(audio.get('dominantFrequencyHz', 0) - 440) < 5 and audio.get('spectralPeakPowerFraction', 0) > 0.3
+                if calibrated_frames < 3 or not calibrated_tone:
+                    raise RuntimeError(f'Known RGB fixture/440 Hz tone not observed for {phase}')
+                if not evidence['changingPixelsObserved'] or not evidence['audioOutputObserved']:
+                    raise RuntimeError(f'Controlled A/V output evidence missing for {phase}')
+            # Loopback calibration from the known sine-wave fixture is mandatory.
+            positive_hash = hashlib.sha256(positive['channelUrl'].encode()).hexdigest()[:12]
+            metrics = json.loads(Path(args.output, 'smoke', positive_hash + '-exo.json').read_text())
+            if metrics.get('durationSeconds', 0) < 20 or metrics.get('rmsDbfs', -240) < -60:
+                raise RuntimeError('Android output loopback calibration failed; audio remains unverified')
     elif args.stage == 'batch':
         if args.offset < 0 or not 1 <= args.count <= 25:
             raise ValueError('Bounded cohorts require nonnegative offset and 1..25 URLs')
