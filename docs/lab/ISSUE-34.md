@@ -127,3 +127,9 @@ to exclude asynchronous player-transition boundaries. File duration and analysed
 duration are reported separately. Consolidation re-measures available WAV/PNG
 artifacts instead of trusting prior pass flags. Updated commits cancel obsolete
 LAB workflow runs; always-upload steps preserve collected checkpoints.
+
+The smoke gate also checks that the controlled scene exposes all three RGB
+components in multiple captured frames and that the measured audio spectrum
+contains the generated 440 Hz tone. A moving loader or unrelated system sound
+is insufficient to calibrate the measurement path. A widget startup regression
+test covers the debug assertion caused by returning a Future from setState.

@@ -40,12 +40,19 @@ def pcm_metrics(path):
     if full_duration > 20:
         pcm = pcm[5 * rate * channels:-10 * rate * channels]
     rms = float(np.sqrt(np.mean(pcm ** 2))) if len(pcm) else 0.0
+    mono = pcm.reshape(-1, channels).mean(axis=1) if len(pcm) else np.array([])
+    segment = mono[:rate]
+    spectrum = np.abs(np.fft.rfft(segment * np.hanning(len(segment)))) ** 2 if len(segment) > 1 else np.array([0.0])
+    peak_bin = int(np.argmax(spectrum[1:])) + 1 if len(spectrum) > 1 else 0
+    frequency = peak_bin * rate / len(segment) if len(segment) else 0
+    spectral_fraction = float(spectrum[peak_bin] / max(float(spectrum.sum()), 1e-30))
     return {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
             'fileDurationSeconds': full_duration,
             'durationSeconds': len(pcm) / (rate * channels),
             'edgeTrimSeconds': {'start': 5, 'end': 10} if full_duration > 20 else {'start': 0, 'end': 0},
             'rmsDbfs': 20 * math.log10(max(rms, 1e-12)),
             'peak': float(np.max(np.abs(pcm))) if len(pcm) else 0.0,
+            'dominantFrequencyHz': frequency, 'spectralPeakPowerFraction': spectral_fraction,
             'nonSilentFraction': float(np.mean(np.abs(pcm) > 0.001)) if len(pcm) else 0.0,
             'method': 'dedicated_emulator_pulseaudio_sink_monitor',
             'limitation': 'Output PCM energy, not human audibility or programme identity'}
@@ -230,6 +237,21 @@ def main():
             raise RuntimeError('Smoke gate rejected: positive/negative discrimination failed')
         for phase in ['exo', 'vlc', 'confirmation']:
             evidence = positive['measuredEvidence'][phase]
+            # The controlled scene must show the generated RGB bars, rather
+            # than a changing loader or unrelated system animation.
+            from PIL import Image
+            import numpy as np
+            calibrated_frames = 0
+            for filename in evidence['frames']:
+                rgb = np.asarray(Image.open(Path(args.output, 'smoke', filename)).convert('RGB')).astype(float)
+                dominance = [float(np.mean((rgb[:, :, c] > 160) &
+                    (rgb[:, :, c] - np.max(np.delete(rgb, c, axis=2), axis=2) > 60))) for c in range(3)]
+                if min(dominance) > 0.01:
+                    calibrated_frames += 1
+            audio = evidence['audio']
+            calibrated_tone = abs(audio.get('dominantFrequencyHz', 0) - 440) < 5 and audio.get('spectralPeakPowerFraction', 0) > 0.3
+            if calibrated_frames < 3 or not calibrated_tone:
+                raise RuntimeError(f'Known RGB fixture/440 Hz tone not observed for {phase}')
             if not evidence['changingPixelsObserved'] or not evidence['audioOutputObserved']:
                 raise RuntimeError(f'Controlled A/V output evidence missing for {phase}')
         # Loopback calibration from the known sine-wave fixture is mandatory.
