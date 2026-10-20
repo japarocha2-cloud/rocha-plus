@@ -162,3 +162,38 @@ background ANR dialogs. A frame counts as output evidence only when window
 focus belongs to Rocha+ LAB; obstructed screenshots are saved separately. The
 PulseAudio route uses an explicit private Unix socket, output sink and disabled
 unused audio input.
+
+## Feature laboratory: remote, preview and new category routes
+
+The manual LAB player screen has a TV button (`Testar interface, controle e
+Cast`) opening the feature laboratory in the same isolated debug package.
+Existing release/login routes retain the frozen four-category navigation.
+The feature Home adds Filmes, Séries, Documentários, Música, Educação, Cultura,
+Entretenimento, Religiosos and Futebol, with real category routes even when
+there are no validated channels. No candidate directory is used as a fallback.
+
+`ValidatedLabRepository` reads `branding/lab_approved.json` (initially empty) or
+an explicitly imported `validated-catalog.json` in the current LAB run directory.
+It requires a measured audiovisual pass, a stable 180-second confirmation,
+matching channel URL and pixel/PCM evidence flags; blocked/quarantined channels
+remain excluded. The upstream aggregator retains/rechecks original evidence.
+Use `python3 tools/lab/install_validated.py --report <consolidated-results.json>`
+to import the aggregate snapshot into the debug app, or `--asset` before an
+isolated debug APK build. This never writes to the production package/catalogue.
+
+The channel preview opens real playback after user selection. It can expand
+into fullscreen and uses the same approved playlist. Film category filters
+use explicit `genres` metadata only; missing genres remain `Sem gênero informado`.
+This is organization of live movie channels, not a VOD library of film titles.
+
+The shared playback session supports CH+/CH- and PageUp/PageDown plus visible
+previous/next buttons in both engines and the Cast controller. Arrow keys remain
+available for focus traversal. Channel lists wrap, deduplicate URLs and skip
+blocked/quarantined signals. During Cast a new selection sends a new load into
+the existing receiver session; its label/content ID commits only after that
+receiver confirms playback of the requested URL. Failed changes remain explicit
+and do not claim the new channel is playing. The same Cast transport is exposed
+from ExoPlayer and LibVLC. These unit/widget tests verify sender behavior only:
+physical Chromecast/TV remote button delivery, network discovery, audiovisual
+Cast quality and reconnection require a real receiver on the same network.
+No receiver is available in the headless Android CI, so physical Cast is pending.

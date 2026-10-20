@@ -9,6 +9,7 @@ import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../live/lab_observer.dart';
 import '../live/lab_runtime.dart';
+import 'feature_lab_screen.dart';
 import '../live/player_lab_results.dart';
 import '../theme/rocha_theme.dart';
 import 'adaptive_player_screen.dart';
@@ -464,6 +465,19 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
             ],
           ),
           actions: [
+            if (const bool.fromEnvironment('ROCHA_LAB_ONLY'))
+              IconButton(
+                tooltip: 'Testar interface, controle e Cast',
+                icon: const Icon(Icons.tv),
+                onPressed: _current != null
+                    ? null
+                    : () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FeatureLabScreen(),
+                        ),
+                      ),
+              ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: const Text('Cancelar'),
