@@ -1,0 +1,10 @@
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins*
+build/
+android/
+ios/
+*.iml
+pubspec.lock
+__pycache__/

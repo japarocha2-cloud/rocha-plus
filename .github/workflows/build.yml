@@ -43,6 +43,9 @@ jobs:
           PY
       - name: Configure Android phone and TV
         run: python3 tools/configure_android.py
+      - name: Configure debug laboratory bridge
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 tools/lab/configure.py
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Prepare signed Firebase build
@@ -134,6 +137,9 @@ jobs:
             echo "Somente se esta execucao tiver sucesso: baixe rocha-plus-beta-login-universal." >> "$GITHUB_STEP_SUMMARY"
             echo "A conexao ao Google ainda exige teste no aparelho e SHA da assinatura registrado no Firebase." >> "$GITHUB_STEP_SUMMARY"
             echo "Se houver falha em Prepare signed Firebase build, confira os Secrets no GitHub; nunca os publique." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "${{ github.head_ref }}" == *dual-player-lab* ]]; then
+            echo "### Rocha+ LAB experimental" >> "$GITHUB_STEP_SUMMARY"
+            echo "Artefato: rocha-plus-player-lab-debug. Sem homologacao audiovisual automatica." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "### Rocha+ SOMENTE PREVIA VISUAL" >> "$GITHUB_STEP_SUMMARY"
             echo "Baixe rocha-plus-layout-preview-no-channels. O login e os canais reais nao funcionam neste APK." >> "$GITHUB_STEP_SUMMARY"

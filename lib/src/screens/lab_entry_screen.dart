@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../live/channel.dart';
-import '../live/channel_repository.dart';
+import '../live/lab_catalog.dart';
 import 'player_lab_screen.dart';
 
 /// Test build entrypoint: no Firebase login, purchases, or catalogue mutation.
@@ -33,7 +33,7 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
   }
 
   void _reload() {
-    setState(() => _loading = ChannelRepository().loadBrazilPublicDirectory(forceRefresh: true));
+    setState(() => _loading = loadLabCatalog());
   }
 
   @override
@@ -41,13 +41,24 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
     future: _loading,
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
-        return Scaffold(appBar: AppBar(title: const Text('Rocha+ LAB • experimental')),
-          body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            if (snapshot.hasError) const Text('Não foi possível carregar o catálogo.'),
-            if (!snapshot.hasError) const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: _reload, child: const Text('Atualizar canais')),
-          ])));
+        return Scaffold(
+          appBar: AppBar(title: const Text('Rocha+ LAB • experimental')),
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (snapshot.hasError)
+                  const Text('Não foi possível carregar o catálogo.'),
+                if (!snapshot.hasError) const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: _reload,
+                  child: const Text('Atualizar canais'),
+                ),
+              ],
+            ),
+          ),
+        );
       }
       return PlayerLabScreen(channels: snapshot.data!);
     },

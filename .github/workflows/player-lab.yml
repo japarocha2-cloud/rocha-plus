@@ -1,0 +1,73 @@
+name: Rocha LAB Android evidence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/lab/**'
+      - 'lib/src/live/lab*'
+      - 'lib/src/live/player_lab_results.dart'
+      - 'lib/src/screens/player_lab_screen.dart'
+      - '.github/workflows/player-lab.yml'
+permissions:
+  contents: read
+concurrency:
+  group: rocha-lab-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.head_ref == 'feat/dual-player-lab-20261020'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Auditable catalogue inventory (all requested sources)
+        run: |
+          python3 tools/lab/catalog.py
+          cp build/lab/catalog/candidates.json branding/lab_candidates.json
+      - name: Scaffold debug LAB
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+          python3 tools/lab/configure.py
+          flutter pub get
+      - name: Static and unit verification
+        run: |
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s tools/lab -p 'test_*.py'
+          python3 tools/rocha_quality_guard.py
+          flutter analyze
+          flutter test
+      - name: Build isolated LAB APK
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rocha-lab-catalog
+          path: build/lab/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-lab-android-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+  smoke:
+    needs: build
+    uses: ./.github/workflows/player-lab-device.yml
+    with:
+      stage: smoke
+  batch10:
+    needs: smoke
+    uses: ./.github/workflows/player-lab-device.yml
+    with:
+      stage: batch10
+  batch25:
+    needs: batch10
+    uses: ./.github/workflows/player-lab-device.yml
+    with:
+      stage: batch25

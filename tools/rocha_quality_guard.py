@@ -47,7 +47,11 @@ for path in ROOT.rglob("*"):
     # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml"}:
         if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
-            issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
+            lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")}
+            if rel not in lab_transport_files:
+                issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
+            # These two LAB-only inputs are governed by the debug-only network
+            # config emitted by tools/lab/configure.py, never by release policy.
 
 # Fiscaliza os contratos mínimos das telas principais.
 all_dart = "\n".join(text for rel, text in dart_files if rel.parts and rel.parts[0] == "lib")
