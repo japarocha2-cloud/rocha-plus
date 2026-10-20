@@ -26,12 +26,14 @@ jobs:
       - name: Host evidence tools and dedicated audio sink
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg pulseaudio
+          sudo apt-get install -y ffmpeg pulseaudio xvfb xauth libxkbcommon-x11-0 libxcb-cursor0 libxcb-xinerama0 libxcb-icccm4 libxcb-keysyms1 libxcb-image0 libxcb-render-util0
           python3 -m pip install pillow numpy
           export XDG_RUNTIME_DIR="$RUNNER_TEMP/rocha-runtime"
           mkdir -p "$XDG_RUNTIME_DIR"
           chmod 700 "$XDG_RUNTIME_DIR"
           echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> "$GITHUB_ENV"
+          Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/rocha-xvfb.log" 2>&1 &
+          echo 'DISPLAY=:99' >> "$GITHUB_ENV"
           pulseaudio --start --exit-idle-time=-1
           test -s "$XDG_RUNTIME_DIR/pulse/pid"
           pactl load-module module-null-sink sink_name=rocha_lab rate=48000 channels=2
@@ -63,11 +65,14 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
+          # The headless QEMU binary stubs PulseAudio functions. Use the full
+          # binary on Xvfb so captured PCM comes from actual emulator output.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt
+            ps -eo pid,args | rg 'qemu-system|emulator|Xvfb' > build/lab/android/emulator-processes.txt
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
             adb shell settings put system screen_off_timeout 2147483647

@@ -87,6 +87,14 @@ It requires ADB, the generated LAB APK, Python numpy/Pillow, ffmpeg and a dedica
 PulseAudio sink `rocha_lab`. It assumes the fixture HTTP server at host port 8765.
 See the reusable device workflow for exact setup and emulator flags.
 
+Audiovisual cohorts use the full emulator binary on Xvfb, not `-no-window`:
+the Android QEMU source contains `audio/paaudio-headless-impl.c` whose PulseAudio
+constructors return NULL and whose connection function returns -1. Merely
+starting a PulseAudio server cannot enable that stubbed implementation.
+Source inspected: platform/external/qemu commit
+`ae9d18d2b6261179fbd57fffec720a04f7bfb053` on android.googlesource.com.
+The UI-only screenshot job may use headless/no-audio and makes no sound claim.
+
 ## Measurements and the meaning of a pass
 
 - API metrics: monotonic request-to-first-progress startup, observed playhead
