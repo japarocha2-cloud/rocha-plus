@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/live/validated_lab_repository.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 
@@ -41,7 +42,19 @@ Map<String, dynamic> candidate(String url) => {
   },
 };
 void main() {
-  setUp(ChannelRepository.resetSessionHealthForTests);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ChannelRepository.resetSessionHealthForTests();
+  });
+  test('stored user block survives a fresh validated repository', () async {
+    SharedPreferences.setMockInitialValues({
+      'rocha_blocked_channel_names_v1': ['canal validado'],
+    });
+    final repo = ValidatedLabRepository(
+      read: () async => jsonEncode([candidate('https://example.test/pass')]),
+    );
+    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
+  });
   test(
     'empty approved snapshot never loads the live candidate directory',
     () async {

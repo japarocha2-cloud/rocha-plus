@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'channel.dart';
+import 'channel_blocks.dart';
+import 'channel_identity.dart';
 import 'lab_runtime.dart';
 import 'channel_repository.dart';
 import 'catalog_presentation.dart';
@@ -28,6 +30,7 @@ class ValidatedLabRepository extends ChannelRepository {
     bool forceRefresh = false,
   }) async {
     final raw = jsonDecode(await _read()) as List;
+    final userBlocks = await ChannelBlocks().load();
     final channels = <String, Channel>{};
     for (final value in raw) {
       try {
@@ -62,6 +65,7 @@ class ValidatedLabRepository extends ChannelRepository {
             !['http', 'https'].contains(uri.scheme) ||
             uri.host.isEmpty ||
             uri.userInfo.isNotEmpty ||
+            userBlocks.contains(channelIdentity(channel.name)) ||
             isBlocked(channel) ||
             isQuarantined(channel.url)) {
           continue;
