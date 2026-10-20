@@ -10,6 +10,7 @@ import '../live/channel.dart';
 import '../live/lab_observer.dart';
 import '../live/player_lab_results.dart';
 import '../theme/rocha_theme.dart';
+import 'adaptive_player_screen.dart';
 
 /// Opt-in laboratory only. Never mutate the frozen production catalogue.
 class PlayerLabScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
   int _completed = 0;
   int _elapsed = 0;
   int _total = 0;
+  int _batchSize = 10;
   Channel? _current;
 
   @override
@@ -79,7 +81,9 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
         // Do not invoke initialize twice: await the value notification instead.
         final ready = Completer<void>();
         void onReady() {
-          if (controller.value.isInitialized && !ready.isCompleted) ready.complete();
+          if (controller.value.isInitialized && !ready.isCompleted) {
+            ready.complete();
+          }
           if (controller.value.errorDescription != VlcPlayerValue.noError &&
               !ready.isCompleted) ready.completeError(
                 StateError(controller.value.errorDescription));
@@ -136,7 +140,7 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
   Future<void> _start() async {
     if (_running || widget.channels.isEmpty) return;
     final pending = widget.channels.where((c) =>
-        !_saved.containsKey(PlayerLabResults.keyFor(c))).toList();
+        !_saved.containsKey(PlayerLabResults.keyFor(c))).take(_batchSize).toList();
     if (pending.isEmpty) {
       setState(() => _status = 'Todos os canais desta lista já têm registro.');
       return;
@@ -166,21 +170,30 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
         setState(() => _completed++);
       }
     } catch (error) {
-      if (mounted) setState(() => _status = 'Erro: $error');
+      if (mounted) {
+        setState(() => _status = 'Erro: $error');
+      }
     } finally {
       await _closePlayers();
-      if (mounted) setState(() { _running = false; _current = null;
-        if (!_status.startsWith('Erro:')) _status = _cancel
-          ? 'Interrompido; resultados anteriores preservados'
-          : 'Lote concluído'; });
+      if (mounted) {
+        setState(() { _running = false; _current = null;
+          if (!_status.startsWith('Erro:')) {
+            _status = _cancel
+              ? 'Interrompido; resultados anteriores preservados'
+              : 'Lote concluído';
+          }
+        });
+      }
     }
   }
 
   Future<void> _export() async {
     final data = _saved.values.map((r) => r.toJson()).toList();
     await Clipboard.setData(ClipboardData(text: const JsonEncoder.withIndent('  ').convert(data)));
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Relatório JSON copiado para a área de transferência.')));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Relatório JSON copiado para a área de transferência.')));
+    }
   }
 
   Future<void> _validate(Channel channel, LabRecord record) async {
@@ -227,10 +240,20 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
             'Faixas de vídeo/áudio não comprovam imagem visível ou som audível; valide no aparelho.',
             style: TextStyle(fontSize: 12, color: Colors.white70)),
           const SizedBox(height: 12),
-          Row(children: [
+          Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+            DropdownButton<int>(value: _batchSize,
+              items: const [
+                DropdownMenuItem(value: 1, child: Text('1 canal')),
+                DropdownMenuItem(value: 10, child: Text('10 canais')),
+                DropdownMenuItem(value: 25, child: Text('25 canais')),
+                DropdownMenuItem(value: 99999, child: Text('Todos')),
+              ],
+              onChanged: _running ? null : (value) {
+                if (value != null) setState(() => _batchSize = value);
+              }),
             FilledButton.icon(onPressed: _running ? null : _start,
               icon: const Icon(Icons.play_arrow), label: const Text('Iniciar pendentes')),
-            const SizedBox(width: 8),
             OutlinedButton(onPressed: _running ? () => setState(() => _cancel = true) : null,
               child: const Text('Parar')),
           ]),
@@ -246,6 +269,8 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
           final channel = widget.channels[index];
           final record = _saved[PlayerLabResults.keyFor(channel)];
           return ListTile(dense: true, title: Text(channel.name),
+            onTap: _running ? null : () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => AdaptivePlayerScreen(channel: channel))),
             subtitle: Text(record == null ? 'Pendente' :
               'Exo ${record.exo.progressSeconds}s / VLC ${record.vlc.progressSeconds}s • '
               'confirmado ${record.confirmation.progressSeconds}s com ${record.preferred?.label ?? "nenhum"} • '

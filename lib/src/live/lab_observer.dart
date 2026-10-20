@@ -21,7 +21,7 @@ class LabObserver {
     required bool playing, required bool buffering, required bool videoTrack,
     required bool audioTrack, String? error}) {
     final delta = _lastTimestamp == null ? 0 :
-        (milliseconds - _lastTimestamp!).clamp(0, 5000);
+        (milliseconds - _lastTimestamp!).clamp(0, 5000).toInt();
     final advanced = _lastPosition != null && position > _lastPosition!;
     if (advanced) {
       _progressMs += delta;
