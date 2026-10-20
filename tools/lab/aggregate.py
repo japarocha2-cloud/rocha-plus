@@ -3,6 +3,7 @@
 import argparse
 import csv
 import json
+import re
 import unicodedata
 from pathlib import Path
 from catalog import m3u
@@ -13,10 +14,46 @@ CATEGORY_ORDER = ['TV ao Vivo', 'Esportes', 'Infantil', 'Notícias', 'Filmes',
                   'Séries', 'Documentários', 'Música', 'Educação', 'Cultura',
                   'Entretenimento', 'Religiosos', 'Futebol', 'Outros']
 
+# Editorial discovery priority for the Brazilian audience, not audience ratings.
+# Only the already-validated export set is ordered by these rules.
+PRIORITY = {
+    'TV ao Vivo': [r'globo|tv morena', r'sbt', r'record(?:tv)?', r'band',
+                   r'rede\s*tv', r'(?:tv )?cultura|cultura fast', r'tv brasil'],
+    'Esportes': [r'sportv', r'espn', r'premiere', r'caze\s*tv', r'combate', r'n sports'],
+    'Futebol': [r'premiere', r'sportv', r'espn', r'caze\s*tv'],
+    'Infantil': [r'cartoon network', r'disney channel', r'nickelodeon',
+                 r'discovery kids', r'gloob', r'turma da monica', r'pluto tv kids',
+                 r'pluto tv junior', r'sbt kids', r'tooncast', r'babyfirst'],
+    'Notícias': [r'globo\s*news', r'cnn brasil', r'record news|pluto tv record news',
+                 r'band\s*news', r'jovem pan', r'sbt news'],
+    'Filmes': [r'telecine', r'hbo', r'megapix', r'tnt', r'space', r'cinemax',
+               r'paramount', r'axn movies', r'star movies'],
+    'Séries': [r'warner', r'sony', r'axn', r'universal', r'star channel'],
+    'Documentários': [r'discovery', r'national geographic|nat geo', r'history', r'animal planet'],
+    'Música': [r'mtv', r'bis', r'multishow', r'trace brazuca'],
+}
+
 
 def alphabetical(value):
     return ''.join(c for c in unicodedata.normalize('NFKD', value.casefold())
                    if not unicodedata.combining(c))
+
+
+def channel_order(row):
+    name = alphabetical(row['name'])
+    rules = PRIORITY.get(row['group'], [])
+    priority = next((i for i, pattern in enumerate(rules)
+                     if re.match(r'(?:' + pattern + r')(?=\W|\d|$)', name)), len(rules))
+    return priority, name, row['url']
+
+
+def ordered_playlist(rows):
+    lines = ['#EXTM3U', '# LAB automatic pixel/PCM evidence; no production approval']
+    order = {group: i for i, group in enumerate(CATEGORY_ORDER)}
+    for row in sorted(rows, key=lambda r: (order.get(r['group'], len(order)),
+                                           alphabetical(r['group']), channel_order(r))):
+        lines.extend(m3u([row]).splitlines()[2:])
+    return '\n'.join(lines) + '\n'
 
 
 def export_categories(result, out):
@@ -35,7 +72,7 @@ def export_categories(result, out):
     fields = ['name', 'url', 'group', 'preferred', 'testedAt']
     for order, group in enumerate(groups, 1):
         selected = sorted((r for r in approved if r['group'] == group),
-                          key=lambda r: (alphabetical(r['name']), r['url']))
+                          key=channel_order)
         entry = {'order': order, 'category': group, 'validatedChannels': len(selected),
                  'status': 'available' if selected else 'awaiting_validated_channels',
                  'files': {}, 'productionApproved': False}
@@ -48,13 +85,7 @@ def export_categories(result, out):
                 writer = csv.DictWriter(f, fieldnames=fields, extrasaction='ignore')
                 writer.writeheader()
                 writer.writerows(channels)
-            playlist = m3u(selected).replace('# LAB candidates only; not validated for production',
-                '# LAB automatic pixel/PCM evidence; no production approval')
-            # m3u() has its own sort: restore the same accent-insensitive order.
-            lines = playlist.splitlines()[:2]
-            for row in selected:
-                lines.extend(m3u([row]).splitlines()[2:])
-            (directory / f'{stem}.m3u').write_text('\n'.join(lines) + '\n')
+            (directory / f'{stem}.m3u').write_text(ordered_playlist(selected))
             entry['files'] = {ext: f'categories/{stem}.{ext}' for ext in ['json', 'csv', 'm3u']}
         index.append(entry)
     (out / 'catalog-index.json').write_text(json.dumps(index, ensure_ascii=False, indent=2))
@@ -139,9 +170,7 @@ def main():
     for filename, selected in [('automatic-audiovisual-pass.m3u', approved),
                                ('brazil-portuguese-pass.m3u', [r for r in approved if r['brazilOrPortuguese']]),
                                ('football-multilingual-pass.m3u', [r for r in approved if r['football']])]:
-        playlist = m3u(selected).replace('# LAB candidates only; not validated for production',
-          '# LAB automatic pixel/PCM evidence; no production approval')
-        (out / filename).write_text(playlist)
+        (out / filename).write_text(ordered_playlist(selected))
     print(json.dumps(result['summary'], ensure_ascii=False, indent=2))
 
 

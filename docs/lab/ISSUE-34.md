@@ -38,8 +38,12 @@ The consolidated artifact contains `catalog-index.json`, ordered as TV ao Vivo,
 Esportes, Infantil, Notícias, Filmes, Séries, Documentários, Música, Educação,
 Cultura, Entretenimento, Religiosos, Futebol and Outros. The first four retain
 the existing product order. Each category with measured audiovisual passes gets
-its own JSON, CSV and M3U in `categories/`, with channels in accent-insensitive
-alphabetical order and the preferred player in JSON/CSV. Empty categories have
+its own JSON, CSV and M3U in `categories/`, with editorial priority for familiar
+Brazilian channel brands first, followed by accent-insensitive alphabetical
+order, and the preferred player in JSON/CSV. `PRIORITY` in `aggregate.py` records
+the explicit order; it is editorial curation, not a measured audience ranking.
+The same ordering applies to combined approved M3Us. Priority never overrides
+validation or blocking. Empty categories have
 an explicit pending entry in the index and no playlist. Pending, failed and
 blocked candidates cannot enter these catalogues. Regeneration removes stale
 category exports. These are LAB deliveries; production remains frozen.

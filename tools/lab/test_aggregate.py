@@ -2,10 +2,19 @@ import unittest
 import json
 import tempfile
 from pathlib import Path
-from aggregate import aggregate, export_categories
+from aggregate import aggregate, export_categories, channel_order, ordered_playlist
 
 
 class AggregateTest(unittest.TestCase):
+    def test_familiar_brands_precede_alphabetical_channels_in_all_playlists(self):
+        rows = [{'name': name, 'group': 'TV ao Vivo', 'url': name}
+                for name in ['Alpha TV', 'Band (720p)', 'SBT Interior', 'TV Morena', 'RecordTV Rio', 'Bandeirantes Regional']]
+        expected = ['TV Morena', 'SBT Interior', 'RecordTV Rio', 'Band (720p)', 'Alpha TV', 'Bandeirantes Regional']
+        self.assertEqual([r['name'] for r in sorted(rows, key=channel_order)], expected)
+        playlist = ordered_playlist(rows)
+        positions = [playlist.index(',' + name + '\n') for name in expected]
+        self.assertEqual(positions, sorted(positions))
+
     def test_missing_shards_stay_pending_and_inconclusive_is_not_unavailable(self):
         candidate = lambda url: {'url': url, 'name': url, 'eligible': True,
           'origins': ['br'], 'group': 'Infantil'}

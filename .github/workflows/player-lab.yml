@@ -13,7 +13,7 @@ permissions:
   contents: read
 concurrency:
   group: rocha-lab-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   build:
     if: github.head_ref == 'feat/dual-player-lab-20261020'
