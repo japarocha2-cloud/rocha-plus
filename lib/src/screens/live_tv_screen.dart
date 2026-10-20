@@ -5,7 +5,8 @@ import '../live/channel_repository.dart';
 import '../live/channel_scanner.dart';
 import '../live/favorites_repository.dart';
 import '../theme/rocha_theme.dart';
-import 'player_screen.dart';
+import 'adaptive_player_screen.dart';
+import 'player_lab_screen.dart';
 import '../widgets/rocha_channel_card.dart';
 
 class LiveTvScreen extends StatefulWidget {
@@ -140,6 +141,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         ),
         actions: [
           IconButton(
+            tooltip: 'Laboratório ExoPlayer + LibVLC',
+            onPressed: loading || channels.isEmpty ? null : () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => PlayerLabScreen(channels: channels.where(
+                (c) => !repository.isQuarantined(c.url) && !repository.isBlocked(c)).toList()))),
+            icon: const Icon(Icons.science_outlined),
+          ),
+          IconButton(
             tooltip: 'Verificar disponibilidade de até 40 canais',
             onPressed: loading || scanning || visible.isEmpty ? null : () => scan(visible),
             icon: scanning ? const SizedBox(width: 20, height: 20,
@@ -236,7 +244,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                                 onHide: () => hideChannel(channel),
                                 onOpen: () async {
                                   await Navigator.push(context, MaterialPageRoute(
-                                    builder: (_) => PlayerScreen(channel: channel)));
+                                    builder: (_) => AdaptivePlayerScreen(channel: channel)));
                                   if (mounted) setState(() {});
                                 });
                             },

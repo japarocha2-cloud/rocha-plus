@@ -8,7 +8,7 @@ import '../live/channel_repository.dart';
 import '../live/favorites_repository.dart';
 import 'live_tv_screen.dart';
 import 'news_screen.dart';
-import 'player_screen.dart';
+import 'adaptive_player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
@@ -223,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
           channel: items[i], favorite: favorites.contains(items[i].url),
           onFavorite: () => _favorite(items[i]),
           onOpen: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerScreen(channel: items[i])));
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => AdaptivePlayerScreen(channel: items[i])));
             if (mounted) _load();
           })),
       )),
