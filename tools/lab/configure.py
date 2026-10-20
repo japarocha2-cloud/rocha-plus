@@ -45,6 +45,7 @@ def configure_lab(root):
                         result.success(mapOf(
                             "auto" to intent.getBooleanExtra("lab_auto", false),
                             "fixture" to intent.getBooleanExtra("lab_fixture", false),
+                            "features" to intent.getBooleanExtra("lab_features", false),
                             "offset" to intent.getIntExtra("lab_offset", 0),
                             "limit" to intent.getIntExtra("lab_limit", 0)))
                     } else result.notImplemented()

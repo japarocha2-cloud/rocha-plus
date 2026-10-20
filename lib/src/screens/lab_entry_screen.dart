@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../live/channel.dart';
 import '../live/lab_catalog.dart';
+import '../live/lab_runtime.dart';
+import 'feature_lab_screen.dart';
 import 'player_lab_screen.dart';
 
 /// Test build entrypoint: no Firebase login, purchases, or catalogue mutation.
@@ -25,6 +27,7 @@ class _LabCatalogueLoader extends StatefulWidget {
 
 class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
   Future<List<Channel>>? _loading;
+  bool _features = false;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
   }
 
   void _reload() {
+    _configureFeatures();
     final loading = loadLabCatalog().catchError((
       Object error,
       StackTrace stack,
@@ -45,10 +49,18 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
     });
   }
 
+  Future<void> _configureFeatures() async {
+    final configuration = await LabRuntime.configuration();
+    if (mounted && configuration['features'] == true) {
+      setState(() => _features = true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => FutureBuilder<List<Channel>>(
     future: _loading,
     builder: (context, snapshot) {
+      if (_features) return const FeatureLabScreen();
       if (!snapshot.hasData) {
         return Scaffold(
           appBar: AppBar(title: const Text('Rocha+ LAB • experimental')),
