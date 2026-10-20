@@ -85,8 +85,9 @@ class _PlayerLabScreenState extends State<PlayerLabScreen> {
             ready.complete();
           }
           if (controller.value.errorDescription != VlcPlayerValue.noError &&
-              !ready.isCompleted) ready.completeError(
-                StateError(controller.value.errorDescription));
+              !ready.isCompleted) {
+            ready.completeError(StateError(controller.value.errorDescription));
+          }
         }
         controller.addListener(onReady);
         onReady();
