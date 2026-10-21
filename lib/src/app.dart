@@ -82,9 +82,11 @@ class _SubscriptionGateState extends State<_SubscriptionGate> {
   }
 
   void _refresh() {
-    if (mounted) setState(() {
-      _allowed = SubscriptionAccess.isAllowed(widget.uid);
-    });
+    if (mounted) {
+      setState(() {
+        _allowed = SubscriptionAccess.isAllowed(widget.uid);
+      });
+    }
   }
 
   @override
