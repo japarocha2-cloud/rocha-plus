@@ -48,6 +48,9 @@ jobs:
         run: python3 tools/lab/configure.py
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Test Windows PC catalogue importer safety
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 -m unittest tools/lab/test_import_pc_report.py
       - name: Prepare signed Firebase build
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         env:
