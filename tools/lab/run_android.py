@@ -279,7 +279,21 @@ def main():
                 audio = evidence['audio']
                 calibrated_tone = abs(audio.get('dominantFrequencyHz', 0) - 440) < 5 and audio.get('spectralPeakPowerFraction', 0) > 0.3
                 if calibrated_frames < 3 or not calibrated_tone:
-                    raise RuntimeError(f'Known RGB fixture/440 Hz tone not observed for {phase}')
+                    diagnostic = {
+                        'phase': phase,
+                        'calibratedRgbFrames': calibrated_frames,
+                        'totalCapturedFrames': len(evidence['frames']),
+                        'tone440HzDetected': calibrated_tone,
+                        'dominantFrequencyHz': audio.get('dominantFrequencyHz'),
+                        'spectralPeakPowerFraction': audio.get('spectralPeakPowerFraction'),
+                        'rmsDbfs': audio.get('rmsDbfs'),
+                        'audioError': audio.get('error'),
+                        'changingPixelsObserved': evidence['changingPixelsObserved'],
+                        'audioOutputObserved': evidence['audioOutputObserved'],
+                    }
+                    Path(args.output, 'smoke', 'calibration-failure.json').write_text(
+                        json.dumps(diagnostic, indent=2))
+                    raise RuntimeError(f'Known RGB fixture/440 Hz tone not observed: {json.dumps(diagnostic)}')
                 if not evidence['changingPixelsObserved'] or not evidence['audioOutputObserved']:
                     raise RuntimeError(f'Controlled A/V output evidence missing for {phase}')
             # Loopback calibration from the known sine-wave fixture is mandatory.
