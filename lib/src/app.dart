@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
 import 'auth/firebase_auth_repository.dart';
 import 'auth/subscription_access.dart';
+import 'app_release_policy.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/intro_screen.dart';
@@ -53,7 +54,12 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
-              : _SubscriptionGate(uid: controller.account!.uid, onSignOut: () async {
+              : !RochaReleasePolicy.paidSubscriptionRequired
+                  ? HomeScreen(onSignOut: () async {
+                      await controller.signOut();
+                      if (controller.account != null) throw StateError('Sign-out failed');
+                    })
+                  : _SubscriptionGate(uid: controller.account!.uid, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
           }),
