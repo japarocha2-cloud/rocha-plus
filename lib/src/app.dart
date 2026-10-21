@@ -90,7 +90,9 @@ class _SubscriptionGateState extends State<_SubscriptionGate> {
   @override
   void didUpdateWidget(covariant _SubscriptionGate oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.uid != widget.uid) _refresh();
+    if (oldWidget.uid != widget.uid) {
+      _refresh();
+    }
   }
 
   @override
