@@ -140,6 +140,14 @@ footer{color:#bccfda;border-color:#2a5567}
 </div>
 </section>
 <footer>Visual inspirado no fundo cósmico do Rocha+. <a href="./ajuda.html" style="color:#97f5f9">Perguntas frequentes</a>. Protótipo independente. Ainda não publicado; pagamentos externos não integrados à liberação de acesso. Documentos completos disponíveis nos links acima. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
+
+<section aria-labelledby="google-login-title" class="card" style="margin:22px 0;padding:20px;border:1px solid #39a9cb;border-radius:16px;background:rgba(5,24,45,.9)">
+<h2 id="google-login-title" style="margin-top:0">Sua conta Rocha+ <small style="font-size:13px;color:#b8d4e1">• acesso Google</small></h2>
+<p>Entre com sua conta Google para identificar seu cadastro. O login não confirma pagamento nem libera TV ou Office automaticamente.</p>
+<button type="button" id="google-signin" disabled>Entrar com Google</button>
+<button type="button" id="google-signout" hidden>Sair da conta</button>
+<p id="google-auth-status" role="status" aria-live="polite" style="color:#b8d4e1;font-size:14px">Configurando autenticação…</p>
+</section>
 </main>
 <dialog id="docs" class="dialog"><h2 id="dialog-title">Documento</h2><div id="dialog-body"></div><button id="close" type="button">Fechar</button></dialog>
 <script>
@@ -168,5 +176,32 @@ document.querySelectorAll('[data-doc]').forEach(button=>button.addEventListener(
  dialog.showModal();
 }));
 document.getElementById('close').addEventListener('click',()=>dialog.close());
+</script>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const signin=document.getElementById('google-signin'),signout=document.getElementById('google-signout'),status=document.getElementById('google-auth-status');
+try {
+  const {firebaseConfig}=await import('../assets/firebase-config.js');
+  if(!firebaseConfig?.apiKey||!firebaseConfig?.authDomain||!firebaseConfig?.projectId) throw Error('Configuração do Firebase ainda não publicada.');
+  const auth=getAuth(initializeApp(firebaseConfig));
+  const provider=new GoogleAuthProvider();
+  signin.disabled=false;
+  onAuthStateChanged(auth,user=>{
+    signin.hidden=!!user;signout.hidden=!user;
+    status.textContent=user?'Conectado como '+(user.displayName||user.email||'usuário Google')+'. Assinaturas e licenças serão verificadas separadamente.':'Entre com Google para criar ou acessar seu cadastro Rocha+.';
+  },()=>{status.textContent='Não foi possível verificar o login. Tente novamente.'});
+  signin.addEventListener('click',async()=>{
+    signin.disabled=true;status.textContent='Abrindo login seguro do Google…';
+    try{await signInWithPopup(auth,provider)}catch(e){
+      if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){
+        try{await signInWithRedirect(auth,provider)}catch{status.textContent='Falha ao abrir login Google. Verifique as configurações.'}
+      }else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')status.textContent='Login não concluído: '+(e.code||'erro de autenticação');
+      else status.textContent='Login cancelado.';
+    }finally{signin.disabled=false}
+  });
+  signout.addEventListener('click',async()=>{try{await signOut(auth)}catch{status.textContent='Não foi possível sair. Tente novamente.'}});
+}catch(e){status.textContent='Login Google ainda indisponível. Falta configurar o projeto Firebase e autorizar o domínio deste site.'}
 </script>
 </body></html>
