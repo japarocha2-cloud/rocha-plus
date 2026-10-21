@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#061528">
+<title>Rocha+ Office | Estudando / Empresas — Prévia</title>
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;--bg:#0c1f31;--panel:#1b3951;--light:#d0e3ef;--cyan:#79d7f3;--gold:#f2d48b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 90% 0%,#194563 0%,transparent 45%),var(--bg);color:#fff}
+main{max-width:1060px;margin:auto;padding:24px 20px 70px}
+header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding-bottom:24px;border-bottom:1px solid #34516a}
+.logo{font-size:29px;font-weight:850;letter-spacing:-1px;text-decoration:none;color:white}.logo b{color:#6bd7f1}
+nav{display:flex;flex-wrap:wrap;gap:18px}nav a{color:#bdd5e5;text-decoration:none;font-size:14px}nav a[aria-current]{color:white;border-bottom:2px solid #4ca9e3}
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;align-items:center;padding:54px 0 34px}
+.chip{display:inline-block;background:#15415b;border:1px solid #357c9c;border-radius:24px;padding:5px 12px;font-size:12px;color:#a8edff;font-weight:700}
+h1{font-size:clamp(31px,5vw,56px);line-height:1.08;letter-spacing:-1.8px;margin:16px 0}h2{font-size:25px;margin:32px 0 15px}
+p{color:var(--light)}.hero p{font-size:18px}.visual{border:1px solid #4b849d;border-radius:24px;padding:20px;background:linear-gradient(135deg,#254e66,#12293e);box-shadow:0 20px 50px #0007}
+.visual .bar{height:12px;background:#061b2e;border-radius:20px;margin-bottom:18px}.visual .mock{display:grid;grid-template-columns:1fr 1fr;gap:10px}.visual .mock div{background:#0b2437;border:1px solid #376780;border-radius:12px;min-height:76px;padding:14px;color:#a4ebfc;font-size:13px}
+.modules{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.module{background:var(--panel);border:1px solid #35627b;border-radius:16px;padding:21px}.module .symbol{font-size:27px}.module h3{margin:7px 0;font-size:17px}.module p{margin:0;font-size:13px}
+.offer{margin-top:38px;background:#f5f7fa;border-radius:21px;padding:25px;color:#17364b;max-width:680px}.offer h2{margin:0;color:#17364b}.offer p{color:#456079}.price{font-size:42px;font-weight:850;letter-spacing:-1.8px;color:#102e42}.tag{background:#d8f4e5;border-radius:20px;color:#147653;font-size:12px;font-weight:700;padding:6px 10px}.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+button{border:0;border-radius:11px;padding:13px 18px;font:inherit;font-weight:750;background:#c8d7df;color:#2f566b;cursor:not-allowed}
+.notice{border:1px solid #b88b41;background:#392c17;color:#ffedc4;border-radius:12px;padding:14px 17px;margin:24px 0;font-size:14px}
+footer{margin-top:45px;border-top:1px solid #34516a;padding-top:20px;color:#b3c8d6;font-size:13px}
+a:focus-visible,button:focus-visible{outline:3px solid #ffe3a1;outline-offset:3px}
+@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:30px}.modules{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.modules{grid-template-columns:1fr}}
+
+/* Rocha+ cósmico: identidade visual compartilhada, aplicada apenas à página Office. */
+:root{--bg:#061528;--panel:#102a43;--light:#dcebf5;--cyan:#2ce7ef;--gold:#ffd270}
+body{background:#061528;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(180deg,rgba(3,10,28,.45),rgba(4,13,31,.75) 45%,rgba(2,13,29,.90)),url("../../branding/home-tv-galaxy.png") center/cover no-repeat}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 80% 10%,rgba(0,223,242,.13),transparent 34%),radial-gradient(circle at 15% 85%,rgba(37,135,213,.16),transparent 45%)}
+header{border-bottom-color:#2a5567}.logo b{color:var(--cyan)}nav a[aria-current]{border-bottom-color:var(--cyan);color:#c5fcff}
+.chip{background:#082e42;border-color:#2bc5da;color:#91f6ff}
+h1 strong,.price{color:var(--gold)}.visual{background:linear-gradient(135deg,rgba(10,57,84,.95),rgba(6,17,39,.95));border-color:#37bad1}
+.visual .bar{background:linear-gradient(90deg,#2ce7ef,#ffd270);opacity:.7}
+.visual .mock div{background:rgba(4,25,46,.92);border-color:#3a869e;color:#c3f9ff}
+.module{background:linear-gradient(155deg,rgba(8,42,67,.95),rgba(5,19,41,.96));border-color:rgba(44,231,239,.56);box-shadow:0 10px 25px #0004}
+.module .symbol{color:var(--cyan)}.module h3{color:#fff}.module p{color:#d0e6f1}
+.offer{background:linear-gradient(155deg,rgba(7,32,52,.98),rgba(4,18,39,.98));border:1px solid #cba758;color:#f7fcff;box-shadow:0 12px 32px #0005}
+.offer h2{color:#fff}.offer p{color:#dcebf5}.offer .price{color:var(--gold)}
+.tag{background:#173f39;border:1px solid #59af9a;color:#c6ffea}
+button{background:#263c4b;color:#b4c7d1}.notice{background:rgba(56,42,9,.90);border-color:#c8a54f}
+footer{border-top-color:#2a5567}
+.visual{padding:0;overflow:hidden;border-color:#2ce7ef;box-shadow:0 0 32px rgba(44,231,239,.18)}.visual img{display:block;width:100%;height:auto}</style></head>
+<body><main>
+<header><a class="logo" href="../assinaturas/index.html">Rocha<b>+</b></a><nav aria-label="Menu principal">
+<a href="../assinaturas/index.html">Planos TV</a><a href="./index.html" aria-current="page">Estudando / Empresas</a><a href="../assinaturas/documentos.html">Termos e documentos</a><a href="../assinaturas/ajuda.html">Ajuda</a>
+</nav></header>
+<section class="hero"><div><span class="chip">Rocha+ Office</span><h1>Tudo o que você precisa para estudar e trabalhar.</h1>
+<p>Documentos, planilhas, apresentações e controle financeiro reunidos em um só programa.</p>
+<p>Ferramentas de produtividade com desenvolvimento voltado a PC e Android. Versão comercial ainda em preparação.</p></div>
+<div class="visual" aria-label="Banner promocional Rocha+ Office com aplicativo centralizado na galáxia azul"><img src="../assets/rocha-office-banner.jpg" alt="Banner Rocha+ Office com o aplicativo em destaque no centro de uma galáxia azul e quatro módulos: Documentos, Planilhas, Apresentações e Financeiro" width="1672" height="941" loading="eager" decoding="async"></div></section>
+<h2>Um espaço para cada tarefa</h2><section class="modules" aria-label="Ferramentas do Office">
+<article class="module"><div class="symbol">▤</div><h3>Documentos</h3><p>Textos, relatórios e formatação.</p></article>
+<article class="module"><div class="symbol">▦</div><h3>Planilhas</h3><p>Cálculos, organização e tabelas.</p></article>
+<article class="module"><div class="symbol">▣</div><h3>Apresentações</h3><p>Slides e projetos visuais.</p></article>
+<article class="module"><div class="symbol">▥</div><h3>Financeiro</h3><p>Gráficos, entradas e saídas.</p></article>
+</section>
+<section class="offer" aria-labelledby="titulo-oferta">
+<div class="row" style="justify-content:space-between"><h2 id="titulo-oferta">Rocha+ Office Básico</h2><span class="tag">Pagamento único</span></div>
+<div class="price">R$ 49,90</div>
+<p>Proposta de licença individual associada à conta Google do comprador, para até 2 dispositivos. Aplicativos Windows e Android ainda sujeitos a testes e homologação.</p>
+<a href="https://mpago.la/2KWTnPa" target="_blank" rel="noopener noreferrer" aria-label="Pagar Rocha+ Office no Mercado Pago, R$ 49,90" style="display:inline-block;background:linear-gradient(110deg,#00c8dd,#087cab);color:#04121f;padding:14px 20px;border-radius:12px;font-weight:750;text-decoration:none">Comprar Rocha+ Office • R$ 49,90 ↗</a>
+<p style="font-size:13px">O botão abre uma cobrança externa no Mercado Pago. Confira o produto, o valor de R$ 49,90 e a ausência de recorrência antes de pagar. O acesso e download não são liberados automaticamente nesta prévia.</p>
+</section>
+<div class="notice"><strong>Prévia interna:</strong> o link externo pode receber pagamentos reais, mas esta página ainda não emite licenças nem oferece APK ou EXE comercial. Termos e privacidade do Office precisarão ser revisados antes das vendas.</div>
+<footer>Rocha+ • Estudando / Empresas • Página de prévia. A parte de TV e seus planos seguem separados.</footer>
+
+<section aria-labelledby="google-login-title" class="card" style="margin:22px 0;padding:20px;border:1px solid #39a9cb;border-radius:16px;background:rgba(5,24,45,.9)">
+<h2 id="google-login-title" style="margin-top:0">Sua conta Rocha+ <small style="font-size:13px;color:#b8d4e1">• acesso Google</small></h2>
+<p>Entre com sua conta Google para identificar seu cadastro. O login não confirma pagamento nem libera TV ou Office automaticamente.</p>
+<button type="button" id="google-signin" disabled>Entrar com Google</button>
+<button type="button" id="google-signout" hidden>Sair da conta</button>
+<p id="google-auth-status" role="status" aria-live="polite" style="color:#b8d4e1;font-size:14px">Configurando autenticação…</p>
+</section>
+</main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const signin=document.getElementById('google-signin'),signout=document.getElementById('google-signout'),status=document.getElementById('google-auth-status');
+try {
+  const {firebaseConfig}=await import('../assets/firebase-config.js');
+  if(!firebaseConfig?.apiKey||!firebaseConfig?.authDomain||!firebaseConfig?.projectId) throw Error('Configuração do Firebase ainda não publicada.');
+  const auth=getAuth(initializeApp(firebaseConfig));
+  const provider=new GoogleAuthProvider();
+  signin.disabled=false;
+  onAuthStateChanged(auth,user=>{
+    signin.hidden=!!user;signout.hidden=!user;
+    status.textContent=user?'Conectado como '+(user.displayName||user.email||'usuário Google')+'. Assinaturas e licenças serão verificadas separadamente.':'Entre com Google para criar ou acessar seu cadastro Rocha+.';
+  },()=>{status.textContent='Não foi possível verificar o login. Tente novamente.'});
+  signin.addEventListener('click',async()=>{
+    signin.disabled=true;status.textContent='Abrindo login seguro do Google…';
+    try{await signInWithPopup(auth,provider)}catch(e){
+      if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){
+        try{await signInWithRedirect(auth,provider)}catch{status.textContent='Falha ao abrir login Google. Verifique as configurações.'}
+      }else if(e.code==='auth/unauthorized-domain')status.textContent='Este endereço ainda não foi autorizado no Firebase. Entre em contato com o suporte Rocha+.';
+      else if(e.code==='auth/operation-not-allowed')status.textContent='O login Google ainda precisa ser habilitado no Firebase.';
+      else if(e.code==='auth/network-request-failed')status.textContent='Falha na conexão. Verifique sua internet e tente novamente.';
+      else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')status.textContent='Login não concluído: '+(e.code||'erro de autenticação');
+      else status.textContent='Login cancelado.';
+    }finally{signin.disabled=false}
+  });
+  signout.addEventListener('click',async()=>{try{await signOut(auth)}catch{status.textContent='Não foi possível sair. Tente novamente.'}});
+}catch(e){status.textContent='Login Google ainda indisponível. Falta configurar o projeto Firebase e autorizar o domínio deste site.'}
+</script>
+</body></html>

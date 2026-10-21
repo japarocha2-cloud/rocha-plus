@@ -1,0 +1,21 @@
+name: Site Rocha+ - verificacao estatica
+
+on:
+  pull_request:
+    paths:
+      - 'web/**'
+      - 'tools/verify_site_checkout.py'
+      - '.github/workflows/site-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar planos, links e login Google
+        run: python3 tools/verify_site_checkout.py
