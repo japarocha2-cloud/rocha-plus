@@ -94,7 +94,10 @@ try {
     try{await signInWithPopup(auth,provider)}catch(e){
       if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){
         try{await signInWithRedirect(auth,provider)}catch{status.textContent='Falha ao abrir login Google. Verifique as configurações.'}
-      }else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')status.textContent='Login não concluído: '+(e.code||'erro de autenticação');
+      }else if(e.code==='auth/unauthorized-domain')status.textContent='Este endereço ainda não foi autorizado no Firebase. Entre em contato com o suporte Rocha+.';
+      else if(e.code==='auth/operation-not-allowed')status.textContent='O login Google ainda precisa ser habilitado no Firebase.';
+      else if(e.code==='auth/network-request-failed')status.textContent='Falha na conexão. Verifique sua internet e tente novamente.';
+      else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')status.textContent='Login não concluído: '+(e.code||'erro de autenticação');
       else status.textContent='Login cancelado.';
     }finally{signin.disabled=false}
   });
