@@ -6,6 +6,7 @@ import re
 root = Path(__file__).resolve().parents[1]
 tv = (root / "web/assinaturas/index.html").read_text(encoding="utf-8")
 office = (root / "web/estudando-empresas/index.html").read_text(encoding="utf-8")
+firebase = (root / "web/assets/firebase-config.js").read_text(encoding="utf-8")
 checks = {
     "TV mensal preço": "R$ 4,50" in tv,
     "TV mensal link": 'href="https://mpago.la/32m6qxz"' in tv,
@@ -21,6 +22,10 @@ checks = {
     "Login nas duas páginas": all('id="google-signin"' in x for x in (tv, office)),
     "Logout nas duas páginas": all('id="google-signout"' in x for x in (tv, office)),
     "Firebase configuração web importada": all("../assets/firebase-config.js" in x for x in (tv, office)),
+    "Firebase projeto Rocha+ confirmado": 'projectId: "rocha-plus"' in firebase,
+    "Firebase Web authDomain correto": 'authDomain: "rocha-plus.firebaseapp.com"' in firebase,
+    "Firebase Web appId registrado": 'appId: "1:977269532083:web:bd469df549034d603f97c6"' in firebase,
+    "Firebase Web sem placeholder": "SUBSTITUIR_" not in firebase,
     "Google provider registrado": all("new GoogleAuthProvider()" in x for x in (tv, office)),
     "Sessão autenticada monitorada": all("onAuthStateChanged(auth" in x for x in (tv, office)),
     "Sessão permite saída": all("await signOut(auth)" in x for x in (tv, office)),
