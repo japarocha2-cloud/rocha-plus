@@ -40,6 +40,7 @@ class HomeScreen extends StatefulWidget {
     ('Educação', Icons.school_outlined),
     ('Cultura', Icons.palette_outlined),
     ('Entretenimento', Icons.theaters_outlined),
+    ('Reality', Icons.people_outline),
     ('Religiosos', Icons.church_outlined),
     ('Futebol', Icons.sports_soccer),
   ];
