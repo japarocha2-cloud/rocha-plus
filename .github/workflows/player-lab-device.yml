@@ -72,6 +72,12 @@ jobs:
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt
+            # Diagnose whether Android emulator creates a PulseAudio output client.
+            # This does not relax the mandatory video/PCM acceptance gate.
+            pactl list sink-inputs > build/lab/android/pulse-sink-inputs-before.txt
+            pactl list sinks > build/lab/android/pulse-sinks-before.txt
+            adb shell media volume --show || true
+            adb shell dumpsys audio > build/lab/android/android-audio-policy.txt || true
             ps -eo pid,args | grep -E '[q]emu-system|[e]mulator|[X]vfb' > build/lab/android/emulator-processes.txt || true
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
