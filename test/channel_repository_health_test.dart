@@ -14,13 +14,13 @@ void main() {
 
   setUp(ChannelRepository.resetSessionHealthForTests);
 
-  test('player failure quarantines a stream for the current session', () {
+  test('temporary player failure does not quarantine a stream', () {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     expect(repository.isQuarantined(url), isFalse);
     repository.reportPlaybackFailure(url);
-    expect(repository.isQuarantined(url), isTrue);
+    expect(repository.isQuarantined(url), isFalse);
   });
 
   test('successful playback clears a previous quarantine', () {
@@ -32,14 +32,14 @@ void main() {
     expect(repository.isQuarantined(url), isFalse);
   });
 
-  test('sports catalog excludes non-sports and quarantined streams', () {
+  test('sports catalog excludes non-sports but retains temporarily failing streams', () {
     final repository = ChannelRepository();
     const sport = Channel(name: 'Futebol Brasil', url: 'https://example.com/sport.m3u8', group: 'Esportes');
     const news = Channel(name: 'Jornal', url: 'https://example.com/news.m3u8', group: 'News');
 
     expect(repository.sportsOnly([sport, news]), [sport]);
     repository.reportPlaybackFailure(sport.url);
-    expect(repository.sportsOnly([sport, news]), isEmpty);
+    expect(repository.sportsOnly([sport, news]), [sport]);
   });
 
   test('physical-test blocklist survives remote URL changes', () {
