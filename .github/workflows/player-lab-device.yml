@@ -82,6 +82,21 @@ jobs:
             adb install -r build/lab/apk/app-debug.apk
             adb shell settings put global heads_up_notifications_enabled 0
             adb shell settings put system screen_off_timeout 2147483647
+            # Ensure a muted emulator is not mistaken for a defective channel.
+            adb shell cmd audio set-volume 3 12 0 || true
+            adb shell media volume --stream 3 --set 12 || true
+            adb shell input keyevent 24
+            adb shell input keyevent 24
+            adb shell dumpsys audio > build/lab/android/android-audio-after-volume.txt || true
+            pactl list sinks > build/lab/android/pulse-sinks-after-volume.txt
+            # Capture the actual emulator sink client for root-cause analysis.
+            (while true; do date -u +%FT%TZ; pactl list short sink-inputs; sleep 5; done) > build/lab/android/pulse-client-timeline.txt 2>&1 &
+            # Prove that the host PCM recording path can record a known tone.
+            # Separate calibration is not accepted as evidence of Android output.
+            timeout 8 ffmpeg -nostdin -loglevel error -f pulse -i rocha_lab.monitor -t 6 -ar 48000 -ac 2 -y build/lab/android/host-calibration.wav &
+            sleep 1
+            timeout 3 ffmpeg -nostdin -loglevel error -f lavfi -i sine=frequency=440:sample_rate=48000 -t 2 -f pulse rocha_lab || true
+            wait || true
             python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
       - name: Preserve evidence and checkpoints even after failures
         uses: actions/upload-artifact@v4
