@@ -220,7 +220,37 @@ def consolidate(records, out):
     return reports
 
 
-def cohort(args, name, offset, count, fixture=False):
+def preflight_report(out, url):
+    """Infrastructure calibration only; never creates a channel approval."""
+    from PIL import Image
+    import numpy as np
+    digest = hashlib.sha256(url.encode()).hexdigest()[:12]
+    frames = sorted(out.glob(f'{digest}-exo-*.png'))
+    calibrated = 0
+    for path in frames:
+        rgb = np.asarray(Image.open(path).convert('RGB')).astype(float)
+        dominance = [float(np.mean((rgb[:, :, c] > 160) &
+            (rgb[:, :, c] - np.max(np.delete(rgb, c, axis=2), axis=2) > 60)))
+            for c in range(3)]
+        if min(dominance) > 0.01:
+            calibrated += 1
+    audio_path = out / f'{digest}-exo.wav'
+    try:
+        audio = pcm_metrics(audio_path)
+    except Exception as error:
+        audio = {'error': str(error)}
+    passed = (calibrated >= 3 and audio.get('durationSeconds', 0) >= 20 and
+              audio.get('rmsDbfs', -240) >= -60 and
+              abs(audio.get('dominantFrequencyHz', 0) - 440) < 5 and
+              audio.get('spectralPeakPowerFraction', 0) > 0.3)
+    report = {'preflightOnly': True, 'productionApproved': False,
+              'channelApproval': False, 'calibratedRgbFrames': calibrated,
+              'capturedFrames': len(frames), 'audio': audio, 'passed': passed}
+    (out / 'preflight.json').write_text(json.dumps(report, indent=2))
+    return report
+
+
+def cohort(args, name, offset, count, fixture=False, preflight=False):
     out = Path(args.output) / name
     out.mkdir(parents=True, exist_ok=True)
     adb('shell', 'am', 'force-stop', PACKAGE)
@@ -230,7 +260,7 @@ def cohort(args, name, offset, count, fixture=False):
     (out / 'launch.txt').write_text(launch)
     launched_at = time.time()
     seen, last, recorder, audio_path = set(), None, None, None
-    deadline = time.monotonic() + count * 330 + 180
+    deadline = time.monotonic() + (180 if preflight else count * 330 + 180)
     state = {}
     last_valid_status = time.monotonic()
     log = (out / 'logcat.txt').open('w')
@@ -273,6 +303,11 @@ def cohort(args, name, offset, count, fixture=False):
                           '-c:a', 'pcm_s16le', str(audio_path)], stdout=subprocess.DEVNULL,
                           stderr=(out / 'audio-recorder.log').open('a'))
                 capture(name, state, out, seen)
+                # Stop only the separate infrastructure probe. Regular channel
+                # runs still require 60s/engine plus 180s confirmation unchanged.
+                if (preflight and current == ('http://10.0.2.2:8765/fixture.mp4', 'exo')
+                        and state.get('elapsedSeconds', 0) >= 45):
+                    break
                 for filename in ['phases.json', 'results.json']:
                     try:
                         data = read_remote(name, filename)
@@ -291,14 +326,17 @@ def cohort(args, name, offset, count, fixture=False):
             time.sleep(3)
         else:
             raise RuntimeError(f'{name}: deadline reached; checkpoints preserved')
-        for filename in ['results.csv', 'audiovisual-checked.m3u']:
-            (out / filename).write_text(adb('exec-out', 'run-as', PACKAGE, 'cat', f'files/rocha-lab/{name}/{filename}'))
+        if not preflight:
+            for filename in ['results.csv', 'audiovisual-checked.m3u']:
+                (out / filename).write_text(adb('exec-out', 'run-as', PACKAGE, 'cat', f'files/rocha-lab/{name}/{filename}'))
     finally:
         stop_recording()
         logger.terminate()
         logger.wait(timeout=10)
         log.close()
         adb('shell', 'am', 'force-stop', PACKAGE)
+    if preflight:
+        return preflight_report(out, 'http://10.0.2.2:8765/fixture.mp4')
     records = json.loads((out / 'results.json').read_text())
     reports = consolidate(records, out)
     print(json.dumps({'cohort': name, 'records': len(records), 'errors': state.get('failures', [])}), flush=True)
@@ -310,13 +348,18 @@ def cohort(args, name, offset, count, fixture=False):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--output', default='build/lab/android')
-    p.add_argument('--stage', choices=['smoke', 'batch10', 'batch25', 'batch'], required=True)
+    p.add_argument('--stage', choices=['preflight', 'smoke', 'batch10', 'batch25', 'batch'], required=True)
     p.add_argument('--offset', type=int, default=0)
     p.add_argument('--count', type=int, default=25)
     args = p.parse_args()
     Path(args.output).mkdir(parents=True, exist_ok=True)
     Path(args.output, 'device.txt').write_text(adb('shell', 'getprop'))
-    if args.stage == 'smoke':
+    if args.stage == 'preflight':
+        report = cohort(args, 'preflight', 0, 1, fixture=True, preflight=True)
+        print(json.dumps(report), flush=True)
+        if not report['passed']:
+            raise RuntimeError('Infrastructure RGB/440 Hz preflight failed; no channels approved')
+    elif args.stage == 'smoke':
         records = cohort(args, 'smoke', 0, 3, fixture=True)
         positive, repeated, negative = smoke_records(records)
         # Two active channels must complete: this exercises decoder teardown and

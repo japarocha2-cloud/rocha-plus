@@ -17,15 +17,18 @@ permissions:
 
 jobs:
   entitlement-unit:
-    name: Experimental entitlement service unit tests
+    name: Experimental entitlement rules and HTTP integration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test authoritative entitlement rules
-        run: node --test backend/entitlement/service.test.mjs
+      - name: Install locked entitlement dependencies without lifecycle scripts
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test authoritative entitlement rules and HTTP integration
+        run: node --test backend/entitlement/*.test.mjs
   android:
     runs-on: ubuntu-latest
     env:

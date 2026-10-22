@@ -84,3 +84,25 @@ Os testes agora registram desativação/descarte da rota, cancelamento dos event
 A fonte oficial Dart mostra que cancelamento síncrono sem Future pode retornar o singleton de Future da zona raiz. A fake foi alterada para modelar cancelamento assíncrono na zona do teste e alocar o Future de fechamento nessa mesma zona. Adicionado baseline do controlador sem Navigator e exigência de conclusão de cancelamento/descarte, mantendo o limite de dois segundos. A hipótese é específica do ambiente de testes e será confirmada ou rejeitada pelo novo CI; não constitui teste físico nem mudança de produção.
 
 O smoke de `184c731` terminou VERMELHO: RGB 5/5, tom 440 Hz ausente e RMS −98,84018 dBFS. Artifact `12430982223`, ZIP SHA-256 `e0e2bd842746ddb9c360138f00d31fa4007e3955e5255d6fc32d98077a65bf14`, confirmou root no emulador. A coleta ALSA descartava stdout útil quando um dos caminhos posteriores não existia. O coletor agora separa cards, pcm, status e dispositivos, preserva stdout/stderr e código de saída mesmo em falha. Um teste de regressão cobre esse comportamento; aprovação audiovisual permanece igual.
+
+## Terceiro ciclo: integração HTTP e calibração antecipada
+
+[Build do fcdedef, 39791595216](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39791595216) concluiu com sucesso: Node, análise e **142 testes Flutter**, APK experimental e observação das rotas de categorias no emulador. O log do job `119868783727` confirma o baseline do controlador e o descarte após expiração fullscreen passando. A correção da fake de cancelamento resolveu as falhas da suíte; isso comprova o comportamento automatizado local, sem homologar aparelhos físicos ou cobrança real. [Laboratório 39791595575](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39791595575) ainda não tinha resultado audiovisual confirmado na consulta deste ciclo.
+
+### Assinaturas
+
+- Transporte HTTP extraído para módulo testável, preservando Firebase/Firestore no adaptador de servidor. Testes usam sockets de loopback reais e o núcleo de regras existente; verificadores e armazenamento dos cenários positivos são doubles.
+- Corrigida decodificação UTF-8 de JSON dividido em pacotes. O limite de corpo conta bytes e retorna JSON 413 sem interromper antecipadamente o leitor com um erro de conexão em vez da resposta.
+- Gerado lockfile e executado `npm ci --ignore-scripts` localmente. Nenhuma credencial de produção foi consultada, nenhum serviço implantado e nenhum pagamento real foi processado.
+- **25 testes Node passaram**: 15 do núcleo, oito de HTTP e dois com o Firebase Admin SDK real para rejeitar tokens malformados e audiência/emissor incorretos. Ainda faltam tokens legítimos, revogação remota, transações/regras Firestore reais, HTTPS e integração com o app/administrador/Cast.
+- CI passa a instalar dependências com lockfile e executar todos os arquivos de teste do backend.
+- Fiscal estático agora ignora dependências instaladas em `node_modules` e inclui os módulos próprios `.mjs` na verificação. Três regressões comprovam que arquivos de terceiros não geram falsos achados, enquanto segredo fixo e URL insegura do backend próprio continuam bloqueados. Sete testes Python de configuração/fiscal passaram.
+
+### Áudio
+
+- Criada checagem preliminar independente que coleta aproximadamente 45 segundos da primeira fase Exo da fixture conhecida e os dumps de áudio. Tem limite de infraestrutura de três minutos e exige três quadros RGB e pelo menos 20 segundos úteis de PCM com tom 440 Hz, RMS e pico espectral compatíveis.
+- A checagem produz somente `preflight.json`, sempre com `productionApproved=false` e `channelApproval=false`. Não gera resultado homologado de canal.
+- Se o ambiente falhar, o CI preserva os diagnósticos e bloqueia a etapa longa antes de percorrer as fixtures completas. Se passar, o smoke completo e os lotes continuam exigindo 60 segundos em cada player e confirmação de 180 segundos, sem alteração.
+- **31 testes Python LAB passaram**, incluindo quatro casos da checagem preliminar: tom correto, silêncio/tom errado/captura curta/ruído, RGB insuficiente e erro na gravação. A execução real do novo preflight aguarda o próximo CI; áudio continua VERMELHO.
+
+O lançamento permanece VERMELHO. Beta gratuito, versão congelada, catálogo oficial e política de cobrança não foram alterados.

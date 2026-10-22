@@ -13,10 +13,10 @@ BANNED = {
 
 TEXT_EXTS = {
     ".dart", ".yaml", ".yml", ".json", ".xml", ".gradle",
-    ".kts", ".md", ".txt", ".properties", ".java", ".kt"
+    ".kts", ".md", ".txt", ".properties", ".java", ".kt", ".mjs"
 }
 
-ignore_parts = {".git", "build", ".dart_tool"}
+ignore_parts = {".git", "build", ".dart_tool", "node_modules"}
 issues = []
 dart_files = []
 
@@ -45,7 +45,7 @@ for path in ROOT.rglob("*"):
     if re.search(r'(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["\'][^"\']{8,}', text):
         issues.append(f"{rel}: possível segredo fixo no código")
     # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
-    if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml"}:
+    if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml", ".mjs"}:
         if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
             lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")}
             if rel not in lab_transport_files:

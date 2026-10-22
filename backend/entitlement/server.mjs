@@ -1,8 +1,8 @@
-import { createServer } from 'node:http';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
-import { AccessError, createAccessService, recordKey } from './service.mjs';
+import { createAccessService, recordKey } from './service.mjs';
+import { createHttpServer } from './http_server.mjs';
 
 // No client-provided project, token verifier, admin flag or entitlement data.
 if (!process.env.GOOGLE_CLOUD_PROJECT || !process.env.ROCHA_PLANS_JSON) {
@@ -36,30 +36,6 @@ const access = createAccessService({
   verifyToken: (token, checkRevoked) => getAuth().verifyIdToken(token, checkRevoked),
   store, plans: JSON.parse(process.env.ROCHA_PLANS_JSON),
 });
-const server = createServer(async (req, res) => {
-  // Bind only to loopback. An independently configured HTTPS gateway is mandatory.
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-store, private');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  try {
-    let content = '';
-    for await (const chunk of req) {
-      content += chunk;
-      if (Buffer.byteLength(content) > 8192) throw new AccessError(413, 'Request too large');
-    }
-    let body;
-    try { body = content ? JSON.parse(content) : {}; }
-    catch { throw new AccessError(400, 'Invalid JSON'); }
-    if (!body || Array.isArray(body) || typeof body !== 'object') throw new AccessError(400, 'Invalid JSON object');
-    const result = await access({ method: req.method, path: req.url,
-      authorization: req.headers.authorization, body });
-    res.writeHead(200); res.end(JSON.stringify(result));
-  } catch (error) {
-    const status = error instanceof AccessError ? error.status : 503;
-    res.writeHead(status);
-    res.end(JSON.stringify({ allowed: false, error: status === 503 ? 'Service unavailable' : error.message }));
-  }
-});
-server.requestTimeout = 15_000;
-server.headersTimeout = 10_000;
+// Bind only to loopback. An independently configured HTTPS gateway is mandatory.
+const server = createHttpServer({ access });
 server.listen(Number(process.env.PORT ?? 8080), '127.0.0.1');

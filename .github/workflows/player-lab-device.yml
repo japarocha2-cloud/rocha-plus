@@ -100,6 +100,7 @@ jobs:
             # Prove that the host PCM recording path can record a known tone.
             # Separate calibration is not accepted as evidence of Android output.
             python3 tools/lab/calibrate_host_audio.py
+            if [ "${{ inputs.stage }}" = "smoke" ]; then python3 tools/lab/run_android.py --stage preflight; fi
             python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
       - name: Preserve evidence and checkpoints even after failures
         uses: actions/upload-artifact@v4
