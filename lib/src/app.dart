@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
 import 'auth/firebase_auth_repository.dart';
-import 'auth/subscription_access.dart';
+import 'auth/subscription_gate.dart';
 import 'app_release_policy.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -59,82 +59,20 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       await controller.signOut();
                       if (controller.account != null) throw StateError('Sign-out failed');
                     })
-                  : _SubscriptionGate(uid: controller.account!.uid, onSignOut: () async {
-            await controller.signOut();
-            if (controller.account != null) throw StateError('Sign-out failed');
-          }),
+                  : SubscriptionGate(
+                      uid: controller.account!.uid,
+                      homeBuilder: (_) => HomeScreen(
+                        accountUid: controller.account!.uid,
+                        onSignOut: () async {
+                          await controller.signOut();
+                          if (controller.account != null) throw StateError('Sign-out failed');
+                        },
+                      ),
+                      onSignOut: () async {
+                        await controller.signOut();
+                        if (controller.account != null) throw StateError('Sign-out failed');
+                      },
+                    ),
     ));
   }
-}
-
-class _SubscriptionGate extends StatefulWidget {
-  final String uid;
-  final Future<void> Function() onSignOut;
-  const _SubscriptionGate({required this.uid, required this.onSignOut});
-
-  @override
-  State<_SubscriptionGate> createState() => _SubscriptionGateState();
-}
-
-class _SubscriptionGateState extends State<_SubscriptionGate> {
-  late Future<bool> _allowed;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _refresh();
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) => _refresh());
-  }
-
-  void _refresh() {
-    if (mounted) {
-      setState(() {
-        _allowed = SubscriptionAccess.isAllowed(widget.uid);
-      });
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _SubscriptionGate oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.uid != widget.uid) {
-      _refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => FutureBuilder<bool>(
-    future: _allowed,
-    builder: (context, snapshot) {
-      if (snapshot.data == true) {
-        return HomeScreen(accountUid: widget.uid, onSignOut: widget.onSignOut);
-      }
-      return Scaffold(
-        appBar: AppBar(title: const Text('Rocha+ • Assinatura')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.lock_outline, size: 52),
-              const SizedBox(height: 18),
-              Text(snapshot.connectionState == ConnectionState.waiting
-                  ? 'Verificando sua assinatura...'
-                  : 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.',
-                  textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              OutlinedButton(onPressed: _refresh, child: const Text('Verificar novamente')),
-              TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
-            ]),
-          ),
-        ),
-      );
-    },
-  );
 }

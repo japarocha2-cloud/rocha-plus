@@ -128,7 +128,8 @@ def stable_sample(sample, engine, seconds):
     fields = ['elapsedSeconds', 'startupMilliseconds', 'bufferingMilliseconds',
               'stalls', 'progressSeconds']
     if any(type(sample.get(key)) not in (int, float) or
-           not math.isfinite(sample[key]) or sample[key] < 0 for key in fields):
+           (type(sample[key]) is float and not math.isfinite(sample[key])) or
+           sample[key] < 0 for key in fields):
         return False
     return (sample['elapsedSeconds'] >= seconds and
             seconds * 0.8 <= sample['progressSeconds'] <= sample['elapsedSeconds'] and
@@ -140,7 +141,11 @@ def stable_sample(sample, engine, seconds):
 
 def selected_phase(record):
     """A successful confirmation cannot replace the initial 60-second phase."""
+    if not isinstance(record, dict):
+        return None
     engine = record.get('preferred')
+    if not isinstance(engine, str):
+        return None
     phase = {'exoPlayer': 'exo', 'libVlc': 'vlc'}.get(engine)
     if (phase is None or not isinstance(record.get('exo'), dict) or
             not isinstance(record.get('vlc'), dict) or

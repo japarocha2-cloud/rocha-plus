@@ -14,10 +14,12 @@ import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
 import '../cast/cast_channel_loader.dart';
+import '../cast/cast_connection_observer.dart';
 import '../live/channel_playback_session.dart';
 import '../widgets/channel_navigation.dart';
 import '../cast/cast_hls_proxy.dart';
 import 'cast_control_screen.dart';
+import 'session_cast_launcher.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
@@ -38,6 +40,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _loading = true;
   bool _failed = false;
   bool _casting = false;
+  bool _castDisconnected = false;
+  CastConnectionObserver? _castConnectionObserver;
   bool get _remotePlayback => widget.session?.casting == true;
   bool _controlsVisible = false;
   bool _fullscreen = false;
@@ -223,26 +227,54 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _startCasting(GoogleCastDevice device) async {
-    if (_casting) return;
+    if (!mounted || _casting) return;
+    _castDisconnected = false;
     setState(() => _casting = true);
     try {
       final started = await GoogleCastSessionManager.instance
           .startSessionWithDevice(device)
           .timeout(const Duration(seconds: 8));
+      if (!mounted) return;
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
+      if (!mounted) return;
       await CastHlsProxy.instance.close();
+      if (!mounted) return;
       final session = widget.session;
       if (session != null) {
         session.deviceName = device.friendlyName;
-        await session.startCasting(
+        final confirmed = await session.startCasting(
           (channel) => CastChannelLoader.load(channel, device),
+          connectionStates: castConnectionStates(),
+          isDisconnected: castIsDisconnected,
+          onDisconnected: closeDisconnectedCastRelay,
         );
+        if (!confirmed) return;
       } else {
+        _castConnectionObserver?.dispose();
+        _castConnectionObserver = CastConnectionObserver(
+          castConnectionStates(),
+          isDisconnected: castIsDisconnected,
+          onDisconnected: () {
+            _castDisconnected = true;
+            closeDisconnectedCastRelay();
+            if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+              unawaited(_initialize());
+            }
+          },
+        );
+        if (_castDisconnected) return;
         await CastChannelLoader.load(widget.channel, device);
       }
+      if (!mounted ||
+          _castDisconnected ||
+          (session != null && !session.casting)) {
+        return;
+      }
       await _controller?.pause();
-      if (mounted) {
+      if (mounted &&
+          !_castDisconnected &&
+          (session == null || session.casting)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
@@ -261,14 +293,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
           ),
         );
-        if (GoogleCastSessionManager.instance.connectionState ==
-            GoogleCastConnectState.disconnected) {
+        if (mounted &&
+            (_castDisconnected ||
+                GoogleCastSessionManager.instance.connectionState ==
+                    GoogleCastConnectState.disconnected)) {
           await CastHlsProxy.instance.close();
           widget.session?.stopCasting();
-          if (widget.session == null) await _initialize();
+          if (widget.session == null &&
+              mounted &&
+              ModalRoute.of(context)?.isCurrent == true) {
+            await _initialize();
+          }
         }
       }
     } catch (_) {
+      _castConnectionObserver?.dispose();
+      _castConnectionObserver = null;
       widget.session?.stopCasting();
       await CastHlsProxy.instance.close();
       try {
@@ -329,6 +369,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _castConnectionObserver?.dispose();
+    _castConnectionObserver = null;
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);

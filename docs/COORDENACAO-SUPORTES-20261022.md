@@ -29,9 +29,9 @@ O artifact `12425863407`, ZIP SHA-256 `7b9ac05550072f7b21184c8156124bb5dc32a4b07
 
 ## Pendências adicionais verificadas
 
-- Cast não possui observação contínua da desconexão inesperada no fluxo examinado; há verificações ao retornar da tela de controle. A proteção contra retorno tardio não resolve essa pendência inteira.
+- No código de partida, Cast não possuía observação contínua da desconexão inesperada. O segundo ciclo abaixo implementa observador; teste físico e CI do novo código continuam necessários.
 - Favoritos usavam chave local global no código de partida, sem UID. Correção adicional passa UID explicitamente do app às telas e congela namespace por instância do repositório; guest fica separado. Listas legadas não são atribuídas a conta por suposição. Carregamentos antigos são descartados após mudar conta. Quatro testes adicionados, ainda pendentes de execução Flutter. Não há sincronização em nuvem.
-- O gate atual de assinatura pode deixar uma rota de player já aberta quando a assinatura expira. O backend não resolve essa evasão sozinho; interromper player e Cast de forma verificável continua bloqueio de lançamento.
+- No código de partida, o gate de assinatura podia deixar uma rota de player aberta após expiração. O segundo ciclo abaixo corrige a propriedade das rotas locais; integração, testes e interrupção de Cast remoto continuam bloqueios de lançamento.
 - Detecção de tela larga se baseia em largura, não identifica por si só Android TV. Fullscreen e controle exigem ensaio físico.
 - Termos, privacidade e autorizações podem existir fora do repositório; não foram apresentados nesta auditoria. Não inferir inexistência externa.
 
@@ -50,3 +50,17 @@ O artifact `12425863407`, ZIP SHA-256 `7b9ac05550072f7b21184c8156124bb5dc32a4b07
 3. Validar backend em ambiente isolado com Firebase/Firestore reais ou emuladores adequados, sem tocar produção; executar E2E antes de ligar cobrança.
 4. Reexecutar canais somente após calibração Android válida; preservar categorias e populares primeiro, sem aprovar candidatos por URL.
 5. Testar controle/Cast em aparelhos, revisar propostas visuais e completar documentação antes de qualquer lançamento.
+
+## Continuação: CI do `184c731` e segundo ciclo
+
+Os seis suportes entregaram o primeiro ciclo no commit `184c731e7720c027e18d831449798ebfc3749419`. Conferência remota preservou 12 referências protegidas (`main`, freeze/frozen/checkpoint).
+
+- [Build 39787581579](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39787581579): job unitário Node concluído com sucesso; etapas Analyze e Test do Flutter passaram. Compilação/observação Android ainda em execução na conferência deste ciclo; não declarar workflow inteiro aprovado antes de concluir.
+- [Laboratório 39787581678](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39787581678): build concluído com sucesso; `smoke / device` iniciado, ainda sem nova conclusão audiovisual. Essa execução testa `184c731`, não as mudanças posteriores abaixo.
+- Fiscal acrescentou rejeição de metadados de preferência e métricas malformadas sem derrubar o validador. Os 26 testes Python LAB passaram; as exigências de aprovação audiovisual não foram reduzidas.
+- Segurança preparou gate proprietário de um Navigator protegido: negativa, erro e timeout de revalidação removem as rotas locais, com proteção contra respostas atrasadas de UID antigo. A política beta gratuita continua intacta. Testes de regressão novos ainda devem passar no CI; destruição de widget/controlador não comprova parada física nem revoga Cast remoto.
+- Espelhamento integrou observação contínua da sessão, incluindo desconexão inesperada, erro/fim do stream e cancelamento de callbacks antigos. Treze regressões novas foram escritas para observador/sessão; a confirmação de conexão agora distingue operação válida de cancelada para evitar pausa/navegação tardia. Execução Flutter no CI ainda necessária. Não equivale a homologação física de reconexão ou espelhamento.
+- O gate recebeu sete testes widget com PlayerScreen/VideoPlayerController e plataforma simulada, inclusive fullscreen, erro, timeout, Voltar e UID trocado. A dependência da interface de vídeo foi declarada somente para desenvolvimento. Isso verifica pedidos de descarte quando os testes passarem; não comprova parada física do decoder. Revalidação periódica de um minuto e timeout de 12 segundos, sem promessa de revogação instantânea.
+- Nova evidência do diagnóstico anterior: os erros `pcm_writei` começam antes da instalação/abertura do laboratório. Falha de sons do sistema já existia no emulador; não atribuir ao player/catálogo sem isolamento adicional.
+
+O estado de lançamento permanece VERMELHO até áudio Android comprovado e assinatura integrada/testada ponta a ponta. O novo ciclo continua exclusivamente experimental.

@@ -10,6 +10,27 @@ import '../cast/cast_readiness.dart';
 import '../live/channel_playback_session.dart';
 import 'cast_control_screen.dart';
 
+/// Transitional/reconnecting events do not claim a terminal disconnect.
+Stream<bool> castConnectionStates() => GoogleCastSessionManager.instance
+    .currentSessionStream
+    .where(
+      (session) =>
+          session == null ||
+          session.connectionState == GoogleCastConnectState.connected ||
+          session.connectionState == GoogleCastConnectState.disconnected,
+    )
+    .map(
+      (session) =>
+          session?.connectionState == GoogleCastConnectState.connected,
+    );
+
+void closeDisconnectedCastRelay() {
+  unawaited(CastHlsProxy.instance.close().catchError((Object _) {}));
+}
+
+bool castIsDisconnected() => GoogleCastSessionManager.instance.connectionState ==
+    GoogleCastConnectState.disconnected;
+
 Future<void> launchSessionCast(
   BuildContext context,
   ChannelPlaybackSession session, {
@@ -47,6 +68,7 @@ Future<void> launchSessionCast(
       child: CastDevicePicker(
         onSelected: (device) async {
           Navigator.pop(sheet);
+          if (!context.mounted) return;
           try {
             final manager = GoogleCastSessionManager.instance;
             if (!await manager
@@ -54,6 +76,7 @@ Future<void> launchSessionCast(
                 .timeout(const Duration(seconds: 8))) {
               throw StateError('Sessão Cast recusada');
             }
+            if (!context.mounted) return;
             if (manager.connectionState != GoogleCastConnectState.connected) {
               await manager.currentSessionStream
                   .firstWhere(
@@ -62,12 +85,17 @@ Future<void> launchSessionCast(
                   )
                   .timeout(const Duration(seconds: 8));
             }
-            session.deviceName = device.friendlyName;
-            await session.startCasting(
-              (channel) => CastChannelLoader.load(channel, device),
-            );
-            await pauseLocal();
             if (!context.mounted) return;
+            session.deviceName = device.friendlyName;
+            final confirmed = await session.startCasting(
+              (channel) => CastChannelLoader.load(channel, device),
+              connectionStates: castConnectionStates(),
+              isDisconnected: castIsDisconnected,
+              onDisconnected: closeDisconnectedCastRelay,
+            );
+            if (!confirmed || !context.mounted || !session.casting) return;
+            await pauseLocal();
+            if (!context.mounted || !session.casting) return;
             await Navigator.push(
               context,
               MaterialPageRoute(

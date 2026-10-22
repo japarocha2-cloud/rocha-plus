@@ -4,10 +4,28 @@ import unittest
 import wave
 import hashlib
 from unittest.mock import patch
-from run_android import consolidate, pcm_metrics
+from run_android import consolidate, pcm_metrics, selected_phase, stable_sample
 
 
 class EvidenceTest(unittest.TestCase):
+    def test_malformed_selected_phase_metadata_is_inconclusive_without_crashing(self):
+        for record in [None, [], 'exoPlayer', 1, {},
+                       {'preferred': []}, {'preferred': {}}, {'preferred': True},
+                       {'preferred': 'exoPlayer', 'exo': None, 'vlc': []}]:
+            with self.subTest(record=record):
+                self.assertIsNone(selected_phase(record))
+
+    def test_invalid_sample_numbers_are_rejected_without_crashing(self):
+        sample = dict(engine='exoPlayer', elapsedSeconds=60,
+                      startupMilliseconds=100, bufferingMilliseconds=0,
+                      stalls=0, progressSeconds=58, videoTrackDetected=True)
+        for value in [None, True, '60', [], {}, float('nan'), float('inf'), -1]:
+            with self.subTest(value=value):
+                self.assertFalse(stable_sample(dict(sample, elapsedSeconds=value), 'exoPlayer', 60))
+        # Python JSON integers have arbitrary precision; do not throw converting
+        # them to IEEE doubles before another metric rejects the sample.
+        self.assertFalse(stable_sample(dict(sample, bufferingMilliseconds=10 ** 1000), 'exoPlayer', 60))
+
     def test_track_or_preference_without_pixels_and_pcm_cannot_pass(self):
         with tempfile.TemporaryDirectory() as d:
             result = consolidate([{'channelUrl': 'https://example.org/live',

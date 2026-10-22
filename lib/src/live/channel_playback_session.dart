@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
+import '../cast/cast_connection_observer.dart';
 import 'channel.dart';
 
 /// One selection shared by the local player and the Cast controller.
@@ -23,6 +26,7 @@ class ChannelPlaybackSession extends ChangeNotifier {
   bool busy = false;
   bool _disposed = false;
   int _operation = 0;
+  CastConnectionObserver? _connectionObserver;
   String? confirmedContentId;
   String? deviceName;
   Future<String> Function(Channel)? _castLoader;
@@ -35,16 +39,39 @@ class ChannelPlaybackSession extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  Future<void> startCasting(Future<String> Function(Channel) loader) async {
-    if (_disposed || busy) return;
+  Future<bool> startCasting(
+    Future<String> Function(Channel) loader, {
+    Stream<bool>? connectionStates,
+    bool Function()? isDisconnected,
+    VoidCallback? onDisconnected,
+  }) async {
+    if (_disposed || busy) return false;
     final operation = ++_operation;
     busy = true;
     _changed();
     try {
+      if (connectionStates != null) {
+        _connectionObserver?.dispose();
+        _connectionObserver = CastConnectionObserver(
+          connectionStates,
+          isDisconnected: isDisconnected,
+          onDisconnected: () {
+            stopCasting();
+            onDisconnected?.call();
+          },
+        );
+        if (_disposed || operation != _operation) return false;
+      }
       final id = await loader(current);
-      if (_disposed || operation != _operation) return;
+      if (_disposed || operation != _operation) return false;
       _castLoader = loader;
       confirmedContentId = id;
+      return true;
+    } catch (_) {
+      if (_disposed || operation != _operation) return false;
+      _connectionObserver?.dispose();
+      _connectionObserver = null;
+      rethrow;
     } finally {
       if (!_disposed && operation == _operation) {
         busy = false;
@@ -56,6 +83,8 @@ class ChannelPlaybackSession extends ChangeNotifier {
   void stopCasting() {
     if (_disposed) return;
     ++_operation;
+    _connectionObserver?.dispose();
+    _connectionObserver = null;
     busy = false;
     _castLoader = null;
     confirmedContentId = null;
@@ -102,6 +131,8 @@ class ChannelPlaybackSession extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     ++_operation;
+    _connectionObserver?.dispose();
+    _connectionObserver = null;
     busy = false;
     _castLoader = null;
     confirmedContentId = null;

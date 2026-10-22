@@ -12,6 +12,116 @@ const second = Channel(name: 'Segundo', url: 'https://example.test/two');
 const blocked = Channel(name: 'Bloqueado', url: 'https://example.test/blocked');
 
 void main() {
+  test('receiver load failure releases the connection observer', () async {
+    final states = StreamController<bool>.broadcast(sync: true);
+    addTearDown(states.close);
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    await expectLater(
+      session.startCasting(
+        (_) async => throw StateError('receiver load rejected'),
+        connectionStates: states.stream,
+      ),
+      throwsStateError,
+    );
+    expect(states.hasListener, isFalse);
+    expect(session.casting, isFalse);
+    expect(session.busy, isFalse);
+  });
+  test('unexpected receiver disconnect invalidates Cast without leaving route', () async {
+    final states = StreamController<bool>.broadcast(sync: true);
+    addTearDown(states.close);
+    var cleanups = 0;
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    expect(await session.startCasting(
+      (c) async => c.url,
+      connectionStates: states.stream,
+      onDisconnected: () => cleanups++,
+    ), isTrue);
+    expect(session.casting, isTrue);
+    states.add(false);
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+    expect(cleanups, 1);
+    expect(states.hasListener, isFalse);
+    await session.step(1);
+    expect(session.current, second);
+  });
+  test('disconnect during receiver load returns cancellation, not approval', () async {
+    final states = StreamController<bool>.broadcast(sync: true);
+    addTearDown(states.close);
+    final gate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    final loading = session.startCasting(
+      (_) => gate.future,
+      connectionStates: states.stream,
+    );
+    states.add(false);
+    gate.complete(first.url);
+    expect(await loading, isFalse);
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+  });
+  test('terminal state before attachment prevents receiver load', () async {
+    final states = StreamController<bool>();
+    addTearDown(states.close);
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    var loads = 0;
+    expect(await session.startCasting(
+      (_) async {
+        loads++;
+        return first.url;
+      },
+      connectionStates: states.stream,
+      isDisconnected: () => true,
+    ), isFalse);
+    expect(loads, 0);
+    expect(session.busy, isFalse);
+    expect(states.hasListener, isFalse);
+  });
+  test('old stream and late load failure cannot stop a newer receiver', () async {
+    final oldStates = StreamController<bool>.broadcast(sync: true);
+    final newStates = StreamController<bool>.broadcast(sync: true);
+    addTearDown(oldStates.close);
+    addTearDown(newStates.close);
+    final oldLoad = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    final loading = session.startCasting(
+      (_) => oldLoad.future,
+      connectionStates: oldStates.stream,
+    );
+    session.stopCasting();
+    expect(await session.startCasting(
+      (_) async => 'new-receiver',
+      connectionStates: newStates.stream,
+    ), isTrue);
+    oldStates.add(false);
+    oldLoad.completeError(StateError('old receiver failed late'));
+    expect(await loading, isFalse);
+    expect(session.casting, isTrue);
+    expect(session.confirmedContentId, 'new-receiver');
+    expect(newStates.hasListener, isTrue);
+  });
+  test('dispose cancels native observation without disconnect side effects', () async {
+    final states = StreamController<bool>.broadcast(sync: true);
+    addTearDown(states.close);
+    var cleanups = 0;
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    await session.startCasting(
+      (c) async => c.url,
+      connectionStates: states.stream,
+      onDisconnected: () => cleanups++,
+    );
+    session.dispose();
+    states.add(false);
+    expect(states.hasListener, isFalse);
+    expect(cleanups, 0);
+    expect(session.casting, isFalse);
+  });
   test(
     'next/previous wrap, deduplicate URLs and skip blocked channels',
     () async {
