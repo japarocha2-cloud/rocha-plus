@@ -10,7 +10,7 @@
 
 ## Testes e limites
 
-Foram adicionadas regressões para revogação de carregamento pendente, troca de proprietário da permissão, parada do receiver apesar de falha no relay, fechamento do relay apesar de falha no receiver, autorização negada após falha de parada, reautorização aguardando limpeza e DNS do relay concluído após revogar. Os testes Flutter devem passar no novo CI; não há SDK Flutter local.
+Foram adicionadas regressões para revogação de carregamento pendente, troca de proprietário da permissão, parada do receiver apesar de falha no relay, fechamento do relay apesar de falha no receiver, autorização negada após falha de parada, reautorização aguardando limpeza e DNS do relay concluído após revogar. A análise Flutter, os testes Flutter e o teste explícito da opção experimental passaram no CI do commit cd7f8fb. O APK LAB compilou. A observação visual não executou: o download da imagem Android falhou com “Error on ZipFile unknown archive”, antes do emulador iniciar. Não há SDK Flutter local.
 
 O backend já contém trial imutável de sete dias por UID, relógio do servidor, confirmação administrativa auditada/idempotente, renovação e estorno, com 25 testes Node locais e de integração HTTP. Isso não comprova Firestore, tokens legítimos, revogação remota ou pagamentos reais em uma implantação.
 
@@ -21,3 +21,11 @@ A instalação do plugin Firebase falhou conforme imagem enviada pelo usuário. 
 O receiver padrão do Google pode continuar com uma URL pública se o telefone perder conexão antes de enviar a parada. Um pedido de encerramento não é prova física e não equivale a revogação de mídia no servidor. Bloqueio independente do telefone exige receiver/URLs com autorização e expiração verificadas no servidor, além das autorizações dos fornecedores dos canais. Esse requisito permanece aberto.
 
 A versão oficial congelada, preços, pagamentos reais e catálogo oficial não foram alterados.
+
+## Preparação do APK de teste
+
+O workflow manual agora aceita `subscription_lab=true` com `signed_login=true` e `entitlement_url`. A preparação rejeita a opção fora de `feat/dual-player-lab-20261020` e exige URL HTTPS pública, sem credenciais, query ou fragmento. Os três artefatos recebem nomes `rocha-plus-subscription-lab-*`, distintos do beta com login. A evidência de release registra a opção e o endpoint, mantendo validação física e de assinatura/pagamentos pendentes.
+
+A configuração Firebase não controla os modos de compilação: a preparação sobrescreve `ROCHA_LAB_ONLY` e `ROCHA_LAYOUT_PREVIEW` com falso, e a opção de bloqueio deriva exclusivamente do pedido explícito. Sem esse pedido, o bloqueio fica desativado e o endpoint é apagado. Isso evita ativação acidental ou desvio do gate por valores antigos no Secret JSON.
+
+Nove testes Python de configuração passaram localmente, incluindo sobreposição dos modos no JSON, branch incorreta e endpoints inválidos. Nenhum APK assinado com bloqueio foi gerado ou distribuído nesta etapa. A implantação Firebase e os testes reais continuam pendentes; configurar uma URL não demonstra que o serviço esteja funcionando.

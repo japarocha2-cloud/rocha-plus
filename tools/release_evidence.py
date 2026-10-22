@@ -47,6 +47,9 @@ firebase_release = bool(os.environ.get("ROCHA_FIREBASE_FILE"))
 if signed_release != firebase_release:
     raise SystemExit("Release evidence inconsistent: signing and Firebase must be enabled together.")
 
+build_config = json.loads(Path(os.environ['ROCHA_FIREBASE_FILE']).read_text()) if firebase_release else {}
+subscription_lab = build_config.get('ROCHA_EXPERIMENTAL_SUBSCRIPTIONS') == 'true'
+
 report = {
     "commit": os.environ["GITHUB_SHA"],
     "build_number": os.environ["GITHUB_RUN_NUMBER"],
@@ -57,6 +60,9 @@ report = {
     "signing": "production signing configured" if signed_release else "development candidate; production signing not configured",
     "firebase_auth_configured": firebase_release,
     "physical_validation": "pending",
+    "experimental_subscription_enforcement": subscription_lab,
+    "entitlement_endpoint": build_config.get('ROCHA_ENTITLEMENT_URL', ''),
+    "subscription_validation": "pending; build configuration is not cloud or payment validation",
     "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
     "outputs": outputs,
 }
