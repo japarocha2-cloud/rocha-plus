@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /rochaOfficeLicenses/{id} { allow read, write: if false; }
+    match /rochaOfficePayments/{id} { allow read, write: if false; }
+    match /rochaOfficeChallenges/{id} { allow read, write: if false; }
+    match /rochaOfficeAudit/{id} { allow read, write: if false; }
+  }
+}

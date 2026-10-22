@@ -2,11 +2,23 @@ name: Rocha Office experimental installers
 on:
   push:
     branches: [feat/office-installers-20261022]
-    paths: ['office/**', '.github/workflows/office-installers.yml']
+    paths: ['office/**', 'backend/office/**', '.github/workflows/office-installers.yml']
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  license:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked license dependencies
+        working-directory: backend/office
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test Office account, device proof and payment rules
+        run: node --test backend/office/*.test.mjs
   android:
     runs-on: ubuntu-latest
     defaults:
