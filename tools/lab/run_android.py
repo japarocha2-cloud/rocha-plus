@@ -99,6 +99,20 @@ def capture(run, state, out, seen):
         return
     crop = frame.crop((x, y, x + width, y + height))
     crop.save(out / f'{stem}.png')
+    # Inspect the guest while its player is active, not only before playback.
+    # Failed diagnostics are preserved without replacing the pixel/PCM gate.
+    if bucket == 1:
+        for label, command in [
+                ('audioflinger', ['shell', 'dumpsys', 'media.audio_flinger']),
+                ('audio-policy', ['shell', 'dumpsys', 'media.audio_policy']),
+                ('audio', ['shell', 'dumpsys', 'audio']),
+                ('alsa', ['shell', 'cat /proc/asound/cards; cat /proc/asound/pcm; cat /proc/asound/card*/pcm*p/sub*/status']),
+                ('kernel', ['shell', 'dmesg'])]:
+            try:
+                diagnostic = adb(*command)
+            except Exception as error:
+                diagnostic = f'Diagnostic unavailable: {error}'
+            (out / f'{stem}-{label}.txt').write_text(diagnostic)
     pixels = np.asarray(crop).astype(float)
     data = {'url': url, 'phase': phase, 'elapsedSeconds': seconds,
             'rect': rect, 'stddev': float(pixels.std()), 'focusConfirmed': True, 'focus': focus_text,

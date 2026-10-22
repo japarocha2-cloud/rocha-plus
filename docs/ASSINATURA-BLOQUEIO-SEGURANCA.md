@@ -1,6 +1,8 @@
 # Controle de acesso a canais: pendências de lançamento
 
-A aplicação Flutter na branch experimental solicita a cada minuto uma autorização de assinatura do servidor configurado em `--dart-define=ROCHA_ENTITLEMENT_URL=https://...`. Sem URL, sem login, com falha de rede, resposta inválida ou conta divergente, **nega o acesso**. A versão de produção congelada não foi alterada.
+A política atual é `RochaReleaseStage.beta`: usuários autenticados entram sem cobrança e `_SubscriptionGate` não é acionado. Portanto, o bloqueio por mensalidade vencida **não está comprovado nem ativo nessa política**. A versão de produção congelada não foi alterada.
+
+Quando a política exigir assinatura, `_SubscriptionGate` consulta a cada minuto o servidor configurado em `--dart-define=ROCHA_ENTITLEMENT_URL=https://...`. Nesse caminho, URL ausente, falha de rede, resposta inválida ou conta divergente negam autorização. Isso descreve o código do cliente; não comprova um serviço implantado ou o bloqueio de inadimplentes. Não mudar a política para `official` antes de concluir backend e testes de ponta a ponta.
 
 ## Contrato obrigatório do serviço (ainda não implementado)
 
@@ -14,7 +16,7 @@ A aplicação Flutter na branch experimental solicita a cada minuto uma autoriza
 
 ## Status
 
-- **Cliente experimental**: barreira fail-closed implementada; sem URL de serviço configurada, todo acesso autenticado será bloqueado. Não promover à produção até backend, administração e testes de ponta a ponta concluídos.
+- **Cliente experimental**: beta gratuito para usuários autenticados. A barreira fail-closed está condicionada à política `official`, não ativa no beta. Não promover à produção até backend, administração e testes de ponta a ponta concluídos.
 - **Backend de direitos de acesso**: pendente.
 - **Cobrança/baixa automática**: pendente.
 - **Certificação de ponta a ponta**: pendente.
