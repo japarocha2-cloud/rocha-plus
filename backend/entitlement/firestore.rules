@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Server Admin SDK uses IAM. No mobile/web client may grant access or pay itself.
+    match /rochaEntitlements/{id} { allow read, write: if false; }
+    match /rochaPayments/{id} { allow read, write: if false; }
+    match /rochaAccessAudit/{id} { allow read, write: if false; }
+  }
+}

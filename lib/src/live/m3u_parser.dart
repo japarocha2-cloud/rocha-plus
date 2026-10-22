@@ -20,7 +20,8 @@ class M3uParser {
         group = _attribute(line, 'group-title') ?? 'Outros';
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
-        if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty && uri.userInfo.isEmpty && seenUrls.add(line)) {
+        if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') &&
+            uri.host.isNotEmpty && uri.userInfo.isEmpty && seenUrls.add(line)) {
           channels.add(Channel(
             name: _cleanName(name),
             url: line,

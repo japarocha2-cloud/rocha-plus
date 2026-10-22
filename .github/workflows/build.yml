@@ -11,11 +11,32 @@ on:
         description: Gerar beta com login real (requer 4 Secrets de assinatura/Firebase)
         type: boolean
         default: true
+      subscription_lab:
+        description: Ativar bloqueio SOMENTE no teste experimental (exige signed_login e backend validado)
+        type: boolean
+        default: false
+      entitlement_url:
+        description: URL HTTPS do servico experimental de direitos
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 jobs:
+  entitlement-unit:
+    name: Experimental entitlement rules and HTTP integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked entitlement dependencies without lifecycle scripts
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test authoritative entitlement rules and HTTP integration
+        run: node --test backend/entitlement/*.test.mjs
   android:
     runs-on: ubuntu-latest
     env:
@@ -24,6 +45,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate subscription build request
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          SIGNED_LOGIN: ${{ inputs.signed_login }}
+          SUBSCRIPTION_LAB: ${{ inputs.subscription_lab }}
+        run: |
+          if [ "$SUBSCRIPTION_LAB" = "true" ] && [ "$SIGNED_LOGIN" != "true" ]; then
+            echo "O teste de bloqueio exige signed_login=true."
+            exit 1
+          fi
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -43,22 +74,40 @@ jobs:
           PY
       - name: Configure Android phone and TV
         run: python3 tools/configure_android.py
+      - name: Configure debug laboratory bridge
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 tools/lab/configure.py
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Test Windows PC catalogue importer safety
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 -m unittest tools/lab/test_import_pc_report.py
       - name: Prepare signed Firebase build
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         env:
           ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
           ROCHA_FIREBASE_CONFIG_JSON: ${{ secrets.ROCHA_FIREBASE_CONFIG_JSON }}
+          ROCHA_SUBSCRIPTION_LAB: ${{ inputs.subscription_lab && 'true' || 'false' }}
+          ROCHA_ENTITLEMENT_URL: ${{ inputs.entitlement_url }}
         run: python3 tools/prepare_signed_build.py
       - name: Get dependencies
         run: flutter pub get
+      - name: Isolate VLC surface lifecycle fix for LAB
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: |
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+      - name: Verify LAB native/Dart player protocol
+        if: contains(github.head_ref, 'dual-player-lab')
+        run: python3 tools/lab/verify_vlc_protocol.py
       - name: Rocha+ Quality Guard
         run: python3 tools/rocha_quality_guard.py
       - name: Analyze
         run: flutter analyze
       - name: Test
         run: flutter test
+      - name: Verify explicit experimental subscription policy
+        run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK
@@ -84,44 +133,90 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-beta-login-universal
+          name: ${{ inputs.subscription_lab && 'rocha-plus-subscription-lab-universal' || 'rocha-plus-beta-login-universal' }}
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
       - name: Upload ARM64 APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-beta-login-arm64
+          name: ${{ inputs.subscription_lab && 'rocha-plus-subscription-lab-arm64' || 'rocha-plus-beta-login-arm64' }}
           path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
           if-no-files-found: error
       - name: Upload Play Store AAB
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-beta-login-play-store-aab
+          name: ${{ inputs.subscription_lab && 'rocha-plus-subscription-lab-play-store-aab' || 'rocha-plus-beta-login-play-store-aab' }}
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
       # Generated only for visual QA. No Firebase credentials or access to streams.
       - name: Build visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && !contains(github.head_ref, 'dual-player-lab') }}
         run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_LAYOUT_PREVIEW=true
       - name: Upload visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && !contains(github.head_ref, 'dual-player-lab') }}
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-layout-preview-no-channels
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+      # Installable Android lab, isolated from Firebase and the frozen release.
+      # Unlike the visual preview, this mode loads real public channel URLs.
+      - name: Build experimental player lab APK
+        if: github.event_name == 'pull_request'
+        run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
+      - name: Upload experimental player lab APK
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-player-lab-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+      - name: Enable KVM for feature UI evidence
+        if: github.event_name == 'pull_request' && contains(github.head_ref, 'dual-player-lab')
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Observe actual Android feature category routes
+        if: github.event_name == 'pull_request' && contains(github.head_ref, 'dual-player-lab')
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: default
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -no-audio -camera-back none
+          script: |
+            adb install -r build/app/outputs/flutter-apk/app-debug.apk
+            python3 tools/lab/run_feature_ui.py
+      - name: Preserve Android feature UI evidence
+        if: always() && github.event_name == 'pull_request' && contains(github.head_ref, 'dual-player-lab')
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-feature-ui-evidence
+          path: build/lab/android/feature-ui/
+          if-no-files-found: warn
       - name: Explain build mode and downloadable artifacts
         if: always()
         env:
+          ROCHA_SUBSCRIPTION_REQUESTED: ${{ inputs.subscription_lab && 'true' || 'false' }}
           ROCHA_SIGNED_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && 'true' || 'false' }}
         run: |
           if [ "$ROCHA_SIGNED_REQUESTED" = "true" ]; then
             echo "### Rocha+ beta com login Firebase" >> "$GITHUB_STEP_SUMMARY"
-            echo "Somente se esta execucao tiver sucesso: baixe rocha-plus-beta-login-universal." >> "$GITHUB_STEP_SUMMARY"
+            if [ "$ROCHA_SUBSCRIPTION_REQUESTED" = "true" ]; then
+              echo "Teste de bloqueio: rocha-plus-subscription-lab-universal; validacao real ainda obrigatoria." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Somente se esta execucao tiver sucesso: baixe rocha-plus-beta-login-universal." >> "$GITHUB_STEP_SUMMARY"
+            fi
             echo "A conexao ao Google ainda exige teste no aparelho e SHA da assinatura registrado no Firebase." >> "$GITHUB_STEP_SUMMARY"
             echo "Se houver falha em Prepare signed Firebase build, confira os Secrets no GitHub; nunca os publique." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "${{ github.head_ref }}" == *dual-player-lab* ]]; then
+            echo "### Rocha+ LAB experimental" >> "$GITHUB_STEP_SUMMARY"
+            echo "Artefato: rocha-plus-player-lab-debug. Sem homologacao audiovisual automatica." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "### Rocha+ SOMENTE PREVIA VISUAL" >> "$GITHUB_STEP_SUMMARY"
             echo "Baixe rocha-plus-layout-preview-no-channels. O login e os canais reais nao funcionam neste APK." >> "$GITHUB_STEP_SUMMARY"

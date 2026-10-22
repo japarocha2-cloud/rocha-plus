@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/app.dart';
+import 'package:rocha_plus/src/app_release_policy.dart';
 import 'package:rocha_plus/src/auth/auth_controller.dart';
 import 'package:rocha_plus/src/auth/auth_repository.dart';
 import 'package:rocha_plus/src/screens/home_screen.dart';
@@ -132,7 +133,19 @@ void main() {
       await tester.tap(find.text('Pular'));
     }
     await tester.pumpAndSettle();
+    // Beta testers can reach Home; official builds may require a valid
+    // server-authoritative subscription and must never bypass that gate.
+    if (RochaReleasePolicy.paidSubscriptionRequired) {
+      expect(find.byType(HomeScreen), findsNothing);
+      repository.changes.add(null);
+      await tester.pumpAndSettle();
+      expect(find.byType(LoginScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      return;
+    }
     expect(find.byType(HomeScreen), findsOneWidget);
+    expect(tester.widget<HomeScreen>(find.byType(HomeScreen)).accountUid,
+        'verified');
     final navigator = Navigator.of(tester.element(find.byType(HomeScreen)));
     unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) =>
       const Scaffold(body: Text('Conteúdo privado')))));

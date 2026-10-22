@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
+
 import '../live/channel.dart';
 import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
@@ -11,13 +13,24 @@ import '../widgets/player_viewport.dart';
 import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
-import '../cast/cast_playback_evidence.dart';
+import '../cast/cast_channel_loader.dart';
+import '../cast/cast_connection_observer.dart';
+import '../live/channel_playback_session.dart';
+import '../widgets/channel_navigation.dart';
 import '../cast/cast_hls_proxy.dart';
 import 'cast_control_screen.dart';
+import 'session_cast_launcher.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Channel channel;
-  const PlayerScreen({super.key, required this.channel});
+  final ChannelPlaybackSession? session;
+  final bool initiallyFullscreen;
+  const PlayerScreen({
+    super.key,
+    required this.channel,
+    this.session,
+    this.initiallyFullscreen = false,
+  });
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
@@ -27,6 +40,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _loading = true;
   bool _failed = false;
   bool _casting = false;
+  bool _castDisconnected = false;
+  CastConnectionObserver? _castConnectionObserver;
+  bool get _remotePlayback => widget.session?.casting == true;
   bool _controlsVisible = false;
   bool _fullscreen = false;
   bool? _portraitOnExit;
@@ -36,6 +52,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     super.didChangeDependencies();
     _portraitOnExit ??= MediaQuery.sizeOf(context).width < 600;
   }
+
   bool _playbackConfirmed = false;
   bool _isPlaying = false;
   bool _isBuffering = false;
@@ -46,7 +63,24 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _initialize();
+    if (!_remotePlayback) _initialize();
+    if (widget.initiallyFullscreen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _toggleFullscreen();
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant PlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.channel.url != widget.channel.url) {
+      if (_remotePlayback) {
+        _controller?.pause();
+      } else {
+        _initialize();
+      }
+    }
   }
 
   Future<void> _initialize() async {
@@ -57,7 +91,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
     await old?.dispose();
     if (!mounted || attempt != _attempt) return;
 
-    setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
+    setState(() {
+      _loading = true;
+      _failed = false;
+      _playbackConfirmed = false;
+      _isPlaying = false;
+      _isBuffering = false;
+    });
 
     final controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.channel.url),
@@ -86,7 +126,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await controller.dispose();
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
-        setState(() { _loading = false; _failed = true; });
+        setState(() {
+          _loading = false;
+          _failed = true;
+        });
       }
     }
   }
@@ -97,15 +140,25 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final value = controller.value;
     if (value.hasError) {
       _channelRepository.reportPlaybackFailure(widget.channel.url);
-      setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
+      setState(() {
+        _loading = false;
+        _failed = true;
+        _playbackConfirmed = false;
+      });
       return;
     }
-    final confirmed = _evidence.observe(position: value.position,
-        isPlaying: value.isPlaying, isBuffering: value.isBuffering, hasError: value.hasError);
+    final confirmed = _evidence.observe(
+      position: value.position,
+      isPlaying: value.isPlaying,
+      isBuffering: value.isBuffering,
+      hasError: value.hasError,
+    );
     if (confirmed) {
       _channelRepository.reportPlaybackSuccess(widget.channel.url);
     }
-    if (confirmed || _isPlaying != value.isPlaying || _isBuffering != value.isBuffering) {
+    if (confirmed ||
+        _isPlaying != value.isPlaying ||
+        _isBuffering != value.isBuffering) {
       setState(() {
         if (confirmed) _playbackConfirmed = true;
         _isPlaying = value.isPlaying;
@@ -115,12 +168,29 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _openCastPicker() async {
+    final session = widget.session;
+    if (session != null && session.casting) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CastControlScreen(
+            channel: session.current,
+            session: session,
+            deviceName: session.deviceName ?? 'TV',
+            confirmedContentId: session.confirmedContentId,
+          ),
+        ),
+      );
+      return;
+    }
     final ready = await CastReadiness.ready;
     if (!mounted) return;
     if (!ready) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Google Cast indisponível neste aparelho.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Google Cast indisponível neste aparelho.'),
+        ),
+      );
       return;
     }
     await showModalBottomSheet<void>(
@@ -134,56 +204,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
           },
         ),
       ),
-    );
-  }
-
-  String _castContentType(Uri uri) {
-    final path = uri.path.toLowerCase();
-    if (path.endsWith('.m3u8') || path.endsWith('.m3u')) {
-      return 'application/x-mpegURL';
-    }
-    if (path.endsWith('.mpd')) return 'application/dash+xml';
-    if (path.endsWith('.webm')) return 'video/webm';
-    if (path.endsWith('.mp4') || path.endsWith('.m4v')) return 'video/mp4';
-    // URLs without an extension in the Rocha+ live catalogue are normally HLS.
-    return 'application/x-mpegURL';
-  }
-
-  Future<void> _loadAndConfirmCast(Uri uri) async {
-    final media = GoogleCastMediaInformation(
-      contentId: uri.toString(),
-      contentUrl: uri,
-      contentType: _castContentType(uri),
-      streamType: CastMediaStreamType.live,
-      metadata: GoogleCastMovieMediaMetadata(title: widget.channel.name),
-    );
-
-    await GoogleCastRemoteMediaClient.instance.loadMedia(
-      media,
-      autoPlay: true,
-      playPosition: Duration.zero,
-      playbackRate: 1.0,
-    ).timeout(const Duration(seconds: 8));
-    await GoogleCastRemoteMediaClient.instance.play().timeout(const Duration(seconds: 5));
-
-    for (var i = 0; i < 40; i++) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
-      final state = status?.playerState;
-      final info = status?.mediaInformation;
-      final matches = CastPlaybackEvidence.matches(uri.toString(), info?.contentId, info?.contentUrl);
-      if (CastPlaybackEvidence.confirms(
-          requested: uri.toString(), contentId: info?.contentId,
-          contentUrl: info?.contentUrl, playing: state == CastMediaPlayerState.playing)) {
-        return;
-      }
-      if (matches && state == CastMediaPlayerState.idle && status?.idleReason != null) {
-        throw StateError('Receiver entrou em idle: ${status?.idleReason}');
-      }
-    }
-
-    throw TimeoutException(
-      'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
     );
   }
 
@@ -207,36 +227,89 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _startCasting(GoogleCastDevice device) async {
-    if (_casting) return;
+    if (!mounted || _casting) return;
+    _castDisconnected = false;
     setState(() => _casting = true);
     try {
       final started = await GoogleCastSessionManager.instance
-          .startSessionWithDevice(device).timeout(const Duration(seconds: 8));
+          .startSessionWithDevice(device)
+          .timeout(const Duration(seconds: 8));
+      if (!mounted) return;
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
+      if (!mounted) return;
       await CastHlsProxy.instance.close();
-      final uri = Uri.parse(widget.channel.url);
-      try {
-        await _loadAndConfirmCast(uri);
-      } catch (_) {
-        if (_castContentType(uri) != 'application/x-mpegURL' || !device.isOnLocalNetwork) rethrow;
-        final relayUri = await CastHlsProxy.instance.relay(uri);
-        await _loadAndConfirmCast(relayUri);
+      if (!mounted) return;
+      final session = widget.session;
+      if (session != null) {
+        session.deviceName = device.friendlyName;
+        final confirmed = await session.startCasting(
+          (channel) => CastChannelLoader.load(channel, device),
+          connectionStates: castConnectionStates(),
+          isDisconnected: castIsDisconnected,
+          onDisconnected: closeDisconnectedCastRelay,
+        );
+        if (!confirmed) return;
+      } else {
+        _castConnectionObserver?.dispose();
+        _castConnectionObserver = CastConnectionObserver(
+          castConnectionStates(),
+          isDisconnected: castIsDisconnected,
+          onDisconnected: () {
+            _castDisconnected = true;
+            closeDisconnectedCastRelay();
+            if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+              unawaited(_initialize());
+            }
+          },
+        );
+        if (_castDisconnected) return;
+        await CastChannelLoader.load(widget.channel, device);
+      }
+      if (!mounted ||
+          _castDisconnected ||
+          (session != null && !session.casting)) {
+        return;
       }
       await _controller?.pause();
-      if (mounted) {
+      if (mounted &&
+          !_castDisconnected &&
+          (session == null || session.casting)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reprodução confirmada pela TV.')),
         );
-        await Navigator.push(context, MaterialPageRoute(builder: (_) => CastControlScreen(
-          channel: widget.channel, deviceName: device.friendlyName,
-          confirmedContentId: GoogleCastRemoteMediaClient.instance.mediaStatus?.mediaInformation?.contentId)));
-        if (GoogleCastSessionManager.instance.connectionState == GoogleCastConnectState.disconnected) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CastControlScreen(
+              channel: widget.channel,
+              session: widget.session,
+              deviceName: device.friendlyName,
+              confirmedContentId: GoogleCastRemoteMediaClient
+                  .instance
+                  .mediaStatus
+                  ?.mediaInformation
+                  ?.contentId,
+            ),
+          ),
+        );
+        if (mounted &&
+            (_castDisconnected ||
+                GoogleCastSessionManager.instance.connectionState ==
+                    GoogleCastConnectState.disconnected)) {
           await CastHlsProxy.instance.close();
-          await _controller?.play();
+          widget.session?.stopCasting();
+          if (widget.session == null &&
+              mounted &&
+              ModalRoute.of(context)?.isCurrent == true) {
+            await _initialize();
+          }
         }
       }
     } catch (_) {
+      _castConnectionObserver?.dispose();
+      _castConnectionObserver = null;
+      widget.session?.stopCasting();
       await CastHlsProxy.instance.close();
       try {
         await GoogleCastSessionManager.instance.endSessionAndStopCasting();
@@ -245,7 +318,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('A TV não confirmou a reprodução. Tente novamente.')),
+          const SnackBar(
+            content: Text('A TV não confirmou a reprodução. Tente novamente.'),
+          ),
         );
       }
     } finally {
@@ -275,7 +350,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
       await SystemChrome.setPreferredOrientations(
-        _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
+        _portraitOnExit == true
+            ? [DeviceOrientation.portraitUp]
+            : DeviceOrientation.values,
       );
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
@@ -292,6 +369,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _castConnectionObserver?.dispose();
+    _castConnectionObserver = null;
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);
@@ -299,7 +378,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
-      _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
+      _portraitOnExit == true
+          ? [DeviceOrientation.portraitUp]
+          : DeviceOrientation.values,
     );
     super.dispose();
   }
@@ -313,64 +394,82 @@ class _PlayerScreenState extends State<PlayerScreen> {
         if (!didPop && _fullscreen) _toggleFullscreen();
       },
       child: Scaffold(
-      backgroundColor: Colors.black,
-      appBar: _fullscreen
-          ? null
-          : AppBar(
-              backgroundColor: Colors.black,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text(
-                    _playbackConfirmed
-                        ? (_isBuffering ? 'Carregando…' : _isPlaying ? 'Reproduzindo' : 'Pausado')
-                        : 'Conectando…',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _playbackConfirmed ? RochaColors.playGreen : Colors.white54,
+        backgroundColor: Colors.black,
+        appBar: _fullscreen
+            ? null
+            : AppBar(
+                backgroundColor: Colors.black,
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.channel.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                    Text(
+                      _playbackConfirmed
+                          ? (_isBuffering
+                                ? 'Carregando…'
+                                : _isPlaying
+                                ? 'Reproduzindo'
+                                : 'Pausado')
+                          : 'Conectando…',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _playbackConfirmed
+                            ? RochaColors.playGreen
+                            : Colors.white54,
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  if (widget.session != null)
+                    ChannelStepButtons(session: widget.session!),
+                  IconButton(
+                    tooltip: 'Transmitir para TV',
+                    onPressed: _casting ? null : _openCastPicker,
+                    icon: const Icon(Icons.cast),
                   ),
                 ],
               ),
-              actions: [
-                IconButton(
-                  tooltip: 'Transmitir para TV',
-                  onPressed: _casting ? null : _openCastPicker,
-                  icon: const Icon(Icons.cast),
+        body: Center(
+          child: _remotePlayback
+              ? const Text('Reprodução na TV')
+              : _failed
+              ? _FailureState(onRetry: _initialize)
+              : _loading ||
+                    controller == null ||
+                    !controller.value.isInitialized
+              ? const CircularProgressIndicator(color: RochaColors.ruby)
+              : _fullscreen
+              ? SizedBox.expand(
+                  child: _VideoSurface(
+                    controller: controller,
+                    controlsVisible: _controlsVisible,
+                    fullscreen: _fullscreen,
+                    onShowControls: _showControls,
+                    onTogglePlayback: _togglePlayback,
+                    onToggleFullscreen: _toggleFullscreen,
+                    session: widget.session,
+                  ),
+                )
+              : AspectRatio(
+                  aspectRatio: controller.value.aspectRatio > 0
+                      ? controller.value.aspectRatio
+                      : 16 / 9,
+                  child: _VideoSurface(
+                    controller: controller,
+                    controlsVisible: _controlsVisible,
+                    fullscreen: _fullscreen,
+                    onShowControls: _showControls,
+                    onTogglePlayback: _togglePlayback,
+                    onToggleFullscreen: _toggleFullscreen,
+                    session: widget.session,
+                  ),
                 ),
-              ],
-            ),
-      body: Center(
-        child: _failed
-            ? _FailureState(onRetry: _initialize)
-            : _loading || controller == null || !controller.value.isInitialized
-                ? const CircularProgressIndicator(color: RochaColors.ruby)
-                : _fullscreen
-                    ? SizedBox.expand(
-                        child: _VideoSurface(
-                          controller: controller,
-                          controlsVisible: _controlsVisible,
-                          fullscreen: _fullscreen,
-                          onShowControls: _showControls,
-                          onTogglePlayback: _togglePlayback,
-                          onToggleFullscreen: _toggleFullscreen,
-                        ),
-                      )
-                    : AspectRatio(
-                        aspectRatio: controller.value.aspectRatio > 0
-                            ? controller.value.aspectRatio
-                            : 16 / 9,
-                        child: _VideoSurface(
-                          controller: controller,
-                          controlsVisible: _controlsVisible,
-                          fullscreen: _fullscreen,
-                          onShowControls: _showControls,
-                          onTogglePlayback: _togglePlayback,
-                          onToggleFullscreen: _toggleFullscreen,
-                        ),
-                      ),
-      ),
+        ),
       ),
     );
   }
@@ -378,6 +477,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
 class _VideoSurface extends StatelessWidget {
   final VideoPlayerController controller;
+  final ChannelPlaybackSession? session;
   final bool controlsVisible;
   final bool fullscreen;
   final VoidCallback onShowControls;
@@ -386,6 +486,7 @@ class _VideoSurface extends StatelessWidget {
 
   const _VideoSurface({
     required this.controller,
+    this.session,
     required this.controlsVisible,
     required this.fullscreen,
     required this.onShowControls,
@@ -395,55 +496,65 @@ class _VideoSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlayerControlsFocus(
-        controlsVisible: controlsVisible,
-        onShowControls: onShowControls,
-        child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onShowControls,
-        onDoubleTap: onToggleFullscreen,
-        child: PlayerViewport(
-          aspectRatio: controller.value.aspectRatio,
-          video: VideoPlayer(controller),
-          overlays: [
-            Center(
-              child: AnimatedOpacity(
-                opacity: controlsVisible ? 1 : 0,
-                duration: const Duration(milliseconds: 180),
-                child: IgnorePointer(
-                  ignoring: !controlsVisible,
-                  child: IconButton.filled(
-                    autofocus: true,
-                    tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
-                    iconSize: 42,
-                    onPressed: () {
-                      onTogglePlayback();
-                      onShowControls();
-                    },
-                    icon: Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                  ),
-                ),
-              ),
-            ),
+    controlsVisible: controlsVisible,
+    onShowControls: onShowControls,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onShowControls,
+      onDoubleTap: onToggleFullscreen,
+      child: PlayerViewport(
+        aspectRatio: controller.value.aspectRatio,
+        video: VideoPlayer(controller),
+        overlays: [
+          if (session != null && controlsVisible)
             Positioned(
-              right: 8,
+              left: 8,
               bottom: 8,
-              child: AnimatedOpacity(
-                opacity: controlsVisible ? 1 : 0,
-                duration: const Duration(milliseconds: 180),
-                child: IgnorePointer(
-                  ignoring: !controlsVisible,
-                  child: IconButton.filledTonal(
-                    tooltip: fullscreen ? 'Sair da tela cheia' : 'Tela cheia',
-                    onPressed: onToggleFullscreen,
-                    icon: Icon(fullscreen ? Icons.fullscreen_exit : Icons.fullscreen),
+              child: ChannelStepButtons(session: session!),
+            ),
+          Center(
+            child: AnimatedOpacity(
+              opacity: controlsVisible ? 1 : 0,
+              duration: const Duration(milliseconds: 180),
+              child: IgnorePointer(
+                ignoring: !controlsVisible,
+                child: IconButton.filled(
+                  autofocus: true,
+                  tooltip: controller.value.isPlaying ? 'Pausar' : 'Reproduzir',
+                  iconSize: 42,
+                  onPressed: () {
+                    onTogglePlayback();
+                    onShowControls();
+                  },
+                  icon: Icon(
+                    controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
                   ),
                 ),
               ),
             ),
-          ],
-        ),
-        ),
-      );
+          ),
+          Positioned(
+            right: 8,
+            bottom: 8,
+            child: AnimatedOpacity(
+              opacity: controlsVisible ? 1 : 0,
+              duration: const Duration(milliseconds: 180),
+              child: IgnorePointer(
+                ignoring: !controlsVisible,
+                child: IconButton.filledTonal(
+                  tooltip: fullscreen ? 'Sair da tela cheia' : 'Tela cheia',
+                  onPressed: onToggleFullscreen,
+                  icon: Icon(
+                    fullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _FailureState extends StatelessWidget {
@@ -452,21 +563,28 @@ class _FailureState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.signal_wifi_connected_no_internet_4, size: 48, color: RochaColors.ruby),
-            const SizedBox(height: 16),
-            const Text('Este sinal está indisponível no momento.', textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              autofocus: true,
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Tentar novamente'),
-            ),
-          ],
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.signal_wifi_connected_no_internet_4,
+          size: 48,
+          color: RochaColors.ruby,
         ),
-      );
+        const SizedBox(height: 16),
+        const Text(
+          'Este sinal está indisponível no momento.',
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        FilledButton.icon(
+          autofocus: true,
+          onPressed: onRetry,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Tentar novamente'),
+        ),
+      ],
+    ),
+  );
 }
