@@ -96,7 +96,6 @@ jobs:
             timeout 8 ffmpeg -nostdin -loglevel error -f pulse -i rocha_lab.monitor -t 6 -ar 48000 -ac 2 -y build/lab/android/host-calibration.wav &
             sleep 1
             timeout 3 ffmpeg -nostdin -loglevel error -f lavfi -i sine=frequency=440:sample_rate=48000 -t 2 -f pulse rocha_lab || true
-            wait || true
             python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
       - name: Preserve evidence and checkpoints even after failures
         uses: actions/upload-artifact@v4
