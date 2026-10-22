@@ -1,0 +1,73 @@
+name: Rocha Office experimental installers
+on:
+  push:
+    branches: [feat/office-installers-20261022]
+    paths: ['office/**', '.github/workflows/office-installers.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: office
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install locked dependencies
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build web editor and Android project
+        run: |
+          npm run build
+          npx cap add android
+      - name: Compile experimental Android APK
+        working-directory: office/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Hash experimental APK
+        run: sha256sum android/app/build/outputs/apk/debug/app-debug.apk > android/app/build/outputs/apk/debug/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-office-lab-android-NOT-COMMERCIAL
+          path: |
+            office/android/app/build/outputs/apk/debug/app-debug.apk
+            office/android/app/build/outputs/apk/debug/SHA256SUMS.txt
+          if-no-files-found: error
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: office
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked dependencies
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build experimental Windows installer
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run desktop:pack -- --publish never
+      - name: Hash experimental Windows installer
+        shell: pwsh
+        run: Get-ChildItem releases/*.exe | Get-FileHash -Algorithm SHA256 | Format-List | Out-File releases/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-office-lab-windows-NOT-COMMERCIAL
+          path: |
+            office/releases/*.exe
+            office/releases/SHA256SUMS.txt
+          if-no-files-found: error
