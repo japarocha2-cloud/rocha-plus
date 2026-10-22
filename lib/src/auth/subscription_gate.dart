@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'subscription_access.dart';
+import 'playback_permission.dart';
+import '../cast/revoke_cast_playback.dart';
 
 typedef AccessVerifier = Future<bool> Function(String uid);
 
 /// Owns every protected route, so revocation disposes active local players too.
-/// This gate does not revoke a stream already loaded on a remote Cast receiver.
+/// Cast stop is requested too; an offline receiver cannot be proven stopped here.
 class SubscriptionGate extends StatefulWidget {
   final String uid;
   final Future<void> Function() onSignOut;
@@ -15,6 +17,8 @@ class SubscriptionGate extends StatefulWidget {
   final AccessVerifier verifyAccess;
   final Duration recheckInterval;
   final Duration verificationTimeout;
+  final Future<void> Function()? stopRemotePlayback;
+  final PlaybackPermission? playbackPermission;
 
   const SubscriptionGate({
     super.key,
@@ -24,6 +28,8 @@ class SubscriptionGate extends StatefulWidget {
     this.verifyAccess = SubscriptionAccess.isAllowed,
     this.recheckInterval = const Duration(minutes: 1),
     this.verificationTimeout = const Duration(seconds: 12),
+    this.stopRemotePlayback,
+    this.playbackPermission,
   });
 
   @override
@@ -38,6 +44,11 @@ class _SubscriptionGateState extends State<SubscriptionGate>
   int _generation = 0;
   bool _allowed = false;
   bool _checking = true;
+  bool _remoteCleanupFailed = false;
+  late final PlaybackPermission _permission;
+  late final Object _playbackOwner;
+  Future<bool> _remoteCleanup = Future<bool>.value(true);
+  int _cleanupRevision = 0;
 
   @override
   void initState() {
@@ -45,6 +56,9 @@ class _SubscriptionGateState extends State<SubscriptionGate>
     assert(widget.recheckInterval > Duration.zero);
     assert(widget.verificationTimeout > Duration.zero);
     WidgetsBinding.instance.addObserver(this);
+    _permission = widget.playbackPermission ?? PlaybackPermission.instance;
+    _playbackOwner = _permission.protect();
+    _remoteCleanup = _stopRemote();
     _refresh();
     _startTimer();
   }
@@ -61,8 +75,10 @@ class _SubscriptionGateState extends State<SubscriptionGate>
     setState(() {
       _checking = true;
       if (clearAccess) {
+        _permission.revoke(_playbackOwner);
         _allowed = false;
         _resetProtectedRoutes();
+        _remoteCleanup = _stopRemote();
       }
     });
     bool allowed;
@@ -71,12 +87,39 @@ class _SubscriptionGateState extends State<SubscriptionGate>
     } catch (_) {
       allowed = false;
     }
+    if (allowed) {
+      if (_remoteCleanupFailed) _remoteCleanup = _stopRemote();
+      allowed = await _remoteCleanup;
+    }
     if (!mounted || generation != _generation || uid != widget.uid) return;
     setState(() {
       _checking = false;
-      if (!allowed) _resetProtectedRoutes();
-      _allowed = allowed;
+      if (!allowed) {
+        _permission.revoke(_playbackOwner);
+        if (_allowed) _remoteCleanup = _stopRemote();
+        _resetProtectedRoutes();
+      }
+      _allowed = allowed && _permission.grant(_playbackOwner);
     });
+  }
+
+  Future<bool> _stopRemote() async {
+    final previous = _remoteCleanup;
+    final revision = ++_cleanupRevision;
+    await previous;
+    try {
+      await (widget.stopRemotePlayback ?? revokeCastPlayback)()
+          .timeout(const Duration(seconds: 12));
+      if (mounted && revision == _cleanupRevision) {
+        setState(() => _remoteCleanupFailed = false);
+      }
+      return true;
+    } catch (_) {
+      if (mounted && revision == _cleanupRevision) {
+        setState(() => _remoteCleanupFailed = true);
+      }
+      return false;
+    }
   }
 
   void _resetProtectedRoutes() {
@@ -104,6 +147,7 @@ class _SubscriptionGateState extends State<SubscriptionGate>
 
   @override
   void dispose() {
+    if (_permission.revoke(_playbackOwner)) unawaited(_stopRemote());
     _generation++;
     _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -144,6 +188,9 @@ class _SubscriptionGateState extends State<SubscriptionGate>
                 : 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.',
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
+            if (_remoteCleanupFailed)
+              const Text('Não foi possível confirmar a parada da TV. '
+                  'Desconecte a transmissão na televisão e tente novamente.'),
             OutlinedButton(
               onPressed: _checking ? null : _refresh,
               child: const Text('Verificar novamente'),

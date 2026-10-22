@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 import '../live/channel.dart';
+import '../auth/playback_permission.dart';
 import '../live/channel_playback_session.dart';
 import '../widgets/channel_navigation.dart';
 import '../cast/cast_hls_proxy.dart';
@@ -104,6 +105,7 @@ class _CastControlScreenState extends State<CastControlScreen> {
           if (playing) {
             await GoogleCastRemoteMediaClient.instance.pause();
           } else {
+            PlaybackPermission.instance.acquire().ensureValid();
             await GoogleCastRemoteMediaClient.instance.play();
           }
         }),

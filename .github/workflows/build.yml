@@ -86,6 +86,8 @@ jobs:
         run: flutter analyze
       - name: Test
         run: flutter test
+      - name: Verify explicit experimental subscription policy
+        run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK

@@ -8,6 +8,7 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 import 'package:video_player/video_player.dart' show VideoPlayerController;
 
 import 'package:rocha_plus/src/auth/subscription_gate.dart';
+import 'package:rocha_plus/src/auth/playback_permission.dart';
 import 'package:rocha_plus/src/live/channel.dart';
 import 'package:rocha_plus/src/screens/player_screen.dart';
 
@@ -86,10 +87,15 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
 const fixtureChannel = Channel(name: 'Teste de encerramento local',
     url: 'https://example.invalid/fixture.m3u8');
 
-Widget gateApp(AccessVerifier verify, {String uid = 'one', bool fullscreen = false}) =>
+Future<void> noRemotePlayback() async {}
+
+Widget gateApp(AccessVerifier verify, {String uid = 'one', bool fullscreen = false,
+    PlaybackPermission? permission, Future<void> Function()? stopRemote}) =>
     MaterialApp(home: SubscriptionGate(
       uid: uid,
       verifyAccess: verify,
+      playbackPermission: permission,
+      stopRemotePlayback: stopRemote ?? noRemotePlayback,
       onSignOut: () async {},
       homeBuilder: (context) => Scaffold(body: TextButton(
         onPressed: () {
@@ -305,6 +311,54 @@ void main() {
     expect(video.disposed, contains(0));
     expect(video.playing, isEmpty);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('revocation invalidates pending Cast permits and waits for remote shutdown before regrant', (tester) async {
+    final permission = PlaybackPermission();
+    final stopped = Completer<void>();
+    var calls = 0;
+    var allowed = true;
+    Future<bool> verify(String _) async => allowed;
+    Future<void> stopRemote() async {
+      calls++;
+      if (calls > 1) await stopped.future;
+    }
+    await tester.pumpWidget(gateApp(verify,
+        permission: permission, stopRemote: stopRemote));
+    await flush(tester);
+    await openPlayer(tester, video);
+    final pendingCast = permission.acquire();
+    allowed = false;
+    await tester.pump(const Duration(minutes: 1));
+    await flush(tester);
+    await expectPlaybackStopped(tester, video);
+    expect(pendingCast.ensureValid, throwsStateError);
+    expect(permission.acquire, throwsStateError);
+    expect(calls, 2);
+    allowed = true;
+    await tester.tap(find.text('Verificar novamente'));
+    await flush(tester);
+    expect(find.text('Abrir player one'), findsNothing);
+    stopped.complete();
+    await flush(tester);
+    expect(find.text('Abrir player one'), findsOneWidget);
+    permission.acquire().ensureValid();
+    expect(pendingCast.ensureValid, throwsStateError);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('remote shutdown failure cannot grant access or claim a stopped TV', (tester) async {
+    final permission = PlaybackPermission();
+    Future<bool> verify(String _) async => true;
+    Future<void> stopRemote() async => throw StateError('receiver offline');
+    await tester.pumpWidget(gateApp(verify,
+        permission: permission, stopRemote: stopRemote));
+    await flush(tester);
+    expect(find.text('Abrir player one'), findsNothing);
+    expect(permission.acquire, throwsStateError);
+    expect(find.textContaining('Não foi possível confirmar a parada da TV'), findsOneWidget);
+    expect(video.nextId, 0);
     await tester.pumpWidget(const SizedBox());
   });
 

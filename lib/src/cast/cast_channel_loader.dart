@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 import '../live/channel.dart';
+import '../auth/playback_permission.dart';
 import 'cast_playback_evidence.dart';
 import 'cast_hls_proxy.dart';
 
@@ -19,7 +20,11 @@ class CastChannelLoader {
     return 'application/x-mpegURL';
   }
 
-  static Future<void> loadAndConfirm(Channel channel, Uri uri) async {
+  static Future<void> loadAndConfirm(Channel channel, Uri uri, {
+    PlaybackPermit? permit,
+  }) async {
+    final authorization = permit ?? PlaybackPermission.instance.acquire();
+    authorization.ensureValid();
     final media = GoogleCastMediaInformation(
       contentId: uri.toString(),
       contentUrl: uri,
@@ -31,17 +36,19 @@ class CastChannelLoader {
     await GoogleCastRemoteMediaClient.instance
         .loadMedia(
           media,
-          autoPlay: true,
+          autoPlay: false,
           playPosition: Duration.zero,
           playbackRate: 1.0,
         )
         .timeout(const Duration(seconds: 8));
+    authorization.ensureValid();
     await GoogleCastRemoteMediaClient.instance.play().timeout(
       const Duration(seconds: 5),
     );
 
     for (var i = 0; i < 40; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
+      authorization.ensureValid();
       final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
       final state = status?.playerState;
       final info = status?.mediaInformation;
@@ -71,17 +78,21 @@ class CastChannelLoader {
   }
 
   static Future<String> load(Channel channel, GoogleCastDevice device) async {
+    final permit = PlaybackPermission.instance.acquire();
     final uri = Uri.parse(channel.url);
     try {
-      await loadAndConfirm(channel, uri);
+      await loadAndConfirm(channel, uri, permit: permit);
       return uri.toString();
     } catch (_) {
+      permit.ensureValid();
       if (contentType(uri) != 'application/x-mpegURL' ||
           !device.isOnLocalNetwork) {
         rethrow;
       }
-      final relayUri = await CastHlsProxy.instance.relay(uri);
-      await loadAndConfirm(channel, relayUri);
+      final relayUri = await CastHlsProxy.instance.relay(uri,
+          ensureAuthorized: permit.ensureValid);
+      permit.ensureValid();
+      await loadAndConfirm(channel, relayUri, permit: permit);
       return relayUri.toString();
     }
   }
