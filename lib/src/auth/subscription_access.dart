@@ -11,11 +11,11 @@ class SubscriptionAccess {
   static Future<bool> isAllowed(String uid) async {
     final uri = Uri.tryParse(endpoint);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return false;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null || user.uid != uid) return false;
-    final token = await user.getIdToken();
-    if (token == null || token.isEmpty) return false;
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null || user.uid != uid) return false;
+      final token = await user.getIdToken().timeout(const Duration(seconds: 12));
+      if (token == null || token.isEmpty) return false;
       final response = await http.get(uri, headers: {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',

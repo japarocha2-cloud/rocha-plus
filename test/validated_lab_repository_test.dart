@@ -34,6 +34,10 @@ Map<String, dynamic> candidate(String url) => {
     'confirmation': sample('libVlc'),
     'preferred': 'libVlc',
     'measuredEvidence': {
+      'vlc': {
+        'changingPixelsObserved': true,
+        'audioOutputObserved': true,
+      },
       'confirmation': {
         'changingPixelsObserved': true,
         'audioOutputObserved': true,
@@ -81,5 +85,21 @@ void main() {
     expect(channels.single.url, pass['url']);
     expect(channels.single.preferredEngine, 'libVlc');
     expect(channels.single.genres, ['Comédia']);
+  });
+  test('rejects confirmation without a measured initial player phase', () async {
+    final absent = candidate('https://example.test/absent');
+    absent['result']['measuredEvidence'].remove('vlc');
+    final silent = candidate('https://example.test/initial-silence');
+    silent['result']['measuredEvidence']['vlc']['audioOutputObserved'] = false;
+    final failed = candidate('https://example.test/initial-error');
+    failed['result']['vlc']['error'] = 'decoder failure';
+    final mismatched = candidate('https://example.test/wrong-player');
+    mismatched['result']['preferred'] = 'exoPlayer';
+    final pass = candidate('https://example.test/pass');
+    final repo = ValidatedLabRepository(
+      read: () async => jsonEncode([absent, silent, failed, mismatched, pass]),
+    );
+    final channels = await repo.loadBrazilPublicDirectory();
+    expect(channels.map((channel) => channel.url), [pass['url']]);
   });
 }

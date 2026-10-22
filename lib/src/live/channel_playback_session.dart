@@ -22,61 +22,75 @@ class ChannelPlaybackSession extends ChangeNotifier {
   Channel current;
   bool busy = false;
   bool _disposed = false;
+  int _operation = 0;
   String? confirmedContentId;
   String? deviceName;
   Future<String> Function(Channel)? _castLoader;
   bool get casting => _castLoader != null;
   List<Channel> get available =>
       playlist.where(_allowed).toList(growable: false);
-  bool get canChange => !busy && available.length > 1;
+  bool get canChange => !_disposed && !busy && available.length > 1;
 
   void _changed() {
     if (!_disposed) notifyListeners();
   }
 
   Future<void> startCasting(Future<String> Function(Channel) loader) async {
-    if (busy) return;
+    if (_disposed || busy) return;
+    final operation = ++_operation;
     busy = true;
     _changed();
     try {
       final id = await loader(current);
+      if (_disposed || operation != _operation) return;
       _castLoader = loader;
       confirmedContentId = id;
     } finally {
-      busy = false;
-      _changed();
+      if (!_disposed && operation == _operation) {
+        busy = false;
+        _changed();
+      }
     }
   }
 
   void stopCasting() {
+    if (_disposed) return;
+    ++_operation;
+    busy = false;
     _castLoader = null;
     confirmedContentId = null;
+    deviceName = null;
     _changed();
   }
 
   Future<void> select(Channel channel) async {
-    if (busy ||
+    if (_disposed ||
+        busy ||
         channel.url == current.url ||
         !_allowed(channel) ||
         !playlist.any((c) => c.url == channel.url)) {
       return;
     }
+    final operation = ++_operation;
     busy = true;
     _changed();
     try {
       final loader = _castLoader;
       final id = loader == null ? null : await loader(channel);
+      if (_disposed || operation != _operation) return;
       current = channel;
       confirmedContentId = id;
     } finally {
-      busy = false;
-      _changed();
+      if (!_disposed && operation == _operation) {
+        busy = false;
+        _changed();
+      }
     }
   }
 
   Future<void> step(int direction) async {
     final channels = available;
-    if (busy || channels.length < 2) return;
+    if (_disposed || busy || channels.length < 2) return;
     final index = channels.indexWhere((c) => c.url == current.url);
     final next = index < 0
         ? (direction > 0 ? 0 : channels.length - 1)
@@ -87,6 +101,11 @@ class ChannelPlaybackSession extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    ++_operation;
+    busy = false;
+    _castLoader = null;
+    confirmedContentId = null;
+    deviceName = null;
     super.dispose();
   }
 }

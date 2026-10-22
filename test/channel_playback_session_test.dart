@@ -70,6 +70,92 @@ void main() {
       expect(session.current, second);
     },
   );
+  test('disconnect discards a late Cast connection confirmation', () async {
+    final gate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    final connecting = session.startCasting((_) => gate.future);
+    session.deviceName = 'TV';
+    session.stopCasting();
+    expect(session.busy, isFalse);
+    expect(session.deviceName, isNull);
+    gate.complete('late-confirmation');
+    await connecting;
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+  });
+  test('disconnect discards an in-flight Cast channel change', () async {
+    final gate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    await session.startCasting((c) async {
+      if (c == first) return c.url;
+      return gate.future;
+    });
+    final switching = session.step(1);
+    session.stopCasting();
+    gate.complete(second.url);
+    await switching;
+    expect(session.current, first);
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+    expect(session.busy, isFalse);
+    await session.step(1);
+    expect(session.current, second);
+  });
+  test('stale completion cannot unlock a newer Cast operation', () async {
+    final oldGate = Completer<String>();
+    final newGate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    final oldConnection = session.startCasting((_) => oldGate.future);
+    session.stopCasting();
+    final newConnection = session.startCasting((_) => newGate.future);
+    oldGate.complete('old-receiver');
+    await oldConnection;
+    expect(session.busy, isTrue);
+    expect(session.casting, isFalse);
+    newGate.complete('new-receiver');
+    await newConnection;
+    expect(session.busy, isFalse);
+    expect(session.casting, isTrue);
+    expect(session.confirmedContentId, 'new-receiver');
+  });
+  test('disposed session ignores late confirmation and further commands', () async {
+    final gate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    final connecting = session.startCasting((_) => gate.future);
+    session.dispose();
+    gate.complete('late-receiver');
+    await connecting;
+    var called = false;
+    await session.startCasting((_) async {
+      called = true;
+      return 'unexpected';
+    });
+    await session.step(1);
+    expect(called, isFalse);
+    expect(session.current, first);
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+    expect(session.canChange, isFalse);
+  });
+  test('dispose discards an in-flight Cast channel selection', () async {
+    final gate = Completer<String>();
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    await session.startCasting((c) async {
+      if (c == first) return c.url;
+      return gate.future;
+    });
+    final switching = session.step(1);
+    session.dispose();
+    gate.complete(second.url);
+    await switching;
+    expect(session.current, first);
+    expect(session.casting, isFalse);
+    expect(session.confirmedContentId, isNull);
+    expect(session.busy, isFalse);
+  });
   testWidgets(
     'remote CH and page keys change both local and casting selections',
     (tester) async {

@@ -18,12 +18,14 @@ class HomeScreen extends StatefulWidget {
   final Future<void> Function()? onSignOut;
   final bool previewOnly;
   final bool laboratoryFeatures;
+  final String? accountUid;
   const HomeScreen({
     super.key,
     this.repository,
     this.onSignOut,
     this.previewOnly = false,
     this.laboratoryFeatures = false,
+    this.accountUid,
   });
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
@@ -50,7 +52,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final repository = widget.repository ?? ChannelRepository();
-  final favoritesRepository = FavoritesRepository();
+  late FavoritesRepository favoritesRepository;
   List<Channel> channels = [];
   Set<String> favorites = {};
   bool loading = true;
@@ -87,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    favoritesRepository = FavoritesRepository(accountUid: widget.accountUid);
     if (widget.previewOnly) {
       loading = false;
     } else {
@@ -94,14 +97,28 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountUid != widget.accountUid) {
+      favoritesRepository = FavoritesRepository(accountUid: widget.accountUid);
+      favorites = {};
+      if (!widget.previewOnly) {
+        loading = true;
+        _load();
+      }
+    }
+  }
+
   Future<void> _load() async {
     if (widget.previewOnly) return;
+    final owner = favoritesRepository;
     try {
       final result = await Future.wait([
         repository.loadBrazilPublicDirectory(),
-        favoritesRepository.load(),
+        owner.load(),
       ]);
-      if (mounted) {
+      if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
           channels = result[0] as List<Channel>;
           favorites = result[1] as Set<String>;
@@ -110,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (_) {
-      if (mounted) {
+      if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
           loading = false;
           failed = true;
@@ -121,15 +138,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _favorite(Channel channel) async {
     if (widget.previewOnly) return;
+    final owner = favoritesRepository;
     final next = {...favorites};
     next.contains(channel.url)
         ? next.remove(channel.url)
         : next.add(channel.url);
     try {
-      await favoritesRepository.save(next);
-      if (mounted) setState(() => favorites = next);
+      await owner.save(next);
+      if (mounted && identical(owner, favoritesRepository)) {
+        setState(() => favorites = next);
+      }
     } catch (_) {
-      if (mounted) {
+      if (mounted && identical(owner, favoritesRepository)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Não foi possível salvar o favorito.')),
         );
@@ -149,10 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     final group = title == 'TV ao Vivo' ? 'TV aberta' : title;
+    final accountUid = widget.accountUid;
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => LiveTvScreen(
+          accountUid: accountUid,
           initialGroup: group,
           repository: widget.repository,
           laboratoryFeatures: widget.laboratoryFeatures,
@@ -268,10 +290,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (widget.previewOnly) {
                                     _open('TV ao Vivo');
                                   } else {
+                                    final accountUid = widget.accountUid;
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => LiveTvScreen(
+                                          accountUid: accountUid,
                                           repository: widget.repository,
                                           laboratoryFeatures:
                                               widget.laboratoryFeatures,

@@ -144,6 +144,8 @@ void main() {
       return;
     }
     expect(find.byType(HomeScreen), findsOneWidget);
+    expect(tester.widget<HomeScreen>(find.byType(HomeScreen)).accountUid,
+        'verified');
     final navigator = Navigator.of(tester.element(find.byType(HomeScreen)));
     unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) =>
       const Scaffold(body: Text('Conteúdo privado')))));

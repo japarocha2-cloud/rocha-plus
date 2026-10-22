@@ -42,11 +42,18 @@ class ValidatedLabRepository extends ChannelRepository {
         }
         final result = Map<String, dynamic>.from(row['result'] as Map);
         final record = LabRecord.fromJson(result);
-        final confirmation =
-            (result['measuredEvidence'] as Map)['confirmation'] as Map;
-        if (record.preferred == null ||
-            confirmation['changingPixelsObserved'] != true ||
-            confirmation['audioOutputObserved'] != true ||
+        final preferred = record.preferred;
+        final evidence = result['measuredEvidence'] as Map;
+        bool observed(String phase) {
+          final sample = evidence[phase];
+          return sample is Map &&
+              sample['changingPixelsObserved'] == true &&
+              sample['audioOutputObserved'] == true;
+        }
+        if (preferred == null ||
+            result['preferred'] != preferred.name ||
+            !observed(preferred == LabEngine.exoPlayer ? 'exo' : 'vlc') ||
+            !observed('confirmation') ||
             record.channelUrl != row['url']) {
           continue;
         }

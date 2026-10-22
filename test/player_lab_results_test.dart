@@ -110,6 +110,43 @@ void main() {
     expect(result.audioTrackDetected, isTrue);
   });
 
+  test('stable phase wins over a longer failed phase', () {
+    final stable = sample(LabEngine.exoPlayer, progress: 55);
+    final failed = sample(
+      LabEngine.libVlc,
+      progress: 60,
+      error: 'decoder failure',
+    );
+    expect(chooseLabWinner(stable, failed), LabEngine.exoPlayer);
+  });
+
+  test('confirmation cannot approve a failed or mislabeled initial phase', () {
+    const confirmation = LabSample(
+      engine: LabEngine.libVlc,
+      elapsedSeconds: 180,
+      startupMilliseconds: 1000,
+      bufferingMilliseconds: 0,
+      stalls: 0,
+      progressSeconds: 175,
+      videoTrackDetected: true,
+      audioTrackDetected: true,
+    );
+    LabRecord record(LabSample initial) => LabRecord(
+      channelName: 'Canal',
+      channelUrl: 'https://example.org/live',
+      group: 'LAB',
+      testedAt: DateTime.utc(2026),
+      exo: sample(LabEngine.exoPlayer, progress: 55),
+      vlc: initial,
+      confirmation: confirmation,
+    );
+    expect(record(sample(LabEngine.libVlc, progress: 0)).preferred, isNull);
+    expect(record(sample(LabEngine.exoPlayer, progress: 55)).preferred, isNull);
+    expect(record(sample(LabEngine.libVlc, progress: 55)).preferred,
+        LabEngine.libVlc);
+    expect(sample(LabEngine.libVlc, progress: 100).stableFor(60), isFalse);
+  });
+
   test(
     'result survives repository reload and keeps separate regional URLs',
     () async {

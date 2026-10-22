@@ -1,8 +1,17 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'channel.dart';
 
 class FavoritesRepository {
-  static const _key = 'favorite_channel_urls';
+  /// Capture identity synchronously. Async reads/writes never consult a mutable
+  /// login session, and the unowned legacy global list is never imported.
+  FavoritesRepository({String? accountUid})
+    : _key = accountUid == null || accountUid.isEmpty
+          ? 'favorite_channel_urls_v2:guest'
+          : 'favorite_channel_urls_v2:uid:${base64Url.encode(utf8.encode(accountUid))}';
+
+  final String _key;
 
   Future<Set<String>> load() async {
     final prefs = await SharedPreferences.getInstance();

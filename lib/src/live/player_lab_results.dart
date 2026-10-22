@@ -37,8 +37,13 @@ class LabSample {
 
   bool get hasProgress => progressSeconds > 0;
   bool stableFor(int seconds) =>
+      seconds > 0 &&
       elapsedSeconds >= seconds &&
+      startupMilliseconds >= 0 &&
+      bufferingMilliseconds >= 0 &&
+      stalls >= 0 &&
       progressSeconds >= seconds * 0.8 &&
+      progressSeconds <= elapsedSeconds &&
       videoTrackDetected &&
       error == null &&
       bufferingMilliseconds <= seconds * 100 &&
@@ -101,8 +106,15 @@ class LabRecord {
   });
 
   /// An inconclusive test must not override the working production player.
-  LabEngine? get preferred =>
-      confirmation.stableFor(180) ? confirmation.engine : null;
+  LabEngine? get preferred {
+    if (exo.engine != LabEngine.exoPlayer || vlc.engine != LabEngine.libVlc) {
+      return null;
+    }
+    final initial = confirmation.engine == LabEngine.exoPlayer ? exo : vlc;
+    return initial.stableFor(60) && confirmation.stableFor(180)
+        ? confirmation.engine
+        : null;
+  }
 
   LabRecord withHumanCheck({required bool picture, required bool sound}) =>
       LabRecord(
@@ -193,6 +205,14 @@ class PlayerLabResults {
 }
 
 LabEngine chooseLabWinner(LabSample exo, LabSample vlc) {
+  final exoStable = exo.stableFor(60);
+  final vlcStable = vlc.stableFor(60);
+  if (exoStable != vlcStable) {
+    return exoStable ? LabEngine.exoPlayer : LabEngine.libVlc;
+  }
+  if ((exo.error == null) != (vlc.error == null)) {
+    return exo.error == null ? LabEngine.exoPlayer : LabEngine.libVlc;
+  }
   if (!vlc.hasProgress && exo.hasProgress) return LabEngine.exoPlayer;
   if (!exo.hasProgress && vlc.hasProgress) return LabEngine.libVlc;
   return vlc.score > exo.score ? LabEngine.libVlc : LabEngine.exoPlayer;

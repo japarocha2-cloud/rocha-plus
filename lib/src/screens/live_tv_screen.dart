@@ -16,11 +16,13 @@ class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
   final ChannelRepository? repository;
   final bool laboratoryFeatures;
+  final String? accountUid;
   const LiveTvScreen({
     super.key,
     this.initialGroup = 'Todos',
     this.repository,
     this.laboratoryFeatures = false,
+    this.accountUid,
   });
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
@@ -30,7 +32,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   late final ChannelRepository repository;
   bool scanning = false;
   Map<String, ChannelReachability> reachability = {};
-  final favoritesRepository = FavoritesRepository();
+  late FavoritesRepository favoritesRepository;
   final search = TextEditingController();
   List<Channel> channels = const [];
   Set<String> favorites = {};
@@ -42,12 +44,24 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   void initState() {
     super.initState();
+    favoritesRepository = FavoritesRepository(accountUid: widget.accountUid);
     repository = widget.repository ?? ChannelRepository();
     selectedGroup = widget.initialGroup;
     load();
   }
 
+  @override
+  void didUpdateWidget(covariant LiveTvScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountUid != widget.accountUid) {
+      favoritesRepository = FavoritesRepository(accountUid: widget.accountUid);
+      favorites = {};
+      load();
+    }
+  }
+
   Future<void> load({bool forceRefresh = false}) async {
+    final owner = favoritesRepository;
     setState(() {
       loading = true;
       error = null;
@@ -55,9 +69,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     try {
       final results = await Future.wait([
         repository.loadBrazilPublicDirectory(forceRefresh: forceRefresh),
-        favoritesRepository.load(),
+        owner.load(),
       ]);
-      if (mounted) {
+      if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
           channels = results[0] as List<Channel>;
           favorites = results[1] as Set<String>;
@@ -66,7 +80,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         });
       }
     } catch (_) {
-      if (mounted) {
+      if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
           error = 'Não foi possível carregar os canais.';
           loading = false;
@@ -115,12 +129,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   }
 
   Future<void> toggleFavorite(Channel channel) async {
+    final owner = favoritesRepository;
     final next = {...favorites};
     next.contains(channel.url)
         ? next.remove(channel.url)
         : next.add(channel.url);
     setState(() => favorites = next);
-    await favoritesRepository.save(next);
+    await owner.save(next);
   }
 
   @override

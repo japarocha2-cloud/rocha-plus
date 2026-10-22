@@ -55,7 +55,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
               : !RochaReleasePolicy.paidSubscriptionRequired
-                  ? HomeScreen(onSignOut: () async {
+                  ? HomeScreen(accountUid: controller.account!.uid, onSignOut: () async {
                       await controller.signOut();
                       if (controller.account != null) throw StateError('Sign-out failed');
                     })
@@ -114,7 +114,7 @@ class _SubscriptionGateState extends State<_SubscriptionGate> {
     future: _allowed,
     builder: (context, snapshot) {
       if (snapshot.data == true) {
-        return HomeScreen(onSignOut: widget.onSignOut);
+        return HomeScreen(accountUid: widget.uid, onSignOut: widget.onSignOut);
       }
       return Scaffold(
         appBar: AppBar(title: const Text('Rocha+ • Assinatura')),

@@ -69,6 +69,12 @@ jobs:
           # binary on Xvfb so captured PCM comes from actual emulator output.
           emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
+            # AOSP default image is debuggable. Root only this disposable CI
+            # emulator so ALSA/kernel diagnostics are readable during playback.
+            # No application permissions or physical device are changed.
+            adb root
+            adb wait-for-device
+            adb shell id > build/lab/android/diagnostic-identity.txt
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt

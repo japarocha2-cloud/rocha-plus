@@ -121,6 +121,36 @@ def capture(run, state, out, seen):
     (out / f'{stem}.json').write_text(json.dumps(data, indent=2))
 
 
+def stable_sample(sample, engine, seconds):
+    """Validate serialized player observations independently of preferred metadata."""
+    if not isinstance(sample, dict) or sample.get('engine') != engine:
+        return False
+    fields = ['elapsedSeconds', 'startupMilliseconds', 'bufferingMilliseconds',
+              'stalls', 'progressSeconds']
+    if any(type(sample.get(key)) not in (int, float) or
+           not math.isfinite(sample[key]) or sample[key] < 0 for key in fields):
+        return False
+    return (sample['elapsedSeconds'] >= seconds and
+            seconds * 0.8 <= sample['progressSeconds'] <= sample['elapsedSeconds'] and
+            sample.get('videoTrackDetected') is True and
+            sample.get('error') is None and
+            sample['bufferingMilliseconds'] <= seconds * 100 and
+            sample['stalls'] <= 3)
+
+
+def selected_phase(record):
+    """A successful confirmation cannot replace the initial 60-second phase."""
+    engine = record.get('preferred')
+    phase = {'exoPlayer': 'exo', 'libVlc': 'vlc'}.get(engine)
+    if (phase is None or not isinstance(record.get('exo'), dict) or
+            not isinstance(record.get('vlc'), dict) or
+            record['exo'].get('engine') != 'exoPlayer' or
+            record['vlc'].get('engine') != 'libVlc'):
+        return None
+    return phase if (stable_sample(record.get(phase), engine, 60) and
+                     stable_sample(record.get('confirmation'), engine, 180)) else None
+
+
 def consolidate(records, out):
     import numpy as np
     from PIL import Image
@@ -157,7 +187,10 @@ def consolidate(records, out):
                                'meanAbsoluteFrameDifferences': differences,
                                'changingPixelsObserved': motion,
                                'audioOutputObserved': pcm, 'audio': audio}
-        auto_pass = record.get('preferred') is not None and evidence['confirmation']['changingPixelsObserved'] and evidence['confirmation']['audioOutputObserved']
+        selected = selected_phase(record)
+        auto_pass = selected is not None and all(
+            evidence[phase]['changingPixelsObserved'] and evidence[phase]['audioOutputObserved']
+            for phase in [selected, 'confirmation'])
         reports.append(dict(record, measuredEvidence=evidence,
                             automaticAudiovisualPass=auto_pass, productionApproved=False))
     (out / 'measured-results.json').write_text(json.dumps(reports, indent=2))
