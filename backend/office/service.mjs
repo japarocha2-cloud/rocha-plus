@@ -9,7 +9,7 @@ export const recordKey = value => createHash('sha256').update(value).digest('hex
 const fail = (status, message) => { throw new AccessError(status, message); };
 const text = (value, max = 200) => typeof value === 'string' && value.length > 0 && value.length <= max;
 const actions = ['activate', 'access', 'deactivate'];
-function deviceKey(jwk) {
+export function deviceKey(jwk) {
   if (!jwk || jwk.kty !== 'EC' || jwk.crv !== 'P-256' || jwk.d ||
       ![jwk.x, jwk.y].every(v => typeof v === 'string' && /^[\w-]{43}$/.test(v))) {
     fail(400, 'Invalid installation public key');
@@ -23,13 +23,15 @@ const licensed = state => state.payments.some(p => p.product === PRODUCT && p.st
 
 /** transact must atomically read/write UID, payment, challenge and audit records. */
 export function createOfficeService({ verifyToken, store, now = Date.now,
-  random = () => randomBytes(32).toString('base64url'), issueDownload }) {
+  random = () => randomBytes(32).toString('base64url'), issueDownload, findAccount }) {
   async function identity(header) {
     if (typeof header !== 'string' || !/^Bearer \S+$/.test(header)) fail(401, 'Unauthorized');
     let actor;
     try { actor = await verifyToken(header.slice(7), true); } catch { fail(401, 'Unauthorized'); }
-    if (!text(actor?.uid, 128) || actor.firebase?.sign_in_provider !== 'google.com' ||
-        actor.email_verified !== true) fail(401, 'Verified Google account required');
+    const provider = actor?.firebase?.sign_in_provider;
+    const google = provider === 'google.com' || (provider === 'custom' &&
+      actor.officeGoogleBridge === true && /^[a-f0-9]{64}$/.test(actor.officeDeviceId ?? ''));
+    if (!text(actor?.uid, 128) || !google || actor.email_verified !== true) fail(401, 'Verified Google account required');
     return actor;
   }
   return async ({ method, path, authorization, body = {} }) => {
@@ -45,6 +47,7 @@ export function createOfficeService({ verifyToken, store, now = Date.now,
     if (path === '/v1/office/challenge' && method === 'POST') {
       if (!actions.includes(body.action)) fail(400, 'Invalid action');
       const key = deviceKey(body.publicKey);
+      if (actor.firebase.sign_in_provider === 'custom' && actor.officeDeviceId !== key.id) fail(403, 'Installation session mismatch');
       if (body.label !== undefined && !text(body.label, 80)) fail(400, 'Invalid installation label');
       const challengeId = random();
       const challenge = { uid: actor.uid, deviceId: key.id, publicKey: key.jwk,
@@ -106,8 +109,16 @@ export function createOfficeService({ verifyToken, store, now = Date.now,
       return result;
     }
     if (method !== 'POST' || !['/v1/office/admin/confirm', '/v1/office/admin/refund',
-      '/v1/office/admin/revoke-device'].includes(path)) fail(404, 'Not found');
-    if (actor.rochaOfficeAdmin !== true) fail(403, 'Office administrator required');
+      '/v1/office/admin/revoke-device', '/v1/office/admin/lookup'].includes(path)) fail(404, 'Not found');
+    if (actor.rochaOfficeAdmin !== true || actor.firebase.sign_in_provider !== 'google.com') fail(403, 'Office administrator required');
+    if (path.endsWith('/lookup')) {
+      if (!text(body.email, 254) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email) || typeof findAccount !== 'function') fail(400, 'Valid Google email required');
+      let buyer;
+      try { buyer = await findAccount(body.email.trim().toLowerCase()); } catch { fail(404, 'Google account not found'); }
+      if (!text(buyer?.uid, 128) || buyer.emailVerified !== true || buyer.disabled || !buyer.providerData?.some(p => p.providerId === 'google.com')) fail(404, 'Verified Google account not found');
+      return store.transact(buyer.uid, {}, state => ({ uid: buyer.uid, email: buyer.email,
+        licensed: licensed(state), devices: Object.entries(state.account?.devices ?? {}).map(([id, d]) => ({ id, label: d.label })) }));
+    }
     if (!text(body.uid, 128) || !text(body.evidenceReference, 500)) fail(400, 'Evidence required');
     if (path.endsWith('/revoke-device')) {
       if (!text(body.deviceId, 64) || !/^[a-f0-9]{64}$/.test(body.deviceId)) fail(400, 'Invalid device');

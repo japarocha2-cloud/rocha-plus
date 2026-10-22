@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync, sign, webcrypto } from 'node:crypto';
 import { once } from 'node:events';
-import { createOfficeService, PRODUCT } from './service.mjs';
+import { createOfficeService, PRODUCT, deviceKey } from './service.mjs';
 import { createHttpServer } from './http_server.mjs';
 import { installation, officeClient } from '../../office/src/license-client.mjs';
 
@@ -50,7 +50,7 @@ function fixture(options = {}) {
   const complete = (d, c, action = 'activate', body = {}, token = 'alice') => req(action, { challengeId: c.challengeId, signature: d.sign(c.message), ...body }, token);
   const prove = async (d, action = 'activate', body = {}, token = 'alice') => complete(d, await challenge(d, action, token), action, body, token);
   return { access, req, approve, refund, me, challenge, complete, prove, payment, calls,
-    records: () => records, advance: ms => { time += ms; } };
+    tokens, records: () => records, advance: ms => { time += ms; } };
 }
 
 test('only verified Google ID tokens are accepted, with revocation checking', async () => {
@@ -187,4 +187,27 @@ test('private installation key cannot be exported and service errors never grant
   const client = officeClient({ endpoint: 'https://office.example', getToken: async () => 'alice',
     installation: device(), fetch: async () => new Response('{"allowed":false}', { status: 503 }) });
   await assert.rejects(client.prove('access'));
+});
+
+test('paired session is scoped to its installation and cannot approve a purchase', async () => {
+  const f = fixture(), d = device(); await f.approve();
+  f.tokens.bridge = { uid: 'alice-uid', email_verified: true, firebase: { sign_in_provider: 'custom' },
+    officeGoogleBridge: true, officeDeviceId: deviceKey(d.publicKey).id, rochaOfficeAdmin: true };
+  assert.equal((await f.prove(d, 'activate', {}, 'bridge')).allowed, true);
+  await status(f.prove(device(), 'activate', {}, 'bridge'), 403);
+  await status(f.approve({}, 'bridge'), 403);
+});
+test('only Office operator can locate a verified Google buyer; supplied UID is ignored', async () => {
+  const emails=[];
+  const f=fixture({ findAccount: async email=>{emails.push(email);return {uid:'google-found',email,emailVerified:true,disabled:false,providerData:[{providerId:'google.com'}]};} });
+  await status(f.req('admin/lookup',{email:'buyer@example.test'},'alice'),403);
+  assert.equal(emails.length,0);
+  const result=await f.req('admin/lookup',{email:'Buyer@Example.Test',uid:'forged'},'admin');
+  assert.equal(result.uid,'google-found');assert.deepEqual(emails,['buyer@example.test']);
+  assert.equal(result.licensed,false);
+});
+test('unverified or non-Google buyer lookup cannot create a license', async()=>{
+  const f=fixture({findAccount:async()=>({uid:'x',emailVerified:false,providerData:[{providerId:'password'}]})});
+  await status(f.req('admin/lookup',{email:'buyer@example.test'},'admin'),404);
+  assert.equal(f.records().payments.size,0);
 });

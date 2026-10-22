@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+const root = readFileSync('dist/index.html', 'utf8');
+const editor = readFileSync('dist/editor.html', 'utf8');
+const config = JSON.parse(readFileSync('dist/office-public-config.json', 'utf8'));
+assert.equal(config.commercial, true);
+assert.ok(root.includes('Seu Office, na sua conta.') && !root.includes('contenteditable'));
+assert.ok(editor.includes("'office:'+ns+':'+k"));
+assert.ok(editor.includes('window.officeStorage=parent.officeStorage'));
+assert.ok(existsSync('dist/portal.html'));
+assert.ok(!readFileSync('dist/portal.html', 'utf8').includes('contenteditable'));
+console.log('Commercial shell excludes editor until authorization; account storage and approval portal verified.');

@@ -4,6 +4,7 @@ service cloud.firestore {
     match /rochaOfficeLicenses/{id} { allow read, write: if false; }
     match /rochaOfficePayments/{id} { allow read, write: if false; }
     match /rochaOfficeChallenges/{id} { allow read, write: if false; }
+    match /rochaOfficePairings/{id} { allow read, write: if false; }
     match /rochaOfficeAudit/{id} { allow read, write: if false; }
   }
 }

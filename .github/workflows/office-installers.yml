@@ -18,7 +18,22 @@ jobs:
         working-directory: backend/office
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Test Office account, device proof and payment rules
-        run: node --test backend/office/*.test.mjs
+        run: node --test backend/office/*.test.mjs office/test/*.test.mjs
+      - name: Install locked Office client dependencies
+        working-directory: office
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify commercial shell with non-production fixture configuration
+        working-directory: office
+        env:
+          ROCHA_OFFICE_COMMERCIAL: 'true'
+          ROCHA_OFFICE_LICENSE_URL: https://office-test.example
+          ROCHA_OFFICE_PORTAL_URL: https://site-test.example/activate/
+          ROCHA_OFFICE_FIREBASE_JSON: '{"projectId":"rocha-plus","apiKey":"public-test-fixture","authDomain":"rocha-plus.firebaseapp.com","appId":"test-only"}'
+        run: |
+          npm run build
+          node tools/check-commercial-build.mjs
   android:
     runs-on: ubuntu-latest
     defaults:

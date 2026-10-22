@@ -2,6 +2,8 @@ import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { createOfficeService, recordKey } from './service.mjs';
+import { officeTokenVerifier } from './auth-boundary.mjs';
+import { createPairingService } from './pairing.mjs';
 import { createHttpServer } from './http_server.mjs';
 if (!process.env.GOOGLE_CLOUD_PROJECT) throw new Error('Configure experimental GOOGLE_CLOUD_PROJECT');
 if (process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST) {
@@ -28,9 +30,27 @@ const store = { transact(uid, { paymentId, challengeId }, callback) {
     });
   });
 }};
+const verifyToken = officeTokenVerifier({ verifyIdToken: (token, revoked) => getAuth().verifyIdToken(token, revoked), getUser: uid => getAuth().getUser(uid) });
 const access = createOfficeService({
-  verifyToken: (token, checkRevoked) => getAuth().verifyIdToken(token, checkRevoked), store,
+  verifyToken, store, findAccount: email => getAuth().getUserByEmail(email),
   // Commercial files are deliberately not public. No signer is enabled until
   // private artifacts are validated and a scoped server storage identity exists.
 });
-createHttpServer({ access, allowedOrigins: JSON.parse(process.env.ROCHA_OFFICE_ORIGINS ?? '[]') }).listen(Number(process.env.PORT ?? 8081), '127.0.0.1');
+const pairing = process.env.ROCHA_OFFICE_PORTAL_URL ? createPairingService({
+  verifyToken, licenseStore: store, portalUrl: process.env.ROCHA_OFFICE_PORTAL_URL,
+  store: { transact(id, callback) {
+    return db.runTransaction(async tx => {
+      const ref = db.collection('rochaOfficePairings').doc(recordKey(id));
+      const doc = await tx.get(ref);
+      return callback({ record: doc.exists ? doc.data() : null,
+        set: record => tx.set(ref, { ...record, expiresAt: new Date(record.expiresAtMs) }) });
+    });
+  } },
+  mintSession: async ({ uid, deviceId, googleAuthTime }) => {
+    const user = await getAuth().getUser(uid);
+    const validAfter = Date.parse(user.tokensValidAfterTime);
+    if (user.disabled || !Number.isFinite(validAfter) || googleAuthTime * 1000 < validAfter) throw new Error('Google approval revoked');
+    return getAuth().createCustomToken(uid, { officeGoogleBridge: true, officeDeviceId: deviceId, officeGoogleAuthTime: googleAuthTime });
+  },
+}) : null;
+createHttpServer({ access: req => req.path.startsWith('/v1/office/pair/') && pairing ? pairing(req) : access(req), allowedOrigins: JSON.parse(process.env.ROCHA_OFFICE_ORIGINS ?? '[]') }).listen(Number(process.env.PORT ?? 8081), '127.0.0.1');

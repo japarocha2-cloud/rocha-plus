@@ -1,6 +1,6 @@
 # Office: liberação por conta Google — experimental
 
-O preço de R$49,90 é único para o pacote inteiro. Não há licença separada por módulo. O UID vem de um token Firebase Google verificado pelo Admin SDK com `checkRevoked=true`, nunca de um e-mail ou UID enviado pelo comprador.
+O preço de R$49,90 é único para o pacote inteiro. Não há licença separada por módulo. O UID vem de uma sessão Firebase verificada pelo Admin SDK com `checkRevoked=true`, nunca de um e-mail ou UID enviado pelo comprador. A sessão pode ser Google direta (portal) ou uma sessão restrita da instalação, emitida após confirmação Google no navegador externo.
 
 ## Implementado
 
@@ -26,9 +26,25 @@ Somente um operador autorizado deve atribuir a claim `rochaOfficeAdmin`. Não at
 ## O que ainda impede ativação comercial
 
 1. Acesso ao Firebase e identidade de serviço não estão disponíveis nesta sessão; não houve implantação, criação de claims nem teste Google real.
-2. O módulo cliente de prova está preparado, mas os instaladores LAB ainda não usam uma tela Google e um bloqueio comercial. Eles continuam experimentais e não devem ser distribuídos como produto pago protegido.
-3. É necessário conectar portal, painel de aprovação e adaptadores de login Android/Windows, remover o editor da memória ao sair/revogar e validar com contas reais.
+2. A tela comercial, o controlador de acesso, o pareamento no navegador e o painel administrativo estão conectados em código. O build padrão continua LAB e sem bloqueio; o modo comercial exige configuração HTTPS e Firebase explícita. Os instaladores LAB não devem ser distribuídos como produto pago protegido.
+3. É necessário publicar o portal/painel com a configuração real, habilitar o serviço, autorizar o domínio Google e testar Android/Windows reais. Ao sair/trocar conta o frame do editor é descartado. Falha de verificação pausa o frame e conserva o trabalho não salvo; uma nova autorização da mesma conta pode retomá-lo. A verificação comercial preparada exige conexão ao servidor e é repetida a cada minuto, com timeout de 12 segundos.
 4. Preparar arquivos comerciais assinados em armazenamento privado e habilitar o assinador somente para os dois destinos fixos. Uma URL temporária já emitida pode continuar válida até expirar (máximo 60 segundos neste contrato); não prometer revogação instantânea de cópias baixadas.
 5. Testar edição, salvar/exportar e impressão nos dispositivos reais e o fluxo compra → conferência → conta correta → duas instalações → terceiro bloqueado → estorno.
 
 Nenhum pagamento real foi aprovado, nenhuma licença de comprador foi criada e nenhuma cobrança foi ativada por estes testes.
+
+## Entrada Google no Android e Windows
+
+`ROCHA_OFFICE_PORTAL_URL` habilita os endpoints `/v1/office/pair/start`, `/approve` e `/finish`. Não habilitar antes de configurar HTTPS e limitação de requisições na entrada pública. O par expira em dois minutos; é necessário digitar no navegador o código exibido pelo programa. O navegador confirma uma sessão Google verificada e uma compra aprovada. Só a chave privada da instalação, junto do segredo de consulta, resgata a sessão uma vez. Segredos e tokens não entram em URLs.
+
+O Firebase Admin emite um custom token contendo UID, instalação e horário da autenticação Google original. A sessão resultante só comprova essa instalação e não pode aprovar pagamentos. O verificador compara também o horário original com `tokensValidAfterTime`, evitando que uma troca tardia de custom token contorne uma revogação anterior. O serviço precisa da permissão IAM de assinatura necessária ao `createCustomToken` do Firebase Admin.
+
+O portal e o painel usam Google pelo navegador normal. O Android abre o navegador via Capacitor Browser; o Electron usa uma ponte restrita ao URL de confirmação configurado. Não há Google OAuth dentro de um WebView embutido. O painel só aparece para `rochaOfficeAdmin=true`, mas a autorização efetiva é repetida pelo servidor para cada operação. Busca comprador Google por e-mail, confirma o pacote de R$49,90, registra estorno já realizado e revoga instalações. Nenhum desses botões movimenta dinheiro.
+
+Para o Electron com arquivos locais, a origem `null` pode ser explicitamente incluída em `ROCHA_OFFICE_ORIGINS`; ela não é aceita nas rotas administrativas nem na aprovação Google do pareamento. As rotas de comprador continuam exigindo token e prova criptográfica. Adicionar a origem real do portal e a origem nativa Android configurada. Configurar TTL de `rochaOfficePairings.expiresAt`, além dos desafios de instalação.
+
+## Verificação desta etapa
+
+39 testes locais passaram: regras, HTTP, SDK Firebase negativo, pareamento criptográfico, controlador do editor, concorrência, conta divergente e configuração do build. O cliente e o servidor usam assinaturas reais nos testes; identidades Google válidas e banco são simulados. A compilação comercial com dados fictícios confirmou separação entre tela de acesso e editor e namespace de dados por conta, inclusive no financeiro incorporado. A prévia HTTP interna não oferece WebCrypto; ela mostrou o editor fechado nessa condição, sem comprovar login real.
+
+Não houve implantação em nuvem, teste de conta Google legítima, assinatura comercial de arquivos, liberação de download pago ou ativação de cobrança.

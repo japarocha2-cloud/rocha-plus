@@ -41,6 +41,7 @@ function jsonBody(req) {
 export function createHttpServer({ access, allowedOrigins = [] }) {
   const origins = new Set(allowedOrigins);
   for (const origin of origins) {
+    if (origin === 'null') continue; // Optional Electron file origin; bearer + device proof remain mandatory.
     const url = new URL(origin);
     if (url.protocol !== "https:" || url.origin !== origin) throw new Error("Exact HTTPS Office origin required");
   }
@@ -53,7 +54,7 @@ export function createHttpServer({ access, allowedOrigins = [] }) {
       const origin = req.headers.origin;
       res.setHeader('Vary', 'Origin');
       if (origin) {
-        if (!origins.has(origin)) throw new AccessError(403, 'Origin not allowed');
+        if (!origins.has(origin) || (origin === 'null' && (req.url.includes('/admin/') || req.url === '/v1/office/pair/approve'))) throw new AccessError(403, 'Origin not allowed');
         res.setHeader('Access-Control-Allow-Origin', origin);
       }
       if (req.method === 'OPTIONS') {
