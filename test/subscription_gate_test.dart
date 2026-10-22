@@ -16,13 +16,17 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
   final streams = <int, StreamController<VideoEvent>>{};
   final playing = <int>{};
   final disposed = <int>[];
+  final events = <String>[];
 
   @override
   Future<void> init() async {}
   @override
   Future<int?> create(DataSource dataSource) async {
     final id = nextId++;
-    final stream = StreamController<VideoEvent>();
+    events.add('create:$id');
+    final stream = StreamController<VideoEvent>(onCancel: () {
+      events.add('events-cancel:$id');
+    });
     streams[id] = stream;
     stream.add(VideoEvent(
       eventType: VideoEventType.initialized,
@@ -33,6 +37,7 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
   }
   @override
   Future<void> dispose(int playerId) async {
+    events.add('native-dispose:$playerId');
     disposed.add(playerId);
     playing.remove(playerId);
     await streams.remove(playerId)?.close();
@@ -40,9 +45,15 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
   @override
   Stream<VideoEvent> videoEventsFor(int playerId) => streams[playerId]!.stream;
   @override
-  Future<void> play(int playerId) async { playing.add(playerId); }
+  Future<void> play(int playerId) async {
+    events.add('play:$playerId');
+    playing.add(playerId);
+  }
   @override
-  Future<void> pause(int playerId) async { playing.remove(playerId); }
+  Future<void> pause(int playerId) async {
+    events.add('pause:$playerId');
+    playing.remove(playerId);
+  }
   @override
   Future<Duration> getPosition(int playerId) async => Duration.zero;
   @override
@@ -72,11 +83,58 @@ Widget gateApp(AccessVerifier verify, {String uid = 'one', bool fullscreen = fal
       homeBuilder: (context) => Scaffold(body: TextButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) =>
-              PlayerScreen(channel: fixtureChannel, initiallyFullscreen: fullscreen)));
+              PlaybackLifecycleProbe(
+                events: (VideoPlayerPlatform.instance as RecordingVideoPlatform).events,
+                child: PlayerScreen(channel: fixtureChannel, initiallyFullscreen: fullscreen),
+              )));
         },
         child: Text('Abrir player $uid'),
       )),
     ));
+
+class PlaybackLifecycleProbe extends StatefulWidget {
+  final List<String> events;
+  final Widget child;
+  const PlaybackLifecycleProbe({super.key, required this.events, required this.child});
+  @override
+  State<PlaybackLifecycleProbe> createState() => _PlaybackLifecycleProbeState();
+}
+
+class _PlaybackLifecycleProbeState extends State<PlaybackLifecycleProbe> {
+  @override
+  void deactivate() {
+    widget.events.add('route-deactivate');
+    super.deactivate();
+  }
+  @override
+  void dispose() {
+    widget.events.add('route-dispose');
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+Future<void> pumpUntil(WidgetTester tester, bool Function() condition,
+    RecordingVideoPlatform video, String phase) async {
+  // Navigator/Overlay removal and VideoPlayerController disposal are async.
+  // Keep a strict two-second bound and all native disposal assertions.
+  for (var frame = 0; frame < 40 && !condition(); frame++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+  expect(condition(), isTrue, reason: '$phase did not complete within 2 seconds; '
+      'players including offstage=${find.byType(PlayerScreen, skipOffstage: false).evaluate().length}; '
+      'playing=${video.playing}; disposed=${video.disposed}; events=${video.events}');
+}
+
+Future<void> expectPlaybackStopped(WidgetTester tester, RecordingVideoPlatform video) async {
+  await pumpUntil(tester, () =>
+      find.byType(PlayerScreen, skipOffstage: false).evaluate().isEmpty &&
+      video.disposed.contains(0) && video.playing.isEmpty,
+      video, 'protected route destruction and platform disposal');
+  expect(video.events, contains('route-dispose'));
+  expect(video.events, contains('events-cancel:0'));
+}
 
 Future<void> flush(WidgetTester tester) async {
   await tester.pump();
@@ -87,8 +145,13 @@ Future<void> flush(WidgetTester tester) async {
 Future<void> openPlayer(WidgetTester tester, RecordingVideoPlatform video) async {
   await tester.tap(find.text('Abrir player one'));
   await flush(tester);
-  expect(find.byType(PlayerScreen), findsOneWidget);
-  expect(video.playing, hasLength(1));
+  await pumpUntil(tester, () {
+    final players = find.byType(PlayerScreen);
+    if (players.evaluate().length != 1 || video.playing.length != 1) return false;
+    return ModalRoute.of(tester.element(players))?.animation?.isCompleted == true;
+  }, video, 'player route entrance');
+  // Let NavigationNotification reach the parent PopScope before system Back.
+  await tester.pump();
 }
 
 void main() {
@@ -122,6 +185,7 @@ void main() {
     await tester.pump(const Duration(minutes: 1));
     await flush(tester);
     expect(find.byType(PlayerScreen), findsNothing);
+    await expectPlaybackStopped(tester, video);
     expect(video.disposed, contains(0));
     expect(video.playing, isEmpty);
     expect(find.textContaining('Acesso não liberado'), findsOneWidget);
@@ -149,6 +213,7 @@ void main() {
     await tester.pump(const Duration(minutes: 1));
     await flush(tester);
     expect(find.byType(PlayerScreen), findsNothing);
+    await expectPlaybackStopped(tester, video);
     expect(video.disposed, contains(0));
     expect(video.playing, isEmpty);
     expect(find.textContaining('Acesso não liberado'), findsOneWidget);
@@ -166,6 +231,7 @@ void main() {
     await tester.pump(const Duration(minutes: 1));
     await tester.pump(const Duration(seconds: 13));
     await flush(tester);
+    await expectPlaybackStopped(tester, video);
     expect(video.playing, isEmpty);
     expect(video.disposed, contains(0));
     expect(find.byType(PlayerScreen), findsNothing);
@@ -197,6 +263,7 @@ void main() {
     await openPlayer(tester, video);
     await tester.binding.handlePopRoute();
     await flush(tester);
+    await expectPlaybackStopped(tester, video);
     expect(find.byType(PlayerScreen), findsNothing);
     expect(find.text('Abrir player one'), findsOneWidget);
     expect(video.disposed, contains(0));
@@ -221,6 +288,7 @@ void main() {
     pendingOldUid.complete(true);
     await flush(tester);
     expect(find.byType(PlayerScreen), findsNothing);
+    await expectPlaybackStopped(tester, video);
     expect(video.playing, isEmpty);
     expect(video.disposed, contains(0));
     expect(find.text('Abrir player two'), findsNothing);

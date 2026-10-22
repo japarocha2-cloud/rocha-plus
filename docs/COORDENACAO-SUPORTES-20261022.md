@@ -70,3 +70,9 @@ O estado de lançamento permanece VERMELHO até áudio Android comprovado e assi
 [Build 39789137900](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39789137900), job `119860156473`, parou na análise por sete ocorrências de `prefer_function_declarations_over_variables` em `test/subscription_gate_test.dart`. Não houve erro de tipo ou compilação apontado nessa etapa; os testes Flutter e a geração de APK foram pulados. O job Node de direitos passou. O laboratório `39789137922` ainda não tinha jobs na consulta, pois aguarda a execução anterior do mesmo grupo.
 
 O hotfix substitui as sete closures nomeadas por declarações locais de função; não suprime o analisador e não modifica código de produção ou exigências dos testes. `git diff --check` passou. Resultado da nova análise e dos testes deve ser conferido no próximo CI, sem aprovação antecipada.
+
+### Resultado do `86655f0` e instrumentação do descarte
+
+[Build 39789955824](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39789955824): Analyze passou; Node passou; Flutter registrou **136 testes passando e cinco falhando**, todos no novo arquivo do gate. Falhas: descarte após expiração, erro, timeout e mudança de UID; retorno por Voltar. Os testes de Cast passaram nessa execução. O APK não foi gerado por esse build.
+
+Os testes agora registram desativação/descarte da rota, cancelamento dos eventos de vídeo e chamada de descarte da plataforma. A checagem inclui widgets fora da tela (`skipOffstage: false`) e aguarda as condições completas com limite de dois segundos; também verifica término da animação de entrada antes de Voltar. Nenhum assert de encerramento foi removido, nenhum teste foi pulado e nenhum código de produção foi alterado neste diagnóstico. O próximo CI deve distinguir espera assíncrona insuficiente de falha real; o gate permanece sem aprovação até o resultado.
