@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:video_player/video_player.dart' show VideoPlayerController;
 
 import 'package:rocha_plus/src/auth/subscription_gate.dart';
 import 'package:rocha_plus/src/live/channel.dart';
@@ -24,9 +26,17 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
   Future<int?> create(DataSource dataSource) async {
     final id = nextId++;
     events.add('create:$id');
-    final stream = StreamController<VideoEvent>(onCancel: () {
+    // A synchronous/null onCancel makes StreamSubscription.cancel return the
+    // SDK's root-zone Future._nullFuture, which FakeAsync pumps cannot drain.
+    // Model the native asynchronous cancellation explicitly in this test zone.
+    final stream = StreamController<VideoEvent>(onCancel: () async {
       events.add('events-cancel:$id');
+      await Future<void>.value();
+      events.add('events-cancel-completed:$id');
     });
+    // Allocate done in the test zone too; close after cancel must not fall back
+    // to the same root-zone singleton while completing the fake native dispose.
+    unawaited(stream.done);
     streams[id] = stream;
     stream.add(VideoEvent(
       eventType: VideoEventType.initialized,
@@ -41,6 +51,7 @@ class RecordingVideoPlatform extends VideoPlayerPlatform {
     disposed.add(playerId);
     playing.remove(playerId);
     await streams.remove(playerId)?.close();
+    events.add('native-dispose-completed:$playerId');
   }
   @override
   Stream<VideoEvent> videoEventsFor(int playerId) => streams[playerId]!.stream;
@@ -130,10 +141,13 @@ Future<void> pumpUntil(WidgetTester tester, bool Function() condition,
 Future<void> expectPlaybackStopped(WidgetTester tester, RecordingVideoPlatform video) async {
   await pumpUntil(tester, () =>
       find.byType(PlayerScreen, skipOffstage: false).evaluate().isEmpty &&
-      video.disposed.contains(0) && video.playing.isEmpty,
+      video.disposed.contains(0) && video.playing.isEmpty &&
+      video.events.contains('native-dispose-completed:0'),
       video, 'protected route destruction and platform disposal');
   expect(video.events, contains('route-dispose'));
   expect(video.events, contains('events-cancel:0'));
+  expect(video.events, contains('events-cancel-completed:0'));
+  expect(video.events, contains('native-dispose-completed:0'));
 }
 
 Future<void> flush(WidgetTester tester) async {
@@ -164,6 +178,28 @@ void main() {
     VideoPlayerPlatform.instance = video;
   });
   tearDown(() { VideoPlayerPlatform.instance = originalPlatform; });
+
+  testWidgets('platform lifecycle baseline disposes without any Navigator', (tester) async {
+    // Report only the resolved package's lock entry, never environment values.
+    final lock = File('pubspec.lock');
+    if (lock.existsSync()) {
+      final entry = RegExp(r'  video_player:\n[\s\S]*?(?=\n  \w|\nsdks:|$)')
+          .firstMatch(lock.readAsStringSync())?.group(0);
+      debugPrint('Resolved video_player lifecycle baseline: $entry');
+    }
+    final controller = VideoPlayerController.networkUrl(Uri.parse(fixtureChannel.url));
+    await controller.initialize();
+    await controller.play();
+    expect(video.playing, contains(0));
+    var disposeCompleted = false;
+    unawaited(controller.dispose().then((_) { disposeCompleted = true; }));
+    await pumpUntil(tester, () => disposeCompleted && video.playing.isEmpty &&
+        video.events.contains('events-cancel-completed:0') &&
+        video.events.contains('native-dispose-completed:0'), video, 'direct controller baseline');
+    expect(video.disposed, contains(0));
+    expect(video.events, containsAllInOrder(['events-cancel:0',
+        'events-cancel-completed:0', 'native-dispose:0', 'native-dispose-completed:0']));
+  });
 
   testWidgets('initial denial never creates protected content', (tester) async {
     Future<bool> verify(String _) async => false;

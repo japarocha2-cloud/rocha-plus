@@ -3,8 +3,9 @@ import tempfile
 import unittest
 import wave
 import hashlib
+import subprocess
 from unittest.mock import patch
-from run_android import consolidate, pcm_metrics, selected_phase, stable_sample
+from run_android import consolidate, pcm_metrics, selected_phase, stable_sample, diagnostic_output
 
 
 class EvidenceTest(unittest.TestCase):
@@ -25,6 +26,16 @@ class EvidenceTest(unittest.TestCase):
         # Python JSON integers have arbitrary precision; do not throw converting
         # them to IEEE doubles before another metric rejects the sample.
         self.assertFalse(stable_sample(dict(sample, bufferingMilliseconds=10 ** 1000), 'exoPlayer', 60))
+
+    def test_nonzero_guest_diagnostic_preserves_partial_stdout_and_error(self):
+        result = subprocess.CompletedProcess(['adb'], 1,
+                    stdout=b'card 0: virtual audio\n',
+                    stderr=b'cat: missing status: No such file or directory\n')
+        with patch('run_android.subprocess.run', return_value=result):
+            diagnostic = diagnostic_output('shell', 'cat /proc/asound/cards; cat missing')
+        self.assertIn('exitCode: 1', diagnostic)
+        self.assertIn('card 0: virtual audio', diagnostic)
+        self.assertIn('No such file or directory', diagnostic)
 
     def test_track_or_preference_without_pixels_and_pcm_cannot_pass(self):
         with tempfile.TemporaryDirectory() as d:

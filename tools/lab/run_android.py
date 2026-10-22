@@ -30,6 +30,14 @@ def adb(*args, timeout=20, binary=False):
     return p.stdout if binary else p.stdout.decode()
 
 
+def diagnostic_output(*args):
+    """Preserve partial stdout even if a guest diagnostic exits unsuccessfully."""
+    result = subprocess.run(['adb', *args], capture_output=True, timeout=20)
+    return (f'exitCode: {result.returncode}\nstdout:\n' +
+            result.stdout.decode(errors='replace') + '\nstderr:\n' +
+            result.stderr.decode(errors='replace'))
+
+
 def read_remote(run, name):
     raw = adb('exec-out', 'run-as', PACKAGE, 'cat', f'files/rocha-lab/{run}/{name}')
     try:
@@ -106,10 +114,13 @@ def capture(run, state, out, seen):
                 ('audioflinger', ['shell', 'dumpsys', 'media.audio_flinger']),
                 ('audio-policy', ['shell', 'dumpsys', 'media.audio_policy']),
                 ('audio', ['shell', 'dumpsys', 'audio']),
-                ('alsa', ['shell', 'cat /proc/asound/cards; cat /proc/asound/pcm; cat /proc/asound/card*/pcm*p/sub*/status']),
+                ('alsa-cards', ['shell', 'cat', '/proc/asound/cards']),
+                ('alsa-pcm', ['shell', 'cat', '/proc/asound/pcm']),
+                ('alsa-status', ['shell', 'cat /proc/asound/card*/pcm*p/sub*/status']),
+                ('alsa-devices', ['shell', 'ls', '-lR', '/proc/asound', '/dev/snd']),
                 ('kernel', ['shell', 'dmesg'])]:
             try:
-                diagnostic = adb(*command)
+                diagnostic = diagnostic_output(*command)
             except Exception as error:
                 diagnostic = f'Diagnostic unavailable: {error}'
             (out / f'{stem}-{label}.txt').write_text(diagnostic)
