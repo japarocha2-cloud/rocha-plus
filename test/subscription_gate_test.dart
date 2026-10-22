@@ -103,7 +103,7 @@ void main() {
   tearDown(() { VideoPlayerPlatform.instance = originalPlatform; });
 
   testWidgets('initial denial never creates protected content', (tester) async {
-    final AccessVerifier verify = (_) async => false;
+    Future<bool> verify(String _) async => false;
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     expect(find.text('Abrir player one'), findsNothing);
@@ -114,7 +114,7 @@ void main() {
 
   testWidgets('expiration removes fullscreen route and disposes its actual controller', (tester) async {
     var allowed = true;
-    final AccessVerifier verify = (_) async => allowed;
+    Future<bool> verify(String _) async => allowed;
     await tester.pumpWidget(gateApp(verify, fullscreen: true));
     await flush(tester);
     await openPlayer(tester, video);
@@ -138,10 +138,10 @@ void main() {
 
   testWidgets('network error revokes existing playback instead of retaining stale success', (tester) async {
     var networkFails = false;
-    final AccessVerifier verify = (_) async {
+    Future<bool> verify(String _) async {
       if (networkFails) throw StateError('network unavailable');
       return true;
-    };
+    }
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     await openPlayer(tester, video);
@@ -159,7 +159,7 @@ void main() {
   testWidgets('verification timeout revokes player and ignores a late positive result', (tester) async {
     var calls = 0;
     final pending = Completer<bool>();
-    final AccessVerifier verify = (_) => ++calls == 1 ? Future.value(true) : pending.future;
+    Future<bool> verify(String _) => ++calls == 1 ? Future.value(true) : pending.future;
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     await openPlayer(tester, video);
@@ -176,7 +176,7 @@ void main() {
   });
 
   testWidgets('successful periodic recheck keeps the same live controller', (tester) async {
-    final AccessVerifier verify = (_) async => true;
+    Future<bool> verify(String _) async => true;
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     await openPlayer(tester, video);
@@ -191,7 +191,7 @@ void main() {
   });
 
   testWidgets('system back pops protected player without bypassing its gate', (tester) async {
-    final AccessVerifier verify = (_) async => true;
+    Future<bool> verify(String _) async => true;
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     await openPlayer(tester, video);
@@ -208,10 +208,10 @@ void main() {
   testWidgets('UID change disposes old route and cannot inherit prior or delayed grant', (tester) async {
     final pendingOldUid = Completer<bool>();
     var calls = 0;
-    final AccessVerifier verify = (uid) {
+    Future<bool> verify(String uid) {
       if (uid == 'two') return Future.value(false);
       return ++calls == 1 ? Future.value(true) : pendingOldUid.future;
-    };
+    }
     await tester.pumpWidget(gateApp(verify));
     await flush(tester);
     await openPlayer(tester, video);

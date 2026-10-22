@@ -64,3 +64,9 @@ Os seis suportes entregaram o primeiro ciclo no commit `184c731e7720c027e18d8314
 - Nova evidência do diagnóstico anterior: os erros `pcm_writei` começam antes da instalação/abertura do laboratório. Falha de sons do sistema já existia no emulador; não atribuir ao player/catálogo sem isolamento adicional.
 
 O estado de lançamento permanece VERMELHO até áudio Android comprovado e assinatura integrada/testada ponta a ponta. O novo ciclo continua exclusivamente experimental.
+
+## Correção do CI após `245acd3`
+
+[Build 39789137900](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/39789137900), job `119860156473`, parou na análise por sete ocorrências de `prefer_function_declarations_over_variables` em `test/subscription_gate_test.dart`. Não houve erro de tipo ou compilação apontado nessa etapa; os testes Flutter e a geração de APK foram pulados. O job Node de direitos passou. O laboratório `39789137922` ainda não tinha jobs na consulta, pois aguarda a execução anterior do mesmo grupo.
+
+O hotfix substitui as sete closures nomeadas por declarações locais de função; não suprime o analisador e não modifica código de produção ou exigências dos testes. `git diff --check` passou. Resultado da nova análise e dos testes deve ser conferido no próximo CI, sem aprovação antecipada.
