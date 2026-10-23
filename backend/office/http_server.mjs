@@ -2,7 +2,19 @@ import { createServer } from 'node:http';
 import { AccessError } from './service.mjs';
 import { createRequestBudget } from './request-budget.mjs';
 
+function parseJson(buffer) {
+  if (buffer.length > 8192) throw new AccessError(413, 'Request too large');
+  let body;
+  try { body = buffer.length ? JSON.parse(buffer.toString('utf8')) : {}; }
+  catch { throw new AccessError(400, 'Invalid JSON'); }
+  if (!body || Array.isArray(body) || typeof body !== 'object') throw new AccessError(400, 'Invalid JSON object');
+  return body;
+}
+
 function jsonBody(req) {
+  // Functions Framework has already consumed the stream. Verify raw bytes;
+  // never trust a middleware-supplied object or wait for a second end event.
+  if (Buffer.isBuffer(req.rawBody)) return Promise.resolve().then(() => parseJson(req.rawBody));
   return new Promise((resolve, reject) => {
     const chunks = [];
     let bytes = 0;
@@ -19,19 +31,9 @@ function jsonBody(req) {
     });
     req.on('end', () => {
       if (rejected) return;
-      let body;
       try {
-        const content = Buffer.concat(chunks).toString('utf8');
-        body = content ? JSON.parse(content) : {};
-      } catch {
-        reject(new AccessError(400, 'Invalid JSON'));
-        return;
-      }
-      if (!body || Array.isArray(body) || typeof body !== 'object') {
-        reject(new AccessError(400, 'Invalid JSON object'));
-        return;
-      }
-      resolve(body);
+        resolve(parseJson(Buffer.concat(chunks)));
+      } catch (error) { reject(error); }
     });
     req.on('error', () => reject(new AccessError(400, 'Invalid request')));
     req.on('aborted', () => reject(new AccessError(400, 'Request aborted')));
@@ -39,7 +41,7 @@ function jsonBody(req) {
 }
 
 /** HTTP boundary only. Firebase verification remains in the production adapter. */
-export function createHttpServer({ access, allowedOrigins = [], requestBudget = createRequestBudget() }) {
+export function createHttpHandler({ access, allowedOrigins = [], requestBudget = createRequestBudget() }) {
   const origins = new Set(allowedOrigins);
   for (const origin of origins) {
     if (origin === 'null') continue; // Optional Electron file origin; bearer + device proof remain mandatory.
@@ -47,7 +49,7 @@ export function createHttpServer({ access, allowedOrigins = [], requestBudget = 
     if (url.protocol !== "https:" || url.origin !== origin) throw new Error("Exact HTTPS Office origin required");
   }
   if (typeof access !== 'function') throw new TypeError('Access service required');
-  const server = createServer(async (req, res) => {
+  return async (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store, private');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -87,7 +89,11 @@ export function createHttpServer({ access, allowedOrigins = [], requestBudget = 
           error: status === 503 ? 'Service unavailable' : error.message }));
       }
     }
-  });
+  };
+}
+
+export function createHttpServer(options) {
+  const server = createServer(createHttpHandler(options));
   server.requestTimeout = 15_000;
   server.headersTimeout = 10_000;
   return server;

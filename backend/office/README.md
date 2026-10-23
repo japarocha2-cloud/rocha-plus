@@ -25,7 +25,7 @@ Somente um operador autorizado deve atribuir a claim `rochaOfficeAdmin`. Não at
 
 ## O que ainda impede ativação comercial
 
-1. Acesso ao Firebase e identidade de serviço não estão disponíveis nesta sessão; não houve implantação, criação de claims nem teste Google real.
+1. A conta Firebase foi autenticada e o acesso ao projeto rocha-plus e ao Firestore Standard em southamerica-east1 foi confirmado. O projeto informou Billing Enabled: No e a API Cloud Functions estava desativada. Ainda não há serviço publicado, claims administrativas criadas ou teste Google de comprador real. A identidade da CLI não substitui a identidade de serviço do runtime.
 2. A tela comercial, o controlador de acesso, o pareamento no navegador e o painel administrativo estão conectados em código. O build padrão continua LAB e sem bloqueio; o modo comercial exige configuração HTTPS e Firebase explícita. Os instaladores LAB não devem ser distribuídos como produto pago protegido.
 3. É necessário publicar o portal/painel com a configuração real, habilitar o serviço, autorizar o domínio Google e testar Android/Windows reais. Ao sair/trocar conta o frame do editor é descartado. Falha de verificação pausa o frame e conserva o trabalho não salvo; uma nova autorização da mesma conta pode retomá-lo. A verificação comercial preparada exige conexão ao servidor e é repetida a cada minuto, com timeout de 12 segundos.
 4. Preparar arquivos comerciais assinados em armazenamento privado e habilitar o assinador somente para os dois destinos fixos. Uma URL temporária já emitida pode continuar válida até expirar (máximo 60 segundos neste contrato); não prometer revogação instantânea de cópias baixadas.
@@ -45,10 +45,20 @@ Para o Electron com arquivos locais, a origem `null` pode ser explicitamente inc
 
 ## Verificação desta etapa
 
-42 testes locais passaram: regras, HTTP, orçamento de requisições, SDK Firebase negativo, pareamento criptográfico, controlador do editor, concorrência, conta divergente e configuração do build. O cliente e o servidor usam assinaturas reais nos testes; identidades Google válidas e banco são simulados. A compilação comercial com dados fictícios confirmou separação entre tela de acesso e editor e namespace de dados por conta, inclusive no financeiro incorporado. A prévia HTTP interna não oferece WebCrypto; ela mostrou o editor fechado nessa condição, sem comprovar login real.
+44 testes locais passaram: regras, HTTP, orçamento de requisições, SDK Firebase negativo, pareamento criptográfico, controlador do editor, concorrência, conta divergente e configuração do build. O cliente e o servidor usam assinaturas reais nos testes; identidades Google válidas e banco são simulados. A compilação comercial com dados fictícios confirmou separação entre tela de acesso e editor e namespace de dados por conta, inclusive no financeiro incorporado. A prévia HTTP interna não oferece WebCrypto; ela mostrou o editor fechado nessa condição, sem comprovar login real.
 
 Não houve implantação em nuvem, teste de conta Google legítima, assinatura comercial de arquivos, liberação de download pago ou ativação de cobrança.
 
 ## Proteção contra excesso de requisições
 
 Cada processo aceita até 600 requisições por minuto, com orçamento de 60 para pareamento Google. O excesso recebe 429 e Retry-After antes de analisar JSON ou chamar Firebase. Cabeçalhos de IP do cliente não alteram o orçamento; a memória é constante. Esse limite é compartilhado pelos compradores da instância: ainda é necessário um gateway com proteção distribuída entre réplicas. Preflight CORS não consome o orçamento.
+
+## Publicação preparada em Cloud Functions (23/10/2026)
+
+O firebase.json da raiz contém somente o codebase rocha-office, com entrada functions.mjs em backend/office e Node 22. O serviço foi separado do servidor local em runtime.mjs; a função HTTP usa a mesma validação e verifica os bytes rawBody já consumidos pelo framework. Os testes exercitam a entrada real do SDK de Functions e negam token ausente ou malformado sem conceder licença.
+
+A função rochaOfficeLicense está configurada para southamerica-east1, 256 MiB, timeout de 15 segundos, mínimo zero e máximo de uma instância. Isso limita a escala configurada, mas não constitui teto financeiro; durante implantações pode haver sobreposição de instâncias e o gateway distribuído continua necessário. O acesso HTTP é público porque recebe Google bearer tokens, e cada operação continua autenticada pelo serviço. CORS não libera nenhuma origem por padrão. O pareamento permanece desabilitado até definir portal HTTPS publicado e suas origens autorizadas.
+
+Com a conta autenticada, publicar apenas esta função usando `npx -y firebase-tools@latest deploy --only functions:rocha-office:rochaOfficeLicense --project rocha-plus --non-interactive`. Não publicar hosting, auth ou regras Firestore com este comando. Não substituir as regras existentes da TV: os bloqueios de coleções Office ainda precisam ser mesclados e verificados antes de aprovar qualquer pagamento. Os TTLs e as permissões IAM de assinatura de custom tokens também continuam pendentes.
+
+Configurações .env de implantação são ignoradas pelo Git; .env.example contém só o modelo. Nunca armazenar refresh tokens de CLI nem chaves de serviço no repositório. O runtime usa identidade gerenciada do Google, sem baixar chave privada.

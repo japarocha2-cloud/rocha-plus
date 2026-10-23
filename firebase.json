@@ -1,0 +1,8 @@
+{
+  "functions": [{
+    "source": "backend/office",
+    "codebase": "rocha-office",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", ".git", "*.test.mjs", "*-debug.log", "*.local", "README.md", "firestore.rules"]
+  }]
+}
