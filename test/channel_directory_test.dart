@@ -1,8 +1,7 @@
-import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 
 void main() {
@@ -10,84 +9,51 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
   });
-  test('partial refresh retains only the failed source from its own cache', () async {
-    var refresh = false;
-    final repo = ChannelRepository(client: MockClient((request) async {
-      if (request.url == ChannelRepository.sportsPlaylist) {
-        return refresh ? http.Response('', 503) : http.Response(
-            '#EXTM3U\n#EXTINF:-1,Football\nhttps://example.com/sport\n', 200);
-      }
-      return http.Response('#EXTM3U\n#EXTINF:-1,TV\n'
-          'https://example.com/${refresh ? 'new' : 'old'}\n', 200);
-    }));
-    await repo.loadBrazilPublicDirectory();
-    refresh = true;
-    final channels = await repo.loadBrazilPublicDirectory(forceRefresh: true);
-    expect(channels.map((c) => c.url), containsAll([
-      'https://example.com/sport', 'https://example.com/new']));
-    expect(channels.map((c) => c.url), isNot(contains('https://example.com/old')));
-  });
-
-  test('successful playback restores a quarantined cached channel without reload', () async {
-    var calls = 0;
-    final repo = ChannelRepository(client: MockClient((request) async {
-      calls++;
-      return http.Response('#EXTM3U\n#EXTINF:-1,Canal\nhttps://example.com/live\n', 200);
-    }));
-    await repo.loadBrazilPublicDirectory();
-    repo.reportPlaybackFailure('https://example.com/live');
-    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
-    repo.reportPlaybackSuccess('https://example.com/live');
-    expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
-    expect(calls, 2);
-  });
-
-  test('duplicate source URL retains Brazilian title and promotes sports group', () async {
-    final repo = ChannelRepository(client: MockClient((request) async =>
-        http.Response('#EXTM3U\n#EXTINF:-1,${request.url == ChannelRepository.sportsPlaylist ? 'Foreign name' : 'Nome brasileiro'}\n'
-            'https://example.com/live\n', 200)));
+  Map<String, Object> entry(String name, String url) =>
+      {'name': name, 'url': url, 'approved': true, 'status': 'approved'};
+  test('only reviewed entries load and no remote playlist is requested', () async {
+    final repo = ChannelRepository(
+      client: MockClient((_) async => throw StateError('Remote catalogue forbidden')),
+      catalogLoader: () async => jsonEncode([
+        entry('SBT', 'https://example.com/sbt.m3u8'),
+        {'name': 'Candidate', 'url': 'https://example.com/unverified.m3u8'},
+        {...entry('Blocked', 'https://example.com/blocked.m3u8'), 'blocked': true},
+        entry('RecordTV', 'https://example.com/record.m3u8'),
+      ]));
     final channels = await repo.loadBrazilPublicDirectory();
-    expect(channels.single.name, 'Nome brasileiro');
-    expect(channels.single.group, 'Esportes');
+    expect(channels.map((c) => c.name), ['SBT']);
+    expect(await repo.loadBrazilPublicDirectory(forceRefresh: true), hasLength(1));
   });
-
-  test('concurrent catalog loads share requests and preserve source quality URL', () async {
+  test('failure removes a cached approved stream until playback succeeds', () async {
     var calls = 0;
-    final gate = Completer<void>();
-    final repo = ChannelRepository(client: MockClient((request) async {
+    final repo = ChannelRepository(catalogLoader: () async {
       calls++;
-      await gate.future;
-      return http.Response('#EXTM3U\n#EXTINF:-1 group-title="General",Canal\n'
-          'https://example.com/master.m3u8?quality=original\n', 200);
-    }));
-    final first = repo.loadBrazilPublicDirectory();
-    final second = repo.loadBrazilPublicDirectory();
-    gate.complete();
-    final results = await Future.wait([first, second]);
-    expect(calls, 2);
-    expect(results.first.single.url,
-        'https://example.com/master.m3u8?quality=original');
+      return jsonEncode([entry('SBT', 'https://example.com/live.m3u8')]);
+    });
     await repo.loadBrazilPublicDirectory();
-    expect(calls, 2);
-  });
-  test('one failed directory does not discard the other source', () async {
-    final repo = ChannelRepository(client: MockClient((request) async {
-      if (request.url == ChannelRepository.sportsPlaylist) {
-        return http.Response('', 503);
-      }
-      return http.Response('#EXTM3U\n#EXTINF:-1,Canal\n'
-          'https://example.com/master.m3u8\n', 200);
-    }));
+    repo.reportPlaybackFailure('https://example.com/live.m3u8');
+    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
+    repo.reportPlaybackSuccess('https://example.com/live.m3u8');
     expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
+    expect(calls, 1);
   });
-  test('failed refresh retains last known catalog', () async {
-    var offline = false;
-    final repo = ChannelRepository(client: MockClient((request) async =>
-        offline ? http.Response('', 503) : http.Response(
-        '#EXTM3U\n#EXTINF:-1,Canal\nhttps://example.com/master.m3u8\n', 200)));
-    final first = await repo.loadBrazilPublicDirectory();
-    offline = true;
-    final fallback = await repo.loadBrazilPublicDirectory(forceRefresh: true);
-    expect(fallback.single.url, first.single.url);
+  test('empty reviewed catalogue stays empty without a candidate fallback', () async {
+    final repo = ChannelRepository(catalogLoader: () async => '[]');
+    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
+  });
+  test('catalogue order is preserved and concurrent loads share one read', () async {
+    var calls = 0;
+    final repo = ChannelRepository(catalogLoader: () async {
+      calls++;
+      return jsonEncode([entry('SBT', 'https://example.com/a.m3u8'),
+        entry('Regional', 'https://example.com/b.m3u8')]);
+    });
+    final results = await Future.wait([repo.loadBrazilPublicDirectory(), repo.loadBrazilPublicDirectory()]);
+    expect(calls, 1);
+    expect(results.first.map((c) => c.name), ['SBT', 'Regional']);
+  });
+  test('invalid approved asset fails closed', () async {
+    final repo = ChannelRepository(catalogLoader: () async => '{}');
+    await expectLater(repo.loadBrazilPublicDirectory(), throwsFormatException);
   });
 }

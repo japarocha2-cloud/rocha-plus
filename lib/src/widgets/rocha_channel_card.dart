@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../live/channel.dart';
 import '../theme/rocha_theme.dart';
+import 'channel_cover.dart';
 
 class RochaChannelCard extends StatefulWidget {
   final Channel channel;
@@ -36,11 +37,7 @@ class _RochaChannelCardState extends State<RochaChannelCard> {
       child: Stack(children: [
         Positioned.fill(child: Padding(
           padding: const EdgeInsets.fromLTRB(22, 48, 22, 80),
-          child: widget.channel.logo == null ? const Icon(Icons.live_tv,
-              color: RochaColors.playGreen, size: 54) :
-            Image.network(widget.channel.logo!, fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(Icons.live_tv,
-                  color: RochaColors.playGreen, size: 54)),
+          child: ChannelCover(channel: widget.channel),
         )),
         Positioned(left: 12, top: 12, child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
