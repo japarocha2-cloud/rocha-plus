@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { AccessError } from './service.mjs';
+import { createRequestBudget } from './request-budget.mjs';
 
 function jsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -38,7 +39,7 @@ function jsonBody(req) {
 }
 
 /** HTTP boundary only. Firebase verification remains in the production adapter. */
-export function createHttpServer({ access, allowedOrigins = [] }) {
+export function createHttpServer({ access, allowedOrigins = [], requestBudget = createRequestBudget() }) {
   const origins = new Set(allowedOrigins);
   for (const origin of origins) {
     if (origin === 'null') continue; // Optional Electron file origin; bearer + device proof remain mandatory.
@@ -66,6 +67,12 @@ export function createHttpServer({ access, allowedOrigins = [] }) {
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
         res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
         res.writeHead(204); res.end(); return;
+      }
+      const budget = requestBudget(req.url);
+      if (!budget.allowed) {
+        res.setHeader('Retry-After', String(budget.retryAfter));
+        req.resume();
+        throw new AccessError(429, 'Too many requests');
       }
       const body = await jsonBody(req);
       const result = await access({ method: req.method, path: req.url,

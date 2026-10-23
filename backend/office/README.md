@@ -45,6 +45,10 @@ Para o Electron com arquivos locais, a origem `null` pode ser explicitamente inc
 
 ## Verificação desta etapa
 
-39 testes locais passaram: regras, HTTP, SDK Firebase negativo, pareamento criptográfico, controlador do editor, concorrência, conta divergente e configuração do build. O cliente e o servidor usam assinaturas reais nos testes; identidades Google válidas e banco são simulados. A compilação comercial com dados fictícios confirmou separação entre tela de acesso e editor e namespace de dados por conta, inclusive no financeiro incorporado. A prévia HTTP interna não oferece WebCrypto; ela mostrou o editor fechado nessa condição, sem comprovar login real.
+42 testes locais passaram: regras, HTTP, orçamento de requisições, SDK Firebase negativo, pareamento criptográfico, controlador do editor, concorrência, conta divergente e configuração do build. O cliente e o servidor usam assinaturas reais nos testes; identidades Google válidas e banco são simulados. A compilação comercial com dados fictícios confirmou separação entre tela de acesso e editor e namespace de dados por conta, inclusive no financeiro incorporado. A prévia HTTP interna não oferece WebCrypto; ela mostrou o editor fechado nessa condição, sem comprovar login real.
 
 Não houve implantação em nuvem, teste de conta Google legítima, assinatura comercial de arquivos, liberação de download pago ou ativação de cobrança.
+
+## Proteção contra excesso de requisições
+
+Cada processo aceita até 600 requisições por minuto, com orçamento de 60 para pareamento Google. O excesso recebe 429 e Retry-After antes de analisar JSON ou chamar Firebase. Cabeçalhos de IP do cliente não alteram o orçamento; a memória é constante. Esse limite é compartilhado pelos compradores da instância: ainda é necessário um gateway com proteção distribuída entre réplicas. Preflight CORS não consome o orçamento.
