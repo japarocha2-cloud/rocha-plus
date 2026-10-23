@@ -10,8 +10,9 @@ import '../widgets/rocha_channel_card.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
+  final String? accountId;
   final ChannelRepository? repository;
-  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository});
+  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository, this.accountId});
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
 }
@@ -20,7 +21,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   late final ChannelRepository repository;
   bool scanning = false;
   Map<String, ChannelReachability> reachability = {};
-  final favoritesRepository = FavoritesRepository();
+  late final favoritesRepository = FavoritesRepository(accountId: widget.accountId);
   final search = TextEditingController();
   List<Channel> channels = const [];
   Set<String> favorites = {};
@@ -89,8 +90,15 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   Future<void> toggleFavorite(Channel channel) async {
     final next = {...favorites};
     next.contains(channel.url) ? next.remove(channel.url) : next.add(channel.url);
-    setState(() => favorites = next);
-    await favoritesRepository.save(next);
+    try {
+      await favoritesRepository.save(next);
+      if (mounted) setState(() => favorites = next);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível salvar o favorito.')));
+      }
+    }
   }
 
   @override

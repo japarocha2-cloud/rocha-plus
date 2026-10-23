@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
@@ -12,34 +13,37 @@ void main() {
     expect(repo.sportsOnly([nfl, female, male]), [male, female, nfl]);
   });
 
-  setUp(ChannelRepository.resetSessionHealthForTests);
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ChannelRepository.resetSessionHealthForTests();
+  });
 
-  test('player failure quarantines a stream for the current session', () {
+  test('playback failure keeps a reviewed stream available', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     expect(repository.isQuarantined(url), isFalse);
-    repository.reportPlaybackFailure(url);
-    expect(repository.isQuarantined(url), isTrue);
+    await repository.reportPlaybackFailure(url);
+    expect(repository.isQuarantined(url), isFalse);
   });
 
-  test('successful playback clears a previous quarantine', () {
+  test('playback callbacks never change catalogue approval', () async {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
-    repository.reportPlaybackFailure(url);
+    await repository.reportPlaybackFailure(url);
     repository.reportPlaybackSuccess(url);
     expect(repository.isQuarantined(url), isFalse);
   });
 
-  test('sports catalog excludes non-sports and quarantined streams', () {
+  test('sports catalog preserves approved streams after playback errors', () async {
     final repository = ChannelRepository();
     const sport = Channel(name: 'Futebol Brasil', url: 'https://example.com/sport.m3u8', group: 'Esportes');
     const news = Channel(name: 'Jornal', url: 'https://example.com/news.m3u8', group: 'News');
 
     expect(repository.sportsOnly([sport, news]), [sport]);
-    repository.reportPlaybackFailure(sport.url);
-    expect(repository.sportsOnly([sport, news]), isEmpty);
+    await repository.reportPlaybackFailure(sport.url);
+    expect(repository.sportsOnly([sport, news]), [sport]);
   });
 
   test('physical-test blocklist survives remote URL changes', () {

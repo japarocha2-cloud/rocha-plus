@@ -82,7 +82,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _onPlayerChanged();
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
-      _channelRepository.reportPlaybackFailure(widget.channel.url);
       await controller.dispose();
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
@@ -96,7 +95,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (controller == null || !mounted || _failed) return;
     final value = controller.value;
     if (value.hasError) {
-      _channelRepository.reportPlaybackFailure(widget.channel.url);
       setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
       return;
     }

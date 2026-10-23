@@ -61,15 +61,18 @@ jobs:
         run: flutter test
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
+      - name: Resolve Android version code
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/android_version_code.py
       - name: Build universal APK
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build apk --release --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Build optimized APKs
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build apk --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
+        run: flutter build apk --release --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"} --split-per-abi
       - name: Build Play Store bundle
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
-        run: flutter build appbundle --release --build-number=${{ github.run_number }} ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
+        run: flutter build appbundle --release --build-number="$ROCHA_ANDROID_VERSION_CODE" ${ROCHA_FIREBASE_FILE:+--dart-define-from-file="$ROCHA_FIREBASE_FILE"}
       - name: Verify release evidence
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/release_evidence.py
@@ -101,17 +104,6 @@ jobs:
           name: rocha-plus-beta-login-play-store-aab
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
-      # Generated only for visual QA. No Firebase credentials or access to streams.
-      - name: Build visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
-        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_LAYOUT_PREVIEW=true
-      - name: Upload visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: rocha-plus-layout-preview-no-channels
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
       - name: Explain build mode and downloadable artifacts
         if: always()
         env:
@@ -123,9 +115,8 @@ jobs:
             echo "A conexao ao Google ainda exige teste no aparelho e SHA da assinatura registrado no Firebase." >> "$GITHUB_STEP_SUMMARY"
             echo "Se houver falha em Prepare signed Firebase build, confira os Secrets no GitHub; nunca os publique." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "### Rocha+ SOMENTE PREVIA VISUAL" >> "$GITHUB_STEP_SUMMARY"
-            echo "Baixe rocha-plus-layout-preview-no-channels. O login e os canais reais nao funcionam neste APK." >> "$GITHUB_STEP_SUMMARY"
-            echo "Para testar login real: Actions > Build Rocha+ > Run workflow > signed_login=true." >> "$GITHUB_STEP_SUMMARY"
+            echo "### Rocha+ validacao de codigo (sem APK)" >> "$GITHUB_STEP_SUMMARY"
+            echo "Esta execucao testa codigo, mas nao gera APK para entrega. Para APK completo use Actions > Build Rocha+ > Run workflow > signed_login=true." >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Remove private build inputs
         if: always()
