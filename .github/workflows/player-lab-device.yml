@@ -55,8 +55,7 @@ jobs:
       - name: Execute real Android ExoPlayer and LibVLC cohort
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          QEMU_AUDIO_DRV: sdl
-          SDL_AUDIODRIVER: pulse
+          QEMU_AUDIO_DRV: pa
           PULSE_SINK: rocha_lab
           QEMU_PA_SINK: rocha_lab
           QEMU_AUDIO_IN_DRV: none
@@ -66,14 +65,15 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          # Try the full emulator SDL output through the dedicated PulseAudio sink.
-          # Prior direct -audio pa runs showed valid RGB but near-silent PCM.
-          # Keep the strict 440 Hz PCM preflight and archive device diagnostics.
-          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio sdl
+          # Emulator 37.x rejects -audio sdl (unknown driver). Use the supported
+          # PulseAudio backend, and record its driver inventory for diagnosis.
+          # Preserve the strict real-PCM 440 Hz gate; never approve silence.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
             # AOSP default image is debuggable. Root only this disposable CI
             # emulator so ALSA/kernel diagnostics are readable during playback.
             # No application permissions or physical device are changed.
+            "$ANDROID_HOME/emulator/emulator" -audio-help > build/lab/android/emulator-audio-drivers.txt 2>&1 || true
             adb root
             adb wait-for-device
             adb shell id > build/lab/android/diagnostic-identity.txt
