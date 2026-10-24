@@ -55,7 +55,8 @@ jobs:
       - name: Execute real Android ExoPlayer and LibVLC cohort
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          QEMU_AUDIO_DRV: pa
+          QEMU_AUDIO_DRV: sdl
+          SDL_AUDIODRIVER: pulse
           PULSE_SINK: rocha_lab
           QEMU_PA_SINK: rocha_lab
           QEMU_AUDIO_IN_DRV: none
@@ -65,9 +66,10 @@ jobs:
           target: default
           profile: pixel_2
           disable-animations: true
-          # The headless QEMU binary stubs PulseAudio functions. Use the full
-          # binary on Xvfb so captured PCM comes from actual emulator output.
-          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
+          # Try the full emulator SDL output through the dedicated PulseAudio sink.
+          # Prior direct -audio pa runs showed valid RGB but near-silent PCM.
+          # Keep the strict 440 Hz PCM preflight and archive device diagnostics.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio sdl
           script: |
             # AOSP default image is debuggable. Root only this disposable CI
             # emulator so ALSA/kernel diagnostics are readable during playback.
