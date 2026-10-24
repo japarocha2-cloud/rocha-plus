@@ -100,13 +100,7 @@ jobs:
             # Capture the actual emulator sink client for root-cause analysis.
             # Route newly created emulator streams into the monitor under test;
             # otherwise a stream on another sink can appear as false silence.
-            (while true; do
-              pactl list short sink-inputs | while IFS="$(printf '\t')" read -r id sink rest; do
-                [ -n "$id" ] || continue
-                [ "$sink" = "$(pactl list short sinks | awk '$2 == "rocha_lab" {print $1}')" ] || pactl move-sink-input "$id" rocha_lab || true
-              done
-              sleep 2
-            done) > build/lab/android/pulse-routing.txt 2>&1 &
+            (while true; do pactl list short sink-inputs | while read -r id sink rest; do [ -n "$id" ] || continue; [ "$sink" = "$(pactl list short sinks | awk '$2 == "rocha_lab" {print $1}')" ] || pactl move-sink-input "$id" rocha_lab || true; done; sleep 2; done) > build/lab/android/pulse-routing.txt 2>&1 &
             (while true; do date -u +%FT%TZ; pactl list short sink-inputs; sleep 5; done) > build/lab/android/pulse-client-timeline.txt 2>&1 &
             # Prove that the host PCM recording path can record a known tone.
             # Separate calibration is not accepted as evidence of Android output.
