@@ -110,8 +110,17 @@ def capture(run, state, out, seen):
     box = tuple(int(rect[k]) for k in ('x', 'y', 'width', 'height'))
     x, y, width, height = box
     window = adb('shell', 'dumpsys', 'window')
-    focus = re.search(r'mCurrentFocus=([^\n]+)', window)
-    focus_text = focus.group(1) if focus else ''
+    # Android 15 reports foreground activity under different window keys.
+    # Accept only the app's real foreground activity, never a launcher image.
+    focus_matches = re.findall(
+        r'(?:mCurrentFocus|mFocusedApp|mTopResumedActivity|topResumedActivity)\s*[:=]\s*([^\n]+)',
+        window,
+    )
+    focus_text = ' | '.join(focus_matches)
+    if PACKAGE not in focus_text:
+        activity = diagnostic_output('shell', 'dumpsys', 'activity', 'activities')
+        top = re.findall(r'(?:topResumedActivity|mResumedActivity)\s*[:=]\s*([^\n]+)', activity)
+        focus_text += ' | ' + ' | '.join(top)
     if PACKAGE not in focus_text:
         blocked = out / 'obstructed'
         blocked.mkdir(exist_ok=True)
