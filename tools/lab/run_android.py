@@ -60,10 +60,23 @@ def pcm_metrics(path):
         pcm = pcm[5 * rate * channels:-10 * rate * channels]
     rms = float(np.sqrt(np.mean(pcm ** 2))) if len(pcm) else 0.0
     mono = pcm.reshape(-1, channels).mean(axis=1) if len(pcm) else np.array([])
-    segment = mono[:rate]
-    spectrum = np.abs(np.fft.rfft(segment * np.hanning(len(segment)))) ** 2 if len(segment) > 1 else np.array([0.0])
+    # Startup buffering can make the first second silent even when later output
+    # is audible. Analyze spaced one-second windows across the trimmed PCM.
+    # Pick the strongest window by actual RMS, never by relative spectral
+    # fraction alone (which could turn digital silence into a false positive).
+    best_segment = np.array([])
+    best_energy = -1.0
+    for start in range(0, max(1, len(mono) - rate + 1), max(rate, 1)):
+        segment = mono[start:start + rate]
+        if len(segment) < rate:
+            continue
+        energy = float(np.mean(segment ** 2))
+        if energy > best_energy:
+            best_energy, best_segment = energy, segment
+    spectrum = (np.abs(np.fft.rfft(best_segment * np.hanning(len(best_segment)))) ** 2
+                if len(best_segment) > 1 else np.array([0.0]))
     peak_bin = int(np.argmax(spectrum[1:])) + 1 if len(spectrum) > 1 else 0
-    frequency = peak_bin * rate / len(segment) if len(segment) else 0
+    frequency = peak_bin * rate / len(best_segment) if len(best_segment) else 0
     spectral_fraction = float(spectrum[peak_bin] / max(float(spectrum.sum()), 1e-30))
     return {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
             'fileDurationSeconds': full_duration,
