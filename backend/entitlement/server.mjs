@@ -8,6 +8,13 @@ import { createHttpServer } from './http_server.mjs';
 if (!process.env.GOOGLE_CLOUD_PROJECT || !process.env.ROCHA_PLANS_JSON) {
   throw new Error('Configure experimental GOOGLE_CLOUD_PROJECT and ROCHA_PLANS_JSON');
 }
+// This adapter is experimental. Require a distinct, explicitly named staging project.
+const configuredProject = process.env.GOOGLE_CLOUD_PROJECT;
+if (configuredProject === 'rocha-plus' ||
+    !process.env.ROCHA_STAGING_PROJECT_ID ||
+    configuredProject !== process.env.ROCHA_STAGING_PROJECT_ID) {
+  throw new Error('Experimental entitlement requires a distinct, matching staging Firebase project');
+}
 if (process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error('Production adapter refuses emulator authentication/storage overrides');
 }
