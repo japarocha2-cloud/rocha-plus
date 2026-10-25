@@ -165,3 +165,15 @@ test('HTTP unknown routes and incomplete payment evidence never create grants', 
   assert.equal(response.body.allowed, false);
   assert.equal(f.payments.size, 0);
 });
+
+test('HTTP payment before first login does not restart seven-day trial later', async t => {
+  const f = await fixture(t);
+  const paid = await f.send({ method: 'POST', path: '/v1/admin/confirm',
+    token: 'admin', body: JSON.stringify(evidence) });
+  assert.equal(paid.status, 200);
+  f.advance(38);
+  const lateLogin = await f.send();
+  assert.equal(lateLogin.status, 200);
+  assert.equal(lateLogin.body.allowed, false);
+  assert.equal(f.accounts.size, 1);
+});
