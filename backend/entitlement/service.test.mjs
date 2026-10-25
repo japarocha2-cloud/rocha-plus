@@ -169,3 +169,15 @@ test('storage outage rejects rather than returning an allowed response', async (
 test('invalid server plan configuration fails startup', () => {
   assert.throws(() => createAccessService({ plans: { bad: { days: 0, amountCents: 450 } } }), /configuration/);
 });
+
+test('payment before first login starts trial immediately, never seven days later', async () => {
+  const f = fixture();
+  await f.approve();
+  const first = structuredClone(f.accounts.get('one'));
+  assert.equal(first.trialStartedAtMs, f.now());
+  f.advance(38);
+  assert.equal((await f.get()).allowed, false);
+  assert.deepEqual(f.accounts.get('one'), first);
+  assert.equal(f.payments.size, 1);
+});
+
