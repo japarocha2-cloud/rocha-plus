@@ -74,9 +74,16 @@ jobs:
             # emulator so ALSA/kernel diagnostics are readable during playback.
             # No application permissions or physical device are changed.
             "$ANDROID_HOME/emulator/emulator" -audio-help > build/lab/android/emulator-audio-drivers.txt 2>&1 || true
-            adb root
+            # ADB can briefly disconnect when requesting root immediately after
+            # boot. Root access is optional for diagnostics, not for playback.
+            adb root > build/lab/android/adb-root.txt 2>&1 || true
             adb wait-for-device
+            for attempt in 1 2 3 4 5 6; do
+              if adb shell getprop sys.boot_completed | grep -qx 1; then break; fi
+              sleep 3
+            done
             adb shell id > build/lab/android/diagnostic-identity.txt
+            adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
             pactl list short sink-inputs >> build/lab/android/pulse-host.txt
