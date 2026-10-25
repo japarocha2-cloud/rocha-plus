@@ -78,10 +78,9 @@ jobs:
             # boot. Root access is optional for diagnostics, not for playback.
             adb root > build/lab/android/adb-root.txt 2>&1 || true
             adb wait-for-device
-            for attempt in 1 2 3 4 5 6; do
-              if adb shell getprop sys.boot_completed | grep -qx 1; then break; fi
-              sleep 3
-            done
+            # android-emulator-runner executes script lines individually through sh -c.
+            # Keep loops on one line to prevent "expecting done" syntax errors.
+            for attempt in 1 2 3 4 5 6; do if adb shell getprop sys.boot_completed | grep -qx 1; then break; fi; sleep 3; done
             adb shell id > build/lab/android/diagnostic-identity.txt
             adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
