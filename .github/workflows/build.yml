@@ -163,6 +163,14 @@ jobs:
           if-no-files-found: error
       # Installable Android lab, isolated from Firebase and the frozen release.
       # Unlike the visual preview, this mode loads real public channel URLs.
+      - name: Apply dedicated LAB signing only when protected secrets exist
+        if: github.event_name == 'pull_request'
+        env:
+          LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+        run: |
+          python3 tools/lab/configure_stable_signing.py
       - name: Build experimental player lab APK
         if: github.event_name == 'pull_request'
         run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
