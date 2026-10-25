@@ -74,6 +74,12 @@ export function createAccessService({ verifyToken, store, plans, now = Date.now 
           transactionId: body.transactionId, plan: body.plan, days: plan.days,
           amountCents: plan.amountCents, currency: 'BRL', status: 'confirmed',
           confirmedAtMs: timestamp, confirmedBy: actor.uid, evidenceReference: body.evidenceReference };
+        // A paid-before-first-login account must not receive a fresh trial later.
+        // Pin the seven-day clock when the first verified payment is recorded.
+        if (!state.account) state.setAccount({
+          uid: body.uid, trialStartedAtMs: timestamp,
+          trialEndsAtMs: timestamp + 7 * DAY,
+        });
         state.setPayment(payment);
         state.audit('confirmed', { adminUid: actor.uid, atMs: timestamp, paymentId, uid: body.uid });
         return { status: 'confirmed', duplicate: false };
