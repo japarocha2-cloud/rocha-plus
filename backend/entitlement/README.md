@@ -15,7 +15,7 @@
 
 Node >=22. Dentro desta pasta, `npm ci --ignore-scripts --no-audit --no-fund` instala as dependências registradas no lockfile e `npm test` executa a suíte. Há testes do núcleo com doubles, integração HTTP por sockets reais em loopback e rejeição de tokens malformados/com audiência ou emissor inválidos usando Firebase Admin SDK real. Os testes positivos de direitos/pagamentos ainda usam verificador e armazenamento em memória. Não validam tokens legítimos, assinatura criptográfica positiva, revogação remota, Firestore, HTTPS, banco ou aplicativo físico.
 
-O adaptador `server.mjs` exige `firebase-admin`, `GOOGLE_CLOUD_PROJECT` de ambiente experimental, `ROCHA_PLANS_JSON` (mapa de IDs de planos com `amountCents` inteiro positivo e `days` de 1 a 366), credenciais de servidor por ADC e Firestore. Dependências resolvidas no lockfile e instaladas localmente sem scripts de ciclo de vida. O adaptador Firebase/Firestore não foi iniciado com credenciais reais. Não armazenar chave privada neste repositório.
+O adaptador `server.mjs` exige `firebase-admin`, `GOOGLE_CLOUD_PROJECT` de ambiente experimental, `ROCHA_STAGING_PROJECT_ID` igual ao ID do projeto experimental e **diferente de `rocha-plus`** (o adaptador recusa a inicialização com o projeto oficial), `ROCHA_PLANS_JSON` (mapa de IDs de planos com `amountCents` inteiro positivo e `days` de 1 a 366), credenciais de servidor por ADC e Firestore. Dependências resolvidas no lockfile e instaladas localmente sem scripts de ciclo de vida. O adaptador Firebase/Firestore não foi iniciado com credenciais reais. Não armazenar chave privada neste repositório.
 
 O processo escuta somente `127.0.0.1`; requer gateway HTTPS configurado separadamente, limite de requisições e monitoramento. O adaptador recusa variáveis de autenticação/Firestore de emulador para evitar ativação acidental de verificação insegura. Configurar endpoint do cliente completo `/v1/entitlement` apenas no experimento após integração. Respostas são `no-store`; falhas não retornam permissão.
 
@@ -27,3 +27,7 @@ O processo escuta somente `127.0.0.1`; requer gateway HTTPS configurado separada
 4. O beta segue gratuito. Não mudar para `official` antes de E2E completo de UID, 7 dias, reinstalação, relógio alterado, confirmação, renovação, estorno, player e Cast físico.
 
 Referências primárias consultadas em 22/10/2026: [Firebase ID tokens](https://firebase.google.com/docs/auth/admin/verify-id-tokens), [transações Firestore](https://firebase.google.com/docs/firestore/manage-data/transactions), [custom claims](https://firebase.google.com/docs/auth/admin/custom-claims).
+
+### Proteção de ambiente experimental (25/10/2026)
+
+A inicialização do servidor exige `GOOGLE_CLOUD_PROJECT=ID_DO_PROJETO_DE_TESTES` e `ROCHA_STAGING_PROJECT_ID=ID_DO_PROJETO_DE_TESTES`; nenhum dos dois pode apontar para o projeto oficial `rocha-plus`. Isto é uma barreira de configuração, não substitui isolamento IAM, regras, HTTPS, logs e testes reais. **Não crie projeto nem implante serviço automaticamente.** O projeto de homologação ainda precisa ser criado/confirmado e ter custos e permissões revisados antes de qualquer integração Firebase real.
