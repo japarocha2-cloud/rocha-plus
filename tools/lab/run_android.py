@@ -78,6 +78,13 @@ def pcm_metrics(path):
     peak_bin = int(np.argmax(spectrum[1:])) + 1 if len(spectrum) > 1 else 0
     frequency = peak_bin * rate / len(best_segment) if len(best_segment) else 0
     spectral_fraction = float(spectrum[peak_bin] / max(float(spectrum.sum()), 1e-30))
+    # Diagnostic only: distinguish a distorted 440 Hz stream from unrelated
+    # background noise. These fields do NOT bypass the strict acceptance gate.
+    frequencies = np.fft.rfftfreq(len(best_segment), 1.0 / rate) if len(best_segment) else np.array([])
+    tone_band = (frequencies >= 430) & (frequencies <= 450)
+    tone_band_fraction = float(spectrum[tone_band].sum() / max(float(spectrum.sum()), 1e-30)) if len(frequencies) else 0.0
+    strongest_window_rms_dbfs = (20 * math.log10(max(math.sqrt(best_energy), 1e-12))
+                                  if best_energy >= 0 else -240.0)
     return {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
             'fileDurationSeconds': full_duration,
             'durationSeconds': len(pcm) / (rate * channels),
@@ -85,6 +92,8 @@ def pcm_metrics(path):
             'rmsDbfs': 20 * math.log10(max(rms, 1e-12)),
             'peak': float(np.max(np.abs(pcm))) if len(pcm) else 0.0,
             'dominantFrequencyHz': frequency, 'spectralPeakPowerFraction': spectral_fraction,
+            'tone430to450HzPowerFractionDiagnostic': tone_band_fraction,
+            'strongestWindowRmsDbfsDiagnostic': strongest_window_rms_dbfs,
             'nonSilentFraction': float(np.mean(np.abs(pcm) > 0.001)) if len(pcm) else 0.0,
             'method': 'dedicated_emulator_pulseaudio_sink_monitor',
             'limitation': 'Output PCM energy, not human audibility or programme identity'}
