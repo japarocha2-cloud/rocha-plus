@@ -67,6 +67,11 @@ try {
   }
   const merchant = await get('/users/me');
   if (!/^\d+$/.test(String(merchant.id))) throw Error('merchant-not-confirmed');
+  if (process.env.EXPECTED_RECEIVING_MERCHANT_ID &&
+      String(merchant.id) !== process.env.EXPECTED_RECEIVING_MERCHANT_ID) {
+    throw Error('merchant-scope-mismatch');
+  }
+  report.receivingMerchantMatchesExpected = Boolean(process.env.EXPECTED_RECEIVING_MERCHANT_ID);
   report.specifiedPayments = {};
   for (const [kind, paymentId] of Object.entries({ monthly: '185249688226', annual: '184267748145' })) {
   try {
@@ -141,7 +146,7 @@ try {
   // Zero matches do not disprove a payment made with another payer or merchant,
   // Pix or an avulso checkout. No automatic association or grant is attempted.
 } catch (error) {
-  const safe = /^(missing-payment-credential|provider-http-\d{3}|incomplete-provider-search|merchant-not-confirmed|invalid-provider-reference)$/;
+  const safe = /^(missing-payment-credential|provider-http-\d{3}|incomplete-provider-search|merchant-not-confirmed|merchant-scope-mismatch|invalid-provider-reference)$/;
   report.mercadoPago.error = safe.test(error.message) ? error.message : 'payment-read-not-confirmed';
   report.mercadoPago.searchComplete = false;
 }
