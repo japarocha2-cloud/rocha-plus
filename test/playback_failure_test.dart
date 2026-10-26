@@ -38,14 +38,14 @@ void main() {
   });
 
   test('classifies native HTTP errors without exposing source URLs or tokens', () {
-    const secret = 'private-source-token';
+    const sampleMarker = 'private-source-token';
     for (final status in [401, 403]) {
       final failure = PlaybackFailure.from(
         'InvalidResponseCodeException: Response code: $status, '
-        'https://example.test/live?token=$secret',
+        'https://example.test/live?token=$sampleMarker',
       );
       expect(failure, PlaybackFailure.accessDenied);
-      expect(failure.message, isNot(contains(secret)));
+      expect(failure.message, isNot(contains(sampleMarker)));
       expect(failure.message, isNot(contains('example.test')));
     }
     expect(PlaybackFailure.from('HTTP error 404'), PlaybackFailure.notFound);
@@ -54,6 +54,6 @@ void main() {
     expect(PlaybackFailure.from('DecoderInitializationException'), PlaybackFailure.decoder);
     expect(PlaybackFailure.from('SocketException'), PlaybackFailure.network);
     expect(PlaybackFailure.from('https://example.test/?token=403'), PlaybackFailure.unknown);
-    expect(PlaybackFailure.from('unclassified $secret').message, isNot(contains(secret)));
+    expect(PlaybackFailure.from('unclassified $sampleMarker').message, isNot(contains(sampleMarker)));
   });
 }
