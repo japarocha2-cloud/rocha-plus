@@ -2,9 +2,13 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { previewDirectPayments } from '../direct_payment_preview.mjs';
 
 const email = 'nadiarocha10@hotmail.com';
 const now = Date.now();
+let selectedUser;
+let existingPaidUntil = null;
+const providerPayments = [];
 const report = { readOnly: true, writes: 0, appLoginTested: false,
   accessGrantedByThisCheck: false, firebase: {}, mercadoPago: {} };
 const millis = value => value?.toMillis?.() ?? null;
@@ -19,6 +23,7 @@ try {
   initializeApp({ credential: cert(key), projectId: 'rocha-plus' });
   const user = await getAuth().getUserByEmail(email);
   if (user.email?.toLowerCase() !== email) throw Error('identity-mismatch');
+  selectedUser = user;
   report.firebase = { accountFound: true, emailVerified: user.emailVerified,
     disabled: user.disabled, googleLinked: false, sparkAccountFound: false };
   const google = user.providerData.filter(p => p.providerId === 'google.com');
@@ -29,6 +34,7 @@ try {
     if (snapshot.exists) {
       const data = snapshot.data();
       const paidUntil = millis(data.paidUntil);
+      existingPaidUntil = paidUntil;
       report.firebase.paidUntil = Number.isFinite(paidUntil) ? new Date(paidUntil).toISOString() : null;
       report.firebase.paidAccessCurrent = Number.isFinite(paidUntil) && paidUntil > now;
     }
@@ -76,6 +82,7 @@ try {
   for (const [kind, paymentId] of Object.entries({ monthly: '185249688226', annual: '184267748145' })) {
   try {
     const payment = await get('/v1/payments/' + paymentId);
+    providerPayments.push(payment);
     report.specifiedPayments[kind] = {
       lookupConfirmed: String(payment.id) === paymentId,
       status: safeStatus(payment.status),
@@ -143,6 +150,14 @@ try {
       refunded: Number(p.transaction_amount_refunded ?? 0) > 0,
       approvedAt: Number.isFinite(Date.parse(p.date_approved)) ? new Date(p.date_approved).toISOString() : null,
       titleMatchesRocha: String(p.description ?? '').toLowerCase().includes('rocha') }));
+  if (!report.firebase.error && report.firebase.sparkAccountFound && providerPayments.length === 2) {
+    try {
+      report.accessPreview = previewDirectPayments({ user: selectedUser, merchantId: merchant.id,
+        payments: providerPayments, assignments: { '185249688226': 'monthly', '184267748145': 'annual' },
+        plans: { monthly: { amountCents: 450, months: 1 }, annual: { amountCents: 4950, months: 12 } },
+        existingPaidUntil, now });
+    } catch (_) { report.accessPreview = { previewOnly: true, readyToApply: false, error: 'preview-not-verified' }; }
+  }
   // Zero matches do not disprove a payment made with another payer or merchant,
   // Pix or an avulso checkout. No automatic association or grant is attempted.
 } catch (error) {
