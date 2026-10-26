@@ -13,11 +13,40 @@ FIELDS = {
 }
 
 
+class LabBundleFormatError(ValueError):
+    """Public formatting diagnostic which never contains credential contents."""
+
+
+def decode_lab_bundle(raw):
+    if not isinstance(raw, str) or len(raw) > 2_000_000:
+        raise LabBundleFormatError('LAB bundle ausente ou excede limite de tamanho')
+    text = raw.strip().lstrip('\ufeff').strip()
+    if text.startswith(('https://', 'http://')):
+        raise LabBundleFormatError('O secret contem um link; cole o conteudo completo do arquivo, nao sua URL')
+    lines = text.splitlines()
+    if len(lines) >= 3 and lines[0].strip().lower() in ('```', '```json') and lines[-1].strip() == '```':
+        text = '\n'.join(lines[1:-1]).strip()
+    for _ in range(2):
+        try:
+            value = json.loads(text)
+        except json.JSONDecodeError as error:
+            kind = 'objeto JSON' if text.startswith('{') else 'texto sem abertura JSON'
+            raise LabBundleFormatError(
+                f'JSON LAB invalido: {kind}; {len(text)} caracteres; linha {error.lineno}, '
+                f'coluna {error.colno}. Cole o arquivo completo') from None
+        if isinstance(value, dict):
+            return value
+        if not isinstance(value, str):
+            break
+        text = value.strip().lstrip('\ufeff').strip()
+    raise LabBundleFormatError('O bundle LAB precisa ser um objeto JSON completo')
+
+
 def lab_environment(env):
     result = dict(env)
     raw = env.get('ROCHA_LAB_BUNDLE_JSON')
     if raw:
-        bundle = json.loads(raw)
+        bundle = decode_lab_bundle(raw)
         if (bundle.get('project') != 'rocha-plus-homologacao' or
                 bundle.get('package') != 'com.rochaplus.app.lab'):
             raise ValueError('Bundle restrito ao projeto e pacote de homologacao')

@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from lab_credentials import lab_environment, export_signing_environment
+from lab_credentials import lab_environment, export_signing_environment, LabBundleFormatError
 
 
 class LabCredentialsTest(unittest.TestCase):
@@ -20,6 +20,20 @@ class LabCredentialsTest(unittest.TestCase):
         env = lab_environment({'ROCHA_LAB_BUNDLE_JSON': json.dumps(self.bundle())})
         self.assertEqual(env['LAB_KEY_ALIAS'], 'fixture-alias')
         self.assertNotIn('ROCHA_KEYSTORE_PASSWORD', env)
+
+    def test_copy_formatting_never_changes_credential_values(self):
+        raw = json.dumps(self.bundle())
+        for value in ['\ufeff' + raw, '\n```json\n' + raw + '\n```\n', json.dumps(raw)]:
+            with self.subTest(format=value[:8]):
+                env = lab_environment({'ROCHA_LAB_BUNDLE_JSON': value})
+                self.assertEqual(env['LAB_KEYSTORE_PASSWORD'], 'fixture-password')
+                self.assertEqual(env['LAB_KEYSTORE_BASE64'], self.bundle()['secrets']['ROCHA_LAB_KEYSTORE_BASE64'])
+
+    def test_link_truncated_json_and_non_objects_fail_without_echoing_private_text(self):
+        for raw in ['https://example.invalid/fixture-private-path', '{"secret":"fixture-private-value', '[]']:
+            with self.subTest(kind=raw[:1]), self.assertRaises(LabBundleFormatError) as caught:
+                lab_environment({'ROCHA_LAB_BUNDLE_JSON': raw})
+            self.assertNotIn('fixture-private', str(caught.exception))
 
     def test_official_project_and_unknown_secrets_are_rejected(self):
         for kind in ('project', 'secret'):

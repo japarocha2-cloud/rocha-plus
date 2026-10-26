@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 from prepare_signed_build import subscription_config
 from report_apk_certificate import report as report_certificate
-from lab_credentials import lab_environment, export_signing_environment
+from lab_credentials import lab_environment, export_signing_environment, LabBundleFormatError
 
 PROJECT = 'rocha-plus-homologacao'
 PACKAGE = 'com.rochaplus.app.lab'
@@ -151,6 +151,9 @@ if __name__ == '__main__':
                    args.private / 'expected.json', os.environ['GITHUB_STEP_SUMMARY'],
                    'build/qa/homologation.json')
             print('Pacote e certificado de homologacao verificados. Login fisico pendente.')
+    except LabBundleFormatError as error:
+        print(str(error), file=sys.stderr)
+        sys.exit(1)
     except Exception as error:
         # Do not print parser/subprocess errors that could include JSON secrets.
         print('Homologacao bloqueada: confira projeto .lab, OAuth Android/SHA-1, chave LAB e scaffold. '
