@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'subscription_access.dart';
 import 'playback_permission.dart';
+import '../screens/subscription_screen.dart';
 import '../cast/revoke_cast_playback.dart';
 
 typedef AccessVerifier = Future<bool> Function(String uid);
@@ -194,6 +195,15 @@ class _SubscriptionGateState extends State<SubscriptionGate>
             OutlinedButton(
               onPressed: _checking ? null : _refresh,
               child: const Text('Verificar novamente'),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => SubscriptionScreen(accountUid: widget.uid),
+                ),
+              ),
+              icon: const Icon(Icons.workspace_premium_outlined),
+              label: const Text('Minha assinatura'),
             ),
             TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
           ]),
