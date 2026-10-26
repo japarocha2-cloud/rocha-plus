@@ -24,34 +24,41 @@ Status geral: AMARELO. Não publicar nem mesclar na versão oficial.
 Regra ativa observada: `match /{document=**} { allow read, write: if false; }`.
 Não substituir por outro ruleset: a proteção necessária às coleções `entitlements`, `payment_events` e `payment_claims` já está presente. Esta conclusão não equivale a teste de IAM, Firestore Emulator ou funcionamento de outras coleções.
 
-## Impedimento encontrado
+## Implantação concluída após ativação do Blaze pelo responsável
 
-`functions:list` retornou HTTP 403 com mensagem do provedor informando que `cloudfunctions.googleapis.com` está desativada ou ainda não foi utilizada no projeto. Não há endpoint de assinatura verificado nesta sessão.
+O impedimento inicial era o plano Spark do projeto de homologação. O responsável concluiu a vinculação de faturamento na própria interface do Firebase. Não é necessário repetir a ativação.
 
-Após a autorização de continuidade pelo responsável, o comando de implantação avançou até a habilitação das APIs necessárias. O Firebase interrompeu a operação porque o projeto precisa do plano Blaze para habilitar `artifactregistry.googleapis.com`. O CLI também indicou a necessidade de Cloud Functions e Cloud Build.
+A função `entitlement` está ACTIVE no projeto `rocha-plus-homologacao`, geração 2, Node.js 22, região `southamerica-east1`. A implantação retornou atualização bem-sucedida. O CLI terminou com código 1 depois dessa atualização por ausência de política de limpeza de imagens; a configuração dessa política ainda não está confirmada.
 
-Mensagem observada: `Your project rocha-plus-homologacao must be on the Blaze (pay-as-you-go) plan to complete this command. Required API artifactregistry.googleapis.com can't be enabled until the upgrade is complete.`
+Endpoint verificado: https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/entitlement . URL do serviço: https://entitlement-mrau75n36a-rj.a.run.app .
 
-Não houve alteração do plano de faturamento. Nenhuma função foi implantada nesta tentativa e nenhum endpoint novo foi verificado. O CLI tentou habilitar APIs antes de retornar o erro; não presumir que todas permaneceram desativadas.
+Verificações HTTPS reais concluídas:
 
-Página indicada pelo próprio Firebase: https://console.firebase.google.com/project/rocha-plus-homologacao/usage/details . A ativação de Blaze é uma decisão separada de faturamento e não está autorizada pela instrução de implantar sem alterar o plano.
+- GET sem autenticação: HTTP 401, `allowed: false`, `Cache-Control: no-store`.
+- GET com bearer inválido: HTTP 401, `allowed: false`, `Cache-Control: no-store`.
+- POST: HTTP 405, `allowed: false`, `Cache-Control: no-store`.
 
-## Implantação preparada para revisão
+Essas verificações comprovam disponibilidade e rejeição de solicitações inválidas. Não comprovam login Google no aparelho nem criação/persistência de trial com token válido. As tentativas auxiliares de obter token com credencial CLI não produziram autenticação válida e não foram usadas como evidência de defeito do login Android.
 
-- Configuração: `firebase.homologacao.json`, codebase `subscription-homologacao`, fonte `functions`, runtime Node.js 22.
-- Dependências instaladas sem scripts de instalação e registradas em `functions/package-lock.json`.
-- `functions/.gitignore` exclui dependências locais, arquivos de ambiente e logs do Firebase.
-- Nenhuma configuração de Firestore/Auth/Hosting está incluída no arquivo de implantação de funções.
-- Comando específico já autorizado e executado, atualmente bloqueado pelo plano:
+Configuração implantada: `firebase.homologacao.json`, codebase `subscription-homologacao`, fonte `functions`. Nenhuma regra Firestore ou configuração Auth/Hosting foi publicada neste avanço.
 
 ```bash
 npx -y firebase-tools@latest deploy --only functions:subscription-homologacao:entitlement --project rocha-plus-homologacao --config firebase.homologacao.json --non-interactive
 ```
 
-A função proposta cria um endpoint HTTPS acessível publicamente; o código exige e verifica token Firebase para consultar/criar o direito da conta. Limite configurado: 10 instâncias, região `southamerica-east1`. O plano atual impede a implantação. Não vincular faturamento nem alterar plano automaticamente.
+O endpoint HTTPS verifica token Firebase, utiliza o UID verificado e consulta/cria o direito dessa conta. Limite: 10 instâncias. Reconciliação Mercado Pago, webhook e agendamento não foram ativados pela implantação desta função.
 
-## Validação local deste preparo
+## APK experimental com login e bloqueio
 
+A execução Build Rocha+ #711 (`40419850739`, fonte `425f14b`) concluiu com sucesso e gerou `rocha-plus-homologacao-login-lab`. O pacote e certificado OAuth foram verificados pelo job. Essa variante tem bloqueio desativado e não serve como evidência de trial/vencimento.
+
+A execução #712 falhou na preparação, antes de gerar APK. A correção `195bb1e14871e24ed5963dac440548f0854975a8` isola a validação do preparador LAB, aceita somente o endpoint de homologação acima e preserva a restrição do preparador original. Os 32 testes Python passaram. A execução #713 (`40422345307`) concluiu com sucesso com login, assinatura e bloqueio experimental ativados. O job conferiu pacote e certificado OAuth antes de publicar o artefato `rocha-plus-homologacao-subscription-lab` (`12698546158`). Fonte: `195bb1e`. SHA-256 do ZIP publicado: `1854da68eb2d6253ad70acb9078cdad648ddbc768f65282df39cbbd1715258bb`.
+
+O ZIP foi baixado e seu SHA-256 corresponde ao digest do GitHub. O APK também corresponde ao SHA-256 do relatório: `aab578be60ef750db332464964dc5a45c04f3132e566e8cddae32fd203cab860`. O relatório confirma projeto/pacote corretos, certificado compatível, bloqueio e endpoint configurados; mantém `productionApproved: false`, `physicalLoginValidation: pending`, `cloudAccessValidated: false`, pagamento e trial/vencimento pendentes.
+
+## Validação automatizada
+
+- O CI do código `195bb1e` concluiu os três jobs com sucesso: backend, Flutter e APK debug experimental, nas execuções `40422210239` (PR) e `40422204959` (push). O debug não substitui a variante assinada com login e bloqueio.
 - Registro da função com os SDKs Firebase efetivamente instalados passou; export `entitlement` e região conferidos.
 - 15 testes de backend passaram após a instalação das dependências.
 - Verificações sintáticas e `git diff --check` passaram.
@@ -59,4 +66,4 @@ A função proposta cria um endpoint HTTPS acessível publicamente; o código ex
 
 ## Ainda pendente
 
-Decisão sobre a ativação do Blaze exclusivamente no projeto de homologação, conclusão das APIs/implantação e verificação HTTPS com tokens reais, trial/vencimento persistentes, reconciliação real por conta e testes físicos em celular/Android TV/Cast. Nenhum pagamento foi aplicado ou estornado neste avanço. A versão oficial permanece preservada.
+Verificar HTTPS com token real do aplicativo, trial/vencimento persistentes, reconciliação real por conta e testes físicos em celular/Android TV/Cast. Nenhum pagamento foi aplicado ou estornado neste avanço. A versão oficial permanece preservada. A homologação geral continua AMARELA.
