@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   homologation-login:
-    if: github.event_name == 'workflow_dispatch' && (inputs.homologation_login || inputs.signed_login) && github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    if: github.event_name == 'workflow_dispatch' && (inputs.homologation_login || inputs.signed_login) && (github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026')
     uses: ./.github/workflows/homologation-login.yml
     with:
       subscription_lab: ${{ inputs.subscription_lab || false }}
@@ -49,7 +49,7 @@ jobs:
       - name: Test authoritative entitlement rules and HTTP integration
         run: node --test backend/entitlement/*.test.mjs
   android:
-    if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.homologation_login || (inputs.signed_login && github.ref == 'refs/heads/feat/dual-player-lab-20261020'))) }}
+    if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.homologation_login || (inputs.signed_login && (github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026')))) }}
     runs-on: ubuntu-latest
     env:
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}

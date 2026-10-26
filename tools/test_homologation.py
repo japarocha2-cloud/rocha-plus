@@ -59,12 +59,26 @@ class HomologationTest(unittest.TestCase):
 
     def test_manual_experimental_only_and_no_private_files_on_rejection(self):
         for change in [{'GITHUB_REF': 'refs/heads/main'}, {'GITHUB_EVENT_NAME': 'pull_request'},
+                       {'GITHUB_REF': 'refs/heads/fix/subscription-access-20261026',
+                        'GITHUB_EVENT_NAME': 'push'},
                        {'LAB_KEYSTORE_PASSWORD': ''}]:
             with tempfile.TemporaryDirectory() as directory:
                 private = Path(directory) / 'private'
                 with self.assertRaises(ValueError):
                     prepare(directory, private, self.env() | change)
                 self.assertFalse(private.exists())
+
+    def test_manual_correction_branch_keeps_homologation_isolated(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gradle = self.scaffold(root)
+            config_path, _ = prepare(root, root / 'private', self.env() | {
+                'GITHUB_REF': 'refs/heads/fix/subscription-access-20261026'})
+            config = json.loads(config_path.read_text())
+            self.assertEqual(config['ROCHA_FIREBASE_PROJECT_ID'], PROJECT)
+            self.assertEqual(config['ROCHA_EXPERIMENTAL_SUBSCRIPTIONS'], 'false')
+            self.assertEqual(config['ROCHA_ENTITLEMENT_URL'], '')
+            self.assertIn('applicationIdSuffix = ".lab"', gradle.read_text())
 
     def test_scaffold_isolated_and_json_cannot_enable_lab_player_or_payment(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -14,7 +14,7 @@ permissions:
   contents: read
 jobs:
   homologation:
-    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

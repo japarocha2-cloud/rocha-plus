@@ -17,6 +17,7 @@ from lab_credentials import lab_environment, export_signing_environment, LabBund
 PROJECT = 'rocha-plus-homologacao'
 PACKAGE = 'com.rochaplus.app.lab'
 BRANCH = 'refs/heads/feat/dual-player-lab-20261020'
+BRANCHES = (BRANCH, 'refs/heads/fix/subscription-access-20261026')
 
 
 def firebase_configuration(source):
@@ -53,7 +54,7 @@ def firebase_configuration(source):
 
 
 def prepare(root, private, env):
-    if env.get('GITHUB_REF') != BRANCH or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
+    if env.get('GITHUB_REF') not in BRANCHES or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
         raise ValueError('Homologacao assinada exige disparo manual na branch experimental')
     env = lab_environment(env)
     names = ['ROCHA_LAB_GOOGLE_SERVICES_JSON', 'LAB_KEYSTORE_BASE64',
