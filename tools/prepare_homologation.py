@@ -10,7 +10,6 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
-from prepare_signed_build import subscription_config
 from report_apk_certificate import report as report_certificate
 from lab_credentials import lab_environment, export_signing_environment, LabBundleFormatError
 
@@ -18,6 +17,25 @@ PROJECT = 'rocha-plus-homologacao'
 PACKAGE = 'com.rochaplus.app.lab'
 BRANCH = 'refs/heads/feat/dual-player-lab-20261020'
 BRANCHES = (BRANCH, 'refs/heads/fix/subscription-access-20261026')
+ENTITLEMENT_ENDPOINT = f'https://southamerica-east1-{PROJECT}.cloudfunctions.net/entitlement'
+
+
+def subscription_config(env):
+    # This preparer is isolated from the original release preparer. A signed
+    # LAB APK may send Firebase tokens only to this verified LAB function.
+    enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
+    if enabled not in ('true', 'false'):
+        raise ValueError('Opcao experimental invalida')
+    result = {'ROCHA_EXPERIMENTAL_SUBSCRIPTIONS': enabled,
+              'ROCHA_LAB_ONLY': 'false', 'ROCHA_LAYOUT_PREVIEW': 'false',
+              'ROCHA_ENTITLEMENT_URL': ''}
+    if enabled == 'true':
+        if env.get('GITHUB_REF') not in BRANCHES:
+            raise ValueError('Bloqueio permitido apenas nas branches de homologacao')
+        if env.get('ROCHA_ENTITLEMENT_URL') != ENTITLEMENT_ENDPOINT:
+            raise ValueError('Homologacao exige o endpoint verificado do proprio projeto')
+        result['ROCHA_ENTITLEMENT_URL'] = ENTITLEMENT_ENDPOINT
+    return result
 
 
 def firebase_configuration(source):
