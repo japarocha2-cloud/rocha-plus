@@ -7,9 +7,10 @@ import sys
 
 
 def certificate_fingerprints(output):
-    # apksigner uses numbered labels for v1/v2 and SDK-range labels for v3/v3.1.
+    # SDK 37 emits "V2 Signer:"; older tools use numbered or SDK-range labels.
     # Never confuse a public-key digest or a source stamp with the APK signer.
-    pattern = r'^Signer (?:#\d+|\(minSdkVersion=[^\r\n]+\)) certificate SHA-1 digest: ([0-9a-fA-F]{40})\s*$'
+    label = r'(?:Signer (?:#\d+|\(minSdkVersion=[^\r\n]+\))|V[1-4](?:\.\d+)? Signer:?)'
+    pattern = rf'^{label} certificate SHA-1 digest: ([0-9a-fA-F]{{40}})[ \t]*\r?$'
     fingerprints = list(dict.fromkeys(re.findall(pattern, output, re.MULTILINE)))
     if not fingerprints:
         raise ValueError('Verified APK output contained no recognized signer certificate SHA-1 digest')

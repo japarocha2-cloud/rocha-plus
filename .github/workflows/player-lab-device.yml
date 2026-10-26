@@ -108,7 +108,8 @@ jobs:
             python3 tools/lab/calibrate_host_audio.py
             pactl list short cards > build/lab/android/pulse-cards.txt || true
             pactl list short modules > build/lab/android/pulse-modules.txt || true
-            # Emulator audio startup is intermittent. Retry the COMPLETE real\n            # RGB + PCM gate once after settling; never mark silence as passing.\n            if [ "${{ inputs.stage }}" = "smoke" ]; then python3 tools/lab/run_android.py --stage preflight || { sleep 12; python3 tools/lab/run_android.py --stage preflight; }; fi
+            # Verify real RGB + PCM before the cohort. Preserve both attempts.
+            sh tools/lab/run_preflight.sh "${{ inputs.stage }}"
             pactl list sink-inputs > build/lab/android/pulse-sink-inputs-after.txt || true
 
             python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
