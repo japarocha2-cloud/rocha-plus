@@ -11,6 +11,10 @@ on:
       count:
         type: number
         default: 25
+      api_level:
+        description: Android guest API; override only for isolated infrastructure comparison
+        type: number
+        default: 35
 permissions:
   contents: read
 jobs:
@@ -60,7 +64,7 @@ jobs:
           QEMU_PA_SINK: rocha_lab
           QEMU_AUDIO_IN_DRV: none
         with:
-          api-level: 35
+          api-level: ${{ inputs.api_level }}
           arch: x86_64
           target: default
           profile: pixel_2
@@ -81,6 +85,8 @@ jobs:
             adb wait-for-device
             adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
             adb shell id > build/lab/android/diagnostic-identity.txt
+            "$ANDROID_HOME/emulator/emulator" -version > build/lab/android/emulator-version.txt 2>&1
+            adb shell getprop ro.build.version.sdk > build/lab/android/guest-api-level.txt
             # Read-only userdebug diagnostics without restarting the ADB daemon.
             adb shell su 0 cat /proc/asound/cards > build/lab/android/guest-audio-cards.txt 2>&1 || true
             adb shell su 0 cat /proc/asound/pcm > build/lab/android/guest-audio-pcm.txt 2>&1 || true
@@ -124,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: rocha-lab-evidence-${{ inputs.stage }}-${{ inputs.offset }}
+          name: rocha-lab-evidence-api${{ inputs.api_level }}-${{ inputs.stage }}-${{ inputs.offset }}
           path: build/lab/android/
           if-no-files-found: error
           retention-days: 30

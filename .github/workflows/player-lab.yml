@@ -78,6 +78,15 @@ jobs:
     uses: ./.github/workflows/player-lab-device.yml
     with:
       stage: smoke
+  audio-compatibility:
+    name: API34 infrastructure calibration only
+    needs: build
+    uses: ./.github/workflows/player-lab-device.yml
+    with:
+      # Same APK and strict RGB/440 Hz gate; no channels or cohort on API34.
+      # API35 smoke remains authoritative for the catalogue pipeline below.
+      stage: preflight
+      api_level: 34
   batch10:
     needs: smoke
     uses: ./.github/workflows/player-lab-device.yml
@@ -101,7 +110,7 @@ jobs:
       count: ${{ matrix.count }}
   aggregate:
     if: always()
-    needs: [build, smoke, batch10, batch25, remaining]
+    needs: [build, smoke, audio-compatibility, batch10, batch25, remaining]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
