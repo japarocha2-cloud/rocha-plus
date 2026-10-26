@@ -21,6 +21,8 @@ void main() {
       await tester.scrollUntilVisible(find.text('Assinatura'), 200,
           scrollable: find.descendant(
               of: menu, matching: find.byType(Scrollable)).first);
+      await tester.ensureVisible(find.text('Assinatura'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Assinatura'));
       await tester.pumpAndSettle();
       expect(find.byType(SubscriptionScreen), findsOneWidget);
