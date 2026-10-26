@@ -22,9 +22,13 @@ class CastChannelLoader {
 
   static Future<void> loadAndConfirm(Channel channel, Uri uri, {
     PlaybackPermit? permit,
+    GoogleCastRemoteMediaClientPlatformInterface? remoteClient,
+    Future<void> Function(Duration)? delay,
   }) async {
     final authorization = permit ?? PlaybackPermission.instance.acquire();
     authorization.ensureValid();
+    final client = remoteClient ?? GoogleCastRemoteMediaClient.instance;
+    final previousStatus = client.mediaStatus;
     final media = GoogleCastMediaInformation(
       contentId: uri.toString(),
       contentUrl: uri,
@@ -33,23 +37,31 @@ class CastChannelLoader {
       metadata: GoogleCastMovieMediaMetadata(title: channel.name),
     );
 
-    await GoogleCastRemoteMediaClient.instance
+    // The plugin acknowledges sending LOAD before the receiver finishes it.
+    // Autoplay belongs in LOAD: an immediate separate PLAY can target the old
+    // media session or arrive while the receiver still has no media to play.
+    await client
         .loadMedia(
           media,
-          autoPlay: false,
+          autoPlay: true,
           playPosition: Duration.zero,
           playbackRate: 1.0,
         )
         .timeout(const Duration(seconds: 8));
     authorization.ensureValid();
-    await GoogleCastRemoteMediaClient.instance.play().timeout(
-      const Duration(seconds: 5),
-    );
 
-    for (var i = 0; i < 40; i++) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+    var resumedPausedMedia = false;
+    for (var i = 0; i < 120; i++) {
+      if (delay == null) {
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      } else {
+        await delay(const Duration(milliseconds: 500));
+      }
       authorization.ensureValid();
-      final status = GoogleCastRemoteMediaClient.instance.mediaStatus;
+      final status = client.mediaStatus;
+      // A cached status from before LOAD cannot confirm this request or reject
+      // it with the idle reason of a previous attempt on the same channel.
+      if (identical(status, previousStatus)) continue;
       final state = status?.playerState;
       final info = status?.mediaInformation;
       final matches = CastPlaybackEvidence.matches(
@@ -65,9 +77,19 @@ class CastChannelLoader {
       )) {
         return;
       }
+      if (matches && state == CastMediaPlayerState.paused &&
+          !resumedPausedMedia) {
+        resumedPausedMedia = true;
+        await client.play().timeout(const Duration(seconds: 5));
+        authorization.ensureValid();
+      }
       if (matches &&
           state == CastMediaPlayerState.idle &&
-          status?.idleReason != null) {
+          const {
+            GoogleCastMediaIdleReason.error,
+            GoogleCastMediaIdleReason.cancelled,
+            GoogleCastMediaIdleReason.finished,
+          }.contains(status?.idleReason)) {
         throw StateError('Receiver entrou em idle: ${status?.idleReason}');
       }
     }
