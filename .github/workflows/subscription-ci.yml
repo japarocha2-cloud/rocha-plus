@@ -7,7 +7,14 @@ on:
     paths:
       - 'functions/**'
       - 'lib/src/auth/**'
+      - 'lib/src/screens/subscription_screen.dart'
+      - 'lib/src/screens/home_screen.dart'
+      - 'test/**'
+      - 'tools/**'
+      - 'backend/entitlement/**'
       - '.github/workflows/subscription-ci.yml'
+permissions:
+  contents: read
 jobs:
   backend:
     runs-on: ubuntu-latest
@@ -34,29 +41,56 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.6'
       - name: Flutter dependencies
         run: flutter pub get
-      - name: Subscription gate widget tests
-        run: flutter test test/subscription_gate_test.dart
+      - name: Subscription navigation, screen and gate tests
+        run: flutter test test/subscription_gate_test.dart test/subscription_screen_test.dart test/subscription_navigation_lab_test.dart
   experimental-apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.6'
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+      - name: Generate isolated Android phone and TV scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+      - name: Test Android configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Fetch dependencies
         run: flutter pub get
       - name: Build safe debug APK (payments remain disabled)
         run: flutter build apk --debug --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=false
+      - name: Verify isolated package and APK signature
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/aapt" dump badging build/app/outputs/flutter-apk/app-debug.apk > /tmp/rocha-apk-badging.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          data = Path('/tmp/rocha-apk-badging.txt').read_text()
+          match = re.search(r"^package: name='([^']+)'", data, re.MULTILINE)
+          if not match or match[1] != 'com.rochaplus.app.lab':
+              raise SystemExit('Experimental package must be com.rochaplus.app.lab')
+          PY
+          python3 tools/report_apk_certificate.py build/app/outputs/flutter-apk/app-debug.apk "$BUILD_TOOLS/apksigner"
+          sha256sum build/app/outputs/flutter-apk/app-debug.apk > build/app/outputs/flutter-apk/app-debug.apk.sha256
       - name: Upload experimental APK
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-subscription-safe-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/flutter-apk/app-debug.apk.sha256
           if-no-files-found: error
