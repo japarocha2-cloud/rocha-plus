@@ -18,3 +18,7 @@ Security: ensure Firestore client access to `entitlements` is denied before depl
 The new root `firestore.rules` is a **deny-by-default experimental policy** and is NOT ready to replace an existing project's complete ruleset. Before any deployment, inspect the live Firestore rules and merge the relevant `entitlements`, `payment_events`, and `payment_claims` restrictions with existing rules. Replacing an existing ruleset without review can break other application collections. Do not deploy this file blindly.
 
 The Mercado Pago inspection module is a read-only scaffold, not an activated webhook, scheduled reconciliation job or completed payment association. Do not report payment tests as passed until provider API access and a real end-to-end transaction test are confirmed.
+
+## Payment verification ledger added
+
+`recordVerifiedPayment({db, paymentId, accessToken})` looks up the payment **again** via the official provider API, requires a previously admin-reviewed mapping in `payment_claims/{paymentId}` to one UID, and atomically records its latest status in `payment_events/{paymentId}`. Repeated checks update the same event rather than creating duplicates. It **never** writes `entitlements/{uid}.paidUntil`. A back-office association process and an audited paid-period computation including multiple plans and reversals are still needed; the real monthly and annual purchases must not be auto-linked based solely on the known transaction IDs.
