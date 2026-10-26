@@ -102,6 +102,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
             channel: session.current,
             session: session,
             initiallyFullscreen: widget.initiallyFullscreen,
+            onTryOtherPlayer: () => setState(() => engine = LabEngine.libVlc),
           ),
   );
 }

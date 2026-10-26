@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rocha_plus/src/live/channel_repository.dart';
 import 'package:rocha_plus/src/live/channel.dart';
+import 'package:rocha_plus/src/live/playback_failure.dart';
 
 void main() {
   test('competition bonuses preserve tiers and unrelated football names stay below soccer', () {
@@ -14,32 +15,34 @@ void main() {
 
   setUp(ChannelRepository.resetSessionHealthForTests);
 
-  test('player failure quarantines a stream for the current session', () {
+  test('transient player failure records diagnosis without quarantining a stream', () {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     expect(repository.isQuarantined(url), isFalse);
-    repository.reportPlaybackFailure(url);
-    expect(repository.isQuarantined(url), isTrue);
+    repository.reportPlaybackFailure(url, failure: PlaybackFailure.timeout);
+    expect(repository.isQuarantined(url), isFalse);
+    expect(repository.lastPlaybackFailure(url), PlaybackFailure.timeout);
   });
 
-  test('successful playback clears a previous quarantine', () {
+  test('successful playback clears the previous failure diagnosis', () {
     final repository = ChannelRepository();
     const url = 'https://example.com/live.m3u8';
 
     repository.reportPlaybackFailure(url);
     repository.reportPlaybackSuccess(url);
     expect(repository.isQuarantined(url), isFalse);
+    expect(repository.lastPlaybackFailure(url), isNull);
   });
 
-  test('sports catalog excludes non-sports and quarantined streams', () {
+  test('sports catalog excludes non-sports but preserves channels after transient failure', () {
     final repository = ChannelRepository();
     const sport = Channel(name: 'Futebol Brasil', url: 'https://example.com/sport.m3u8', group: 'Esportes');
     const news = Channel(name: 'Jornal', url: 'https://example.com/news.m3u8', group: 'News');
 
     expect(repository.sportsOnly([sport, news]), [sport]);
     repository.reportPlaybackFailure(sport.url);
-    expect(repository.sportsOnly([sport, news]), isEmpty);
+    expect(repository.sportsOnly([sport, news]), [sport]);
   });
 
   test('physical-test blocklist survives remote URL changes', () {

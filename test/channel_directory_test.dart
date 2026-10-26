@@ -28,7 +28,7 @@ void main() {
     expect(channels.map((c) => c.url), isNot(contains('https://example.com/old')));
   });
 
-  test('successful playback restores a quarantined cached channel without reload', () async {
+  test('failed playback leaves cached channels visible and retryable without reload', () async {
     var calls = 0;
     final repo = ChannelRepository(client: MockClient((request) async {
       calls++;
@@ -36,7 +36,7 @@ void main() {
     }));
     await repo.loadBrazilPublicDirectory();
     repo.reportPlaybackFailure('https://example.com/live');
-    expect(await repo.loadBrazilPublicDirectory(), isEmpty);
+    expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
     repo.reportPlaybackSuccess('https://example.com/live');
     expect(await repo.loadBrazilPublicDirectory(), hasLength(1));
     expect(calls, 2);

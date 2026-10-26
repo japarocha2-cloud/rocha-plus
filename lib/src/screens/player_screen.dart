@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 
 import '../live/channel.dart';
 import '../live/playback_evidence.dart';
+import '../live/playback_failure.dart';
 import '../live/channel_repository.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/player_viewport.dart';
@@ -25,11 +26,13 @@ class PlayerScreen extends StatefulWidget {
   final Channel channel;
   final ChannelPlaybackSession? session;
   final bool initiallyFullscreen;
+  final VoidCallback? onTryOtherPlayer;
   const PlayerScreen({
     super.key,
     required this.channel,
     this.session,
     this.initiallyFullscreen = false,
+    this.onTryOtherPlayer,
   });
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -39,6 +42,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
+  PlaybackFailure _failure = PlaybackFailure.unknown;
   bool _casting = false;
   bool _castDisconnected = false;
   CastConnectionObserver? _castConnectionObserver;
@@ -94,6 +98,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     setState(() {
       _loading = true;
       _failed = false;
+      _failure = PlaybackFailure.unknown;
       _playbackConfirmed = false;
       _isPlaying = false;
       _isBuffering = false;
@@ -107,7 +112,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
-      await controller.initialize().timeout(const Duration(seconds: 8));
+      await initializeLivePlayback(controller.initialize);
       if (!mounted || attempt != _attempt) {
         await controller.dispose();
         return;
@@ -120,15 +125,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
       if (!mounted || attempt != _attempt) return;
       setState(() => _loading = false);
       _onPlayerChanged();
-    } catch (_) {
+    } catch (error) {
       if (!mounted || attempt != _attempt) return;
-      _channelRepository.reportPlaybackFailure(widget.channel.url);
+      final failure = PlaybackFailure.from(error);
+      _channelRepository.reportPlaybackFailure(widget.channel.url,
+          failure: failure);
       await controller.dispose();
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
         setState(() {
           _loading = false;
           _failed = true;
+          _failure = failure;
         });
       }
     }
@@ -139,10 +147,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (controller == null || !mounted || _failed) return;
     final value = controller.value;
     if (value.hasError) {
-      _channelRepository.reportPlaybackFailure(widget.channel.url);
+      final failure = PlaybackFailure.from(value.errorDescription);
+      _channelRepository.reportPlaybackFailure(widget.channel.url,
+          failure: failure);
       setState(() {
         _loading = false;
         _failed = true;
+        _failure = failure;
         _playbackConfirmed = false;
       });
       return;
@@ -438,7 +449,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
           child: _remotePlayback
               ? const Text('Reprodução na TV')
               : _failed
-              ? _FailureState(onRetry: _initialize)
+              ? _FailureState(
+                  onRetry: _initialize,
+                  failure: _failure,
+                  onTryOtherPlayer: _failure == PlaybackFailure.accessDenied ||
+                          _failure == PlaybackFailure.notFound
+                      ? null
+                      : widget.onTryOtherPlayer,
+                )
               : _loading ||
                     controller == null ||
                     !controller.value.isInitialized
@@ -559,7 +577,10 @@ class _VideoSurface extends StatelessWidget {
 
 class _FailureState extends StatelessWidget {
   final VoidCallback onRetry;
-  const _FailureState({required this.onRetry});
+  final PlaybackFailure failure;
+  final VoidCallback? onTryOtherPlayer;
+  const _FailureState({required this.onRetry, required this.failure,
+    this.onTryOtherPlayer});
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -573,8 +594,8 @@ class _FailureState extends StatelessWidget {
           color: RochaColors.ruby,
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Este sinal está indisponível no momento.',
+        Text(
+          failure.message,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
@@ -584,6 +605,11 @@ class _FailureState extends StatelessWidget {
           icon: const Icon(Icons.refresh),
           label: const Text('Tentar novamente'),
         ),
+        if (onTryOtherPlayer != null)
+          TextButton(
+            onPressed: onTryOtherPlayer,
+            child: const Text('Tentar outro player'),
+          ),
       ],
     ),
   );

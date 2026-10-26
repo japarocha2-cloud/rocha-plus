@@ -5,6 +5,7 @@ import 'channel_identity.dart';
 import 'channel_blocks.dart';
 import 'channel_scanner.dart';
 import 'm3u_parser.dart';
+import 'playback_failure.dart';
 
 class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
@@ -33,7 +34,7 @@ class ChannelRepository {
   static final Map<Uri, List<Channel>> _sourceCache = {};
   static List<Channel>? _memoryCache;
   static List<Channel>? _lastKnownGoodCache;
-  static final Set<String> _sessionFailedUrls = <String>{};
+  static final Map<String, PlaybackFailure> _playbackFailures = {};
 
   // Bloqueio persistente por nome. Use esta camada para canais reprovados
   // em teste físico: eles não voltam quando o diretório remoto é atualizado.
@@ -57,13 +58,20 @@ class ChannelRepository {
         _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
   }
 
-  void reportPlaybackFailure(String url) {
-    _sessionFailedUrls.add(url);
+  void reportPlaybackFailure(String url, {
+    PlaybackFailure failure = PlaybackFailure.unknown,
+  }) {
+    _playbackFailures[url] = failure;
   }
 
-  void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
+  void reportPlaybackSuccess(String url) => _playbackFailures.remove(url);
 
-  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+  PlaybackFailure? lastPlaybackFailure(String url) => _playbackFailures[url];
+
+  // A transient player error is diagnostic evidence, not a channel exclusion.
+  // Keep this compatibility query for callers; explicit/user blocks are still
+  // enforced separately by isBlocked and the catalogue approval rules.
+  bool isQuarantined(String url) => false;
 
   Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
       ChannelScanner(_client).scan(channels);
@@ -77,7 +85,6 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
-        .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
@@ -85,14 +92,13 @@ class ChannelRepository {
   static void resetSessionHealthForTests() {
     _userBlockedNames = {};
     _sourceCache.clear();
-    _sessionFailedUrls.clear();
+    _playbackFailures.clear();
     _memoryCache = null;
     _lastKnownGoodCache = null;
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
       channels
-          .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -137,8 +143,8 @@ class ChannelRepository {
 
     // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
     // são carregadas; a validação profunda não bloqueia mais centenas de
-    // canais antes de a interface aparecer. Falhas reais do player entram
-    // em quarentena durante a sessão por reportPlaybackFailure().
+    // canais antes de a interface aparecer. Falhas do player são registradas
+    // para diagnóstico, sem esconder um canal após um erro transitório.
     final ordered = _orderSportsFirst(
       merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
     );
