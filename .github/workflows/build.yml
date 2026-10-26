@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   homologation-login:
-    if: github.event_name == 'workflow_dispatch' && inputs.homologation_login && github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    if: github.event_name == 'workflow_dispatch' && (inputs.homologation_login || inputs.signed_login) && github.ref == 'refs/heads/feat/dual-player-lab-20261020'
     uses: ./.github/workflows/homologation-login.yml
     with:
       subscription_lab: ${{ inputs.subscription_lab || false }}
@@ -49,7 +49,7 @@ jobs:
       - name: Test authoritative entitlement rules and HTTP integration
         run: node --test backend/entitlement/*.test.mjs
   android:
-    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.homologation_login) }}
+    if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.homologation_login || (inputs.signed_login && github.ref == 'refs/heads/feat/dual-player-lab-20261020'))) }}
     runs-on: ubuntu-latest
     env:
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
@@ -178,6 +178,7 @@ jobs:
       - name: Apply dedicated LAB signing only when protected secrets exist
         if: github.event_name == 'pull_request'
         env:
+          ROCHA_LAB_BUNDLE_JSON: ${{ secrets.ROCHA_LAB_BUNDLE_JSON }}
           LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
           LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
           LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
@@ -185,9 +186,6 @@ jobs:
           python3 tools/lab/configure_stable_signing.py
       - name: Build experimental player lab APK
         if: github.event_name == 'pull_request'
-        env:
-          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
-          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
         run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
       - name: Report exact experimental APK signing certificate (diagnostic only)
         if: github.event_name == 'pull_request'

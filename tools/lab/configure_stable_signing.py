@@ -2,9 +2,14 @@
 import base64
 import os
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from lab_credentials import lab_environment, export_signing_environment
 
 
 def configure(env, root):
+    env = lab_environment(env)
     fields = ('LAB_KEYSTORE_BASE64', 'LAB_KEYSTORE_PASSWORD', 'LAB_KEY_ALIAS')
     present = [bool(env.get(k)) for k in fields]
     if not any(present):
@@ -44,4 +49,5 @@ android {
 
 
 if __name__ == '__main__':
-    configure(os.environ, Path.cwd())
+    if configure(os.environ, Path.cwd()):
+        export_signing_environment(os.environ, os.environ['GITHUB_ENV'])

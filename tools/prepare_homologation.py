@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 
 from prepare_signed_build import subscription_config
 from report_apk_certificate import report as report_certificate
+from lab_credentials import lab_environment, export_signing_environment
 
 PROJECT = 'rocha-plus-homologacao'
 PACKAGE = 'com.rochaplus.app.lab'
@@ -54,6 +55,7 @@ def firebase_configuration(source):
 def prepare(root, private, env):
     if env.get('GITHUB_REF') != BRANCH or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
         raise ValueError('Homologacao assinada exige disparo manual na branch experimental')
+    env = lab_environment(env)
     names = ['ROCHA_LAB_GOOGLE_SERVICES_JSON', 'LAB_KEYSTORE_BASE64',
              'LAB_KEYSTORE_PASSWORD', 'LAB_KEY_ALIAS']
     if any(not env.get(k) for k in names):
@@ -140,6 +142,7 @@ if __name__ == '__main__':
     try:
         if args.operation == 'prepare':
             config, key = prepare(Path.cwd(), args.private, os.environ)
+            export_signing_environment(os.environ, os.environ['GITHUB_ENV'])
             with open(os.environ['GITHUB_ENV'], 'a') as stream:
                 stream.write(f'ROCHA_HOMOLOGATION_CONFIG={config}\nROCHA_HOMOLOGATION_KEYSTORE={key}\n')
             print('Homologacao preparada; dados privados omitidos.')
