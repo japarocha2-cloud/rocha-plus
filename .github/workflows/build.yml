@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      homologation_login:
+        description: Login isolado rocha-plus-homologacao (pacote .lab, secrets LAB)
+        type: boolean
+        default: false
       signed_login:
         description: Gerar beta com login real (requer 4 Secrets de assinatura/Firebase)
         type: boolean
@@ -24,6 +28,13 @@ permissions:
   contents: read
 
 jobs:
+  homologation-login:
+    if: github.event_name == 'workflow_dispatch' && inputs.homologation_login && github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    uses: ./.github/workflows/homologation-login.yml
+    with:
+      subscription_lab: ${{ inputs.subscription_lab || false }}
+      entitlement_url: ${{ inputs.entitlement_url || '' }}
+    secrets: inherit
   entitlement-unit:
     name: Experimental entitlement rules and HTTP integration
     runs-on: ubuntu-latest
@@ -38,6 +49,7 @@ jobs:
       - name: Test authoritative entitlement rules and HTTP integration
         run: node --test backend/entitlement/*.test.mjs
   android:
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.homologation_login) }}
     runs-on: ubuntu-latest
     env:
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}

@@ -1,0 +1,68 @@
+name: Rocha+ isolated Firebase login homologation
+on:
+  workflow_call:
+    inputs:
+      subscription_lab:
+        description: Ativar teste de bloqueio (somente com backend experimental validado)
+        type: boolean
+        default: false
+      entitlement_url:
+        description: Endpoint HTTPS experimental completo /v1/entitlement
+        type: string
+        default: ''
+permissions:
+  contents: read
+jobs:
+  homologation:
+    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Test isolated configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Generate isolated Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+      - name: Prepare dedicated homologation configuration
+        env:
+          ROCHA_LAB_GOOGLE_SERVICES_JSON: ${{ secrets.ROCHA_LAB_GOOGLE_SERVICES_JSON }}
+          LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+          ROCHA_SUBSCRIPTION_LAB: ${{ inputs.subscription_lab && 'true' || 'false' }}
+          ROCHA_ENTITLEMENT_URL: ${{ inputs.entitlement_url }}
+        run: python3 tools/prepare_homologation.py prepare --private "$RUNNER_TEMP/rocha-homologation"
+      - name: Analyze and test application
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: Build isolated signed login APK
+        env:
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
+      - name: Verify package and OAuth certificate before upload
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          python3 tools/prepare_homologation.py verify --private "$RUNNER_TEMP/rocha-homologation" --build-tools "$BUILD_TOOLS"
+      - name: Upload isolated APK for physical testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-homologacao-login-lab
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/qa/homologation.json
+          if-no-files-found: error
+      - name: Remove private homologation inputs
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-homologation"
