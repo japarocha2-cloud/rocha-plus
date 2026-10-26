@@ -22,3 +22,7 @@ The Mercado Pago inspection module is a read-only scaffold, not an activated web
 ## Payment verification ledger added
 
 `recordVerifiedPayment({db, paymentId, accessToken})` looks up the payment **again** via the official provider API, requires a previously admin-reviewed mapping in `payment_claims/{paymentId}` to one UID, and atomically records its latest status in `payment_events/{paymentId}`. Repeated checks update the same event rather than creating duplicates. It **never** writes `entitlements/{uid}.paidUntil`. A back-office association process and an audited paid-period computation including multiple plans and reversals are still needed; the real monthly and annual purchases must not be auto-linked based solely on the known transaction IDs.
+
+## Deterministic periods (not yet connected to production grants)
+
+`entitlement_periods.js` computes the maximum approved period end from server-owned ledger entries after an **independently reviewed plan and UID association**. A month means a calendar month, and an annual plan means 12 calendar months. Concurrent purchases do not stack automatically; the latest valid end wins. The same payment ID cannot appear twice, and status changes such as refunds remove that payment on recalculation. This logic is deliberately not wired to `paidUntil` until trusted claim review, verified plan/amount mapping, account ownership and reconciliation of existing transactions are operationally validated. Tests are included but have not yet been run in CI.
