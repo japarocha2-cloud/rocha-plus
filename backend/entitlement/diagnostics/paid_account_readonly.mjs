@@ -69,7 +69,7 @@ try {
   const subscriptions = await pages('/preapproval/search', { payer_email: email });
   const matched = subscriptions.filter(s => s.payer_email?.toLowerCase() === email &&
     String(s.collector_id) === String(merchant.id));
-  report.mercadoPago = { merchantAuthenticated: true, subscriptionMatches: matched.length,
+  report.mercadoPago = { merchantAuthenticated: true, subscriptionSearchReturned: subscriptions.length, subscriptionMatches: matched.length,
     searchComplete: true, payments: [], entitlementValidated: false };
   const seen = new Set();
   for (const subscription of matched) {
@@ -90,6 +90,20 @@ try {
         approvedAt: Number.isFinite(Date.parse(payment.date_approved)) ? new Date(payment.date_approved).toISOString() : null });
     }
   }
+  const recent = await pages('/v1/payments/search', {
+    sort: 'date_created', criteria: 'desc', range: 'date_created',
+    begin_date: 'NOW-30DAYS', end_date: 'NOW', 'collector.id': merchant.id });
+  report.mercadoPago.directPaymentWindow = 'last-30-days';
+  report.mercadoPago.directSearchComplete = true;
+  report.mercadoPago.directPayments = recent
+    .filter(p => p.payer?.email?.toLowerCase() === email &&
+      String(p.collector_id) === String(merchant.id))
+    .map(p => ({ status: safeStatus(p.status), liveMode: p.live_mode === true,
+      amount: typeof p.transaction_amount === 'number' ? p.transaction_amount : null,
+      currency: p.currency_id === 'BRL' ? 'BRL' : 'other',
+      refunded: Number(p.transaction_amount_refunded ?? 0) > 0,
+      approvedAt: Number.isFinite(Date.parse(p.date_approved)) ? new Date(p.date_approved).toISOString() : null,
+      titleMatchesRocha: String(p.description ?? '').toLowerCase().includes('rocha') }));
   // Zero matches do not disprove a payment made with another payer or merchant,
   // Pix or an avulso checkout. No automatic association or grant is attempted.
 } catch (error) {
