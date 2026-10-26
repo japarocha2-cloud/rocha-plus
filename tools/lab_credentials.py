@@ -26,6 +26,12 @@ def decode_lab_bundle(raw):
     lines = text.splitlines()
     if len(lines) >= 3 and lines[0].strip().lower() in ('```', '```json') and lines[-1].strip() == '```':
         text = '\n'.join(lines[1:-1]).strip()
+    if text.startswith('ROCHA_LAB_V1:'):
+        try:
+            encoded = ''.join(text.removeprefix('ROCHA_LAB_V1:').split())
+            text = base64.b64decode(encoded, validate=True).decode('utf-8')
+        except (ValueError, UnicodeError):
+            raise LabBundleFormatError('Texto LAB incompleto; copie todo o arquivo de configuracao') from None
     for _ in range(2):
         try:
             value = json.loads(text)

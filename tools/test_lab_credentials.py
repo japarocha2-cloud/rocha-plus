@@ -35,6 +35,17 @@ class LabCredentialsTest(unittest.TestCase):
                 lab_environment({'ROCHA_LAB_BUNDLE_JSON': raw})
             self.assertNotIn('fixture-private', str(caught.exception))
 
+    def test_ascii_transport_preserves_values_and_rejects_production_or_corruption(self):
+        raw = json.dumps(self.bundle())
+        encoded = base64.b64encode(raw.encode()).decode()
+        wrapped = 'ROCHA_LAB_V1:\n' + '\n'.join(encoded[i:i+60] for i in range(0, len(encoded), 60))
+        self.assertEqual(lab_environment({'ROCHA_LAB_BUNDLE_JSON': wrapped})['LAB_KEYSTORE_PASSWORD'], 'fixture-password')
+        with self.assertRaises(LabBundleFormatError):
+            lab_environment({'ROCHA_LAB_BUNDLE_JSON': 'ROCHA_LAB_V1:invalid!base64'})
+        bad = self.bundle() | {'project': 'rocha-plus'}
+        with self.assertRaises(ValueError):
+            lab_environment({'ROCHA_LAB_BUNDLE_JSON': 'ROCHA_LAB_V1:' + base64.b64encode(json.dumps(bad).encode()).decode()})
+
     def test_official_project_and_unknown_secrets_are_rejected(self):
         for kind in ('project', 'secret'):
             bundle = self.bundle()
