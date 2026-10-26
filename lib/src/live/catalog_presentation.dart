@@ -26,13 +26,7 @@ String repositoryCategory(String group) =>
 // Editorial priority, never an assertion of measured audience ratings.
 const _priority = <String, List<String>>{
   'TV ao Vivo': [
-    r'globo|tv morena',
     r'sbt',
-    r'record(?:tv)?',
-    r'band',
-    r'rede\s*tv',
-    r'(?:tv )?cultura|cultura fast',
-    r'tv brasil',
   ],
   'Esportes': [
     r'sportv',
@@ -84,6 +78,14 @@ const _priority = <String, List<String>>{
   ],
   'Música': [r'mtv', r'bis', r'multishow', r'trace brazuca'],
 };
+
+// Owner-selected highlights, independent of catalogue admission and favourites.
+// News/kids channels and untested regional variants are not the SBT live signal
+// selected for this area. Changing this list never blocks or deletes a channel.
+bool isFeaturedLiveChannel(Channel channel) =>
+    displayCategory(channel.group) == 'TV ao Vivo' &&
+    const {'sbt', 'sbt nacional', 'sbt interior'}
+        .contains(channelIdentity(channel.name));
 
 int _rank(Channel c) {
   final rules = _priority[displayCategory(c.group)] ?? const <String>[];

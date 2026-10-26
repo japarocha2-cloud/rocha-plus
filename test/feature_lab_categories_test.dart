@@ -45,16 +45,18 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
   });
-  test('familiar brands appear before alphabetical channels', () {
+  test('only SBT retains editorial priority and other channels remain listed', () {
     const channels = [
       Channel(name: 'Alpha', url: 'a', group: 'TV aberta'),
       Channel(name: 'Band', url: 'b', group: 'TV aberta'),
       Channel(name: 'TV Morena', url: 'g', group: 'TV aberta'),
+      Channel(name: 'SBT Nacional', url: 's', group: 'TV aberta'),
     ];
     expect(popularChannelsFirst(channels).map((c) => c.name), [
-      'TV Morena',
-      'Band',
+      'SBT Nacional',
       'Alpha',
+      'Band',
+      'TV Morena',
     ]);
   });
   testWidgets(

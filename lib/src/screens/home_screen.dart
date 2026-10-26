@@ -233,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final live = channels
           .where(
             (c) =>
-                c.group == 'TV aberta' &&
+                isFeaturedLiveChannel(c) &&
                 !repository.isBlocked(c) &&
                 !repository.isQuarantined(c.url),
           )
@@ -424,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     SliverToBoxAdapter(
                       child: _row(
-                        'Canais ao vivo',
+                        'SBT em destaque',
                         live,
                         () => _open('TV ao Vivo'),
                       ),
@@ -455,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Padding(
                           padding: EdgeInsets.all(24),
                           child: Text(
-                            'Nenhum canal aberto disponível no catálogo neste momento.',
+                            'SBT indisponível nos destaques neste momento. Explore o catálogo em TV ao Vivo.',
                             style: TextStyle(color: Colors.white54),
                           ),
                         ),
