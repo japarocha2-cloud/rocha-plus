@@ -41,7 +41,8 @@ try {
 }
 
 try {
-  const token = process.env.MP_ACCESS_TOKEN;
+  const token = process.env.MP_RECEIVING_ACCESS_TOKEN || process.env.MP_ACCESS_TOKEN;
+  report.paymentCredentialSource = process.env.MP_RECEIVING_ACCESS_TOKEN ? 'receiving-account' : 'legacy-account';
   if (!token) throw Error('missing-payment-credential');
   async function get(path, params = {}) {
     const url = new URL(path, 'https://api.mercadopago.com');

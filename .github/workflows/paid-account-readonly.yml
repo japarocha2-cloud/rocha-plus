@@ -27,4 +27,5 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
         run: node backend/entitlement/diagnostics/paid_account_readonly.mjs
