@@ -66,6 +66,30 @@ try {
   }
   const merchant = await get('/users/me');
   if (!/^\d+$/.test(String(merchant.id))) throw Error('merchant-not-confirmed');
+  try {
+    const payment = await get('/v1/payments/185249688226');
+    report.specifiedPayment = {
+      lookupConfirmed: String(payment.id) === '185249688226',
+      status: safeStatus(payment.status),
+      statusDetail: ['accredited', 'pending_capture', 'authorized', 'cc_rejected_other_reason',
+        'cc_rejected_high_risk', 'cc_rejected_insufficient_amount'].includes(payment.status_detail) ? payment.status_detail : 'other',
+      liveMode: payment.live_mode === true,
+      operationType: ['regular_payment', 'recurring_payment', 'card_validation'].includes(payment.operation_type) ? payment.operation_type : 'other',
+      amount: typeof payment.transaction_amount === 'number' ? payment.transaction_amount : null,
+      currency: payment.currency_id === 'BRL' ? 'BRL' : 'other',
+      merchantMatchesConnectedAccount: String(payment.collector_id) === String(merchant.id),
+      payerMatchesSelectedAccount: payment.payer?.email?.toLowerCase() === email,
+      payerEmailAvailable: typeof payment.payer?.email === 'string' && payment.payer.email.length > 0,
+      refundedAmount: typeof payment.transaction_amount_refunded === 'number' ? payment.transaction_amount_refunded : null,
+      approvedAt: Number.isFinite(Date.parse(payment.date_approved)) ? new Date(payment.date_approved).toISOString() : null,
+      titleMatchesRocha: String(payment.description ?? '').toLowerCase().includes('rocha'),
+      entitlementGranted: false,
+    };
+  } catch (error) {
+    report.specifiedPayment = { lookupConfirmed: false,
+      error: /^provider-http-\d{3}$/.test(error.message) ? error.message : 'lookup-not-confirmed',
+      entitlementGranted: false };
+  }
   const subscriptions = await pages('/preapproval/search', { payer_email: email });
   const matched = subscriptions.filter(s => s.payer_email?.toLowerCase() === email &&
     String(s.collector_id) === String(merchant.id));
