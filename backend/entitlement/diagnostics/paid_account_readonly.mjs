@@ -69,7 +69,11 @@ try {
   const subscriptions = await pages('/preapproval/search', { payer_email: email });
   const matched = subscriptions.filter(s => s.payer_email?.toLowerCase() === email &&
     String(s.collector_id) === String(merchant.id));
-  report.mercadoPago = { merchantAuthenticated: true, subscriptionSearchReturned: subscriptions.length, subscriptionMatches: matched.length,
+  report.mercadoPago = { merchantAuthenticated: true, subscriptionSearchReturned: subscriptions.length,
+    subscriptionPayerMatches: subscriptions.filter(s => s.payer_email?.toLowerCase() === email).length,
+    subscriptionPayerMissingMerchant: subscriptions.filter(s =>
+      s.payer_email?.toLowerCase() === email && s.collector_id == null).length,
+    subscriptionMatches: matched.length,
     searchComplete: true, payments: [], entitlementValidated: false };
   const seen = new Set();
   for (const subscription of matched) {
@@ -99,6 +103,8 @@ try {
     .filter(p => p.payer?.email?.toLowerCase() === email &&
       String(p.collector_id) === String(merchant.id))
     .map(p => ({ status: safeStatus(p.status), liveMode: p.live_mode === true,
+      operationType: ['regular_payment', 'recurring_payment', 'card_validation', 'account_fund'].includes(p.operation_type) ? p.operation_type : 'other',
+      statusDetail: ['accredited', 'pending_capture', 'authorized'].includes(p.status_detail) ? p.status_detail : 'other',
       amount: typeof p.transaction_amount === 'number' ? p.transaction_amount : null,
       currency: p.currency_id === 'BRL' ? 'BRL' : 'other',
       refunded: Number(p.transaction_amount_refunded ?? 0) > 0,
