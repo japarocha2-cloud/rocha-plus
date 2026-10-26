@@ -1,31 +1,42 @@
-# Rocha+ — diagnóstico de conta paga, somente leitura — 26/10/2026
+# Rocha+ — pagamentos reais confirmados e liberação pendente — 26/10/2026
 
-## Escopo
-Conta selecionada pelo proprietário: nadiarocha10@hotmail.com. Consulta expressamente autorizada; scripts e workflow somente na branch experimental feat/dual-player-lab-20261020. Nenhuma cobrança, confirmação, alteração de assinatura, acesso, preços, Firebase ou versões congeladas.
+## Resultado vigente
 
-## Evidência real
-Execução: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40342449660
-Fonte: Firebase Admin e API Mercado Pago, com credenciais protegidas do repositório. Nenhuma credencial, UID, documento bancário ou identificador de pagamento impresso.
+A credencial MP_RECEIVING_ACCESS_TOKEN cadastrada pelo proprietário autenticou a conta recebedora esperada. As duas transações foram consultadas individualmente por GET na API Mercado Pago. Ambas são reais, estão approved/accredited, em BRL, com zero estorno informado e correspondência exata de pagador e recebedor.
 
-- Firebase oficial rocha-plus: conta encontrada, e-mail verificado, não desativada, Google vinculado, documento Spark existente.
-- paidUntil: ausente/nulo. Não há período pago vigente registrado nesse documento.
-- Mercado Pago: recebedor autenticado. Pesquisa de assinaturas retornou sete resultados, nenhum com payer_email exatamente igual ao e-mail selecionado. Não se aceita filtro do provedor sem conferir cada resultado.
-- Pagamentos diretos: busca completa no recebedor conectado, últimos 30 dias, filtrada localmente por e-mail exato do pagador e recebedor. Uma operação correspondente: status approved, live_mode true, operation_type card_validation, valor BRL 0,00, sem estorno, aprovada em 13/10/2026 22:19:42 no fuso America/Sao_Paulo (14/10/2026 01:19:42 UTC).
-- Validação de cartão sem valor não comprova pagamento do plano.
-- Nenhuma liberação de acesso foi realizada; login físico no APK não foi testado.
+| Plano informado pelo proprietário | Referência | Valor | Aprovação, America/Sao_Paulo | Resultado |
+|---|---|---|---|---|
+| Mensal | 185249688226 | R$4,50 | 20/10/2026 19:30:41 | Pagamento confirmado, sem estorno |
+| Anual | 184267748145 | R$49,50 | 21/10/2026 06:39:29 | Pagamento confirmado, sem estorno |
 
-## Limites e próximo passo
-Não é prova de inexistência de pagamento. Pagamento em outro recebedor, outro e-mail de pagador, fora da janela consultada ou em Asaas/Inter não foi coberto. Para localizar o pagamento relatado, obter o ID da transação ou comprovante com data/valor/meio/recebedor e conferir diretamente no provedor. Não solicitar novo pagamento nem vincular por semelhança de nomes.
+Pagadora selecionada: nadiarocha10@hotmail.com. Conta Firebase oficial encontrada, e-mail verificado, Google vinculado, conta não desativada e documento rochaSparkAccounts existente. O campo paidUntil permanece nulo, portanto o documento consultado não contém período pago vigente. Nenhuma duração foi calculada ou concedida nesta rodada.
 
-O APK 686 usa Firebase de homologação e bloqueio comercial desativado. A existência de conta/pagamento no projeto oficial não prova liberação nesse APK; não copiar registros reais para homologação automaticamente.
+## Evidência
 
-Status: VERDE para execução de diagnóstico somente leitura; AMARELO para vínculo de pagamento e teste no aplicativo. O resultado não homologa cobrança.
+- Execução real: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40351814361
+- Revisão executada: 6b7faf8a1b920427b64b5353ee2d17672b139648.
+- Fonte da credencial: receiving-account; recebedor confere com o User ID exibido pelo proprietário no painel da Andressa.
+- Script verifica identidade do recebedor antes de consultar pagamentos e só utiliza GET no provedor e leituras no Firebase.
+- writes: 0; appLoginTested: false; accessGrantedByThisCheck: false.
+- Verificação sintática Node e git diff --check aprovados.
+- A aprovação do job comprova a execução do diagnóstico, não a homologação do fluxo completo de assinatura.
 
-## Atualização — referências informadas pelo proprietário
+## Diagnóstico
 
-- Mensal: 185249688226. Anual: 184267748145. Ambos consultados por GET individual na API com a credencial Mercado Pago disponível no repositório.
-- Execução real: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40343908566 — diagnóstico executado com sucesso, consultas de ambos retornaram HTTP 404. Sucesso do diagnóstico não significa pagamentos homologados.
-- O resultado não comprova inexistência nem recusa: pagamentos de outro recebedor podem não estar disponíveis à credencial utilizada.
-- Histórico recuperado: link mensal R$4,50 https://mpago.la/32m6qxz, registrado na conta da sócia. Identidade desse recebedor ainda não foi comparada com a credencial consultada.
-- Diagnóstico passa a aceitar MP_RECEIVING_ACCESS_TOKEN separadamente, com prioridade sobre MP_ACCESS_TOKEN apenas nessa rotina de leitura. O secret original permanece preservado; nenhum código comercial ou de confirmação utiliza essa nova variável.
-- A credencial da conta recebedora deve ser cadastrada diretamente nos Secrets do GitHub pelo operador. Não enviar credencial na conversa. Depois executar novamente o workflow de diagnóstico na branch experimental e conferir valor, status, estorno, recebedor, pagador e vínculo antes de qualquer concessão.
+As consultas anteriores com MP_ACCESS_TOKEN retornaram 404 para esses IDs. Com a credencial da conta recebedora correta ambos retornaram dados confirmados. Isso resolve a dúvida de escopo da credencial: o 404 anterior não indicava inexistência de pagamento.
+
+A falta de paidUntil é uma pendência de registro/vínculo do direito no Firebase, separada da confirmação financeira. A causa exata da sincronização ausente ainda precisa de investigação; não atribuir o problema a cartão, falta de pagamento ou e-mail incorreto.
+
+A busca de assinaturas recorrentes não encontrou correspondência exata de payer_email. Os pagamentos reais identificados são regular_payment. Não interpretar falta de assinatura recorrente como falta de pagamento avulso. Não substituir links ou criar cobranças novas.
+
+## Próximo passo técnico
+
+Preparar a vinculação idempotente dos dois pagamentos à identidade verificada, com verificação de titularidade, valor/plano e política de duração/renovação. Essa rotina precisa distinguir o documento Spark oficial do backend experimental de direitos. Nenhum registro financeiro real foi copiado para o projeto de homologação.
+
+O APK 686 continua com pacote .lab, Firebase rocha-plus-homologacao e bloqueio comercial desativado. Login/reprodução nesse APK não demonstram reconhecimento desses pagamentos no projeto oficial. Validar integração e depois o fluxo no dispositivo antes de declarar homologação.
+
+## Preservação
+
+Alterações apenas em scripts, workflow e documentação da branch experimental feat/dual-player-lab-20261020. Sem gravações em Firebase, aprovação administrativa, cobrança, alteração de preços, publicação de APK ou modificação de refs congeladas. O token antigo permanece preservado; a nova variável é usada apenas pelo diagnóstico.
+
+Status: VERDE para confirmação dos dois pagamentos; AMARELO para vínculo de acesso e teste no aplicativo.
