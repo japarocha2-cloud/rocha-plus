@@ -1,0 +1,40 @@
+name: Subscription safety checks
+on:
+  push:
+    branches:
+      - fix/subscription-access-20261026
+  pull_request:
+    paths:
+      - 'functions/**'
+      - 'lib/src/auth/**'
+      - '.github/workflows/subscription-ci.yml'
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check index.js
+          node --check mercadopago_reconciliation.js
+          node --check reconcile_and_grant.js
+          node --check entitlement_periods.js
+      - name: Unit tests
+        run: npm test
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Flutter dependencies
+        run: flutter pub get
+      - name: Subscription gate widget tests
+        run: flutter test test/subscription_gate_test.dart
