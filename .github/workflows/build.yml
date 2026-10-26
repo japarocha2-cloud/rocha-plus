@@ -173,6 +173,9 @@ jobs:
           python3 tools/lab/configure_stable_signing.py
       - name: Build experimental player lab APK
         if: github.event_name == 'pull_request'
+        env:
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
         run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
       - name: Report exact experimental APK signing certificate (diagnostic only)
         if: github.event_name == 'pull_request'
@@ -239,4 +242,6 @@ jobs:
           fi
       - name: Remove private build inputs
         if: always()
-        run: rm -rf -- "$RUNNER_TEMP/rocha-private"
+        run: |
+          rm -rf -- "$RUNNER_TEMP/rocha-private"
+          rm -rf -- "$GITHUB_WORKSPACE/.rocha-private-lab"
