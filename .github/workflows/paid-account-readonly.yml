@@ -1,0 +1,30 @@
+name: Paid account diagnostic (read-only)
+on:
+  push:
+    branches: [feat/dual-player-lab-20261020]
+    paths:
+      - .github/workflows/paid-account-readonly.yml
+      - backend/entitlement/diagnostics/paid_account_readonly.mjs
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  account-audit:
+    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020' && github.repository == 'japarocha2-cloud/rocha-plus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked SDK without lifecycle scripts
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Read the owner-selected account and recurring payment records
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+        run: node backend/entitlement/diagnostics/paid_account_readonly.mjs
