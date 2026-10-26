@@ -68,7 +68,10 @@ jobs:
           # Emulator 37.x rejects -audio sdl (unknown driver). Use the supported
           # PulseAudio backend, and record its driver inventory for diagnosis.
           # Preserve the strict real-PCM 440 Hz gate; never approve silence.
-          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
+          # Controlled infrastructure experiment: use Intel HDA instead of
+          # virtio-snd. Previous API35/ranchu runs hit pcm_writei I/O errors.
+          # This is NOT an audio approval; the same RGB/440 Hz gate must pass.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa -feature -VirtioSndCard
           script: |
             # Keep the CI guest in its normal ADB mode. Requesting adb root
             # forces an ADB daemon restart and can disturb the audio preflight.
@@ -77,6 +80,9 @@ jobs:
             adb wait-for-device
             adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
             adb shell id > build/lab/android/diagnostic-identity.txt
+            # Read-only userdebug diagnostics without restarting the ADB daemon.
+            adb shell su 0 cat /proc/asound/cards > build/lab/android/guest-audio-cards.txt 2>&1 || true
+            adb shell su 0 cat /proc/asound/pcm > build/lab/android/guest-audio-pcm.txt 2>&1 || true
             adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
             test -s "$XDG_RUNTIME_DIR/pulse/pid"
             pactl info >> build/lab/android/pulse-host.txt
