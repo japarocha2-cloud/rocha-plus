@@ -80,7 +80,11 @@ def prepare(root, private, env):
     for name, value in [('lab.keystore', key_bytes),
                         ('firebase.json', json.dumps(config).encode()),
                         ('expected.json', json.dumps({'project': PROJECT, 'package': PACKAGE,
-                                                     'certificateSha1': fingerprints}).encode())]:
+                                                     'certificateSha1': fingerprints,
+                                                     'subscriptionEnforcementConfigured':
+                                                         config['ROCHA_EXPERIMENTAL_SUBSCRIPTIONS'] == 'true',
+                                                     'entitlementEndpointConfigured':
+                                                         bool(config['ROCHA_ENTITLEMENT_URL'])}).encode())]:
         path = private / name
         path.touch(mode=0o600)
         path.chmod(0o600)
@@ -116,6 +120,11 @@ def verify(apk, build_tools, expected_file, summary, output):
     expected = json.loads(Path(expected_file).read_text())
     if expected.get('project') != PROJECT or expected.get('package') != PACKAGE:
         raise ValueError('Metadados fora da homologacao')
+    enforcement = expected.get('subscriptionEnforcementConfigured')
+    endpoint_configured = expected.get('entitlementEndpointConfigured')
+    if (type(enforcement) is not bool or type(endpoint_configured) is not bool
+            or enforcement != endpoint_configured):
+        raise ValueError('Metadados de assinatura ausentes ou inconsistentes')
     badging = subprocess.run([str(Path(build_tools) / 'aapt'), 'dump', 'badging', str(apk)],
                              capture_output=True, text=True, check=True, timeout=90).stdout
     match = re.search(r"^package: name='([^']+)'", badging, re.MULTILINE)
@@ -127,7 +136,11 @@ def verify(apk, build_tools, expected_file, summary, output):
     result = {'project': PROJECT, 'package': PACKAGE, 'certificateMatchesConfiguration': True,
               'apkSha256': hashlib.sha256(Path(apk).read_bytes()).hexdigest(),
               'productionApproved': False, 'physicalLoginValidation': 'pending',
-              'cloudAccessValidated': False}
+              'cloudAccessValidated': False,
+              'subscriptionEnforcementConfigured': enforcement,
+              'entitlementEndpointConfigured': endpoint_configured,
+              'paymentFlowValidation': 'pending',
+              'trialExpiryValidation': 'pending'}
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(json.dumps(result, indent=2))
     return result

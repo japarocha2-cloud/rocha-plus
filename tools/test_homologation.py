@@ -78,14 +78,20 @@ class HomologationTest(unittest.TestCase):
             self.assertIn('applicationIdSuffix = ".lab"', gradle.read_text())
             self.assertNotIn('test-password', gradle.read_text())
             self.assertEqual(key.stat().st_mode & 0o777, 0o600)
+            expected = json.loads((root / 'private/expected.json').read_text())
+            self.assertFalse(expected['subscriptionEnforcementConfigured'])
+            self.assertFalse(expected['entitlementEndpointConfigured'])
 
-    def check_apk(self, package=PACKAGE, digests=None, crypto_error=False):
+    def check_apk(self, package=PACKAGE, digests=None, crypto_error=False, metadata=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             apk, expected, output = (root / n for n in ['app.apk', 'expected.json', 'report.json'])
             apk.write_bytes(b'fixture-apk')
             expected.write_text(json.dumps({'project': PROJECT, 'package': PACKAGE,
-                                           'certificateSha1': [self.fingerprint]}))
+                                           'certificateSha1': [self.fingerprint],
+                                           **({'subscriptionEnforcementConfigured': False,
+                                               'entitlementEndpointConfigured': False}
+                                              if metadata is None else metadata)}))
             result = subprocess.CompletedProcess([], 0, f"package: name='{package}' versionCode='1'", '')
             with patch('prepare_homologation.subprocess.run', return_value=result), \
                  patch('prepare_homologation.report_certificate', return_value=digests or [self.fingerprint],
@@ -111,3 +117,23 @@ class HomologationTest(unittest.TestCase):
         self.assertFalse(report['productionApproved'])
         self.assertFalse(report['cloudAccessValidated'])
         self.assertEqual(report['physicalLoginValidation'], 'pending')
+
+    def test_access_configuration_never_implies_payment_or_trial_homologation(self):
+        for enabled in (False, True):
+            report = self.check_apk(metadata={
+                'subscriptionEnforcementConfigured': enabled,
+                'entitlementEndpointConfigured': enabled})
+            self.assertEqual(report['subscriptionEnforcementConfigured'], enabled)
+            self.assertEqual(report['entitlementEndpointConfigured'], enabled)
+            self.assertEqual(report['paymentFlowValidation'], 'pending')
+            self.assertEqual(report['trialExpiryValidation'], 'pending')
+            self.assertFalse(report['productionApproved'])
+            self.assertFalse(report['cloudAccessValidated'])
+
+    def test_missing_or_inconsistent_access_metadata_blocks_success_report(self):
+        for metadata in ({}, {'subscriptionEnforcementConfigured': 'false',
+                              'entitlementEndpointConfigured': False},
+                         {'subscriptionEnforcementConfigured': True,
+                          'entitlementEndpointConfigured': False}):
+            with self.subTest(metadata=metadata), self.assertRaises(ValueError):
+                self.check_apk(metadata=metadata)
