@@ -26,3 +26,9 @@ The Mercado Pago inspection module is a read-only scaffold, not an activated web
 ## Deterministic periods (not yet connected to production grants)
 
 `entitlement_periods.js` computes the maximum approved period end from server-owned ledger entries after an **independently reviewed plan and UID association**. A month means a calendar month, and an annual plan means 12 calendar months. Concurrent purchases do not stack automatically; the latest valid end wins. The same payment ID cannot appear twice, and status changes such as refunds remove that payment on recalculation. This logic is deliberately not wired to `paidUntil` until trusted claim review, verified plan/amount mapping, account ownership and reconciliation of existing transactions are operationally validated. Tests are included but have not yet been run in CI.
+
+## Privileged reconciliation grant (experimental)
+
+`reconcile_and_grant.js` now combines provider verification, an independently reviewed `payment_claims/{paymentId}` record (UID, plan, BRL amount in cents), one Firestore transaction, unique `payment_events/{paymentId}` ledger entry and recomputation of `entitlements/{uid}.paidUntil`. Repeating the same approved payment will not extend its period again. A verified refund recomputes the account from remaining ledger records. Run only from a trusted backend/admin process with a protected Mercado Pago access token; **do not expose this function directly to client calls**.
+
+**Critical deployment blockers:** an audited back-office workflow must establish each historical payment claim after account ownership verification; refund/chargeback state must be refreshed promptly for all relevant payments; verify account plan terms and amount before marking a claim reviewed. The code is not deployed, provider credentials are not configured, and live payment transactions have not been reconciled. Maintain PR as draft.
