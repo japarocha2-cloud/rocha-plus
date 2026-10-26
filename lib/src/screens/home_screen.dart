@@ -638,12 +638,16 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
         ),
         child: Row(
           children: [
+            IconButton(
+              tooltip: 'Destaque anterior',
+              onPressed: () => _move(-1),
+              icon: const Icon(Icons.chevron_left),
+            ),
             const Expanded(
               child: Text(
                 'Destaques',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
               ),
-
             ),
             IconButton(
               tooltip: 'Próximo destaque',
