@@ -2,7 +2,7 @@
 
 // Privileged back-office operation only. NEVER expose as an unauthenticated HTTP
 // endpoint. Claims must already have been approved by a verified administrator.
-const {fetchVerifiedPayment} = require('./mercadopago_reconciliation');
+const {fetchVerifiedPayment, eligiblePayment} = require('./mercadopago_reconciliation');
 const {entitlementFromLedger} = require('./entitlement_periods');
 
 async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
@@ -20,6 +20,12 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
     // derive plan from a client-provided amount or a mutable payment link.
     if (claim.currency !== 'BRL' ||
         !Number.isSafeInteger(claim.amountCents) ||
+        claim.amountCents <= 0 ||
+        !/^\d+$/.test(claim.merchantId || '') ||
+        payment.merchantId !== claim.merchantId ||
+        payment.liveMode !== true ||
+        !Number.isFinite(payment.amount) ||
+        Math.abs(payment.amount * 100 - Math.round(payment.amount * 100)) > 1e-6 ||
         Math.round(payment.amount * 100) !== claim.amountCents ||
         payment.currency !== 'BRL') throw new Error('payment does not match reviewed claim');
 
@@ -34,12 +40,14 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
       throw new Error('payment ownership conflict');
     }
     if (!entitlement.exists) throw new Error('account trial must be initialized first');
-    const approved = payment.status === 'approved' && !!payment.dateApproved;
+    const approved = eligiblePayment(payment);
     const updated = {
       uid: claim.uid, provider: 'mercadopago', paymentId: payment.id,
       status: payment.status, eligibleForReview: approved,
       reviewed: true, plan: claim.plan, amount: payment.amount,
       currency: payment.currency, approvalDate: payment.dateApproved,
+      merchantId: payment.merchantId, liveMode: payment.liveMode,
+      refundedAmount: payment.refundedAmount,
       checkedAt: admin.firestore.Timestamp.now(),
     };
     const otherRecords = ledger.docs

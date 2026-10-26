@@ -13,6 +13,11 @@ function normalizePayment(payment) {
     dateApproved: payment.date_approved || null,
     amount: Number(payment.transaction_amount),
     currency: String(payment.currency_id || ''),
+    merchantId: String(payment.collector_id || ''),
+    liveMode: payment.live_mode === true,
+    statusDetail: String(payment.status_detail || ''),
+    refundedAmount: typeof payment.transaction_amount_refunded === 'number'
+      ? payment.transaction_amount_refunded : null,
   };
 }
 
@@ -20,11 +25,21 @@ async function fetchVerifiedPayment(paymentId, accessToken) {
   if (!/^[0-9]+$/.test(String(paymentId))) throw new Error('invalid payment ID');
   if (!accessToken) throw new Error('missing Mercado Pago credential');
   const response = await fetch('https://api.mercadopago.com/v1/payments/' + paymentId, {
+    redirect: 'error',
     headers: {Authorization: 'Bearer ' + accessToken, Accept: 'application/json'},
     signal: AbortSignal.timeout(12000),
   });
   if (!response.ok) throw new Error('payment provider query failed: ' + response.status);
-  return normalizePayment(await response.json());
+  const payment = normalizePayment(await response.json());
+  if (payment.id !== String(paymentId)) throw new Error('payment identity mismatch');
+  return payment;
+}
+
+function eligiblePayment(payment) {
+  return payment.liveMode === true && payment.status === 'approved' &&
+    payment.statusDetail === 'accredited' && payment.refundedAmount === 0 &&
+    payment.currency === 'BRL' && Number.isFinite(payment.amount) &&
+    payment.amount > 0 && !!payment.dateApproved;
 }
 
 /** Returns a verified payment snapshot only. DOES NOT grant access.
@@ -34,9 +49,7 @@ async function fetchVerifiedPayment(paymentId, accessToken) {
  */
 async function inspectPayment(paymentId, accessToken) {
   const payment = await fetchVerifiedPayment(paymentId, accessToken);
-  return {...payment, eligibleForReview: payment.status === 'approved' &&
-    payment.currency === 'BRL' && Number.isFinite(payment.amount) &&
-    payment.amount > 0};
+  return {...payment, eligibleForReview: eligiblePayment(payment)};
 }
 
 /**
@@ -58,9 +71,7 @@ async function recordVerifiedPayment({db, paymentId, accessToken}) {
     if (existing.exists && existing.data().uid !== uid) {
       throw new Error('payment already associated with another account');
     }
-    const eligible = payment.status === 'approved' &&
-      payment.currency === 'BRL' && Number.isFinite(payment.amount) &&
-      payment.amount > 0 && !!payment.dateApproved;
+    const eligible = eligiblePayment(payment);
     const record = {
       uid, provider: 'mercadopago', paymentId: payment.id,
       status: payment.status, eligibleForReview: eligible,
@@ -77,4 +88,4 @@ async function recordVerifiedPayment({db, paymentId, accessToken}) {
 }
 
 module.exports = {normalizePayment, fetchVerifiedPayment, inspectPayment,
-  recordVerifiedPayment};
+  recordVerifiedPayment, eligiblePayment};
