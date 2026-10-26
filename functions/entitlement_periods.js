@@ -32,6 +32,9 @@ function entitlementFromLedger(uid, records) {
     if (!Number.isFinite(approvalMs) || !/Z$|[+-]\d\d:\d\d$/.test(row.approvalDate)) {
       throw new Error('untrusted approval timestamp');
     }
+    if (approvalMs > Date.now() + 5 * 60 * 1000) {
+      throw new Error('approval date is in the future');
+    }
     // Concurrent monthly and annual purchases do not compound or extend one
     // another: the latest independently approved end date wins.
     const expiration = addUtcMonths(row.approvalDate, PERIODS[row.plan]).getTime();
