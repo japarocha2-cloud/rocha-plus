@@ -12,3 +12,9 @@ The endpoint verifies Firebase ID tokens, including revocation, derives UID from
 **Pending:** create and test an authorized server-side Mercado Pago reconciliation process. Verify transactions using Mercado Pago's authenticated API, establish their actual payment and refund states, map each to the correct Firebase UID after documented account-holder confirmation, apply paid periods exactly once per transaction, and handle reversals. Do not set `paidUntil` manually based only on an ID.
 
 Security: ensure Firestore client access to `entitlements` is denied before deployment. The Admin SDK bypasses Firestore client rules. Keep the Mercado Pago token in Secret Manager, never inside this app.
+
+## Firestore rules deployment warning
+
+The new root `firestore.rules` is a **deny-by-default experimental policy** and is NOT ready to replace an existing project's complete ruleset. Before any deployment, inspect the live Firestore rules and merge the relevant `entitlements`, `payment_events`, and `payment_claims` restrictions with existing rules. Replacing an existing ruleset without review can break other application collections. Do not deploy this file blindly.
+
+The Mercado Pago inspection module is a read-only scaffold, not an activated webhook, scheduled reconciliation job or completed payment association. Do not report payment tests as passed until provider API access and a real end-to-end transaction test are confirmed.
