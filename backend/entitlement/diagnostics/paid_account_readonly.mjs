@@ -66,10 +66,12 @@ try {
   }
   const merchant = await get('/users/me');
   if (!/^\d+$/.test(String(merchant.id))) throw Error('merchant-not-confirmed');
+  report.specifiedPayments = {};
+  for (const [kind, paymentId] of Object.entries({ monthly: '185249688226', annual: '184267748145' })) {
   try {
-    const payment = await get('/v1/payments/185249688226');
-    report.specifiedPayment = {
-      lookupConfirmed: String(payment.id) === '185249688226',
+    const payment = await get('/v1/payments/' + paymentId);
+    report.specifiedPayments[kind] = {
+      lookupConfirmed: String(payment.id) === paymentId,
       status: safeStatus(payment.status),
       statusDetail: ['accredited', 'pending_capture', 'authorized', 'cc_rejected_other_reason',
         'cc_rejected_high_risk', 'cc_rejected_insufficient_amount'].includes(payment.status_detail) ? payment.status_detail : 'other',
@@ -86,9 +88,10 @@ try {
       entitlementGranted: false,
     };
   } catch (error) {
-    report.specifiedPayment = { lookupConfirmed: false,
+    report.specifiedPayments[kind] = { lookupConfirmed: false,
       error: /^provider-http-\d{3}$/.test(error.message) ? error.message : 'lookup-not-confirmed',
       entitlementGranted: false };
+  }
   }
   const subscriptions = await pages('/preapproval/search', { payer_email: email });
   const matched = subscriptions.filter(s => s.payer_email?.toLowerCase() === email &&
