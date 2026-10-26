@@ -540,7 +540,110 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
     ],
- …752 tokens truncated…eft),
+  );
+}
+
+class RochaBrand extends StatelessWidget {
+  final bool compact;
+  const RochaBrand({super.key, this.compact = false});
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: compact ? 150 : 230,
+    height: compact ? 50 : 76,
+    child: const RochaWordmark(),
+  );
+}
+
+/// Navigation-only featured carousel: the approved artwork and palette stay intact.
+class _FeaturedCarousel extends StatefulWidget {
+  final bool wide;
+  final ValueChanged<String> onOpen;
+  const _FeaturedCarousel({required this.wide, required this.onOpen});
+
+  @override
+  State<_FeaturedCarousel> createState() => _FeaturedCarouselState();
+}
+
+class _FeaturedCarouselState extends State<_FeaturedCarousel>
+    with WidgetsBindingObserver {
+  static const autoAdvanceInterval = Duration(seconds: 6);
+  static const transitionDuration = Duration(milliseconds: 400);
+  static const initialPage =
+      3001; // Middle item (Home), with room for backward swipes.
+
+  late final PageController controller;
+  Timer? _autoTimer;
+  int currentPage = initialPage;
+  int selected = 1;
+  bool _dragging = false;
+  bool _appActive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    controller = PageController(
+      initialPage: initialPage,
+      viewportFraction: .84,
+    );
+    _restartAuto();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appActive = state == AppLifecycleState.resumed;
+    if (_appActive) {
+      _restartAuto();
+    } else {
+      _autoTimer?.cancel();
+    }
+  }
+
+  void _restartAuto() {
+    _autoTimer?.cancel();
+    if (!_appActive || _dragging) return;
+    _autoTimer = Timer.periodic(autoAdvanceInterval, (_) {
+      if (!mounted || !controller.hasClients) return;
+      _move(1, automatic: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _move(int direction, {bool automatic = false}) {
+    if (!controller.hasClients || _dragging) return;
+    if (!automatic) _restartAuto();
+    controller.animateToPage(
+      currentPage + direction,
+      duration: transitionDuration,
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          widget.wide ? 24 : 14,
+          0,
+          widget.wide ? 24 : 14,
+          8,
+        ),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Destaques',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
+
             ),
             IconButton(
               tooltip: 'Próximo destaque',
