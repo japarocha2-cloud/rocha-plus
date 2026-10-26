@@ -68,10 +68,11 @@ jobs:
           # Emulator 37.x rejects -audio sdl (unknown driver). Use the supported
           # PulseAudio backend, and record its driver inventory for diagnosis.
           # Preserve the strict real-PCM 440 Hz gate; never approve silence.
-          # Controlled infrastructure experiment: use Intel HDA instead of
-          # virtio-snd. Previous API35/ranchu runs hit pcm_writei I/O errors.
-          # This is NOT an audio approval; the same RGB/440 Hz gate must pass.
-          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa -feature -VirtioSndCard
+          # API35's guest reported no soundcards and selected NullSink when
+          # VirtioSndCard was disabled (run 40357197981). Restore its default
+          # sound device. Previous virtio PCM errors still require a fresh
+          # RGB/440 Hz preflight; this is not an audio approval.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
           script: |
             # Keep the CI guest in its normal ADB mode. Requesting adb root
             # forces an ADB daemon restart and can disturb the audio preflight.
