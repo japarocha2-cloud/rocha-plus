@@ -180,14 +180,7 @@ jobs:
           set -euo pipefail
           APK="build/app/outputs/flutter-apk/app-debug.apk"
           BUILD_TOOLS="$(find "${ANDROID_HOME}/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
-          test -f "$APK"
-          test -x "$BUILD_TOOLS/apksigner"
-          CERTS="$("$BUILD_TOOLS/apksigner" verify --print-certs "$APK")"
-          SHA1="$(printf '%s\n' "$CERTS" | sed -n 's/^Signer #1 certificate SHA-1 digest: //p' | head -1)"
-          test -n "$SHA1"
-          echo "### Certificado do APK experimental" >> "$GITHUB_STEP_SUMMARY"
-          echo "SHA-1 do APK gerado: \`$SHA1\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Atenção: assinatura debug temporária do runner. Pode mudar a cada execução; NÃO cadastrá-la como assinatura permanente do Firebase." >> "$GITHUB_STEP_SUMMARY"
+          python3 tools/report_apk_certificate.py "$APK" "$BUILD_TOOLS/apksigner"
       - name: Upload experimental player lab APK
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
