@@ -1,10 +1,31 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rocha_plus/src/cast/cast_hls_proxy.dart';
+import 'package:rocha_plus/src/auth/playback_permission.dart';
 
 void main() {
+  test('revoked access cannot open relay after pending DNS resolution', () async {
+    final dns = Completer<List<InternetAddress>>();
+    final permission = PlaybackPermission();
+    final owner = permission.protect();
+    permission.grant(owner);
+    final permit = permission.acquire();
+    final proxy = CastHlsProxy.testing(
+      resolve: (_) => dns.future,
+      client: MockClient((_) async => http.Response('', 200)),
+    );
+    addTearDown(proxy.close);
+    final pending = proxy.relay(Uri.parse('https://media.example/live.m3u8'),
+        ensureAuthorized: permit.ensureValid);
+    final rejected = expectLater(pending, throwsStateError);
+    permission.revoke(owner);
+    dns.complete([InternetAddress('8.8.8.8')]);
+    await rejected;
+  });
+
   Future<List<InternetAddress>> publicDns(String _) async => [InternetAddress('8.8.8.8')];
 
   test('relay rewrites variants, keys and segments and forwards original bytes', () async {

@@ -35,6 +35,23 @@ def configure(root):
     app.set(attr("icon"), "@drawable/rocha_plus_icon")
     app.set(attr("roundIcon"), "@drawable/rocha_plus_icon")
     app.set(attr("usesCleartextTraffic"), "false")
+    app.set(attr("networkSecurityConfig"), "@xml/rocha_network_security")
+    # Android still denies arbitrary cleartext traffic. Only lab-reviewed hosts
+    # are granted HTTP access; HTTPS remains supported normally.
+    allowed_hosts = root / "tools/allowed_http_hosts.txt"
+    hosts = [line.strip().lower() for line in allowed_hosts.read_text(encoding="utf-8").splitlines()
+             if line.strip() and not line.lstrip().startswith("#")]
+    if not hosts or any(not host or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789.-" for c in host)
+                        for host in hosts):
+        raise ValueError("Invalid or empty HTTP host allowlist")
+    config = ET.Element("network-security-config")
+    ET.SubElement(config, "base-config", {"cleartextTrafficPermitted": "false"})
+    scoped = ET.SubElement(config, "domain-config", {"cleartextTrafficPermitted": "true"})
+    for host in sorted(set(hosts)):
+        ET.SubElement(scoped, "domain", {"includeSubdomains": "false"}).text = host
+    xml_path = root / "android/app/src/main/res/xml/rocha_network_security.xml"
+    xml_path.parent.mkdir(parents=True, exist_ok=True)
+    ET.ElementTree(config).write(xml_path, encoding="utf-8", xml_declaration=True)
     provider = "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
     metadata = next((entry for entry in app.findall("meta-data")
                      if entry.get(attr("name")) == provider), None)
@@ -62,7 +79,19 @@ def configure(root):
         dependency = 'implementation("com.google.android.gms:play-services-cast-framework:21.5.0")'
         if dependency not in text:
             text += "\n dependencies { " + dependency + " }\n"
+        # Debug laboratory installs alongside production instead of replacing it.
+        lab_suffix = 'applicationIdSuffix = ".lab"'
+        if lab_suffix not in text:
+            text += '\nandroid { buildTypes { getByName("debug") { ' + lab_suffix + ' } } }\n'
         gradle.write_text(text, encoding="utf-8")
+    debug_manifest = root / "android/app/src/debug/AndroidManifest.xml"
+    debug_manifest.parent.mkdir(parents=True, exist_ok=True)
+    debug_manifest.write_text(
+        '<manifest xmlns:android="http://schemas.android.com/apk/res/android" '
+        'xmlns:tools="http://schemas.android.com/tools">'
+        '<application android:label="Rocha+ LAB" tools:replace="android:label" /></manifest>',
+        encoding="utf-8",
+    )
     activity = root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt"
     activity.parent.mkdir(parents=True, exist_ok=True)
     activity.write_text((root / "tools/MainActivity.kt").read_text(encoding="utf-8"), encoding="utf-8")

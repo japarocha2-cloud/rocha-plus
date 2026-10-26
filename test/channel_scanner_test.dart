@@ -59,4 +59,14 @@ void main() {
     expect(results['https:'], ChannelReachability.unavailable);
     expect(results['https://example.com/live'], ChannelReachability.unverified);
   });
+  test('HTTP channel is scanned with the same HEAD check as HTTPS', () async {
+    final scanner = ChannelScanner(MockClient((request) async {
+      expect(request.url.scheme, 'http');
+      return http.Response('', 200);
+    }));
+    final results = await scanner.scan([
+      const Channel(name: 'HTTP HLS', url: 'http://example.com/live.m3u8'),
+    ]);
+    expect(results['http://example.com/live.m3u8'], ChannelReachability.reachable);
+  });
 }

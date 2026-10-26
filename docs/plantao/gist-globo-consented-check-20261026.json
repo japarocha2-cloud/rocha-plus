@@ -1,0 +1,20 @@
+[
+  {
+    "name": "GLOBO 2",
+    "sourceHash": "d10ed5111e3b6d05805677c79eb7af34f1d838392ae02a16c29b8b8049f10c14",
+    "explicitTokenTransmissionConsent": true,
+    "httpStatus": 503,
+    "hls": false,
+    "networkRestrictionDetected": false,
+    "redirectStopped": false,
+    "elapsedSeconds": 4.24
+  },
+  {
+    "name": "GLOBO NORDESTE1",
+    "sourceHash": "25d265ca326603196ab8c3c223b1c3fbb63abdc8d6310da42018e0ee5536b16c",
+    "explicitTokenTransmissionConsent": true,
+    "error": "TimeoutError",
+    "hls": false,
+    "elapsedSeconds": 25.03
+  }
+]

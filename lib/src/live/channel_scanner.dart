@@ -16,7 +16,8 @@ class ChannelScanner {
       while (next < channels.length) {
         final channel = channels[next++];
         final uri = Uri.tryParse(channel.url);
-        if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty) {
+        if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http') ||
+            uri.host.isEmpty || uri.userInfo.isNotEmpty) {
           results[channel.url] = ChannelReachability.unavailable;
           continue;
         }

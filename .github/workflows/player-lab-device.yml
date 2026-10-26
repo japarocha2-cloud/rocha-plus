@@ -1,0 +1,136 @@
+name: Rocha LAB device cohort
+on:
+  workflow_call:
+    inputs:
+      stage:
+        required: true
+        type: string
+      offset:
+        type: number
+        default: 0
+      count:
+        type: number
+        default: 25
+      api_level:
+        description: Android guest API; override only for isolated infrastructure comparison
+        type: number
+        default: 35
+permissions:
+  contents: read
+jobs:
+  device:
+    runs-on: ubuntu-latest
+    timeout-minutes: 155
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rocha-lab-android-apk
+          path: build/lab/apk
+      - name: Host evidence tools and dedicated audio sink
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg pulseaudio xvfb xauth libxkbcommon-x11-0 libxcb-cursor0 libxcb-xinerama0 libxcb-icccm4 libxcb-keysyms1 libxcb-image0 libxcb-render-util0
+          python3 -m pip install pillow numpy
+          export XDG_RUNTIME_DIR="$RUNNER_TEMP/rocha-runtime"
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> "$GITHUB_ENV"
+          Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/rocha-xvfb.log" 2>&1 &
+          echo 'DISPLAY=:99' >> "$GITHUB_ENV"
+          pulseaudio --start --exit-idle-time=-1
+          test -s "$XDG_RUNTIME_DIR/pulse/pid"
+          pactl load-module module-null-sink sink_name=rocha_lab rate=48000 channels=2
+          pactl set-default-sink rocha_lab
+          pactl set-default-source rocha_lab.monitor
+          echo "PULSE_SERVER=unix:$XDG_RUNTIME_DIR/pulse/native" >> "$GITHUB_ENV"
+          echo "QEMU_PA_SERVER=unix:$XDG_RUNTIME_DIR/pulse/native" >> "$GITHUB_ENV"
+          mkdir -p build/lab/android
+          pactl -s "unix:$XDG_RUNTIME_DIR/pulse/native" info > build/lab/android/pulse-host.txt
+          pactl list short sinks >> build/lab/android/pulse-host.txt
+          mkdir -p build/lab/fixture
+          ffmpeg -nostdin -loglevel error -f lavfi -i testsrc2=size=320x180:rate=15 -f lavfi -i sine=frequency=440:sample_rate=48000 -t 360 -c:v libx264 -preset ultrafast -pix_fmt yuv420p -c:a aac -movflags +faststart build/lab/fixture/fixture.mp4
+          python3 -m http.server 8765 --directory build/lab/fixture > build/lab/fixture-http.log 2>&1 &
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Execute real Android ExoPlayer and LibVLC cohort
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          QEMU_AUDIO_DRV: pa
+          PULSE_SINK: rocha_lab
+          QEMU_PA_SINK: rocha_lab
+          QEMU_AUDIO_IN_DRV: none
+        with:
+          api-level: ${{ inputs.api_level }}
+          arch: x86_64
+          target: default
+          profile: pixel_2
+          disable-animations: true
+          # Emulator 37.x rejects -audio sdl (unknown driver). Use the supported
+          # PulseAudio backend, and record its driver inventory for diagnosis.
+          # Preserve the strict real-PCM 440 Hz gate; never approve silence.
+          # API35's guest reported no soundcards and selected NullSink when
+          # VirtioSndCard was disabled (run 40357197981). Restore its default
+          # sound device. Previous virtio PCM errors still require a fresh
+          # RGB/440 Hz preflight; this is not an audio approval.
+          emulator-options: -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none -audio pa
+          script: |
+            # Keep the CI guest in its normal ADB mode. Requesting adb root
+            # forces an ADB daemon restart and can disturb the audio preflight.
+            # Privileged ALSA diagnostics are optional, not acceptance evidence.
+            "$ANDROID_HOME/emulator/emulator" -audio-help > build/lab/android/emulator-audio-drivers.txt 2>&1 || true
+            adb wait-for-device
+            adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
+            adb shell id > build/lab/android/diagnostic-identity.txt
+            "$ANDROID_HOME/emulator/emulator" -version > build/lab/android/emulator-version.txt 2>&1
+            adb shell getprop ro.build.version.sdk > build/lab/android/guest-api-level.txt
+            # Read-only userdebug diagnostics without restarting the ADB daemon.
+            adb shell su 0 cat /proc/asound/cards > build/lab/android/guest-audio-cards.txt 2>&1 || true
+            adb shell su 0 cat /proc/asound/pcm > build/lab/android/guest-audio-pcm.txt 2>&1 || true
+            adb shell getprop sys.boot_completed > build/lab/android/adb-boot-state.txt
+            test -s "$XDG_RUNTIME_DIR/pulse/pid"
+            pactl info >> build/lab/android/pulse-host.txt
+            pactl list short sink-inputs >> build/lab/android/pulse-host.txt
+            # Diagnose whether Android emulator creates a PulseAudio output client.
+            # This does not relax the mandatory video/PCM acceptance gate.
+            pactl list sink-inputs > build/lab/android/pulse-sink-inputs-before.txt
+            pactl list sinks > build/lab/android/pulse-sinks-before.txt
+            adb shell media volume --show || true
+            adb shell dumpsys audio > build/lab/android/android-audio-policy.txt || true
+            ps -eo pid,args | grep -E '[q]emu-system|[e]mulator|[X]vfb' > build/lab/android/emulator-processes.txt || true
+            adb install -r build/lab/apk/app-debug.apk
+            adb shell settings put global heads_up_notifications_enabled 0
+            adb shell settings put system screen_off_timeout 2147483647
+            # Ensure a muted emulator is not mistaken for a defective channel.
+            adb shell cmd audio set-volume 3 12 0 || true
+            adb shell media volume --stream 3 --set 12 || true
+            adb shell input keyevent 24
+            adb shell input keyevent 24
+            adb shell dumpsys audio > build/lab/android/android-audio-after-volume.txt || true
+            pactl list sinks > build/lab/android/pulse-sinks-after-volume.txt
+            # Capture the actual emulator sink client for root-cause analysis.
+            # Route newly created emulator streams into the monitor under test;
+            # otherwise a stream on another sink can appear as false silence.
+            (while true; do pactl list short sink-inputs | while read -r id sink rest; do [ -n "$id" ] || continue; [ "$sink" = "$(pactl list short sinks | awk '$2 == "rocha_lab" {print $1}')" ] || pactl move-sink-input "$id" rocha_lab || true; done; sleep 2; done) > build/lab/android/pulse-routing.txt 2>&1 &
+            (while true; do date -u +%FT%TZ; pactl list short sink-inputs; sleep 5; done) > build/lab/android/pulse-client-timeline.txt 2>&1 &
+            # Prove that the host PCM recording path can record a known tone.
+            # Separate calibration is not accepted as evidence of Android output.
+            python3 tools/lab/calibrate_host_audio.py
+            pactl list short cards > build/lab/android/pulse-cards.txt || true
+            pactl list short modules > build/lab/android/pulse-modules.txt || true
+            # Verify real RGB + PCM before the cohort. Preserve both attempts.
+            sh tools/lab/run_preflight.sh "${{ inputs.stage }}"
+            pactl list sink-inputs > build/lab/android/pulse-sink-inputs-after.txt || true
+
+            python3 tools/lab/run_android.py --stage ${{ inputs.stage }} --offset ${{ inputs.offset }} --count ${{ inputs.count }}
+      - name: Preserve evidence and checkpoints even after failures
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rocha-lab-evidence-api${{ inputs.api_level }}-${{ inputs.stage }}-${{ inputs.offset }}
+          path: build/lab/android/
+          if-no-files-found: error
+          retention-days: 30

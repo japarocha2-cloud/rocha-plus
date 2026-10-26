@@ -17,6 +17,12 @@ merged = ET.parse(manifests[0]).getroot()
 app = merged.find("application")
 assert app is not None
 assert app.get(android + "usesCleartextTraffic") == "false"
+assert app.get(android + "networkSecurityConfig") == "@xml/rocha_network_security"
+security_file = root / "android/app/src/main/res/xml/rocha_network_security.xml"
+security = ET.parse(security_file).getroot()
+assert security.find("base-config").get("cleartextTrafficPermitted") == "false"
+allowed_hosts = [element.text for element in security.findall("domain-config/domain")]
+assert allowed_hosts and all(allowed_hosts)
 assert app.get(android + "debuggable", "false") != "true"
 permissions = sorted(node.get(android + "name") for node in merged.findall("uses-permission"))
 assert "android.permission.INTERNET" in permissions
@@ -41,15 +47,22 @@ firebase_release = bool(os.environ.get("ROCHA_FIREBASE_FILE"))
 if signed_release != firebase_release:
     raise SystemExit("Release evidence inconsistent: signing and Firebase must be enabled together.")
 
+build_config = json.loads(Path(os.environ['ROCHA_FIREBASE_FILE']).read_text()) if firebase_release else {}
+subscription_lab = build_config.get('ROCHA_EXPERIMENTAL_SUBSCRIPTIONS') == 'true'
+
 report = {
     "commit": os.environ["GITHUB_SHA"],
     "build_number": os.environ["GITHUB_RUN_NUMBER"],
     "permissions": permissions,
-    "cleartext_allowed": False,
+    "cleartext_allowed": "reviewed_hosts_only",
+    "cleartext_host_count": len(allowed_hosts),
     "debuggable": False,
     "signing": "production signing configured" if signed_release else "development candidate; production signing not configured",
     "firebase_auth_configured": firebase_release,
     "physical_validation": "pending",
+    "experimental_subscription_enforcement": subscription_lab,
+    "entitlement_endpoint": build_config.get('ROCHA_ENTITLEMENT_URL', ''),
+    "subscription_validation": "pending; build configuration is not cloud or payment validation",
     "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
     "outputs": outputs,
 }

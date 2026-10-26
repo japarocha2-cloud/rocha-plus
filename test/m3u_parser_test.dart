@@ -68,17 +68,20 @@ https://example.com/live.m3u8
     expect(channels.single.group, 'Outros');
   });
 
-  test('accepts https streams and rejects insecure http', () {
+  test('accepts HTTP and HTTPS stream URLs but not other schemes', () {
     const playlist = '''#EXTM3U
 #EXTINF:-1,HTTP
 http://example.com/a.m3u8
 #EXTINF:-1,HTTPS
 https://example.com/b.m3u8
+#EXTINF:-1,FILE
+file:///tmp/not-a-stream.m3u8
 ''';
     final channels = M3uParser.parse(playlist);
-    expect(channels, hasLength(1));
-    expect(channels.single.name, 'HTTPS');
-    expect(channels.single.url, 'https://example.com/b.m3u8');
+    expect(channels, hasLength(2));
+    expect(channels.map((c) => c.name), ['HTTP', 'HTTPS']);
+    expect(channels.map((c) => c.url),
+        ['http://example.com/a.m3u8', 'https://example.com/b.m3u8']);
   });
   test('sanitizes Undefined and technical compound groups', () {
     const playlist = '''#EXTM3U
