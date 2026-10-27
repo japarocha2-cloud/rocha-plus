@@ -15,6 +15,7 @@ import '../widgets/player_controls_focus.dart';
 import '../cast/cast_device_picker.dart';
 import '../cast/cast_readiness.dart';
 import '../cast/cast_channel_loader.dart';
+import '../cast/cast_failure.dart';
 import '../cast/cast_connection_observer.dart';
 import '../live/channel_playback_session.dart';
 import '../widgets/channel_navigation.dart';
@@ -27,12 +28,14 @@ class PlayerScreen extends StatefulWidget {
   final ChannelPlaybackSession? session;
   final bool initiallyFullscreen;
   final VoidCallback? onTryOtherPlayer;
+  final VideoPlayerController Function(Uri)? controllerFactory;
   const PlayerScreen({
     super.key,
     required this.channel,
     this.session,
     this.initiallyFullscreen = false,
     this.onTryOtherPlayer,
+    this.controllerFactory,
   });
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -48,6 +51,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   CastConnectionObserver? _castConnectionObserver;
   bool get _remotePlayback => widget.session?.casting == true;
   bool _controlsVisible = false;
+  Timer? _controlsTimer;
   bool _fullscreen = false;
   bool? _portraitOnExit;
 
@@ -104,7 +108,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _isBuffering = false;
     });
 
-    final controller = VideoPlayerController.networkUrl(
+    final controller = widget.controllerFactory?.call(Uri.parse(widget.channel.url)) ??
+        VideoPlayerController.networkUrl(
       Uri.parse(widget.channel.url),
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: false),
     );
@@ -113,10 +118,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
       await initializeLivePlayback(controller.initialize);
-      if (!mounted || attempt != _attempt) {
-        await controller.dispose();
-        return;
-      }
+      // A newer attempt or dispose already owns controller cleanup.
+      if (!mounted || attempt != _attempt) return;
       _evidence.reset(controller.value.position);
       controller.addListener(_onPlayerChanged);
       // Dispara a reprodução imediatamente após a preparação do decoder.
@@ -241,6 +244,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (!mounted || _casting) return;
     _castDisconnected = false;
     setState(() => _casting = true);
+    var sessionConnected = false;
     try {
       final started = await GoogleCastSessionManager.instance
           .startSessionWithDevice(device)
@@ -248,6 +252,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       if (!mounted) return;
       if (!started) throw StateError('Sessão Cast recusada.');
       await _waitForCastSession();
+      sessionConnected = true;
       if (!mounted) return;
       await CastHlsProxy.instance.close();
       if (!mounted) return;
@@ -317,11 +322,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
           }
         }
       }
-    } catch (_) {
+    } catch (error) {
+      if (error is CastFailure && error.kind == CastFailureKind.superseded) return;
       _castConnectionObserver?.dispose();
       _castConnectionObserver = null;
       widget.session?.stopCasting();
-      await CastHlsProxy.instance.close();
+      try { await CastHlsProxy.instance.close(); } catch (_) { /* cleanup */ }
       try {
         await GoogleCastSessionManager.instance.endSessionAndStopCasting();
       } catch (_) {
@@ -329,9 +335,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('A TV não confirmou a reprodução. Tente novamente.'),
-          ),
+          SnackBar(content: Text(castFailureMessage(sessionConnected
+              ? error : CastFailure(CastFailureKind.connection)))),
         );
       }
     } finally {
@@ -341,7 +346,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void _showControls() {
     setState(() => _controlsVisible = true);
-    Future.delayed(const Duration(seconds: 2), () {
+    _controlsTimer?.cancel();
+    _controlsTimer = Timer(const Duration(seconds: 2), () {
       if (mounted && _controller?.value.isPlaying == true) {
         setState(() => _controlsVisible = false);
       }
@@ -380,6 +386,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _controlsTimer?.cancel();
     _castConnectionObserver?.dispose();
     _castConnectionObserver = null;
     final controller = _controller;

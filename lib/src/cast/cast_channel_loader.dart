@@ -6,8 +6,10 @@ import '../live/channel.dart';
 import '../auth/playback_permission.dart';
 import 'cast_playback_evidence.dart';
 import 'cast_hls_proxy.dart';
+import 'cast_failure.dart';
 
 class CastChannelLoader {
+  static int _loadRevision = 0;
   static String contentType(Uri uri) {
     final path = uri.path.toLowerCase();
     if (path.endsWith('.m3u8') || path.endsWith('.m3u')) {
@@ -24,6 +26,7 @@ class CastChannelLoader {
     PlaybackPermit? permit,
     GoogleCastRemoteMediaClientPlatformInterface? remoteClient,
     Future<void> Function(Duration)? delay,
+    void Function()? ensureCurrent,
   }) async {
     final authorization = permit ?? PlaybackPermission.instance.acquire();
     authorization.ensureValid();
@@ -37,84 +40,126 @@ class CastChannelLoader {
       metadata: GoogleCastMovieMediaMetadata(title: channel.name),
     );
 
-    // The plugin acknowledges sending LOAD before the receiver finishes it.
-    // Autoplay belongs in LOAD: an immediate separate PLAY can target the old
-    // media session or arrive while the receiver still has no media to play.
-    await client
-        .loadMedia(
-          media,
-          autoPlay: true,
-          playPosition: Duration.zero,
-          playbackRate: 1.0,
-        )
-        .timeout(const Duration(seconds: 8));
-    authorization.ensureValid();
-
-    var resumedPausedMedia = false;
-    for (var i = 0; i < 120; i++) {
-      if (delay == null) {
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-      } else {
-        await delay(const Duration(milliseconds: 500));
-      }
+    void check() {
       authorization.ensureValid();
-      final status = client.mediaStatus;
-      // A cached status from before LOAD cannot confirm this request or reject
-      // it with the idle reason of a previous attempt on the same channel.
-      if (identical(status, previousStatus)) continue;
-      final state = status?.playerState;
-      final info = status?.mediaInformation;
-      final matches = CastPlaybackEvidence.matches(
-        uri.toString(),
-        info?.contentId,
-        info?.contentUrl,
-      );
-      if (CastPlaybackEvidence.confirms(
-        requested: uri.toString(),
-        contentId: info?.contentId,
-        contentUrl: info?.contentUrl,
-        playing: state == CastMediaPlayerState.playing,
-      )) {
-        return;
-      }
-      if (matches && state == CastMediaPlayerState.paused &&
-          !resumedPausedMedia) {
-        resumedPausedMedia = true;
-        await client.play().timeout(const Duration(seconds: 5));
-        authorization.ensureValid();
-      }
-      if (matches &&
-          state == CastMediaPlayerState.idle &&
-          const {
-            GoogleCastMediaIdleReason.error,
-            GoogleCastMediaIdleReason.cancelled,
-            GoogleCastMediaIdleReason.finished,
-          }.contains(status?.idleReason)) {
-        throw StateError('Receiver entrou em idle: ${status?.idleReason}');
-      }
+      ensureCurrent?.call();
     }
 
-    throw TimeoutException(
-      'A TV abriu a sessão, mas não confirmou reprodução real do canal.',
-    );
+    // Listen before LOAD: a PLAYING or ERROR event may occur while its
+    // acknowledgement is pending, or between two polling intervals.
+    final updates = <GoggleCastMediaStatus?>[];
+    var observationFailed = false;
+    final subscription = client.mediaStatusStream.listen((status) {
+      if (!identical(status, previousStatus)) {
+        if (updates.length == 64) updates.removeAt(0);
+        updates.add(status);
+      }
+    }, onError: (Object _) {
+      observationFailed = true;
+    }, onDone: () {
+      observationFailed = true;
+    });
+    var lastPolled = previousStatus;
+    var requestedMediaSeen = false;
+    var resumedPausedMedia = false;
+    try {
+      check();
+      try {
+        await client.loadMedia(media, autoPlay: true,
+            playPosition: Duration.zero, playbackRate: 1.0)
+            .timeout(const Duration(seconds: 8));
+      } catch (_) {
+        check();
+        throw CastFailure(CastFailureKind.command);
+      }
+      check();
+      for (var i = 0; i < 120; i++) {
+        if (delay == null) {
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+        } else {
+          await delay(const Duration(milliseconds: 500));
+        }
+        check();
+        if (observationFailed) throw CastFailure(CastFailureKind.disconnected);
+        final polled = client.mediaStatus;
+        if (!identical(polled, lastPolled)) {
+          lastPolled = polled;
+          updates.add(polled);
+        }
+        final batch = List<GoggleCastMediaStatus?>.of(updates);
+        updates.clear();
+        for (final status in batch) {
+          final state = status?.playerState;
+          final info = status?.mediaInformation;
+          final matches = CastPlaybackEvidence.matches(
+              uri.toString(), info?.contentId, info?.contentUrl);
+          if (matches) requestedMediaSeen = true;
+          if (state == CastMediaPlayerState.idle &&
+              const {
+                GoogleCastMediaIdleReason.error,
+                GoogleCastMediaIdleReason.cancelled,
+                GoogleCastMediaIdleReason.finished,
+              }.contains(status?.idleReason) &&
+              (matches || (info == null && requestedMediaSeen))) {
+            throw CastFailure(CastFailureKind.receiver);
+          }
+          if (CastPlaybackEvidence.confirms(
+              requested: uri.toString(), contentId: info?.contentId,
+              contentUrl: info?.contentUrl,
+              playing: state == CastMediaPlayerState.playing)) {
+            check();
+            return;
+          }
+          if (matches && state == CastMediaPlayerState.paused &&
+              !resumedPausedMedia) {
+            check();
+            resumedPausedMedia = true;
+            try {
+              await client.play().timeout(const Duration(seconds: 5));
+            } catch (_) {
+              check();
+              throw CastFailure(CastFailureKind.command);
+            }
+            check();
+          }
+        }
+      }
+      throw CastConfirmationTimeout();
+    } finally {
+      await subscription.cancel();
+    }
   }
 
   static Future<String> load(Channel channel, GoogleCastDevice device) async {
     final permit = PlaybackPermission.instance.acquire();
     final uri = Uri.parse(channel.url);
-    try {
-      await loadAndConfirm(channel, uri, permit: permit);
-      return uri.toString();
-    } catch (_) {
+    final revision = ++_loadRevision;
+    void ensureCurrent() {
       permit.ensureValid();
-      if (contentType(uri) != 'application/x-mpegURL' ||
+      if (revision != _loadRevision) throw CastFailure(CastFailureKind.superseded);
+      if (GoogleCastSessionManager.instance.connectionState ==
+          GoogleCastConnectState.disconnected) {
+        throw CastFailure(CastFailureKind.disconnected);
+      }
+    }
+    try {
+      await loadAndConfirm(channel, uri, permit: permit,
+          ensureCurrent: ensureCurrent);
+      return uri.toString();
+    } catch (error) {
+      ensureCurrent();
+      // Lack of confirmation is inconclusive: do not interrupt a possibly
+      // loading receiver with a second LOAD through the relay.
+      if (error is! CastFailure || error.kind != CastFailureKind.receiver ||
+          contentType(uri) != 'application/x-mpegURL' ||
           !device.isOnLocalNetwork) {
         rethrow;
       }
       final relayUri = await CastHlsProxy.instance.relay(uri,
-          ensureAuthorized: permit.ensureValid);
-      permit.ensureValid();
-      await loadAndConfirm(channel, relayUri, permit: permit);
+          ensureAuthorized: ensureCurrent);
+      ensureCurrent();
+      await loadAndConfirm(channel, relayUri, permit: permit,
+          ensureCurrent: ensureCurrent);
       return relayUri.toString();
     }
   }

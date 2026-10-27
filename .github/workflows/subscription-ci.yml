@@ -50,8 +50,8 @@ jobs:
         run: flutter pub get
       - name: Full Flutter suite (catalogue, scanner, TV remote, Cast and access)
         run: flutter test
-      - name: Analyze changed catalogue implementation
-        run: flutter analyze lib/src/live/channel_repository.dart lib/src/live/m3u_parser.dart
+      - name: Analyze complete Flutter application and tests
+        run: flutter analyze
       - name: Verify opt-in subscription policy
         run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
   entitlement:

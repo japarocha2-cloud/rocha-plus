@@ -173,7 +173,12 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
     }
     final value = controller.value;
     final error = value.errorDescription != VlcPlayerValue.noError;
-    return Scaffold(
+    return PopScope(
+      canPop: !fullscreen,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && fullscreen) setState(() => fullscreen = false);
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       appBar: fullscreen
           ? null
@@ -260,6 +265,7 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                                 setState(() => fullscreen = !fullscreen),
                           ),
                           IconButton.filledTonal(
+                            autofocus: true,
                             icon: Icon(
                               value.isPlaying ? Icons.pause : Icons.play_arrow,
                             ),
@@ -275,6 +281,6 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                 ),
               ),
       ),
-    );
+    ));
   }
 }

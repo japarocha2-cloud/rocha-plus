@@ -7,32 +7,79 @@ import '../theme/rocha_theme.dart';
 /// Account access is checked by the backend, never inferred from a plan card.
 class SubscriptionScreen extends StatefulWidget {
   final String? accountUid;
+  final Future<SubscriptionAccessResult?> Function(String)? verifyAccess;
 
-  const SubscriptionScreen({super.key, this.accountUid});
+  const SubscriptionScreen({super.key, this.accountUid, this.verifyAccess});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
 }
 
-class _SubscriptionScreenState extends State<SubscriptionScreen> {
+class _SubscriptionScreenState extends State<SubscriptionScreen>
+    with WidgetsBindingObserver {
   bool checking = false;
-  bool? allowed;
+  SubscriptionAccessResult? result;
+  bool attempted = false;
+  int generation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _clear() {
+    generation++;
+    result = null;
+    attempted = false;
+    checking = false;
+  }
+
+  @override
+  void didUpdateWidget(covariant SubscriptionScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountUid != widget.accountUid ||
+        oldWidget.verifyAccess != widget.verifyAccess) _clear();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) setState(_clear);
+  }
+
+  @override
+  void dispose() {
+    generation++;
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   bool get canCheck {
     final uri = Uri.tryParse(SubscriptionAccess.endpoint);
     return widget.accountUid != null &&
-        uri != null &&
-        uri.scheme == 'https' &&
-        uri.host.isNotEmpty;
+        (widget.verifyAccess != null ||
+            (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty));
   }
 
   Future<void> _checkAccess() async {
     if (checking || !canCheck) return;
-    setState(() => checking = true);
-    final result = await SubscriptionAccess.isAllowed(widget.accountUid!);
-    if (!mounted) return;
+    final revision = ++generation;
+    final uid = widget.accountUid!;
     setState(() {
-      allowed = result;
+      checking = true;
+      attempted = true;
+      result = null;
+    });
+    SubscriptionAccessResult? response;
+    try {
+      response = await (widget.verifyAccess ?? SubscriptionAccess.check)(uid)
+          .timeout(const Duration(seconds: 12));
+    } catch (_) {
+      response = null;
+    }
+    if (!mounted || revision != generation || uid != widget.accountUid) return;
+    setState(() {
+      result = response?.uid == uid ? response : null;
       checking = false;
     });
   }
@@ -62,14 +109,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               const Text('Estado da conta'),
                               const SizedBox(height: 8),
                               Text(
-                                allowed == true
-                                    ? 'Acesso confirmado pelo servidor'
-                                    : allowed == false
+                                checking ? 'Consultando o servidor...'
+                                    : result?.label ?? (attempted
                                         ? 'Não foi possível confirmar o acesso'
-                                        : 'Assinatura ainda não verificada',
+                                        : 'Assinatura ainda não verificada'),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
+                              if (result?.expiresAt != null) ...[
+                                const SizedBox(height: 8),
+                                Text('Validade informada pelo servidor (UTC): '
+                                    + result!.expiresAt!.toIso8601String()),
+                              ],
                               const SizedBox(height: 12),
                               Text(RochaReleasePolicy.betaAccessIsFree
                                   ? 'Esta versão de testes permite assistir sem assinatura. O bloqueio por assinatura está desativado.'

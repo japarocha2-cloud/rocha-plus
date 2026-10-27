@@ -300,4 +300,30 @@ void main() {
       expect(session.current, second);
     },
   );
+  testWidgets('D-pad retains focus navigation and key repeats do not switch channels', (tester) async {
+    final session = ChannelPlaybackSession(initial: first, channels: [second]);
+    addTearDown(session.dispose);
+    var activated = 0;
+    await tester.pumpWidget(MaterialApp(home: ChannelNavigation(
+      session: session,
+      child: Scaffold(body: Row(children: [
+        TextButton(autofocus: true, onPressed: () {}, child: const Text('Um')),
+        TextButton(onPressed: () => activated++, child: const Text('Dois')),
+      ])),
+    )));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(activated, 1);
+    expect(session.current, first);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.channelUp);
+    await tester.pump();
+    expect(session.current, second);
+    await tester.sendKeyRepeatEvent(LogicalKeyboardKey.channelUp);
+    await tester.pump();
+    expect(session.current, second);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.channelUp);
+  });
 }
