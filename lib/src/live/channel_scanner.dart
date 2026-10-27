@@ -25,13 +25,12 @@ class ChannelScanner {
           final request = http.Request('HEAD', uri)..followRedirects = false;
           final response = await client.send(request).timeout(const Duration(seconds: 5));
           await response.stream.listen((_) {}).cancel();
+          // HEAD is only a reachability hint. Some streaming origins reject
+          // HEAD with 404/410/5xx while GET/HLS playback still succeeds.
+          // Do not pronounce a stream dead without actual playback evidence.
           results[channel.url] = response.statusCode >= 200 && response.statusCode < 300
               ? ChannelReachability.reachable
-              : (response.statusCode >= 300 && response.statusCode < 400) ||
-                      response.statusCode == 405 || response.statusCode == 501 || response.statusCode == 401 ||
-                      response.statusCode == 403 || response.statusCode == 429
-                  ? ChannelReachability.unverified
-                  : ChannelReachability.unavailable;
+              : ChannelReachability.unverified;
         } catch (_) {
           results[channel.url] = ChannelReachability.unverified;
         }
