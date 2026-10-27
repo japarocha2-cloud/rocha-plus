@@ -327,4 +327,21 @@ void main() {
         throwsA(isA<CastConfirmationTimeout>()));
     expect(receiver.updates.hasListener, isFalse);
   });
+  test('an unidentified error after a different channel is not attributed to the old request', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.buffering));
+      receiver.updates.add(status(CastMediaPlayerState.playing,
+          url: 'https://example.test/other.m3u8'));
+      receiver.updates.add(GoggleCastMediaStatus(
+        mediaSessionID: 2, playerState: CastMediaPlayerState.idle,
+        idleReason: GoogleCastMediaIdleReason.error, playbackRate: 1,
+        volume: 1, isMuted: false, repeatMode: GoogleCastMediaRepeatMode.off,
+      ));
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}),
+        throwsA(isA<CastConfirmationTimeout>()));
+    expect(receiver.plays, 0);
+  });
 }

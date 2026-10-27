@@ -95,9 +95,11 @@ class CastChannelLoader {
         // receive PLAY; an earlier success must not hide a later failure.
         for (final status in batch) {
           final info = status?.mediaInformation;
-          if (CastPlaybackEvidence.matches(
-              uri.toString(), info?.contentId, info?.contentUrl)) {
-            requestedMediaSeen = true;
+          if (status == null) {
+            requestedMediaSeen = false;
+          } else if (info != null) {
+            requestedMediaSeen = CastPlaybackEvidence.matches(
+                uri.toString(), info.contentId, info.contentUrl);
           }
         }
         final status = batch.last;
