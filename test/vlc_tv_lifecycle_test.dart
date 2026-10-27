@@ -16,7 +16,7 @@ const second = Channel(name: 'Regional Dois', url: 'https://example.test/two',
 
 /// Simulates view creation exactly once per mounted native surface.
 class NativeView extends StatefulWidget {
-  const NativeView({required this.platform, required this.onCreated});
+  const NativeView({super.key, required this.platform, required this.onCreated});
   final TestVlcPlatform platform;
   final PlatformViewCreatedCallback onCreated;
   @override
@@ -34,7 +34,7 @@ class _NativeViewState extends State<NativeView> {
     });
   }
   @override
-  Widget build(BuildContext context) => SizedBox(key: ValueKey('native-vlc-' + id.toString()));
+  Widget build(BuildContext context) => SizedBox(key: ValueKey('native-vlc-$id'));
 }
 
 class TestVlcPlatform extends VlcPlayerPlatform {
@@ -73,9 +73,9 @@ class TestVlcPlatform extends VlcPlayerPlatform {
     await events.remove(viewId)?.close();
   }
   @override
-  Future<void> play(int viewId) async { commands.add('play:' + viewId.toString()); }
+  Future<void> play(int viewId) async { commands.add('play:$viewId'); }
   @override
-  Future<void> pause(int viewId) async { commands.add('pause:' + viewId.toString()); }
+  Future<void> pause(int viewId) async { commands.add('pause:$viewId'); }
 }
 
 void main() {
@@ -117,7 +117,7 @@ void main() {
     expect(platform.created.single.$2, first.url);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await frames(tester);
-    expect(platform.commands, ['play:' + id.toString()]);
+    expect(platform.commands, ['play:$id']);
     await close(tester);
     expect(platform.disposed, [id]);
   });

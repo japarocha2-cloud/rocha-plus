@@ -24,6 +24,9 @@ Future<void> main() async {
   runApp(const UsbPhysicalTestApp());
 }
 
+const usbPhysicalSourceCommit = String.fromEnvironment('ROCHA_SOURCE_COMMIT',
+    defaultValue: 'sem identificador');
+
 const usbPhysicalSamples = [
   Channel(name: 'Big Buck Bunny · amostra de teste',
     url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -66,8 +69,7 @@ class _UsbTestHome extends StatelessWidget {
       const Text('Build isolado para teste físico',
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
       const SizedBox(height: 12),
-      const Text('Código: ' + String.fromEnvironment('ROCHA_SOURCE_COMMIT',
-          defaultValue: 'sem identificador')),
+      const Text('Código: $usbPhysicalSourceCommit'),
       const SizedBox(height: 12),
       const Text('Usa somente vídeos de amostra. Não consulta contas, '
           'não altera assinaturas e não modifica o catálogo ou favoritos do aplicativo oficial.'),

@@ -39,7 +39,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   void didUpdateWidget(covariant SubscriptionScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.accountUid != widget.accountUid ||
-        oldWidget.verifyAccess != widget.verifyAccess) _clear();
+        oldWidget.verifyAccess != widget.verifyAccess) {
+      _clear();
+    }
   }
 
   @override
@@ -57,8 +59,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   String _dateLabel(DateTime value) {
     final date = value.toUtc();
     String two(int part) => part.toString().padLeft(2, '0');
-    return two(date.day) + '/' + two(date.month) + '/' +
-        date.year.toString() + ' ' + two(date.hour) + ':' + two(date.minute);
+    return '${two(date.day)}/${two(date.month)}/${date.year} '
+        '${two(date.hour)}:${two(date.minute)}';
   }
 
   bool get canCheck {
@@ -126,7 +128,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                               if (result?.expiresAt != null) ...[
                                 const SizedBox(height: 8),
                                 Text('Validade informada pelo servidor (UTC): '
-                                    + _dateLabel(result!.expiresAt!)),
+                                    '${_dateLabel(result!.expiresAt!)}'),
                               ],
                               const SizedBox(height: 12),
                               Text(RochaReleasePolicy.betaAccessIsFree

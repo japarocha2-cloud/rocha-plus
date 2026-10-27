@@ -31,7 +31,7 @@ void main() {
     LogicalKeyboardKey.arrowLeft,
     LogicalKeyboardKey.arrowRight,
   ]) {
-    testWidgets('TV remote ' + key.keyLabel + ' reveals hidden controls safely', (tester) async {
+    testWidgets('TV remote ${key.keyLabel} reveals hidden controls safely', (tester) async {
       var visible = false;
       var actions = 0;
       await tester.pumpWidget(MaterialApp(home: StatefulBuilder(

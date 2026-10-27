@@ -6,7 +6,7 @@ import 'package:rocha_plus/src/screens/subscription_screen.dart';
 
 void main() {
   for (final reason in ['trial', 'paid', 'expired']) {
-    testWidgets('subscription identifies server reason ' + reason + ' without invented validity', (tester) async {
+    testWidgets('subscription identifies server reason $reason without invented validity', (tester) async {
       final result = SubscriptionAccessResult.fromPayload({
         'uid': 'A', 'allowed': reason != 'expired', 'reason': reason,
       }, 'A')!;

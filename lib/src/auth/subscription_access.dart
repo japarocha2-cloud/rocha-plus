@@ -16,7 +16,9 @@ class SubscriptionAccessResult {
 
   static SubscriptionAccessResult? fromPayload(Object? payload, String uid) {
     if (payload is! Map<String, dynamic> || payload['uid'] != uid ||
-        payload['allowed'] is! bool) return null;
+        payload['allowed'] is! bool) {
+      return null;
+    }
     final allowed = payload['allowed'] as bool;
     final suppliedReason = payload['reason'];
     final reason = (allowed && (suppliedReason == 'paid' || suppliedReason == 'trial')) ||
@@ -69,7 +71,9 @@ class SubscriptionAccess {
   }) async {
     final uri = endpointUri ?? Uri.tryParse(endpoint);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
-        uri.userInfo.isNotEmpty || uri.hasFragment) return null;
+        uri.userInfo.isNotEmpty || uri.hasFragment) {
+      return null;
+    }
     try {
       final readUid = currentUid ?? () => FirebaseAuth.instance.currentUser?.uid;
       final readToken = getToken ?? () async =>
