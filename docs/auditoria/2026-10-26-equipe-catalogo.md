@@ -45,3 +45,13 @@ Estados:
 
 ## Critério de saída
 Gerar relatório por canal: VERDE/AMARELO/VERMELHO com evidências, CSV das URLs aprovadas, lista de variantes duplicadas e changelog de limpeza reversível, preservando APK oficial.
+
+## Evidências históricas recuperadas em 26/10 (sem repetir testes)
+
+A biblioteca de trabalho contém `Benchmark_RochaPlus_Catalogo.csv`, criado em 19/10/2026: 788 URLs avaliadas; 509 marcadas `video_audio`, 270 `sem_sinal` e nove casos restantes. Os resultados documentam detecção audiovisual por ferramentas externas naquele momento, **não homologação de ExoPlayer/LibVLC em Android**, nem direito de retransmissão. Não converter automaticamente `sem_sinal` em remoção definitiva.
+
+Relatórios anteriores registram SBT Interior/Nacional com verificações FFmpeg de 60 e 180 segundos; ocorreram relatos físicos de áudio, imagem e fullscreen no celular, sem atribuição conclusiva de canal/build/duração. Emulador/CI audiovisual falhou no preflight de áudio em rodadas de 24 a 26/10: não usar como reprovação dos streams isoladamente.
+
+**Fila de ação:** importar CSV histórico e cruzar por URL exata + identidade normalizada contra o catálogo remoto atual. Identificar URLs coincidentes: `video_audio` passa a candidato prioritário; `sem_sinal` recebe marcador *reteste recomendado*; outras URLs ficam *sem evidência atual*. Filtrar autorizações antes de adicionar ao catálogo comercial. Registrar decisões reversíveis e nunca apagar as listas originais ou favoritos.
+
+**Separação de métricas:** teste HTTP HEAD ≠ FFprobe com áudio e vídeo ≠ 60/180 s no FFmpeg ≠ vídeo/áudio no aparelho Android ≠ autorização de distribuição. Cada camada deve aparecer separadamente no relatório final.
