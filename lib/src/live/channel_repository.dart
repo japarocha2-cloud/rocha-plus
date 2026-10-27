@@ -130,14 +130,24 @@ class ChannelRepository {
             ))
         .toList(growable: false);
 
+    // Deduplicate only exact stream/name identities. Identically addressed
+    // regional or editorial variants must not silently inherit each other's
+    // title or category. Different URLs stay as fallback streams until a
+    // playback audit can prove which variants are genuinely duplicates.
     final merged = <String, Channel>{};
     for (final channel in [...brazil, ...sports]) {
-      final previous = merged[channel.url];
-      merged[channel.url] = previous == null ? channel : Channel(
+      final identity = channelIdentity(channel.name);
+      final key = '${channel.url.trim()}|$identity';
+      final previous = merged[key];
+      merged[key] = previous == null ? channel : Channel(
         name: previous.name,
         url: previous.url,
         logo: previous.logo ?? channel.logo,
-        group: channel.group == 'Esportes' ? 'Esportes' : previous.group,
+        group: previous.group == 'Esportes' || channel.group == 'Esportes'
+            ? 'Esportes'
+            : previous.group,
+        genres: previous.genres.isNotEmpty ? previous.genres : channel.genres,
+        preferredEngine: previous.preferredEngine ?? channel.preferredEngine,
       );
     }
 
