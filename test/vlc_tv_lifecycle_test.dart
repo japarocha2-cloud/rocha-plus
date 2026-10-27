@@ -89,15 +89,23 @@ void main() {
     ChannelRepository.resetSessionHealthForTests();
   });
 
+  Future<void> frames(WidgetTester tester) async {
+    // The plugin keeps its hidden placeholder ticker alive. Wait a bounded
+    // number of frames, then assert explicit platform state instead.
+    for (var i = 0; i < 8; i++) {
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+  }
+
   Future<void> open(WidgetTester tester, {bool fullscreen = false}) async {
     await tester.pumpWidget(MaterialApp(home: AdaptivePlayerScreen(
         channel: first, channels: const [first, second],
         initiallyFullscreen: fullscreen)));
-    await tester.pumpAndSettle();
+    await frames(tester);
   }
   Future<void> close(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(platform.events, isEmpty);
     expect(tester.takeException(), isNull);
   }
@@ -108,7 +116,7 @@ void main() {
     final id = platform.created.single.$1;
     expect(platform.created.single.$2, first.url);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(platform.commands, ['play:' + id.toString()]);
     await close(tester);
     expect(platform.disposed, [id]);
@@ -118,7 +126,7 @@ void main() {
     await open(tester);
     final originalId = platform.created.single.$1;
     await tester.sendKeyEvent(LogicalKeyboardKey.channelUp);
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(find.text(second.name), findsOneWidget);
     expect(platform.created, hasLength(2));
     expect(platform.created.last.$2, second.url);
@@ -132,7 +140,7 @@ void main() {
     await open(tester, fullscreen: true);
     expect(find.byType(AppBar), findsNothing);
     await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(find.byType(AdaptivePlayerScreen), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
     expect(platform.created, hasLength(1));
@@ -144,9 +152,9 @@ void main() {
     await open(tester);
     final id = platform.created.single.$1;
     await tester.tap(find.byTooltip('Tela cheia'));
-    await tester.pumpAndSettle();
+    await frames(tester);
     await tester.tap(find.byTooltip('Sair da tela cheia'));
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(platform.created, [(id, first.url)]);
     expect(platform.disposed, isEmpty);
     await close(tester);
@@ -156,7 +164,7 @@ void main() {
     await open(tester);
     final id = platform.created.single.$1;
     platform.events[id]!.add(VlcMediaEvent(mediaEventType: VlcMediaEventType.error));
-    await tester.pumpAndSettle();
+    await frames(tester);
     expect(find.text('O sinal falhou neste reprodutor.'), findsOneWidget);
     expect(find.text(first.name), findsOneWidget);
     expect(Focus.of(tester.element(find.text('Tentar no ExoPlayer'))).hasFocus, isTrue);
@@ -167,7 +175,7 @@ void main() {
     await open(tester);
     for (var i = 0; i < 4; i++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.channelUp);
-      await tester.pumpAndSettle();
+      await frames(tester);
     }
     expect(platform.created, hasLength(5));
     expect(platform.events, hasLength(1));
