@@ -1,0 +1,78 @@
+name: USB physical test build
+on:
+  push:
+    branches: [fix/subscription-access-20261026]
+    paths:
+      - 'lib/usb_physical_main.dart'
+      - 'tools/prepare_usb_physical.py'
+      - '.github/workflows/usb-physical-test.yml'
+permissions:
+  contents: read
+jobs:
+  usb-debug:
+    if: github.ref == 'refs/heads/fix/subscription-access-20261026'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate and guard independent debug package
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+          python3 -m unittest discover -s tools -p 'test_usb_physical.py'
+          python3 tools/prepare_usb_physical.py
+      - name: Resolve and patch the existing isolated VLC laboratory dependency
+        run: |
+          flutter pub get
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
+      - name: Analyze and test
+        run: |
+          flutter analyze
+          flutter test
+      - name: Compile debug USB variant without Firebase credentials or subscriptions
+        run: |
+          flutter build apk --debug --target=lib/usb_physical_main.dart \
+            --build-number=1 --dart-define=ROCHA_USB_PHYSICAL_TEST=true \
+            --dart-define=ROCHA_SOURCE_COMMIT=${{ github.sha }} \
+            --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=false
+      - name: Verify independent package and retain source evidence
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          mkdir -p build/usb-physical
+          "$BUILD_TOOLS/aapt" dump badging build/app/outputs/flutter-apk/app-debug.apk > build/usb-physical/badging.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text = Path('build/usb-physical/badging.txt').read_text()
+          match = re.search(r"^package: name='([^']+)'", text, re.MULTILINE)
+          if not match or match[1] != 'com.rochaplus.app.usbqa':
+              raise SystemExit('USB QA package isolation failed')
+          if 'application-debuggable' not in text:
+              raise SystemExit('USB QA must be a debug APK')
+          PY
+          cp build/app/outputs/flutter-apk/app-debug.apk build/usb-physical/rocha-usb-qa.apk
+          cp build/lab/vlc-lifecycle-patch.json build/usb-physical/
+          cp pubspec.lock build/usb-physical/
+          git rev-parse HEAD > build/usb-physical/source-commit.txt
+          sha256sum build/usb-physical/rocha-usb-qa.apk > build/usb-physical/apk.sha256
+          python3 tools/report_apk_certificate.py build/usb-physical/rocha-usb-qa.apk "$BUILD_TOOLS/apksigner"
+      - name: Temporary CI transfer bundle for connected USB device
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-usb-physical-test
+          path: build/usb-physical/
+          retention-days: 1
+          if-no-files-found: error
