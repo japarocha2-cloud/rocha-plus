@@ -7,6 +7,8 @@ on:
     paths:
       - 'functions/**'
       - 'lib/src/auth/**'
+      - 'lib/src/live/**'
+      - 'test/channel_catalog_identity_test.dart'
       - 'lib/src/screens/subscription_screen.dart'
       - 'lib/src/screens/home_screen.dart'
       - 'test/**'
@@ -45,7 +47,7 @@ jobs:
       - name: Flutter dependencies
         run: flutter pub get
       - name: Subscription navigation, screen and gate tests
-        run: flutter test test/subscription_gate_test.dart test/subscription_screen_test.dart test/subscription_navigation_lab_test.dart
+        run: flutter test test/subscription_gate_test.dart test/channel_catalog_identity_test.dart test/subscription_screen_test.dart test/subscription_navigation_lab_test.dart
   experimental-apk:
     runs-on: ubuntu-latest
     timeout-minutes: 45
