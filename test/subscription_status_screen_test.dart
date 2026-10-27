@@ -70,8 +70,8 @@ void main() {
     await tester.tap(find.text('Verificar acesso'));
     await tester.pumpAndSettle();
     expect(find.text('Teste gratuito confirmado pelo servidor'), findsOneWidget);
-    await tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    await tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.text('Assinatura ainda não verificada'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());

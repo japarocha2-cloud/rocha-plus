@@ -54,6 +54,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     super.dispose();
   }
 
+  String _dateLabel(DateTime value) {
+    final date = value.toUtc();
+    String two(int part) => part.toString().padLeft(2, '0');
+    return two(date.day) + '/' + two(date.month) + '/' +
+        date.year.toString() + ' ' + two(date.hour) + ':' + two(date.minute);
+  }
+
   bool get canCheck {
     final uri = Uri.tryParse(SubscriptionAccess.endpoint);
     return widget.accountUid != null &&
@@ -119,7 +126,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                               if (result?.expiresAt != null) ...[
                                 const SizedBox(height: 8),
                                 Text('Validade informada pelo servidor (UTC): '
-                                    + result!.expiresAt!.toIso8601String()),
+                                    + _dateLabel(result!.expiresAt!)),
                               ],
                               const SizedBox(height: 12),
                               Text(RochaReleasePolicy.betaAccessIsFree
