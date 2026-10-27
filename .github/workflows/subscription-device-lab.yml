@@ -1,0 +1,16 @@
+name: Subscription LAB device validation
+on:
+  push:
+    branches: [fix/subscription-access-20261026]
+    paths: [.github/workflows/subscription-device-lab.yml]
+permissions:
+  contents: read
+jobs:
+  isolated-subscription-lab:
+    if: github.ref == 'refs/heads/fix/subscription-access-20261026'
+    uses: ./.github/workflows/homologation-login.yml
+    with:
+      subscription_lab: true
+      entitlement_url: https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/entitlement
+      build_number: 714
+    secrets: inherit
