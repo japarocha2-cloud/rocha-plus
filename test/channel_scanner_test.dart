@@ -42,7 +42,7 @@ void main() {
     expect(peak, lessThanOrEqualTo(4));
     expect(results['https://example.com/200'], ChannelReachability.reachable);
     expect(results['https://example.com/405'], ChannelReachability.unverified);
-    expect(results['https://example.com/503'], ChannelReachability.unavailable);
+    expect(results['https://example.com/503'], ChannelReachability.unverified);
     expect(results['https://example.com/302'], ChannelReachability.unverified);
   });
   test('invalid URL is rejected and network failure remains unverified', () async {

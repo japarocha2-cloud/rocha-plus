@@ -28,7 +28,6 @@ class ChannelRepository {
   Future<void> restoreUserBlockedChannels() async {
     await _blocks.clear();
     _userBlockedNames = {};
-    _memoryCache = null;
   }
 
   static final Map<Uri, List<Channel>> _sourceCache = {};
@@ -36,27 +35,10 @@ class ChannelRepository {
   static List<Channel>? _lastKnownGoodCache;
   static final Map<String, PlaybackFailure> _playbackFailures = {};
 
-  // Bloqueio persistente por nome. Use esta camada para canais reprovados
-  // em teste físico: eles não voltam quando o diretório remoto é atualizado.
-  static const Set<String> _blockedChannelNames = <String>{
-    '1001 noites',
-    '30a golf kingdom (720p)',
-    'pluto tv esportes',
-    'canal do inter (720p) [not 24/7]',
-    'band sports (1080p)',
-    'times brasil (720p)',
-    'tv thathi (720p) [not 24/7]',
-    'tv sul de minas (720p)',
-    'tv meio (720p)',
-    'tv difusora leste (1080p)',
-    'tv encontro das aguas',
-  };
-
-  bool _isPermanentlyBlocked(Channel channel) {
-    final normalized = channelIdentity(channel.name);
-    return _userBlockedNames.contains(normalized) ||
-        _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
-  }
+  // Only an explicit local user choice hides a channel. Historical names
+  // without URL/device/date evidence must not block alternative feeds.
+  bool _isPermanentlyBlocked(Channel channel) =>
+      _userBlockedNames.contains(channelIdentity(channel.name));
 
   void reportPlaybackFailure(String url, {
     PlaybackFailure failure = PlaybackFailure.unknown,
@@ -127,6 +109,8 @@ class ChannelRepository {
               url: channel.url,
               logo: channel.logo,
               group: 'Esportes',
+              genres: channel.genres,
+              preferredEngine: channel.preferredEngine,
             ))
         .toList(growable: false);
 
@@ -134,10 +118,10 @@ class ChannelRepository {
     // regional or editorial variants must not silently inherit each other's
     // title or category. Different URLs stay as fallback streams until a
     // playback audit can prove which variants are genuinely duplicates.
-    final merged = <String, Channel>{};
+    final merged = <(String, String), Channel>{};
     for (final channel in [...brazil, ...sports]) {
       final identity = channelIdentity(channel.name);
-      final key = '${channel.url.trim()}|$identity';
+      final key = (channel.url.trim(), identity);
       final previous = merged[key];
       merged[key] = previous == null ? channel : Channel(
         name: previous.name,
@@ -155,8 +139,9 @@ class ChannelRepository {
     // são carregadas; a validação profunda não bloqueia mais centenas de
     // canais antes de a interface aparecer. Falhas do player são registradas
     // para diagnóstico, sem esconder um canal após um erro transitório.
+    // Cache source data before local hiding so restore also works offline.
     final ordered = _orderSportsFirst(
-      merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
+      merged.values.toList(),
     );
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);

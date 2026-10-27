@@ -141,4 +141,33 @@ void main() {
       }), throwsStateError);
     expect(receiver.plays, 0);
   });
+  test('PLAYING received during LOAD acknowledgement confirms the requested media', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.current = status(CastMediaPlayerState.playing);
+    };
+    await CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {});
+    expect(receiver.autoplay, isTrue);
+    expect(receiver.plays, 0);
+  });
+
+  test('another paused channel cannot trigger PLAY for this LOAD', () async {
+    final receiver = Receiver();
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+      remoteClient: receiver,
+      delay: (_) async {
+        receiver.current = status(CastMediaPlayerState.paused,
+            url: 'https://example.test/other.m3u8');
+      }), throwsA(isA<TimeoutException>()));
+    expect(receiver.plays, 0);
+  });
+
+  test('LOAD failure propagates without PLAY or false confirmation', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async { throw StateError('LOAD rejected'); };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}), throwsStateError);
+    expect(receiver.plays, 0);
+  });
 }

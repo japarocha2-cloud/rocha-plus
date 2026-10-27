@@ -24,4 +24,30 @@ void main() {
     await tester.pump();
     expect(actions, 1);
   });
+  for (final key in [
+    LogicalKeyboardKey.select,
+    LogicalKeyboardKey.arrowUp,
+    LogicalKeyboardKey.arrowDown,
+    LogicalKeyboardKey.arrowLeft,
+    LogicalKeyboardKey.arrowRight,
+  ]) {
+    testWidgets('TV remote ' + key.keyLabel + ' reveals hidden controls safely', (tester) async {
+      var visible = false;
+      var actions = 0;
+      await tester.pumpWidget(MaterialApp(home: StatefulBuilder(
+        builder: (context, update) => PlayerControlsFocus(
+          controlsVisible: visible,
+          onShowControls: () => update(() => visible = true),
+          child: TextButton(autofocus: true, onPressed: () => actions++,
+              child: const Text('Pausar')),
+        ),
+      )));
+      await tester.pump();
+      await tester.sendKeyEvent(key);
+      await tester.pump();
+      expect(visible, isTrue);
+      expect(actions, 0);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

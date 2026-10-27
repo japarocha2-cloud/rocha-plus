@@ -8,11 +8,11 @@ void main() {
     expect(channels.single.group, 'Outros');
   });
 
-  test('empty title uses tvg-name and duplicate URLs keep the first entry', () {
+  test('empty title uses tvg-name and shared URLs preserve distinct names', () {
     final channels = M3uParser.parse('\uFEFF#EXTM3U\n'
         '#EXTINF:-1 tvg-name="Canal correto",\nhttps://example.com/live\n'
         '#EXTINF:-1,Duplicado\nhttps://example.com/live\n');
-    expect(channels.single.name, 'Canal correto');
+    expect(channels.map((c) => c.name), ['Canal correto', 'Duplicado']);
   });
 
   test('display title cannot inject EXTINF metadata', () {
@@ -128,5 +128,16 @@ https://example.com/kids.m3u8
         '#EXTINF:-1 tvg-id="BandSports.br@SD" group-title="Sports",Band Sports\nhttps://example.com/sports\n'
         '#EXTINF:-1 group-title="General",Canal Generalista Desconhecido\nhttps://example.com/general\n');
     expect(channels.map((c) => c.group), ['Infantil', 'Notícias', 'Esportes', 'Geral']);
+  });
+  test('exact name and URL repeats collapse while alternate URLs survive', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1,Canal (720p)\nhttps://example.com/live\n'
+        '#EXTINF:-1,Canal (1080p)\nhttps://example.com/live\n'
+        '#EXTINF:-1,Canal\nhttps://example.com/backup\n'
+        '#EXTINF:-1,Canal Interior\nhttps://example.com/live\n');
+    expect(channels, hasLength(3));
+    expect(channels.first.name, 'Canal (720p)');
+    expect(channels.map((c) => c.url), contains('https://example.com/backup'));
+    expect(channels.map((c) => c.name), contains('Canal Interior'));
   });
 }

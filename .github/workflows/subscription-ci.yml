@@ -8,6 +8,8 @@ on:
       - 'functions/**'
       - 'lib/src/auth/**'
       - 'lib/src/live/**'
+      - 'lib/src/cast/**'
+      - 'lib/src/widgets/**'
       - 'test/channel_catalog_identity_test.dart'
       - 'lib/src/screens/subscription_screen.dart'
       - 'lib/src/screens/home_screen.dart'
@@ -46,9 +48,32 @@ jobs:
           flutter-version: '3.47.6'
       - name: Flutter dependencies
         run: flutter pub get
-      - name: Subscription navigation, screen and gate tests
-        run: flutter test test/subscription_gate_test.dart test/channel_catalog_identity_test.dart test/channel_scanner_safety_test.dart test/subscription_screen_test.dart test/subscription_navigation_lab_test.dart
+      - name: Full Flutter suite (catalogue, scanner, TV remote, Cast and access)
+        run: flutter test
+      - name: Analyze changed catalogue implementation
+        run: flutter analyze lib/src/live/channel_repository.dart lib/src/live/m3u_parser.dart
+      - name: Verify opt-in subscription policy
+        run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
+  entitlement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked test dependencies without lifecycle scripts
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Entitlement unit and local HTTP integration tests
+        run: node --test backend/entitlement/*.test.mjs
+  android-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Android phone and TV configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
   experimental-apk:
+    if: ${{ false }} # No APK generation or publication during this safety audit.
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

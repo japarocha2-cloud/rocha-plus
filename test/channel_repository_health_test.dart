@@ -45,7 +45,7 @@ void main() {
     expect(repository.sportsOnly([sport, news]), [sport]);
   });
 
-  test('physical-test blocklist survives remote URL changes', () {
+  test('historical names alone cannot block current or alternative feeds', () {
     final repository = ChannelRepository();
     const blockedA = Channel(
       name: '1001 Noites',
@@ -63,8 +63,8 @@ void main() {
       group: 'Esportes',
     );
 
-    expect(repository.isPermanentlyBlockedForTests(blockedA), isTrue);
-    expect(repository.isPermanentlyBlockedForTests(blockedB), isTrue);
+    expect(repository.isPermanentlyBlockedForTests(blockedA), isFalse);
+    expect(repository.isPermanentlyBlockedForTests(blockedB), isFalse);
     expect(repository.isPermanentlyBlockedForTests(allowed), isFalse);
   });
 
@@ -78,12 +78,26 @@ void main() {
     expect(repository.sportsPriorityForTests(female), greaterThan(repository.sportsPriorityForTests(tennis)));
     expect(repository.sportsOnly([tennis, female, male]), [male, female, tennis]);
   });
-  test('physical block applies to sports and survives resolution suffix changes', () {
+  test('historical sports name does not suppress a different resolution', () {
     final repo = ChannelRepository();
     const blocked = Channel(name: 'Band Sports (720p)',
         url: 'https://example.com/new.m3u8', group: 'Esportes');
-    expect(repo.isBlocked(blocked), isTrue);
-    expect(repo.sportsOnly([blocked]), isEmpty);
+    expect(repo.isBlocked(blocked), isFalse);
+    expect(repo.sportsOnly([blocked]), [blocked]);
+  });
+  test('all eleven historical names remain visible without an explicit user block', () {
+    final repository = ChannelRepository();
+    for (final name in [
+      '1001 Noites', '30A Golf Kingdom (720p)', 'Pluto TV Esportes',
+      'Canal do Inter (720p) [not 24/7]', 'Band Sports (1080p)',
+      'Times Brasil (720p)', 'TV Thathi (720p) [not 24/7]',
+      'TV Sul de Minas (720p)', 'TV Meio (720p)',
+      'TV Difusora Leste (1080p)', 'TV Encontro das Aguas',
+    ]) {
+      final channel = Channel(name: name, url: 'https://example.com/live',
+          group: 'Esportes');
+      expect(repository.isBlocked(channel), isFalse, reason: name);
+      expect(repository.sportsOnly([channel]), [channel], reason: name);
+    }
   });
 }
-
