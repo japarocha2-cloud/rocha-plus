@@ -55,3 +55,19 @@ Relatórios anteriores registram SBT Interior/Nacional com verificações FFmpeg
 **Fila de ação:** importar CSV histórico e cruzar por URL exata + identidade normalizada contra o catálogo remoto atual. Identificar URLs coincidentes: `video_audio` passa a candidato prioritário; `sem_sinal` recebe marcador *reteste recomendado*; outras URLs ficam *sem evidência atual*. Filtrar autorizações antes de adicionar ao catálogo comercial. Registrar decisões reversíveis e nunca apagar as listas originais ou favoritos.
 
 **Separação de métricas:** teste HTTP HEAD ≠ FFprobe com áudio e vídeo ≠ 60/180 s no FFmpeg ≠ vídeo/áudio no aparelho Android ≠ autorização de distribuição. Cada camada deve aparecer separadamente no relatório final.
+
+## Triagem reproduzível do CSV histórico (análise de 788 linhas)
+
+Fonte: `Benchmark_RochaPlus_Catalogo.csv` (19/10/2026), cabeçalho delimitado por `;`.
+
+| Deteção | Quantidade | Decisão |
+|---|---:|---|
+| video_audio | 509 | Prioridade de revisão e verificação de direitos, não aprovação comercial automática |
+| sem_sinal | 270 | Alerta de reteste; não remover com base em prova antiga |
+| audio_apenas | 4 | Diagnóstico de vídeo |
+| video_apenas | 1 | Diagnóstico de áudio |
+| tempo_esgotado | 4 | Inconclusivo |
+
+Há **788 URLs distintas** e **nenhuma duplicação exata por identidade normalizada simples** dentro desse CSV. Identidades similares com nomes alternativos, regiões, marcas ou fontes ainda exigem análise editorial. Não se confundem estas listas com o catálogo remoto atual, que muda a cada atualização. Foi gerado um CSV local de triagem com 788 linhas, sem exclusões, chamado `RochaPlus_Triagem_Historica_20261026.csv`.
+
+**Próxima ação técnica:** obter instantâneo da playlist remota atual, fazer correspondência por URL e nome conservador e revalidar somente inconclusivos/reprovados com direitos conferidos. Os dados históricos, sozinhos, não atestam transmissão legal atual ou experiência Android. Manter versão oficial e PR draft.
