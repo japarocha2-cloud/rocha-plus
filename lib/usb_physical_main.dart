@@ -28,11 +28,11 @@ const usbPhysicalSourceCommit = String.fromEnvironment('ROCHA_SOURCE_COMMIT',
     defaultValue: 'sem identificador');
 
 const usbPhysicalSamples = [
-  Channel(name: 'Big Buck Bunny · amostra de teste',
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  Channel(name: 'Big Buck Bunny · MP4 de teste',
+    url: 'https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4',
     group: 'Amostras de teste'),
-  Channel(name: 'Elephants Dream · amostra de teste',
-    url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  Channel(name: 'Big Buck Bunny · HLS de teste',
+    url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
     group: 'Amostras de teste'),
 ];
 

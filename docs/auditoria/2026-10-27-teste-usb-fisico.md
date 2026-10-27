@@ -25,3 +25,14 @@ Solicitar confirmação humana de imagem/áudio quando a TV não puder ser captu
 Um celular não homologa Android TV nem o controle remoto do televisor.
 Esta variante não valida contas reais, trial ou pagamentos, pois não consulta o backend.
 Resultados serão registrados após execução, sem promover pendências a VERDE por antecipação.
+
+## Primeira execução real e correção das amostras
+Build USB do código `7954893` instalado em pacote independente, preservando o oficial e o LAB 713.
+ExoPlayer no Moto g56/Android 16 registrou Source error / HttpDataSource InvalidResponseCodeException 403
+nas amostras antigas do bucket gtv-videos-bucket. Isso é falha de acesso à fonte, não prova de defeito do decoder.
+O mesmo HTTP 403 foi confirmado por consulta externa; nenhum canal do catálogo foi removido.
+Novas amostras: MP4 Media3 em exoplayer-test-media-0 e HLS test-streams.mux.dev/x36xhzz.
+Ambas responderam HEAD 200 em 27/10/2026; isso não homologa reprodução audiovisual.
+Referências: https://github.com/androidx/media/issues/3267 e https://test-streams.mux.dev/ .
+Chromecast informado pelo usuário: dispositivo de sala (nome privado mantido fora do relatório público).
+Recompilar a variante isolada e repetir o teste antes de declarar aprovação.
