@@ -219,6 +219,7 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                   const Text('O sinal falhou neste reprodutor.'),
                   const SizedBox(height: 12),
                   FilledButton(
+                    autofocus: true,
                     onPressed: widget.onUseExo,
                     child: const Text('Tentar no ExoPlayer'),
                   ),
@@ -230,11 +231,12 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                   children: [
                     Positioned.fill(
                       child: VlcPlayer(
+                        key: ObjectKey(controller),
                         controller: controller,
                         aspectRatio: 16 / 9,
-                        placeholder: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        placeholder: value.isInitialized
+                            ? const SizedBox.shrink()
+                            : const Center(child: CircularProgressIndicator()),
                       ),
                     ),
                     Positioned(

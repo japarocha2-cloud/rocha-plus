@@ -183,4 +183,10 @@ void main() {
     expect(platform.disposed, hasLength(5));
     expect(platform.disposed.toSet(), hasLength(5));
   });
+  testWidgets('initialized VLC removes its hidden loading animation', (tester) async {
+    await open(tester);
+    expect(platform.created, hasLength(1));
+    expect(find.byType(CircularProgressIndicator, skipOffstage: false), findsNothing);
+    await close(tester);
+  });
 }
