@@ -29,7 +29,10 @@ class TestController extends VideoPlayerController {
   @override
   Future<void> pause() async { value = value.copyWith(isPlaying: false); }
   @override
-  Future<void> dispose() async { disposals++; }
+  Future<void> dispose() async {
+    disposals++;
+    await super.dispose();
+  }
 }
 
 void main() {
