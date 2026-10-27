@@ -217,3 +217,23 @@ LabEngine chooseLabWinner(LabSample exo, LabSample vlc) {
   if (!exo.hasProgress && vlc.hasProgress) return LabEngine.libVlc;
   return vlc.score > exo.score ? LabEngine.libVlc : LabEngine.exoPlayer;
 }
+
+
+/// Stored laboratory preferences must not prevent opening a channel.
+Future<LabEngine> resolvePlaybackEngine(Channel channel, {
+  Future<LabEngine?> Function(Channel)? readStored,
+  Duration timeout = const Duration(seconds: 2),
+}) async {
+  switch (channel.preferredEngine) {
+    case 'libVlc':
+      return LabEngine.libVlc;
+    case 'exoPlayer':
+      return LabEngine.exoPlayer;
+  }
+  try {
+    return await (readStored ?? PlayerLabResults().preferred)(channel)
+        .timeout(timeout) ?? LabEngine.exoPlayer;
+  } catch (_) {
+    return LabEngine.exoPlayer;
+  }
+}

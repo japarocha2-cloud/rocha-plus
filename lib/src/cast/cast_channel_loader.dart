@@ -50,7 +50,7 @@ class CastChannelLoader {
     final updates = <GoggleCastMediaStatus?>[];
     var observationFailed = false;
     final subscription = client.mediaStatusStream.listen((status) {
-      if (!identical(status, previousStatus)) {
+      if (status == null || !identical(status, previousStatus)) {
         if (updates.length == 64) updates.removeAt(0);
         updates.add(status);
       }
@@ -82,46 +82,56 @@ class CastChannelLoader {
         check();
         if (observationFailed) throw CastFailure(CastFailureKind.disconnected);
         final polled = client.mediaStatus;
-        if (!identical(polled, lastPolled)) {
-          lastPolled = polled;
+        if (!identical(polled, lastPolled) &&
+            !updates.any((status) => identical(status, polled))) {
           updates.add(polled);
         }
+        lastPolled = polled;
         final batch = List<GoggleCastMediaStatus?>.of(updates);
         updates.clear();
+        if (batch.isEmpty) continue;
+        // A burst can contain PLAYING followed by ERROR, PAUSED or a
+        // different channel. Only its latest observed state may confirm or
+        // receive PLAY; an earlier success must not hide a later failure.
         for (final status in batch) {
-          final state = status?.playerState;
           final info = status?.mediaInformation;
-          final matches = CastPlaybackEvidence.matches(
-              uri.toString(), info?.contentId, info?.contentUrl);
-          if (matches) requestedMediaSeen = true;
-          if (state == CastMediaPlayerState.idle &&
-              const {
-                GoogleCastMediaIdleReason.error,
-                GoogleCastMediaIdleReason.cancelled,
-                GoogleCastMediaIdleReason.finished,
-              }.contains(status?.idleReason) &&
-              (matches || (info == null && requestedMediaSeen))) {
-            throw CastFailure(CastFailureKind.receiver);
+          if (CastPlaybackEvidence.matches(
+              uri.toString(), info?.contentId, info?.contentUrl)) {
+            requestedMediaSeen = true;
           }
-          if (CastPlaybackEvidence.confirms(
-              requested: uri.toString(), contentId: info?.contentId,
-              contentUrl: info?.contentUrl,
-              playing: state == CastMediaPlayerState.playing)) {
+        }
+        final status = batch.last;
+        final state = status?.playerState;
+        final info = status?.mediaInformation;
+        final matches = CastPlaybackEvidence.matches(
+            uri.toString(), info?.contentId, info?.contentUrl);
+        if (state == CastMediaPlayerState.idle &&
+            const {
+              GoogleCastMediaIdleReason.error,
+              GoogleCastMediaIdleReason.cancelled,
+              GoogleCastMediaIdleReason.finished,
+            }.contains(status?.idleReason) &&
+            (matches || (info == null && requestedMediaSeen))) {
+          throw CastFailure(CastFailureKind.receiver);
+        }
+        if (CastPlaybackEvidence.confirms(
+            requested: uri.toString(), contentId: info?.contentId,
+            contentUrl: info?.contentUrl,
+            playing: state == CastMediaPlayerState.playing)) {
+          check();
+          return;
+        }
+        if (matches && state == CastMediaPlayerState.paused &&
+            !resumedPausedMedia) {
+          check();
+          resumedPausedMedia = true;
+          try {
+            await client.play().timeout(const Duration(seconds: 5));
+          } catch (_) {
             check();
-            return;
+            throw CastFailure(CastFailureKind.command);
           }
-          if (matches && state == CastMediaPlayerState.paused &&
-              !resumedPausedMedia) {
-            check();
-            resumedPausedMedia = true;
-            try {
-              await client.play().timeout(const Duration(seconds: 5));
-            } catch (_) {
-              check();
-              throw CastFailure(CastFailureKind.command);
-            }
-            check();
-          }
+          check();
         }
       }
       throw CastConfirmationTimeout();

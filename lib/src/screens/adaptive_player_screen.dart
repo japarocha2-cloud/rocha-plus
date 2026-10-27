@@ -53,11 +53,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
     final version = ++generation;
     lastUrl = session.current.url;
     setState(() => loading = true);
-    final preferred = switch (session.current.preferredEngine) {
-      'libVlc' => LabEngine.libVlc,
-      'exoPlayer' => LabEngine.exoPlayer,
-      _ => await PlayerLabResults().preferred(session.current),
-    };
+    final preferred = await resolvePlaybackEngine(session.current);
     if (!mounted || generation != version) return;
     setState(() {
       engine = preferred;

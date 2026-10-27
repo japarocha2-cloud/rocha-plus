@@ -105,4 +105,18 @@ void main() {
         currentUid: () => 'A', getToken: readToken), isNull);
     }
   });
+  test('invalid timezone offsets cannot fabricate a displayed expiration', () {
+    for (final suffix in ['+24:00', '-24:00', '+03:60', '-99:99']) {
+      final result = SubscriptionAccessResult.fromPayload({
+        'uid': 'A', 'allowed': true, 'reason': 'paid',
+        'expiresAt': '2026-11-01T12:00:00' + suffix,
+      }, 'A')!;
+      expect(result.allowed, isTrue);
+      expect(result.expiresAt, isNull);
+    }
+    expect(SubscriptionAccessResult.fromPayload({
+      'uid': 'A', 'allowed': true, 'reason': 'paid',
+      'expiresAt': '2026-11-01T12:00:00-03:00',
+    }, 'A')!.expiresAt, DateTime.utc(2026, 11, 1, 15));
+  });
 }

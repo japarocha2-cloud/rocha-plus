@@ -252,4 +252,79 @@ void main() {
         isNot(contains('secret')));
     expect(castFailureMessage(StateError('token=private')), isNot(contains('private')));
   });
+  test('a later receiver error overrides PLAYING in the same event burst', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.playing));
+      receiver.updates.add(status(CastMediaPlayerState.idle,
+          reason: GoogleCastMediaIdleReason.error));
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}),
+        throwsA(isA<CastFailure>().having((e) => e.kind, 'kind', CastFailureKind.receiver)));
+    expect(receiver.plays, 0);
+    expect(receiver.updates.hasListener, isFalse);
+  });
+
+  test('a paused event superseded by error must not send PLAY', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.paused));
+      receiver.updates.add(status(CastMediaPlayerState.idle,
+          reason: GoogleCastMediaIdleReason.error));
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}), throwsStateError);
+    expect(receiver.plays, 0);
+  });
+
+  test('a paused event superseded by PLAYING needs no extra PLAY', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.paused));
+      receiver.updates.add(status(CastMediaPlayerState.playing));
+    };
+    await CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {});
+    expect(receiver.plays, 0);
+  });
+
+  test('a later different channel cannot inherit an earlier PLAYING confirmation', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.playing));
+      receiver.updates.add(status(CastMediaPlayerState.playing,
+          url: 'https://example.test/other.m3u8'));
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}),
+        throwsA(isA<CastConfirmationTimeout>()));
+    expect(receiver.plays, 0);
+  });
+
+  test('polling cannot append an earlier event after a newer receiver error', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      final playing = status(CastMediaPlayerState.playing);
+      receiver.updates.add(playing);
+      receiver.current = playing;
+      receiver.updates.add(status(CastMediaPlayerState.idle,
+          reason: GoogleCastMediaIdleReason.error));
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}), throwsStateError);
+    expect(receiver.plays, 0);
+  });
+
+  test('clearing receiver media invalidates an earlier PLAYING event', () async {
+    final receiver = Receiver();
+    receiver.onLoad = () async {
+      receiver.updates.add(status(CastMediaPlayerState.playing));
+      receiver.updates.add(null);
+    };
+    await expectLater(CastChannelLoader.loadAndConfirm(channel, uri,
+        remoteClient: receiver, delay: (_) async {}),
+        throwsA(isA<CastConfirmationTimeout>()));
+    expect(receiver.updates.hasListener, isFalse);
+  });
 }

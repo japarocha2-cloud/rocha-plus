@@ -29,10 +29,13 @@ class SubscriptionAccessResult {
     if (reason != null && raw is String &&
         RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$')
             .hasMatch(raw)) {
+      final offset = RegExp(r'[+-](\d{2}):(\d{2})$').firstMatch(raw);
+      final validOffset = offset == null ||
+          (int.parse(offset.group(1)!) < 24 && int.parse(offset.group(2)!) < 60);
       final parts = [int.parse(raw.substring(0, 4)),
         int.parse(raw.substring(5, 7)), int.parse(raw.substring(8, 10))];
       final date = DateTime.utc(parts[0], parts[1], parts[2]);
-      if (date.year == parts[0] && date.month == parts[1] &&
+      if (validOffset && date.year == parts[0] && date.month == parts[1] &&
           date.day == parts[2] && int.parse(raw.substring(11, 13)) < 24 &&
           int.parse(raw.substring(14, 16)) < 60 &&
           int.parse(raw.substring(17, 19)) < 60) {
