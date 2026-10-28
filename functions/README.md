@@ -54,8 +54,10 @@ The Mercado Pago inspection module is a read-only scaffold, not an activated web
   verify provider lookup, claim review, privileged reconciliation, entitlement read
   and application unlock/expiry; test duplicate notification and refund paths.
   The current reconciler and eligibility predicate require `liveMode === true`;
-  an explicitly isolated sandbox path is still needed before a positive sandbox
-  transaction can pass. Do not bypass this guard or substitute a real purchase.
+  [the isolated sandbox path](sandbox/README.md) now accepts explicit test-mode
+  responses and writes only to its demo emulator and separate collections.
+  Its fixture/transaction CI is green; a new provider E2E cycle remains pending.
+  Do not bypass the production guard or substitute a real purchase.
   Never run a real charge or reuse historical production payments.
 - **Trial and account switching:** in a dedicated experimental Firebase environment,
   verify first activation, expiry, renewal, logout/login, and no cross-account access.

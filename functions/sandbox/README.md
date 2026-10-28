@@ -54,6 +54,11 @@ Registrar evidência expurgada do ID de execução, `live_mode=false`, estado,
 valor/moeda/recebedor esperados, renovação, repetição e estorno e seu reflexo na
 conta isolada. O módulo não provisiona checkout, webhook ou aplicativo sandbox.
 
-Neste ambiente não há token, test users nem transação sandbox atestados. Compra,
-renovação e estorno ponta a ponta no provedor continuam pendentes. Não mover o
+Neste executor não há token disponibilizado. Existe uma auditoria histórica de
+recibo sandbox em [CI 38702929655](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38702929655)
+(15/10/2026), com verificação de vendedor e recibo existente aprovada; ela foi
+preservada sem reexecução. Não comprova credencial atual nem o novo ciclo E2E.
+A listagem de nomes de secrets do repositório retornou 403; não foi presumida
+ausência nem disponibilidade de `MP_TEST_ACCESS_TOKEN` no GitHub.
+Compra, renovação e estorno ponta a ponta no novo caminho continuam pendentes. Não mover o
 resultado do emulador para contas cloud ou declarar acesso pago real homologado.

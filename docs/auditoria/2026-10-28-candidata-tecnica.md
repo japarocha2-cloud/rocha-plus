@@ -238,3 +238,41 @@ credencial customizada incompatível com o Admin SDK; corrigidos antes da execu�
 verde. Não eram falhas do reconciliador de produção. Job de CI novo testa apenas
 sandbox/candidata; suítes Flutter/player/Cast e emulador anterior permanecem
 preservadas. Resultado do CI e commits serão acrescentados após conclusão.
+
+### Fechamento da rodada sandbox/candidata
+
+Commits:
+- `4bb02cb`: filtros para CI dedicado, publicado antes do código com `[skip ci]`.
+- `9e49c5eb817c04bd2efea03b9d9c70d737b0bfcf`: módulo sandbox isolado, testes,
+  preparador/verificador e identidade pública da candidata, documentação.
+
+[CI 40688631610](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40688631610)
+**success** no commit de implementação:
+- `sandbox-emulator`: 9 testes aprovados, 14 operações, 23 tentativas e 9 retries;
+  Node 22, Java 21 e Firestore Emulator Standard.
+- `candidate-configuration`: 5 testes Python aprovados.
+Nenhuma nova execução das suítes verdes Flutter/player/Cast, emulador anterior
+ou build Android. Preservados os CIs `40684071278` e `40686132051`.
+
+Verificação local adicional: impressões extraídas da chave real com keytool
+correspondem exatamente a `signer-public.json`, com permissões privadas
+conferidas. `git ls-files` não contém nova chave, senha, JSON de assinatura ou
+Google Services. Nenhum APK foi gerado, inspecionado ou publicado nesta rodada.
+
+**Evidência histórica preservada:** encontrada auditoria de recibo sandbox
+[38702929655](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38702929655),
+15/10/2026, com os passos Verify test seller e Verify existing sandbox payment
+without writes aprovados. Não foi reexecutada. O workflow existente referencia
+`MP_TEST_ACCESS_TOKEN`; a consulta somente aos nomes de secrets retornou 403
+(Resource not accessible by integration). Não inferir ausência do secret no
+GitHub nem disponibilidade/validade atual. Nenhum valor de secret foi consultado.
+Essa evidência histórica não comprova compra/renovação/estorno completos no novo
+caminho isolado e não muda a pendência de E2E atual.
+
+**Situação final: AMARELO.** Resolvido o bloqueio de aceitar `live_mode=false`
+num caminho separado de testes; produção continua exigindo `live_mode=true`.
+Configuração independente e chave candidata preparadas localmente. Faltam
+credencial/test users atuais para E2E controlado, cadastro real Firebase/OAuth,
+custódia da chave/secrets de build, toolchain/build do APK, validação física e
+autorizações. Nada foi implantado ou publicado; Oficial, USBQA, LAB 714, site
+e PR #42 preservados. Este fechamento é documental e usa `[skip ci]`.
