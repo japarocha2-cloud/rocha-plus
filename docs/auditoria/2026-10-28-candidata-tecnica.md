@@ -118,3 +118,32 @@ Concluído: histórico/CI revisados, base verde preservada, LAB 714 analisada,
 branch separada, resposta de datas corrigida com regressões, CI final aprovado
 e pendências registradas. Não concluído: APK candidato, homologação física,
 compra sandbox E2E, concorrência Firestore e notificações automáticas.
+
+### Continuação — Firestore Emulator Standard
+
+Nova suíte em `functions/emulator/`, com CLI 15.34.1 e emulador 1.22.0,
+projeto local descartável `demo-rocha-concurrency`. Nenhum banco cloud consultado
+ou alterado. Guardas rejeitam projeto diferente e host fora do loopback antes
+de inicializar o SDK. A verificação negativa sem variáveis do emulador foi
+executada e recusada como esperado.
+
+Execução local final: **6 testes aprovados**, incluindo o teste agregador.
+Cinco cenários: trial concorrente/vencimento exato; mesmo pagamento concorrente;
+planos mensal/anual simultâneos; replay do estorno mensal mantendo anual;
+estorno da última assinatura negando acesso sem reiniciar trial.
+SDK registrou **10 operações, 17 tentativas, 7 retries**. Contagens finais de
+eventos, `paidUntil`, campos originais do trial e resposta do endpoint conferidos.
+Isso resolve a lacuna de concorrência/retry **no emulador** nesses cenários;
+não comprova concorrência cloud, IAM/regras nem compra sandbox.
+
+Uma falha inicial foi do harness que carregava o endpoint em outro contexto
+JavaScript incompatível com o SDK; corrigido o carregador de teste. Nenhuma
+mudança adicional no código de produção, fluxo de pagamentos ou layout.
+O CI novo é específico da suíte de emulador. Filtros evitam reexecutar a suíte
+Flutter verde por mudanças exclusivas de documentação/emulador; o CI geral
+continua cobrindo mudanças no aplicativo e nos módulos de produção.
+
+Pendências mantidas: identidade e build candidata separada, login/trial físico,
+notificações automáticas, compra/estorno sandbox E2E, testes TV/Cast e autorizações
+de distribuição. Não confundir fixtures `live_mode: true` com transações reais.
+Não há alteração na função implantada nem ativação de webhook/reconciliação.

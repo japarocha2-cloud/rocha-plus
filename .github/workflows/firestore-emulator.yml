@@ -1,0 +1,32 @@
+name: Isolated Firestore concurrency
+on:
+  push:
+    branches: [homolog/technical-candidate-20261028]
+    paths:
+      - 'functions/emulator/**'
+      - 'functions/reconcile_and_grant.js'
+      - 'functions/entitlement_periods.js'
+      - 'functions/mercadopago_reconciliation.js'
+      - 'functions/index.js'
+      - '.github/workflows/firestore-emulator.yml'
+permissions:
+  contents: read
+jobs:
+  firestore-emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GCLOUD_PROJECT: demo-rocha-concurrency
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install locked SDK without lifecycle scripts
+        run: npm ci --prefix functions --ignore-scripts --no-audit --no-fund
+      - name: Exercise real local transactions without provider calls
+        run: npx --yes firebase-tools@15.34.1 emulators:exec --only firestore --project demo-rocha-concurrency --config functions/emulator/firebase.json 'node --test functions/emulator/concurrency.test.js'
