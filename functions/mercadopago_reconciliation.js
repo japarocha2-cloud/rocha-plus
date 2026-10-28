@@ -71,6 +71,9 @@ async function recordVerifiedPayment({db, paymentId, accessToken}) {
     if (existing.exists && existing.data().uid !== uid) {
       throw new Error('payment already associated with another account');
     }
+    if (existing.exists && String(existing.data().paymentId) !== payment.id) {
+      throw new Error('payment ledger document identity mismatch');
+    }
     // A snapshot-only operation must never erase a privileged grant ledger.
     // A reviewed event carries plan and audit fields needed for recomputation.
     if (existing.exists && existing.data().reviewed === true) {
