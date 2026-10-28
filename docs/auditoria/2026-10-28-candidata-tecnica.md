@@ -678,3 +678,41 @@ continua aguardando autorização explícita. A recuperação da chave não conc
 essa autorização. Mantidos todos os demais bloqueios, testes verdes e
 restrições; sem build, pagamento, deploy, publicação, merge ou alteração dos
 projetos existentes. Atualização exclusivamente documental com `[skip ci]`.
+
+### Projeto Firebase candidato criado com autorização — 28/10/2026
+
+O proprietário autorizou explicitamente criar somente o projeto independente
+`rocha-plus-candidate` na conta `rochaplus.app@gmail.com`, sem Analytics,
+vínculo de faturamento ou deploy.
+
+Criação concluída pelo console Firebase com **o ID exato**
+`rocha-plus-candidate`; não foi necessário escolher outro ID. O console
+exibiu “Seu projeto do Firebase está pronto” e, após abrir a visão geral,
+confirmou `rocha-plus-candidate` no **plano Spark**, sem custos
+(US$ 0/mês). Google Analytics foi desativado no assistente; a opção de Gemini
+também foi desativada antes de criar. Não houve vínculo de faturamento,
+upgrade de plano ou deploy.
+
+[Visão geral do projeto candidato](https://console.firebase.google.com/project/rocha-plus-candidate/overview)
+
+O painel apresenta “Adicionar app”: nenhum aplicativo Android foi cadastrado
+nesta rodada. Não foram criados/configurados clientes OAuth, provedor Google
+Sign-In, Google Services, banco, endpoint, secret de runner ou backup da chave.
+A autorização desta rodada foi restrita ao projeto. Os projetos
+`rocha-plus` e `rocha-plus-homologacao` não foram abertos nem alterados.
+
+**Próxima ação sujeita à autorização:** cadastrar o app Android
+`com.rochaplus.app.candidate` no novo projeto, usando exclusivamente o
+certificado original já conferido no ambiente do Codex, e posteriormente
+configurar Google Sign-In/OAuth e obter Google Services privado.
+O SHA-1/SHA-256 público versionado continua a referência; não gerar nova chave.
+
+Estado atualizado: existência do projeto candidato confirmada; etapa Android,
+OAuth/Google Services, custódia/backup cifrado/restauração e secrets do runner
+ainda pendentes. `identity.json` não foi alterado nesta rodada e ainda contém
+o marcador histórico `firebaseProvisioning: pending`; este adendo registra
+que apenas o projeto foi provisionado, não a configuração completa do app.
+
+Nenhum teste verde repetido, APK compilado/publicado, pagamento, merge no PR
+#42, deploy ou atualização do site. Oficial, USBQA e LAB 714 preservados.
+Somente este relatório foi atualizado no Git, com `[skip ci]`.
