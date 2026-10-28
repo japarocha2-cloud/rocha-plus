@@ -155,6 +155,16 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     assert.equal(rows.get('entitlements/account-1').trialUntil,
       '2025-01-01T00:00:00Z');
   });
+  await t.test('parallel replay of one verified payment never stacks paid periods', async () => {
+    rows = initial();
+    const results = await Promise.all([run(), run(), run(), run()]);
+    for (const result of results) {
+      assert.equal(result.paidUntil, '2026-02-20T10:00:00.000Z');
+    }
+    assert.equal(rows.get('entitlements/account-1').paidUntil,
+      '2026-02-20T10:00:00.000Z');
+    assert.equal([...rows.keys()].filter(key => key === 'payment_events/123').length, 1);
+  });
   await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
     for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
       rows = initial();
