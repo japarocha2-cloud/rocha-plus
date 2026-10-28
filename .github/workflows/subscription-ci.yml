@@ -8,6 +8,9 @@ on:
       - 'docs/**'
       - 'functions/emulator/**'
       - '.github/workflows/firestore-emulator.yml'
+      - 'functions/sandbox/**'
+      - 'tools/candidate/**'
+      - '.github/workflows/candidate-sandbox.yml'
   pull_request:
     paths:
       - 'functions/**'
