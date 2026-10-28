@@ -51,7 +51,7 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
       }
       throw new Error('Unexpected dependency');
     },
-    Date: {now: () => now},
+    Date: class extends Date { static now() { return now; } },
     console: {error() {}},
   }, {filename: 'index.js'});
   return {
@@ -79,7 +79,8 @@ test('actual endpoint creates exactly seven days and repeated access never reset
   const h = harness();
   const first = await h.request();
   assert.equal(first.statusCode, 200);
-  assert.deepEqual(first.body, {uid: 'lab-user', allowed: true, reason: 'trial'});
+  assert.deepEqual(first.body, {uid: 'lab-user', allowed: true, reason: 'trial',
+    expiresAt: '2026-11-03T12:00:00.000Z', trialStartedAt: '2026-10-27T12:00:00.000Z'});
   const record = h.records.get('lab-user');
   assert.equal(record.trialStartedAt.toMillis(), START);
   assert.equal(record.trialUntil.toMillis(), START + 7 * DAY);
@@ -99,7 +100,8 @@ test('actual endpoint denies exactly at trial expiry and does not recreate expir
   assert.equal((await h.request()).body.allowed, true);
   h.setNow(START + 7 * DAY);
   assert.deepEqual((await h.request()).body,
-    {uid: 'lab-user', allowed: false, reason: 'expired'});
+    {uid: 'lab-user', allowed: false, reason: 'expired',
+      expiresAt: '2026-11-03T12:00:00.000Z', trialStartedAt: '2026-10-27T12:00:00.000Z'});
   h.setNow(START + 8 * DAY);
   assert.equal((await h.request()).body.allowed, false);
   assert.equal(h.writes(), 1);
@@ -112,10 +114,21 @@ test('actual endpoint distinguishes paid access and falls back to a still-valid 
     paidUntil: h.timestamp(START + DAY),
   });
   assert.equal((await h.request()).body.reason, 'paid');
+  assert.equal((await h.request()).body.expiresAt, '2026-10-28T12:00:00.000Z');
   h.setNow(START + DAY);
   assert.equal((await h.request()).body.reason, 'trial');
+  assert.equal((await h.request()).body.expiresAt, '2026-11-03T12:00:00.000Z');
   h.setNow(START + 7 * DAY);
   assert.equal((await h.request()).body.reason, 'expired');
+  assert.equal(h.writes(), 0);
+});
+
+test('actual endpoint returns no invented dates for an existing undated record', async () => {
+  const h = harness();
+  h.records.set('lab-user', {});
+  assert.deepEqual((await h.request()).body, {
+    uid: 'lab-user', allowed: false, reason: 'expired', expiresAt: null, trialStartedAt: null,
+  });
   assert.equal(h.writes(), 0);
 });
 
@@ -126,7 +139,8 @@ test('actual endpoint preserves valid paid access after trial expiry and denies 
     paidUntil: h.timestamp(START + DAY),
   });
   assert.deepEqual((await h.request()).body,
-    {uid: 'lab-user', allowed: true, reason: 'paid'});
+    {uid: 'lab-user', allowed: true, reason: 'paid',
+      expiresAt: '2026-10-28T12:00:00.000Z', trialStartedAt: null});
   h.setNow(START + DAY);
   assert.equal((await h.request()).body.allowed, false);
 });
@@ -138,7 +152,8 @@ test('actual endpoint uses verified UID and ignores client-supplied payment or i
     body: {uid: 'other', allowed: true, paidUntil: '2099-01-01', reason: 'paid'},
     query: {uid: 'other', paid: 'true'},
   });
-  assert.deepEqual(response.body, {uid: 'lab-user', allowed: false, reason: 'expired'});
+  assert.deepEqual(response.body, {uid: 'lab-user', allowed: false, reason: 'expired',
+    expiresAt: '2026-10-27T12:00:00.000Z', trialStartedAt: null});
   assert.equal(h.records.has('other'), false);
   assert.equal(h.writes(), 0);
 });
