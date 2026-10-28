@@ -276,3 +276,179 @@ credencial/test users atuais para E2E controlado, cadastro real Firebase/OAuth,
 custódia da chave/secrets de build, toolchain/build do APK, validação física e
 autorizações. Nada foi implantado ou publicado; Oficial, USBQA, LAB 714, site
 e PR #42 preservados. Este fechamento é documental e usa `[skip ci]`.
+
+### Preparação da build candidata — inspeção de 28/10/2026
+
+**Estado: AMARELO; build assinada bloqueada por insumos e custódia.**
+Inspeção da branch `homolog/technical-candidate-20261028`, HEAD
+`98160d47f7a0ca341fbd7f80eda3db72fe0acb60`. Alteração desta rodada:
+somente este relatório. Nenhuma configuração de conta/recurso externo foi
+criada ou alterada. Nenhum comando de build, pagamento, deploy, publicação,
+merge, atualização do site ou reexecução de teste foi realizado.
+
+#### Confirmado por leitura de código e evidências existentes
+
+- `tools/candidate/identity.json`: release `com.rochaplus.app.candidate`,
+  debug `com.rochaplus.app.candidate.debug`, projeto esperado
+  `rocha-plus-candidate`, provisionamento `pending`,
+  versão planejada `0.1.0-candidate.1` / code `1`.
+  Isso é uma reserva no código; não comprova existência/disponibilidade do
+  project ID nem cadastro no console Firebase/Google Cloud.
+- `prepare_candidate.py` exige disparo manual e branch exata, valida
+  project ID/número, app Android/pacote, cliente OAuth Android/SHA-1 da chave
+  fornecida e um único cliente web. Gera os defines fora do checkout e muda
+  somente o scaffold Android gerado da cópia candidata.
+- `lib/src/auth/firebase_auth_repository.dart` inicializa Firebase por
+  `FirebaseOptions` e usa `ROCHA_GOOGLE_SERVER_CLIENT_ID` como cliente
+  servidor/web. O Google Services é insumo do preparador; apenas copiar esse
+  arquivo para Android não substitui os defines usados por este aplicativo.
+- Não há Google Services candidato versionado na árvore inspecionada.
+  Não houve acesso autenticado ao console/API do Firebase ou OAuth nesta
+  rodada: existência, provedores habilitados, consentimento e IAM remotos
+  continuam não verificados. Nenhum arquivo de Oficial/LAB deve preencher
+  essa lacuna.
+- `candidate-sandbox.yml` contém somente checks; não compila APK.
+  Não existe workflow assinado dedicado à candidata. `build.yml` referencia
+  preparadores/secrets de outras identidades: não disparar esse fluxo como
+  substituto da preparação candidata.
+- Reconferidos por GET os CIs verdes `40688631610`, `40686132051` e
+  `40684071278`. No primeiro, ambos os jobs continuam **success**.
+  Preservadas as contagens de testes registradas nas rodadas anteriores.
+  Não houve suíte nova nem regressão de código nesta etapa.
+
+#### Firebase/OAuth: configurações pendentes, somente após autorização
+
+1. Confirmar conta proprietária e disponibilidade do projeto proposto
+   `rocha-plus-candidate`; criar/selecionar apenas o projeto independente.
+   Se o ID não estiver disponível, devolver a decisão ao responsável antes
+   de mudar identidade/endpoint no código.
+2. Registrar o app Android release com pacote exato
+   `com.rochaplus.app.candidate`. O debug é outra identidade e só precisa
+   de cadastro próprio se houver objetivo de testar login em debug.
+3. Cadastrar o certificado original da candidata, após recuperar/conferir a
+   chave: SHA-1 `e2f0e4efa910b18b93fce60e9944f7ddf48ee02b`;
+   SHA-256
+   `1103e22ab107a77ad3e6ef8b0d327e44240b91b9a4c0bbbad2d258185e0c696b`.
+   São impressões públicas; não são a chave privada.
+4. Habilitar Authentication/Google no projeto candidato; definir email de
+   suporte e configuração OAuth/consentimento aplicável à conta, incluindo
+   usuários de teste quando exigidos. Conferir cliente Android ligado ao
+   pacote/SHA-1 e cliente web do mesmo projeto, usado como server client ID.
+   Não criar secret OAuth web dentro do APK; o app requer o client ID.
+5. Obter Google Services atualizado após esses cadastros e entregá-lo ao
+   executor por canal privado, fora do Git. Conferir projeto, app ID,
+   sender/project number, API key, cliente Android e cliente web.
+   Os IDs e a API key Firebase são configuração de cliente, não substituem
+   regras/IAM; manter o arquivo fora do Git conforme a restrição desta etapa.
+6. Para login simples, o endpoint de entitlement não é requisito de compilação.
+   Para homologar trial/bloqueio, será necessário backend isolado validado,
+   Auth e dados/regras/IAM candidatos definidos. A URL planejada
+   `https://southamerica-east1-rocha-plus-candidate.cloudfunctions.net/entitlement`
+   não foi implantada ou validada. Qualquer criação/configuração externa
+   exige autorização; deploy continua proibido nesta etapa.
+
+Referências oficiais consultadas:
+[Google Sign-In Android/Firebase](https://firebase.google.com/docs/auth/android/google-signin),
+[cliente servidor/web](https://firebase.google.com/docs/auth/android/google-signin#authenticate_with_firebase)
+e [proteção de chave Android](https://developer.android.com/studio/publish/app-signing#secure-key).
+
+#### Mercado Pago: disponibilidade, sem valores de credenciais
+
+- Não foram encontradas variáveis `MP_*`, `ROCHA_*`,
+  Mercado Pago, keystore ou signing no ambiente deste executor; nenhuma
+  credencial foi impressa, copiada ou enviada ao Git. Isso descreve somente
+  este executor, não outros ambientes remotos do Codex.
+- O workflow histórico referencia `MP_TEST_ACCESS_TOKEN`; a execução
+  `38702929655` de 15/10/2026 foi reconferida como **success**, sem reexecução.
+  O relatório anterior registra 403 ao listar nomes dos secrets.
+  O conector atual não oferece leitura de secrets; disponibilidade e validade
+  atuais no GitHub permanecem **não verificadas**, sem presumir ausência.
+- O módulo novo recebe `ROCHA_MP_SANDBOX_ACCESS_TOKEN`, exige prefixo
+  `TEST-` e resposta `live_mode=false`. Não trocar nomes automaticamente,
+  relaxar a guarda ou usar token real para contornar incompatibilidade.
+- Faltam confirmação privada de credencial compatível, test seller/buyer,
+  meio de pagamento de teste e transação sandbox apropriada ao novo roteiro.
+  Não foram realizadas chamadas ao Mercado Pago, criação de usuários,
+  compras ou estornos. O token não deve entrar no APK nem nos defines Flutter.
+- Credenciais Mercado Pago não são requisito para compilar o APK; são
+  requisito da homologação E2E posterior, que continua pendente.
+
+#### Chave exclusiva: localização e proposta de custódia
+
+O caminho histórico `/workspace/rocha-candidate-private` **não existe no
+executor desta inspeção**, cujo workspace é diferente do anterior.
+Não foi possível conferir a chave original, permissões atuais ou backups.
+Não afirmar perda definitiva nem disponibilidade da chave no Codex remoto.
+
+Antes de encerrar/descartar o ambiente original, o responsável por aquele
+ambiente deve localizar `candidate.p12` e `signing.json`, conferir alias e
+impressões com keytool sem imprimir senha, e preservar os dois por canal
+privado. Não executar `init-signing` como recuperação: uma chave nova não
+reconstitui a chave original.
+
+Proposta sujeita à autorização do proprietário: guardar o PKCS12 em cofre
+privado com controle de acesso, backup cifrado e recuperação verificada;
+guardar a senha em segredo separado. Definir responsável e método de
+restauração. Permissões 700/600 protegem o uso local, mas não garantem
+persistência do workspace nem substituem backup. GitHub Secrets, se escolhido,
+pode fornecer insumos ao runner; não deve ser a única cópia de recuperação.
+Base64 é transporte, não cifragem.
+
+Não houve upload, exportação de chave, criação de cofre/secret ou mudança de
+conta nesta etapa. Após autorização, restaurar os insumos temporariamente fora
+do checkout, sem log de valores, escopo de acesso mínimo e limpeza após o uso.
+Não anexar material privado a chat, relatório, artifact de CI ou commit.
+
+Atenção para o próximo executor: o preparador confronta OAuth com a chave
+fornecida, mas não fixa por si só essa chave a `signer-public.json`.
+Conferir também as duas impressões públicas versionadas antes de preparar
+o scaffold e antes de aceitar o APK; não aceitar substituição silenciosa.
+
+#### Lista objetiva a devolver ao Codex para a compilação futura
+
+- Checkout isolado da branch candidata e revisão deste adendo; preservar
+  Oficial, USBQA, LAB 714, PR #42 e todos os testes verdes.
+- Chave original recuperada, backup confirmado e insumos privados disponíveis:
+  `candidate.p12`, `signing.json` com alias
+  `rocha-candidate-20261028`, e Google Services real do projeto candidato.
+- Runner/toolchain: Flutter `3.47.6` conforme workflow existente,
+  SDK Android com API 37, JDK/Gradle compatíveis, keytool, aapt e apksigner;
+  acesso às dependências e correções nativas já aprovadas preservadas.
+  Neste executor não há flutter/dart/adb/aapt/apksigner no PATH; Java/keytool
+  estão presentes. Nenhuma instalação ou compilação foi tentada.
+- Gerar scaffold em cópia descartável com Flutter e aplicar
+  `tools/configure_android.py` antes do preparador candidato.
+  Não usar preparadores de Oficial/LAB ou seus secrets.
+- Rodar `prepare_candidate.py prepare` com
+  `GITHUB_REF=refs/heads/homolog/technical-candidate-20261028` e
+  `GITHUB_EVENT_NAME=workflow_dispatch`, caminhos privados e identidade
+  pública conferida. Em execução local essas variáveis são guardas de
+  configuração; no futuro CI, restringir também branch/disparo/acesso a secrets.
+- Carregar assinatura por ambiente no subprocesso, sem senha em argumento/log:
+  `ROCHA_CANDIDATE_KEYSTORE`, `ROCHA_CANDIDATE_STORE_PASSWORD`,
+  `ROCHA_CANDIDATE_KEY_ALIAS`. Os nomes são o contrato atual do preparador,
+  não comprovam secrets provisionados em qualquer conta.
+- Compilar APK release com `--build-name=0.1.0-candidate.1`,
+  `--build-number=1` e `--dart-define-from-file=<privado>/dart-define.json`.
+  O preparador gera os cinco defines Firebase/OAuth a partir do JSON validado.
+  Não usar o número da execução LAB como versão candidata.
+- Padrão atual: `ROCHA_CANDIDATE_SUBSCRIPTIONS=false` e
+  `ROCHA_CANDIDATE_ENTITLEMENT_URL` vazia. Isso permite preparar a variante
+  sem bloqueio, mas não homologa trial/assinatura nem autoriza distribuição.
+  Só ativar `true` com endpoint candidato exato e validado, após decisão
+  explícita; não apontar para Oficial/LAB.
+- Executar o verificador de APK existente sobre o binário efetivo: pacote,
+  versão/code, ABIs (ARM64 obrigatória), assinatura válida, SHA-1/SHA-256
+  originais e SHA-256 do APK. Esse exame do novo artefato ainda é necessário
+  e não repete testes verdes. Manter APK privado, sem publicação/substituição.
+- Registrar evidência e limitações. Login/trial físico, TV/Cast, E2E Mercado
+  Pago e notificações permanecem pendentes. Não promover build compilada a
+  homologação completa.
+
+**Autorizações pendentes:** criar/configurar apenas o projeto Firebase/OAuth
+candidato; definir e configurar destino privado de custódia/backup e secrets
+de build; eventual criação de app/usuários/configuração sandbox, se faltantes.
+Nenhuma dessas autorizações é presumida. Deploy, publicação, merge, site e
+pagamentos reais continuam fora de escopo. A próxima rodada deve retornar ao
+Codex com as decisões autorizadas e referências privadas dos insumos, nunca
+seus valores no texto.
