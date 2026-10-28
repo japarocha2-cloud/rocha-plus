@@ -716,3 +716,47 @@ que apenas o projeto foi provisionado, não a configuração completa do app.
 Nenhum teste verde repetido, APK compilado/publicado, pagamento, merge no PR
 #42, deploy ou atualização do site. Oficial, USBQA e LAB 714 preservados.
 Somente este relatório foi atualizado no Git, com `[skip ci]`.
+
+### App Android candidato e certificado cadastrados com autorização — 28/10/2026
+
+O proprietário autorizou cadastrar `com.rochaplus.app.candidate`,
+associado exclusivamente ao certificado original validado. Executado somente
+no projeto `rocha-plus-candidate`, conta `rochaplus.app@gmail.com`.
+
+Cadastro confirmado pelo console:
+- pacote Android: `com.rochaplus.app.candidate`;
+- apelido administrativo: `Rocha+ TV Candidata` (não altera nome/layout no APK);
+- ID do app Firebase: `1:633579358750:android:c27207eca8dc4ab2a13c0f`;
+- número do projeto: `633579358750`;
+- SHA-1 e SHA-256 salvos e visíveis na tabela de certificados, correspondentes
+  exatamente a `tools/candidate/signer-public.json` (blob
+  `9e8a97b383d63c8c7349206da20eed1627d5f9ac`).
+
+[Configuração do app candidato](https://console.firebase.google.com/project/rocha-plus-candidate/settings/general/android:com.rochaplus.app.candidate)
+
+Somente as impressões públicas foram fornecidas ao Firebase. A chave privada,
+a senha e `signing.json` não foram transferidos nem acessados por este
+executor. Não cadastrado pacote debug, Oficial, USBQA ou LAB.
+
+O assistente confirmou “Registrar app” como concluído. As instruções de SDK
+foram fechadas sem executar alterações no código, sem instalar dependências
+nem baixar/publicar Google Services. Não se assume que o arquivo disponível
+agora contenha clientes OAuth completos: a próxima etapa é configurar e
+conferir Google Sign-In/OAuth candidatos antes de obter a configuração final.
+
+Google Sign-In/Authentication não foi habilitado por esta rodada; clientes
+OAuth não foram inspecionados ou configurados manualmente. Eventuais recursos
+gerados automaticamente pelo Firebase durante o registro não foram
+inventariados; não se afirma inexistência de OAuth. Nova configuração de
+provedor/clientes requer autorização explícita. Proposta para a etapa seguinte:
+habilitar somente Google Sign-In no projeto candidato, usar
+`rochaplus.app@gmail.com` como email de suporte, conferir cliente Android
+com pacote/SHA-1 original e cliente servidor/web do próprio projeto, e obter
+Google Services atualizado por canal privado, sem expor valores ou colocar
+configuração no Git.
+
+Plano Spark mantido, sem Analytics, vínculo de faturamento ou deploy. Custódia,
+backup/restauração e insumos privados do runner continuam pendentes.
+Não houve testes verdes repetidos, build, pagamento, merge, publicação ou
+alteração de Oficial, USBQA, LAB 714, site, imagens ou layouts.
+Somente este relatório foi alterado no Git, com `[skip ci]`.
