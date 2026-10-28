@@ -15,3 +15,35 @@ test('normalize does not grant entitlements', () => {
 test('untrusted receipt is not approved without provider credentials', async () => {
   await assert.rejects(inspectPayment('123', ''), /missing Mercado Pago credential/);
 });
+
+test('snapshot reconciliation cannot overwrite reviewed entitlement ledger', async t => {
+  const {recordVerifiedPayment} = require('./mercadopago_reconciliation');
+  const originalFetch = global.fetch;
+  t.after(() => { global.fetch = originalFetch; });
+  global.fetch = async () => ({ok: true, json: async () => ({
+    id: 123, status: 'approved', status_detail: 'accredited',
+    live_mode: true, collector_id: 999, transaction_amount: 4.5,
+    transaction_amount_refunded: 0, currency_id: 'BRL',
+    date_approved: '2026-01-20T10:00:00Z',
+  })});
+  const reviewed = {uid: 'account-1', paymentId: '123',
+    reviewed: true, plan: 'annual', status: 'approved',
+    eligibleForReview: true, approvalDate: '2026-01-20T10:00:00Z'};
+  const rows = new Map([
+    ['payment_claims/123', {uid: 'account-1', reviewed: true}],
+    ['payment_events/123', {...reviewed}],
+  ]);
+  let writes = 0;
+  const db = {collection: name => ({doc: id => ({path: name + '/' + id})}),
+    runTransaction: async fn => fn({
+      get: async ref => ({exists: rows.has(ref.path),
+        data: () => rows.get(ref.path)}),
+      set: () => { writes++; },
+    })};
+  const result = await recordVerifiedPayment({db, paymentId: '123',
+    accessToken: 'fixture'});
+  assert.equal(result.entitlementGranted, false);
+  assert.equal(result.previouslyRecorded, true);
+  assert.equal(writes, 0);
+  assert.deepEqual(rows.get('payment_events/123'), reviewed);
+});
