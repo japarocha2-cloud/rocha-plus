@@ -1,0 +1,9 @@
+{
+  "package": "com.rochaplus.app.candidate",
+  "firebaseProject": "rocha-plus-candidate",
+  "firebaseProvisioning": "pending",
+  "versionName": "0.1.0-candidate.1",
+  "versionCode": 1,
+  "branch": "refs/heads/homolog/technical-candidate-20261028",
+  "productionApproved": false
+}

@@ -172,3 +172,69 @@ A etapa avançou somente na pendência de concorrência Firestore. APK, assinatu
 OAuth próprios da candidata, aparelhos físicos e pagamentos sandbox continuam
 bloqueados pelas condições registradas acima. Oficial, USBQA, LAB 714, PR #42
 e site oficial permanecem preservados; sem publicação, merge ou deploy.
+
+### Continuação — caminho sandbox e configuração candidata independentes
+
+Escopo solicitado: preservar o reconciliador de produção e permitir homologação
+sandbox isolada. `5e9096a`, `e1d7e69` e `8962a64` consultados; continuidade na mesma
+branch, sem reiniciar a rodada anterior.
+
+**Sandbox:** criado módulo separado em `functions/sandbox/reconcile.js`, sem
+importação no aplicativo ou nas Functions implantáveis. Exige projeto
+`demo-rocha-sandbox`, host loopback, credencial `TEST-` e resposta obtida por GET
+com `live_mode === false` explícito. Grava somente coleções `sandbox_*` no
+emulador; recusa banco cloud, modo real, ID/recebedor/valor/claim divergentes.
+Os arquivos de produção `reconcile_and_grant.js` e
+`mercadopago_reconciliation.js` permanecem byte a byte inalterados; teste fixa
+seus hashes e verifica que o predicado de produção continua negando sandbox.
+Não foi criada flag para afrouxar `liveMode === true` na produção.
+
+Teste local final: **9 testes aprovados** (incluindo agregador), 14 operações,
+22 tentativas, 8 retries do SDK. Compra aprovada e renovação por novo ID com
+respostas simuladas `live_mode=false`, replay concorrente/idempotência, estorno
+preservando renovação independente, último estorno retirando validade paga sem
+reiniciar trial expirado e resposta obsoleta sem ressuscitar período estornado.
+Conferidas coleções de produção vazias. Nenhuma chamada POST/cobrança/estorno
+remoto é implementada no cliente; o leitor usa somente GET do provedor.
+
+**Limite da evidência:** respostas do Mercado Pago foram simuladas; SDK e
+transações Firestore foram reais no emulador. Não há token/test users/transação
+sandbox configurados neste ambiente. Portanto compra, renovação e estorno
+ponta a ponta no Mercado Pago continuam pendentes, embora o caminho isolado
+agora aceite pagamentos sandbox válidos sem alterar produção.
+
+**Candidata:** identidade de release reservada `com.rochaplus.app.candidate`,
+debug `.candidate.debug`; projeto proposto `rocha-plus-candidate` ainda não
+provisionado. Versão planejada `0.1.0-candidate.1`, versionCode `1` (pacote novo,
+sem alterar códigos Oficial/LAB/USBQA). Preparador próprio em `tools/candidate/`
+valida projeto, pacote, OAuth Android, SHA-1 independente e cliente web antes
+de alterar um scaffold gerado. Rejeita endpoint Oficial/LAB, assinatura ausente,
+branch/disparo incorretos e fallback de assinatura debug no release.
+
+Chave exclusiva RSA 3072/PKCS12 criada localmente fora do checkout:
+`/workspace/rocha-candidate-private`, diretório 700 e arquivos 600. Senha aleatória
+somente no JSON privado, não impressa nem registrada no Git. Não substitui chave
+existente. Impressões públicas em `tools/candidate/signer-public.json`:
+SHA-1 `e2f0e4efa910b18b93fce60e9944f7ddf48ee02b`;
+SHA-256 `1103e22ab107a77ad3e6ef8b0d327e44240b91b9a4c0bbbad2d258185e0c696b`.
+Custódia/backup privado e secrets de build ainda não configurados; a chave está
+somente neste workspace. Não depender de atualização futura sem essa custódia.
+
+**Testes da candidata:** 5 testes Python aprovados. Cobrem isolamento, rejeição
+OAuth/pacote/certificado, ausência de mutação em configuração inválida, Gradle
+independente, metadados/versões/ABIs e verificador de assinatura/SHA-256. Os testes
+de APK usam ferramentas simuladas; não comprovam APK real. O verificador futuro
+exige apksigner válido e impressões SHA-1/SHA-256 correspondentes à chave própria.
+
+**Pendências reais:** criar/configurar projeto e OAuth próprios, obter Google
+Services real, guardar chave em custódia segura, preparar build runner/toolchain,
+validar endpoint candidato, compilar e inspecionar o APK; executar compra/renovação/
+estorno sandbox E2E e testes físicos. Não houve criação remota de projeto, OAuth,
+conta, backend ou regras, nem build/deploy/publicação. Notificações automáticas,
+TV/Cast físicos e autorização de distribuição continuam pendentes.
+
+Os problemas iniciais locais foram configuração do ruleset do novo emulador e
+credencial customizada incompatível com o Admin SDK; corrigidos antes da execução
+verde. Não eram falhas do reconciliador de produção. Job de CI novo testa apenas
+sandbox/candidata; suítes Flutter/player/Cast e emulador anterior permanecem
+preservadas. Resultado do CI e commits serão acrescentados após conclusão.
