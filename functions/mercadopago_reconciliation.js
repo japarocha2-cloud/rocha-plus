@@ -71,6 +71,13 @@ async function recordVerifiedPayment({db, paymentId, accessToken}) {
     if (existing.exists && existing.data().uid !== uid) {
       throw new Error('payment already associated with another account');
     }
+    // A snapshot-only operation must never erase a privileged grant ledger.
+    // A reviewed event carries plan and audit fields needed for recomputation.
+    if (existing.exists && existing.data().reviewed === true) {
+      return {uid, paymentId: payment.id, status: payment.status,
+        eligibleForReview: eligiblePayment(payment), entitlementGranted: false,
+        previouslyRecorded: true};
+    }
     const eligible = eligiblePayment(payment);
     const record = {
       uid, provider: 'mercadopago', paymentId: payment.id,
