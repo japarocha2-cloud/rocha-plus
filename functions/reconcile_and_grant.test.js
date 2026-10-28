@@ -81,6 +81,39 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     rows.set('payment_events/123', {uid: 'other-account'});
     await assert.rejects(run(), /ownership conflict/);
   });
+  await t.test('expired entitlement can be renewed without changing trial fields', async () => {
+    rows = initial();
+    rows.set('entitlements/account-1', {
+      createdAt: 'original-created', trialStartedAt: 'original-start',
+      trialUntil: 'expired-trial', paidUntil: 'expired-paid',
+    });
+    payment.date_approved = '2026-10-28T10:00:00Z';
+    const result = await run();
+    assert.equal(result.paidUntil, '2026-11-28T10:00:00.000Z');
+    assert.equal(rows.get('entitlements/account-1').paidUntil, result.paidUntil);
+    assert.equal(rows.get('entitlements/account-1').createdAt, 'original-created');
+    assert.equal(rows.get('entitlements/account-1').trialStartedAt, 'original-start');
+    assert.equal(rows.get('entitlements/account-1').trialUntil, 'expired-trial');
+    assert.equal((await run()).paidUntil, result.paidUntil);
+    payment.date_approved = '2026-01-20T10:00:00Z';
+  });
+  await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
+    for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
+      rows = initial();
+      if (claim === null) rows.delete('payment_claims/123');
+      else rows.set('payment_claims/123', claim);
+      const before = structuredClone([...rows]);
+      await assert.rejects(run(), /reviewed UID and plan required/);
+      assert.deepEqual([...rows], before);
+    }
+  });
+  await t.test('missing entitlement fails closed without writing payment event', async () => {
+    rows = initial();
+    rows.delete('entitlements/account-1');
+    const before = structuredClone([...rows]);
+    await assert.rejects(run(), /trial must be initialized/);
+    assert.deepEqual([...rows], before);
+  });
   await t.test('provider response must match requested payment ID', async () => {
     payment.id = '456';
     await assert.rejects(fetchVerifiedPayment('123', 'fixture'), /identity mismatch/);
