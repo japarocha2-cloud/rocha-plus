@@ -111,6 +111,17 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     assert.equal(rows.get('payment_events/456').status, 'approved');
     payment.status = 'approved';
   });
+  await t.test('mismatched ledger document identity fails atomically', async () => {
+    rows = initial();
+    rows.set('payment_events/456', {
+      uid: 'account-1', paymentId: '789', provider: 'mercadopago',
+      status: 'approved', eligibleForReview: true, reviewed: true,
+      plan: 'annual', approvalDate: '2026-01-15T10:00:00Z',
+    });
+    const before = structuredClone([...rows]);
+    await assert.rejects(run(), /ledger document identity mismatch/);
+    assert.deepEqual([...rows], before);
+  });
   await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
     for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
       rows = initial();
