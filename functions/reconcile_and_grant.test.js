@@ -97,6 +97,20 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     assert.equal((await run()).paidUntil, result.paidUntil);
     payment.date_approved = '2026-01-20T10:00:00Z';
   });
+  await t.test('refunding one payment preserves another independently valid plan', async () => {
+    rows = initial();
+    rows.set('payment_events/456', {
+      uid: 'account-1', paymentId: '456', provider: 'mercadopago',
+      status: 'approved', eligibleForReview: true, reviewed: true,
+      plan: 'annual', approvalDate: '2026-01-15T10:00:00Z',
+    });
+    payment.status = 'refunded';
+    const result = await run();
+    assert.equal(result.paidUntil, '2027-01-15T10:00:00.000Z');
+    assert.equal(rows.get('entitlements/account-1').paidUntil, result.paidUntil);
+    assert.equal(rows.get('payment_events/456').status, 'approved');
+    payment.status = 'approved';
+  });
   await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
     for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
       rows = initial();
