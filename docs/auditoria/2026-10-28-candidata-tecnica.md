@@ -760,3 +760,76 @@ backup/restauração e insumos privados do runner continuam pendentes.
 Não houve testes verdes repetidos, build, pagamento, merge, publicação ou
 alteração de Oficial, USBQA, LAB 714, site, imagens ou layouts.
 Somente este relatório foi alterado no Git, com `[skip ci]`.
+
+### Google Sign-In/OAuth candidato preparado com autorização — 28/10/2026
+
+Após autorização do proprietário para avançar com Google Sign-In/OAuth
+exclusivos e suporte `rochaplus.app@gmail.com`, a autenticação do console
+foi concluída pelo formulário seguro. As tentativas anteriores interrompidas
+não haviam configurado o provedor; esta rodada confirmou o acesso e concluiu
+a operação no projeto `rocha-plus-candidate`.
+
+Executado pelo console, sem comando de deploy:
+- inicializado Firebase Authentication somente na candidata;
+- habilitado apenas o provedor Google;
+- nome público do provedor/projeto: `Rocha+ TV Candidata`;
+- email de suporte: `rochaplus.app@gmail.com`;
+- tabela de provedores confirmou **Google — ativado**;
+- nenhum ID de cliente externo/Oficial/LAB foi adicionado à lista de permissões.
+
+[Authentication candidato](https://console.firebase.google.com/project/rocha-plus-candidate/authentication/providers)
+
+O Firebase informou que a primeira ativação cria clientes OAuth e atualiza a
+configuração dos apps. Google Services atualizado foi obtido e inspecionado
+sem imprimir valores, com resultados positivos:
+- projeto `rocha-plus-candidate`, número `633579358750`;
+- app único do pacote `com.rochaplus.app.candidate`, app ID correspondente
+  ao cadastro já registrado;
+- um cliente OAuth Android do pacote candidato, com o SHA-1 original
+  `e2f0e4efa910b18b93fce60e9944f7ddf48ee02b`;
+- um cliente OAuth web com formato válido para server client ID;
+- IDs dos clientes com prefixo do número do projeto candidato;
+- configuração de API key presente, sem expor o valor.
+
+O arquivo está temporariamente em
+`/workspace/rocha-candidate-config-private/google-services.json` neste
+executor, diretório 700, arquivo 600, fora do checkout. Não anexado ao chat,
+não enviado ao Git/Library nem incluído em artifact. Esse caminho não é o
+workspace original da chave e **não comprova disponibilidade no runner**.
+A cópia privada local é temporária, não é custódia/backup durável.
+
+Houve timeout do navegador ao aguardar o evento de download; antes de tentar
+novamente, foi constatado que o arquivo já havia sido salvo. O conteúdo foi
+validado, o assistente fechado e o estado “Google ativado” reconfirmado; não
+houve segundo cadastro ou segundo acionamento do provedor.
+
+**Limite da evidência:** verificação de cadastro/configuração, não teste de
+login do APK. Não foram criados usuários de teste do aplicativo nem executado
+login/trial físico. A configuração geral de consentimento/status de publicação
+OAuth no Google Cloud não foi auditada nesta rodada; eventuais exigências para
+contas de teste permanecem sujeitas à verificação antes do teste físico.
+Não foram lidos/transferidos secrets de cliente web; o aplicativo requer o ID
+web, não o segredo OAuth web.
+
+**Entrega ao Codex:** retomar a branch e este relatório; usar a chave original
+já conferida no ambiente anterior e obter a configuração candidata atual por
+canal privado/autenticado, sem copiar valores para chat/Git. O caminho privado
+acima só pode ser usado se estiver acessível ao executor destinatário; caso
+contrário, obter o SDK config do mesmo app/projeto autenticado no ambiente
+correto. Executar o validador existente antes de preparar o scaffold.
+Não substituir por configuração Oficial/LAB e não incorporar token Mercado
+Pago no APK.
+
+**Pendências mantidas:** aprovar destino e concluir custódia/backup cifrado
+da chave com senha separada e restauração; disponibilizar insumos privados
+ao runner, com autorização antes de criar/alterar secrets; toolchain e build
+assinado; endpoint candidato se o objetivo incluir trial/bloqueio; credenciais
+sandbox/E2E e roteiro físico. A correção de Firebase/OAuth não resolve esses
+bloqueios e não autoriza publicação.
+
+Plano Spark mantido; sem Analytics, vínculo de faturamento, deploy, merge,
+pagamento, publicação, atualização de site ou mudança em Oficial/USBQA/LAB
+714, imagens e layouts. Nenhuma suíte verde repetida. Somente este relatório
+foi atualizado, com `[skip ci]`; `identity.json` segue com marcador histórico
+pending, apesar do cadastro remoto agora comprovado, sem mudança de código
+de produção nesta rodada.
