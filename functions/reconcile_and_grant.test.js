@@ -165,6 +165,32 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
       '2026-02-20T10:00:00.000Z');
     assert.equal([...rows.keys()].filter(key => key === 'payment_events/123').length, 1);
   });
+  await t.test('refund replay cannot resurrect a previously refunded period', async () => {
+    rows = initial();
+    await run();
+    payment.status = 'refunded';
+    const first = await run();
+    const second = await run();
+    assert.equal(first.paidUntil, null);
+    assert.equal(second.paidUntil, null);
+    assert.equal(second.previouslyRecorded, true);
+    assert.equal(rows.get('entitlements/account-1').paidUntil, null);
+    assert.equal(rows.get('payment_events/123').status, 'refunded');
+    payment.status = 'approved';
+  });
+  await t.test('different valid plans choose the latest end without stacking', async () => {
+    rows = initial();
+    rows.set('payment_events/456', {
+      uid: 'account-1', paymentId: '456', provider: 'mercadopago',
+      status: 'approved', eligibleForReview: true, reviewed: true,
+      plan: 'annual', approvalDate: '2026-01-15T10:00:00Z',
+    });
+    const first = await run();
+    const second = await run();
+    assert.equal(first.paidUntil, '2027-01-15T10:00:00.000Z');
+    assert.equal(second.paidUntil, first.paidUntil);
+    assert.equal(rows.get('payment_events/456').plan, 'annual');
+  });
   await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
     for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
       rows = initial();
