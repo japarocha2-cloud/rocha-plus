@@ -452,3 +452,178 @@ Nenhuma dessas autorizações é presumida. Deploy, publicação, merge, site e
 pagamentos reais continuam fora de escopo. A próxima rodada deve retornar ao
 Codex com as decisões autorizadas e referências privadas dos insumos, nunca
 seus valores no texto.
+
+### WORK — preparação final do ambiente candidato (28/10/2026)
+
+Continuidade direta de `9dc46a4ae1124c09dc04c6061a1776f001541ec0`,
+reconfirmado como HEAD no início desta rodada. Não reiniciada homologação.
+Este adendo documenta verificações e procedimento; **não houve recuperação
+da chave, backup efetivo, provisionamento Firebase/OAuth ou criação de secrets**.
+
+#### 1. Recuperação: bloqueio delimitado
+
+Verificados novamente, sem ler conteúdo secreto:
+`/workspace/rocha-candidate-private/candidate.p12` e
+`/workspace/rocha-candidate-private/signing.json` não estão disponíveis
+neste executor. Não há CLI Codex nem ferramentas de Codex Tasks/ambiente remoto
+expostas nesta sessão. A descoberta de integrações não forneceu um conector
+capaz de abrir o workspace anterior. Não foi criada tarefa remota nem enviado
+comando a outro ambiente.
+
+A ausência local não comprova exclusão no ambiente original. O Codex deverá
+retomar **o workspace que criou a chave**, localizar os dois arquivos no
+diretório documentado e, se não existirem ali, consultar somente os volumes e
+backups privados desse ambiente sob autorização existente, sem despejar
+conteúdo ou fazer varredura indiscriminada de outros segredos.
+
+Conferir alias `rocha-candidate-20261028` e as duas impressões contra
+`tools/candidate/signer-public.json`, relido nesta rodada (blob
+`9e8a97b383d63c8c7349206da20eed1627d5f9ac`). As impressões não mudaram.
+O alias e o certificado **da chave privada** não puderam ser reconferidos.
+Não executar `init-signing`, não substituir a chave por debug/Oficial/LAB e
+não alterar o certificado público para fazer uma chave divergente passar.
+
+#### 2. Custódia: procedimento preparado, execução pendente
+
+Destino proposto para aprovação: cofre privado controlado pelo proprietário,
+com PKCS12 e backup cifrado acessíveis somente aos responsáveis de assinatura;
+senha do PKCS12 em entrada separada, com controle de acesso independente.
+Ainda falta identificar produto/conta, responsável e destinatário público de
+cifragem. Nenhum destino foi configurado ou declarado aprovado.
+
+Procedimento para o executor original, após aprovação do destino:
+1. Confirmar chave, alias, permissões 700/600 e ambas as impressões. Usar senha
+   via ambiente do subprocesso; capturar a saída de keytool e divulgar somente
+   resultado de correspondência, sem senha/JSON privado.
+2. Cifrar **somente `candidate.p12`** para destinatário público previamente
+   validado do proprietário (por exemplo, GPG). Não incluir `signing.json`,
+   a senha ou chave privada de decifragem no mesmo pacote. Nome sugerido para
+   o backup: `rocha-candidate-20261028.p12.gpg`.
+3. Guardar o backup no destino aprovado e a senha em segredo separado.
+   Não usar chat, Git, artifacts de CI, pasta pública ou Library de documentos
+   como canal de entrega dos arquivos secretos. Não copiar material da
+   candidata para as configurações de Oficial/LAB.
+4. Restaurar uma cópia em diretório temporário privado (700; arquivo 600),
+   abrir o PKCS12 com a senha obtida separadamente e comparar certificado e
+   alias aos públicos versionados. Conferir também integridade do arquivo
+   restaurado sem registrar seu conteúdo.
+5. Registrar somente responsável, referência privada do backup, data,
+   resultado da restauração e impressões públicas. Remover cópias temporárias
+   após a conferência e manter a origem até confirmação da custódia.
+   Não prometer apagamento físico garantido em armazenamento cloud/SSD.
+
+**Estado do backup: não criado nesta rodada; recuperação não testada.**
+OpenSSL/GPG/keytool existem neste executor, mas isso não substitui acesso à
+chave nem prova que o ambiente original tem os mesmos utilitários.
+
+#### 3. Firebase/OAuth: consulta remota bloqueada por autenticação
+
+`identity.json` segue com projeto proposto `rocha-plus-candidate` e
+`firebaseProvisioning: pending`. O plugin Firebase foi identificado como
+instalado, mas não oferece ferramentas Firebase MCP de conta nesta sessão.
+As CLIs Firebase/gcloud não estão no PATH e não há credenciais Firebase
+disponibilizadas por variáveis neste executor.
+
+Tentativa de consulta em modo de leitura ao console Firebase chegou à tela
+**Faça login / Use sua Conta do Google**. Não foi iniciada autenticação,
+selecionada conta ou criada configuração. Portanto:
+- existência/disponibilidade do projeto: **não verificada remotamente**;
+- app Android, provedor Google, clientes OAuth e consentimento: **não verificados**;
+- Google Services candidato real: **não obtido**;
+- nenhum projeto/app/cliente/secret foi criado ou alterado.
+
+Próxima consulta autenticada deve primeiro verificar o projeto e os aplicativos
+existentes, evitando duplicatas. Para o release, preparar somente
+`com.rochaplus.app.candidate`, associado ao certificado original conferido.
+Cliente Android deve corresponder a pacote/SHA-1; cliente web deve pertencer ao
+projeto candidato e fornecer o server client ID. Habilitar Google Sign-In e
+revisar suporte/consentimento/test users apenas com confirmação explícita do
+proprietário. Se já houver cadastro correto, ler/reutilizar exclusivamente esse
+cadastro candidato, sem modificar Oficial/LAB.
+
+Após localizar o app candidato, obter Google Services por consulta autenticada
+do SDK config, com saída salva diretamente no diretório privado e sem eco em
+logs; nunca publicar a saída integral de `apps:sdkconfig`.
+Validar o arquivo com o preparador existente. Não forjar project number,
+app ID, API key, clientes OAuth ou arquivo pronto.
+
+#### 4. Inventário para o runner (nomes; nenhum valor)
+
+| Insumo/nome | Estado nesta sessão | Uso |
+| --- | --- | --- |
+| `candidate.p12` original | Inacessível; recuperar no workspace original | Assinatura release |
+| `signing.json` original | Inacessível; alias/senha por conferir | Preparador local |
+| `ROCHA_CANDIDATE_KEYSTORE_BASE64` | Secret **proposto**, não provisionado/verificado | Transportar PKCS12 ao runner; base64 não cifra |
+| `ROCHA_CANDIDATE_STORE_PASSWORD` | Secret necessário, não disponível localmente | Senha via ambiente |
+| `ROCHA_CANDIDATE_KEY_ALIAS` | Configuração necessária, valor esperado público já documentado | Alias via ambiente |
+| `ROCHA_CANDIDATE_GOOGLE_SERVICES_JSON` | Secret/configuração privada **proposta**, não obtida | Insumo Firebase exclusivo |
+| `ROCHA_CANDIDATE_KEYSTORE` | Caminho temporário gerado pelo runner, não secret remoto | Referência ao PKCS12 restaurado |
+| `MP_TEST_ACCESS_TOKEN` | Referência histórica no workflow; disponibilidade atual não verificada | Auditoria sandbox antiga |
+| `ROCHA_MP_SANDBOX_ACCESS_TOKEN` | Não disponível localmente; provisionamento remoto não verificado | Novo caminho sandbox; fora do APK |
+
+Os nomes de armazenamento propostos não estão ligados a um workflow de build
+candidato existente. O futuro runner deverá materializar arquivos fora do
+checkout e carregar a senha sem imprimi-la, recriando `signing.json` privado
+apenas para o contrato do preparador. Google Services e assinatura não devem
+ser expostos em summary, logs, caches ou artifacts. Criar/alterar secrets
+somente após autorização específica do proprietário para o destino.
+
+Não foi possível listar secrets atuais com o conector; permanece a limitação
+histórica de acesso documentada. Ausência de variável local não implica
+ausência de secret em GitHub/Codex. Não foi solicitada leitura de seus valores.
+
+#### 5. Mercado Pago: inspeção sem transações
+
+Relidos os módulos na branch:
+`functions/reconcile_and_grant.js` preserva a exigência de modo real na
+produção; `functions/sandbox/reconcile.js` preserva token `TEST-`,
+`live_mode=false` explícito e isolamento no emulador. Nenhum desses arquivos
+foi modificado. A referência histórica `MP_TEST_ACCESS_TOKEN` continua no
+workflow de auditoria, cujo blob permanece
+`fd9f79a23de05d501f01b50909f7bc87e2f13ae5`.
+
+Não há token/usuários de teste disponíveis nas variáveis deste executor.
+Nenhuma conexão autenticada à conta Mercado Pago foi estabelecida; a busca
+de integrações não encontrou plugin para consultá-la. Configurações existentes
+na conta não puderam ser inventariadas remotamente. Credencial compatível,
+vendedor/comprador de teste e meios de teste continuam pendentes de confirmação
+privada. IDs históricos não são prova de disponibilidade atual.
+
+Nenhum GET autenticado ao provedor, compra, renovação, estorno, criação de
+usuário ou pagamento foi executado. Os resultados verdes e as ressalvas do
+E2E anterior permanecem. Token Mercado Pago não é insumo da compilação Android
+e nunca deve ser incorporado ao APK.
+
+#### 6. Entrega e comando de continuidade
+
+Compilação permanece dependente de chave original/custódia e configuração
+Firebase/OAuth real. Permanecem válidos o toolchain, flags de versão, defines,
+guardas e verificador descritos no adendo anterior. Nenhum teste verde foi
+executado; nenhum CI foi disparado manualmente; esta alteração documental
+usa `[skip ci]`.
+
+**Comando de continuidade recomendado ao Codex (instrução para o ambiente
+original, não executada por esta sessão):**
+
+> Retome o workspace original de japarocha2-cloud/rocha-plus na branch
+> homolog/technical-candidate-20261028 e leia este relatório atualizado.
+> Recupere /workspace/rocha-candidate-private/candidate.p12 e signing.json,
+> sem imprimir conteúdos. Confira alias rocha-candidate-20261028 e SHA-1/SHA-256
+> contra tools/candidate/signer-public.json. Não gere outra chave.
+> Se a chave não existir, pare a preparação da assinatura e informe somente
+> o bloqueio. Se existir, mantenha-a privada e prepare custódia/backup cifrado
+> com senha separada no destino explicitamente aprovado pelo proprietário;
+> faça restauração verificável. Consulte somente o projeto Firebase candidato
+> autenticado e inventarie app/OAuth/Google Services e nomes de secrets.
+> Antes de criar ou alterar projeto, app, cliente OAuth, conta, cofre ou
+> secret, obtenha confirmação explícita. Não compile até confirmar os insumos
+> e o escopo da próxima rodada. Preserve todos os testes verdes, produção,
+> Oficial, USBQA, LAB 714, PR #42 e site. Sem pagamentos, merge, deploy ou
+> publicação. Registre apenas resultados comprovados e referências privadas.
+
+**Decisões a solicitar antes de qualquer mutação remota:** conta proprietária
+do Firebase; criar projeto/app/clientes candidatos somente se faltantes e após
+confirmar certificado; destino/conta e responsáveis pela custódia; secrets
+candidatos e escopo do runner; eventual cadastro sandbox faltante.
+Autenticação para leitura continua necessária para verificar os recursos
+existentes. A distribuição pública segue bloqueada.
