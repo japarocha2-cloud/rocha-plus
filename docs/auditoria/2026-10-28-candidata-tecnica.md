@@ -654,3 +654,27 @@ indicada. Chave original, backup, secrets do runner e Mercado Pago continuam
 com o estado anterior, sem novas verificações ou presunções. Nenhum teste
 verde, build, pagamento, merge, deploy, publicação ou atualização do site foi
 executado. Alteração exclusivamente documental, com `[skip ci]`.
+
+### Recuperação da chave original confirmada pelo proprietário — 28/10/2026
+
+O proprietário informou que `candidate.p12` e `signing.json` foram
+encontrados no ambiente anterior do Codex, que o alias
+`rocha-candidate-20261028` confere e que as impressões SHA-1 e SHA-256
+correspondem a `tools/candidate/signer-public.json`.
+
+Esta é evidência comunicada pelo proprietário sobre a verificação no ambiente
+original; este executor não leu os arquivos nem reexecutou keytool. O bloqueio
+de localização/identificação da chave fica resolvido conforme essa confirmação.
+Nenhuma chave nova foi gerada, transferida ou anexada; nenhum segredo foi
+solicitado ou divulgado.
+
+Custódia e backup cifrado com senha separada e restauração verificável
+continuam pendentes de execução/confirmação no destino aprovado. Não descartar
+o workspace original antes de concluir essa preservação. Disponibilidade da
+chave no runner de compilação ainda não foi comprovada.
+
+A criação do projeto candidato Firebase, do app Android/OAuth e dos secrets
+continua aguardando autorização explícita. A recuperação da chave não concede
+essa autorização. Mantidos todos os demais bloqueios, testes verdes e
+restrições; sem build, pagamento, deploy, publicação, merge ou alteração dos
+projetos existentes. Atualização exclusivamente documental com `[skip ci]`.
