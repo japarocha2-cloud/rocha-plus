@@ -4,6 +4,10 @@ on:
     branches:
       - fix/subscription-access-20261026
       - homolog/technical-candidate-20261028
+    paths-ignore:
+      - 'docs/**'
+      - 'functions/emulator/**'
+      - '.github/workflows/firestore-emulator.yml'
   pull_request:
     paths:
       - 'functions/**'
