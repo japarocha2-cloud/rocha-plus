@@ -627,3 +627,30 @@ confirmar certificado; destino/conta e responsáveis pela custódia; secrets
 candidatos e escopo do runner; eventual cadastro sandbox faltante.
 Autenticação para leitura continua necessária para verificar os recursos
 existentes. A distribuição pública segue bloqueada.
+
+### Consulta autenticada Firebase — 28/10/2026
+
+Login confirmado no console Firebase como `rochaplus.app@gmail.com`.
+A lista de projetos acessíveis mostra **1 a 2 de 2**, com:
+- `rocha-plus` (Rocha Plus);
+- `rocha-plus-homologacao` (Rocha Plus Homologacao).
+
+`rocha-plus-candidate` não aparece nessa lista. Isso confirma que não há
+projeto candidato visível na conta consultada; não comprova inexistência global
+ou disponibilidade do ID, nem exclui projeto em outra conta/permissão.
+Os projetos existentes não foram abertos nem modificados.
+
+Nenhum projeto, app Android, cliente OAuth, secret ou backend foi criado.
+Próxima ação proposta ao proprietário: autorizar explicitamente criar somente
+o projeto candidato independente, com ID proposto `rocha-plus-candidate`,
+sujeito à disponibilidade, sem vincular faturamento, sem ativar Analytics,
+sem deploy e sem modificar os dois projetos existentes. Se o ID estiver
+indisponível, parar e solicitar a decisão, sem escolher outro automaticamente.
+Cadastro Android/OAuth e associação de certificado continuam bloqueados até
+recuperar e conferir a chave original; não gerar outra.
+
+Esta consulta resolve o bloqueio de autenticação do console para a conta
+indicada. Chave original, backup, secrets do runner e Mercado Pago continuam
+com o estado anterior, sem novas verificações ou presunções. Nenhum teste
+verde, build, pagamento, merge, deploy, publicação ou atualização do site foi
+executado. Alteração exclusivamente documental, com `[skip ci]`.
