@@ -50,8 +50,16 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
       refundedAmount: payment.refundedAmount,
       checkedAt: admin.firestore.Timestamp.now(),
     };
-    const otherRecords = ledger.docs
-      .filter(doc => doc.id !== payment.id).map(doc => doc.data());
+    // A ledger document must match its provider payment identity. Reject
+    // inconsistent records instead of silently granting another period.
+    const otherRecords = ledger.docs.filter(doc => doc.id !== payment.id)
+      .map(doc => {
+        const row = doc.data();
+        if (String(row.paymentId) !== doc.id) {
+          throw new Error('payment ledger document identity mismatch');
+        }
+        return row;
+      });
     const expiration = entitlementFromLedger(claim.uid, [...otherRecords, updated]);
     tx.set(eventRef, updated);
     // Recompute from source of truth. Never extend paidUntil by adding a period
