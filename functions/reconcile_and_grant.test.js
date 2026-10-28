@@ -87,9 +87,9 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
       createdAt: 'original-created', trialStartedAt: 'original-start',
       trialUntil: 'expired-trial', paidUntil: 'expired-paid',
     });
-    payment.date_approved = '2026-10-28T10:00:00Z';
+    payment.date_approved = '2026-10-27T10:00:00Z';
     const result = await run();
-    assert.equal(result.paidUntil, '2026-11-28T10:00:00.000Z');
+    assert.equal(result.paidUntil, '2026-11-27T10:00:00.000Z');
     assert.equal(rows.get('entitlements/account-1').paidUntil, result.paidUntil);
     assert.equal(rows.get('entitlements/account-1').createdAt, 'original-created');
     assert.equal(rows.get('entitlements/account-1').trialStartedAt, 'original-start');
