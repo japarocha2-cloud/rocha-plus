@@ -39,6 +39,9 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
     if (existing.exists && existing.data().uid !== claim.uid) {
       throw new Error('payment ownership conflict');
     }
+    if (existing.exists && String(existing.data().paymentId) !== payment.id) {
+      throw new Error('payment ledger document identity mismatch');
+    }
     if (!entitlement.exists) throw new Error('account trial must be initialized first');
     const approved = eligiblePayment(payment);
     const updated = {
