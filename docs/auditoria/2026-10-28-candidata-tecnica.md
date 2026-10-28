@@ -147,3 +147,28 @@ Pendências mantidas: identidade e build candidata separada, login/trial físico
 notificações automáticas, compra/estorno sandbox E2E, testes TV/Cast e autorizações
 de distribuição. Não confundir fixtures `live_mode: true` com transações reais.
 Não há alteração na função implantada nem ativação de webhook/reconciliação.
+
+### CI da continuação e commits
+
+- `5e9096a`: filtros de CI para preservar suítes verdes em mudanças exclusivas
+  de emulador/documentação (`[skip ci]`).
+- `e1d7e692bf237c96375ef93bdc2eb8f62cb83fef`: suíte e job dedicados ao emulador.
+- [CI 40686132051](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40686132051):
+  **success**, Node 22, Java 21, Standard Emulator; 6 testes aprovados,
+  10 operações, 19 tentativas, **9 retries** observados. Nenhum abort simulado.
+- A execução geral `40686132022`, disparada pelo push que também continha a
+  mudança dos filtros, foi cancelada para evitar repetição redundante. Isso
+  não invalida nem substitui o CI verde `40684071278`; não houve mudança de
+  código de produção nesta continuação.
+
+Bloqueio sandbox adicional confirmado na inspeção:
+`reconcileAndGrant` e `eligiblePayment` exigem `liveMode === true`. Credenciais
+sandbox sozinhas não permitem homologação positiva pelo módulo atual; preparar
+um caminho explicitamente isolado sem remover a guarda existente. Nenhum
+pagamento real pode ser usado como alternativa. Compras, notificações e respostas
+de estorno fora de ordem do provedor não estão homologadas por este teste local.
+
+A etapa avançou somente na pendência de concorrência Firestore. APK, assinatura,
+OAuth próprios da candidata, aparelhos físicos e pagamentos sandbox continuam
+bloqueados pelas condições registradas acima. Oficial, USBQA, LAB 714, PR #42
+e site oficial permanecem preservados; sem publicação, merge ou deploy.

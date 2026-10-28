@@ -40,10 +40,12 @@ The Mercado Pago inspection module is a read-only scaffold, not an activated web
 
 ## Outstanding homologation evidence gates (do not mark green without evidence)
 
-- **Firestore concurrency:** run isolated Firestore Emulator or approved test-project
-  transactions with competing reconciliations of the same and different payment IDs;
-  record transaction retries, final ledger document count and exact `paidUntil`.
-  The in-memory parallel replay test does **not** simulate Firestore conflict retries.
+- **Firestore concurrency:** the isolated Standard Emulator suite in
+  [emulator/README.md](emulator/README.md) now verifies competing first trial reads,
+  same/different payment IDs, refund replay, ledger counts and exact `paidUntil`.
+  [CI 40686132051](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40686132051)
+  passed all 6 tests with 10 SDK transaction operations, 19 attempts and 9 retries.
+  This is emulator evidence, not cloud load, client rules, IAM or provider E2E evidence.
 - **Reviewed claim / UID ownership:** use an authenticated back-office procedure,
   independently verify account ownership, merchant and plan, and retain audit evidence
   without recording sensitive user identifiers in public CI logs. Never create claims
@@ -51,6 +53,9 @@ The Mercado Pago inspection module is a read-only scaffold, not an activated web
 - **Mercado Pago sandbox end-to-end:** with isolated test credentials and accounts,
   verify provider lookup, claim review, privileged reconciliation, entitlement read
   and application unlock/expiry; test duplicate notification and refund paths.
+  The current reconciler and eligibility predicate require `liveMode === true`;
+  an explicitly isolated sandbox path is still needed before a positive sandbox
+  transaction can pass. Do not bypass this guard or substitute a real purchase.
   Never run a real charge or reuse historical production payments.
 - **Trial and account switching:** in a dedicated experimental Firebase environment,
   verify first activation, expiry, renewal, logout/login, and no cross-account access.
