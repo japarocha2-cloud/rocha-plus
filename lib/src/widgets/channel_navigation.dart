@@ -13,7 +13,7 @@ class ChannelNavigation extends StatelessWidget {
     required this.child,
   });
   @override
-  Widget build(BuildContext context) => Focus(
+  Widget build(BuildContext context) => FocusScope(
     autofocus: true,
     onKeyEvent: (_, event) {
       if (event is! KeyDownEvent) return KeyEventResult.ignored;

@@ -53,11 +53,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
     final version = ++generation;
     lastUrl = session.current.url;
     setState(() => loading = true);
-    final preferred = switch (session.current.preferredEngine) {
-      'libVlc' => LabEngine.libVlc,
-      'exoPlayer' => LabEngine.exoPlayer,
-      _ => await PlayerLabResults().preferred(session.current),
-    };
+    final preferred = await resolvePlaybackEngine(session.current);
     if (!mounted || generation != version) return;
     setState(() {
       engine = preferred;
@@ -173,7 +169,12 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
     }
     final value = controller.value;
     final error = value.errorDescription != VlcPlayerValue.noError;
-    return Scaffold(
+    return PopScope(
+      canPop: !fullscreen,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && fullscreen) setState(() => fullscreen = false);
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       appBar: fullscreen
           ? null
@@ -218,6 +219,7 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                   const Text('O sinal falhou neste reprodutor.'),
                   const SizedBox(height: 12),
                   FilledButton(
+                    autofocus: true,
                     onPressed: widget.onUseExo,
                     child: const Text('Tentar no ExoPlayer'),
                   ),
@@ -229,11 +231,12 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                   children: [
                     Positioned.fill(
                       child: VlcPlayer(
+                        key: ObjectKey(controller),
                         controller: controller,
                         aspectRatio: 16 / 9,
-                        placeholder: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        placeholder: value.isInitialized
+                            ? const SizedBox.shrink()
+                            : const Center(child: CircularProgressIndicator()),
                       ),
                     ),
                     Positioned(
@@ -260,6 +263,7 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                                 setState(() => fullscreen = !fullscreen),
                           ),
                           IconButton.filledTonal(
+                            autofocus: true,
                             icon: Icon(
                               value.isPlaying ? Icons.pause : Icons.play_arrow,
                             ),
@@ -275,6 +279,6 @@ class _VlcPlaybackScreenState extends State<_VlcPlaybackScreen> {
                 ),
               ),
       ),
-    );
+    ));
   }
 }

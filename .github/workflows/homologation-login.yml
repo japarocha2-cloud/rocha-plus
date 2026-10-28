@@ -6,15 +6,19 @@ on:
         description: Ativar teste de bloqueio (somente com backend experimental validado)
         type: boolean
         default: false
+      build_number:
+        description: Version code for an isolated LAB update
+        type: number
+        default: 0
       entitlement_url:
-        description: Endpoint HTTPS experimental completo /v1/entitlement
+        description: Endpoint HTTPS experimental completo de acesso
         type: string
         default: ''
 permissions:
   contents: read
 jobs:
   homologation:
-    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020'
+    if: github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -45,10 +49,13 @@ jobs:
       - name: Analyze and test application
         run: |
           flutter pub get
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
           flutter analyze
           flutter test
       - name: Build isolated signed login APK
-        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
+        run: flutter build apk --release --build-number=${{ inputs.build_number || github.run_number }} --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
       - name: Verify package and OAuth certificate before upload
         run: |
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
@@ -56,7 +63,7 @@ jobs:
       - name: Upload isolated APK for physical testing
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-homologacao-login-lab
+          name: ${{ inputs.subscription_lab && 'rocha-plus-homologacao-subscription-lab' || 'rocha-plus-homologacao-login-lab' }}
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/qa/homologation.json

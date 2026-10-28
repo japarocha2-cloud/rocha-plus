@@ -5,6 +5,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 import '../cast/cast_device_picker.dart';
 import '../cast/cast_channel_loader.dart';
+import '../cast/cast_failure.dart';
 import '../cast/cast_hls_proxy.dart';
 import '../cast/cast_readiness.dart';
 import '../live/channel_playback_session.dart';
@@ -69,12 +70,13 @@ Future<void> launchSessionCast(
         onSelected: (device) async {
           Navigator.pop(sheet);
           if (!context.mounted) return;
+          var sessionConnected = false;
           try {
             final manager = GoogleCastSessionManager.instance;
             if (!await manager
                 .startSessionWithDevice(device)
                 .timeout(const Duration(seconds: 8))) {
-              throw StateError('Sessão Cast recusada');
+              throw CastFailure(CastFailureKind.connection);
             }
             if (!context.mounted) return;
             if (manager.connectionState != GoogleCastConnectState.connected) {
@@ -86,6 +88,7 @@ Future<void> launchSessionCast(
                   .timeout(const Duration(seconds: 8));
             }
             if (!context.mounted) return;
+            sessionConnected = true;
             session.deviceName = device.friendlyName;
             final confirmed = await session.startCasting(
               (channel) => CastChannelLoader.load(channel, device),
@@ -111,9 +114,10 @@ Future<void> launchSessionCast(
                 GoogleCastConnectState.disconnected) {
               session.stopCasting();
             }
-          } catch (_) {
+          } catch (error) {
+            if (error is CastFailure && error.kind == CastFailureKind.superseded) return;
             session.stopCasting();
-            await CastHlsProxy.instance.close();
+            try { await CastHlsProxy.instance.close(); } catch (_) { /* cleanup */ }
             try {
               await GoogleCastSessionManager.instance
                   .endSessionAndStopCasting();
@@ -122,11 +126,8 @@ Future<void> launchSessionCast(
             }
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'A TV não confirmou a reprodução. Tente novamente.',
-                  ),
-                ),
+                SnackBar(content: Text(castFailureMessage(sessionConnected
+                    ? error : CastFailure(CastFailureKind.connection)))),
               );
             }
           }

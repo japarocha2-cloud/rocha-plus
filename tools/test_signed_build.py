@@ -58,6 +58,10 @@ class SignedBuildTest(unittest.TestCase):
         self.assertEqual(subscription_config(env)['ROCHA_EXPERIMENTAL_SUBSCRIPTIONS'], 'true')
         with self.assertRaises(ValueError):
             subscription_config(env | {'GITHUB_REF': 'refs/heads/main'})
+        # Expanding the isolated LAB preparer must not expand the original
+        # release preparer's branch allowlist.
+        with self.assertRaises(ValueError):
+            subscription_config(env | {'GITHUB_REF': 'refs/heads/fix/subscription-access-20261026'})
 
     def test_automatic_builds_cannot_publish_locked_apk_as_full_beta(self):
         workflow = (Path(__file__).resolve().parents[1] /
