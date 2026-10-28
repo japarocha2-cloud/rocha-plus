@@ -111,6 +111,15 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     assert.equal(rows.get('payment_events/456').status, 'approved');
     payment.status = 'approved';
   });
+  await t.test('existing payment event with mismatched ID fails before writes', async () => {
+    rows = initial();
+    rows.set('payment_events/123', {
+      uid: 'account-1', paymentId: '999', provider: 'mercadopago',
+    });
+    const before = structuredClone([...rows]);
+    await assert.rejects(run(), /ledger document identity mismatch/);
+    assert.deepEqual([...rows], before);
+  });
   await t.test('mismatched ledger document identity fails atomically', async () => {
     rows = initial();
     rows.set('payment_events/456', {
