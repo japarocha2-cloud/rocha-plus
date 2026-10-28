@@ -102,3 +102,19 @@ novo binário, não inferidos do código nem do APK LAB. Não publicar artefato.
 Próximos passos: concluir CI, configurar identidade candidata isolada, executar
 sandbox/Firestore e roteiro físico, conferir evidências de autorização dos canais.
 Distribuição segue bloqueada por essas lacunas; versão oficial preservada.
+
+### Resultado final desta etapa
+
+Commit de implementação: `a1cd34792f65f44ade64be6b215fa625d6ea66e6`.
+[CI 40684071278](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40684071278)
+concluído com **success** no código acima: backend, entitlement,
+android-configuration e Flutter aprovados. Suíte Flutter completa,
+`flutter analyze` e política opt-in experimental aprovados. APK **skipped**,
+conforme a guarda existente; não houve compilação Android nova.
+Os oito testes locais do endpoint também passaram. Este adendo é documental
+com `[skip ci]`; não reexecutar a suíte verde por ele.
+
+Concluído: histórico/CI revisados, base verde preservada, LAB 714 analisada,
+branch separada, resposta de datas corrigida com regressões, CI final aprovado
+e pendências registradas. Não concluído: APK candidato, homologação física,
+compra sandbox E2E, concorrência Firestore e notificações automáticas.
