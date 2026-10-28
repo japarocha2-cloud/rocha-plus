@@ -131,6 +131,30 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     await assert.rejects(run(), /ledger document identity mismatch/);
     assert.deepEqual([...rows], before);
   });
+  await t.test('reviewed claim with wrong currency or unapproved plan fails closed', async () => {
+    for (const change of [{currency: 'USD'}, {plan: 'weekly'},
+      {amountCents: 0}, {merchantId: 'not-numeric'}]) {
+      rows = initial();
+      rows.set('payment_claims/123', {
+        ...rows.get('payment_claims/123'), ...change,
+      });
+      const before = structuredClone([...rows]);
+      await assert.rejects(run(), /reviewed UID and plan required|match reviewed claim/);
+      assert.deepEqual([...rows], before);
+    }
+  });
+  await t.test('existing reviewed grant is idempotent even after account trial expires', async () => {
+    rows = initial();
+    rows.set('entitlements/account-1', {
+      trialUntil: '2025-01-01T00:00:00Z', paidUntil: null,
+    });
+    const first = await run();
+    const second = await run();
+    assert.equal(first.paidUntil, second.paidUntil);
+    assert.equal(second.previouslyRecorded, true);
+    assert.equal(rows.get('entitlements/account-1').trialUntil,
+      '2025-01-01T00:00:00Z');
+  });
   await t.test('unreviewed or missing claim cannot mutate ledger or entitlement', async () => {
     for (const claim of [null, {uid: 'account-1', reviewed: false, plan: 'monthly'}]) {
       rows = initial();
