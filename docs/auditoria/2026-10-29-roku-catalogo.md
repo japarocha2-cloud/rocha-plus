@@ -46,3 +46,19 @@ Configurar os serviços compatíveis de pareamento e assinatura; instalar o ZIP
 via sideload na TV; validar navegação, favoritos, vídeo/áudio contínuos,
 reconexão e expiração. Revisar os 114 positivos fora do filtro com evidência de
 formato e compatibilidade. Publicação de loja e instalação física não realizadas.
+
+## Encerramento comprovado
+
+- Código: `3b83f6b1357c69559c3539ec13f2b60f821723f0`; PR #43 em draft.
+- CI: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40973222655
+  concluída com sucesso: seis testes, reprodução exata do exportador e compilação
+  BrighterScript 0.69.0 sem diagnóstico de erro.
+- Artefato: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40973222655/artifacts/12941750554
+- ZIP Roku: `RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip`.
+- SHA-256 do ZIP Roku: `bad88e91041bd5b4287be4e7d9eee5797d6db6e659edcefa18226c42ec167368`.
+- SHA-256 do contêiner de artefato: `c50df344ca50a1601279162996dbd72c3029a4f66e0fdba56c504e7078522a5c`.
+- Artefato baixado: digest externo e SHA256SUMS interno conferidos; integridade
+  ZIP, manifesto 0.6.1, 395 entradas carregáveis, 393 pendências e referência do
+  loader ao novo snapshot conferidos. `auth.json` mantém os endpoints vazios.
+- Nenhuma instalação na TV nem teste de reprodução Roku realizado. Próximo passo:
+  configurar os serviços existentes e instalar o pacote para homologação física.
