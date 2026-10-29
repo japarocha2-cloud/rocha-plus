@@ -1,0 +1,34 @@
+name: Roku current benchmark catalogue
+on:
+  push:
+    branches: [feat/roku-current-catalog-20261029]
+    paths: ['platforms/roku/**', 'tools/import_roku_benchmark.py', 'tools/test_roku_benchmark.py', '.github/workflows/roku-benchmark-catalog.yml']
+permissions:
+  contents: read
+jobs:
+  roku-test-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check provenance, catalogue policy and preserved IDs
+        run: |
+          python3 tools/import_roku_benchmark.py --check
+          python3 -m unittest discover -s tools -p test_roku_benchmark.py -v
+      - name: Compile native Roku test package
+        run: npx --yes --package brighterscript@0.69.0 bsc --project platforms/roku/bsconfig.json
+      - name: Identify test package and include evidence
+        run: |
+          mv build/roku/RochaPlus-Roku.zip build/roku/RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip
+          cp platforms/roku/catalog/benchmark-manifest.json build/roku/
+          cp docs/auditoria/2026-10-29-roku-catalogo.md build/roku/
+          cd build/roku
+          sha256sum RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-Roku-0.6.1-Catalogo395-Teste
+          path: build/roku/
+          if-no-files-found: error
