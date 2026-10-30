@@ -8,6 +8,11 @@ on:
       - 'tools/*tv*fixtures*.py'
       - 'tools/*shared_tv*.py'
       - 'branding/lab_candidates.json'
+      - 'docs/tv/roku-android-parity-12.json'
+      - 'lib/src/live/tv_parity_lab.dart'
+      - 'lib/src/screens/lab_entry_screen.dart'
+      - 'test/tv_parity_lab_test.dart'
+      - 'pubspec.yaml'
       - '.github/workflows/tv-shared-examples.yml'
   workflow_dispatch:
 permissions:
@@ -39,6 +44,14 @@ jobs:
           assert len(records)>0, "No HTTPS candidates available"
           print(f"{len(records)} experimental examples prepared identically")
           PY
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Test Android TV parity asset and loader
+        run: |
+          flutter pub get
+          flutter test test/tv_parity_lab_test.dart
+          dart analyze lib/src/live/tv_parity_lab.dart test/tv_parity_lab_test.dart
       - name: Upload isolated examples (not app packages)
         uses: actions/upload-artifact@v4
         with:
