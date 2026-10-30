@@ -14,13 +14,17 @@ class TvParityLab {
         parsed['channels'] is! List) {
       throw const FormatException('Invalid experimental TV catalogue');
     }
+    if ((parsed['channels'] as List).length != 12) {
+      throw const FormatException('LAB must contain 12 channels');
+    }
     final channels = <Channel>[];
     final urls = <String>{};
     for (final entry in parsed['channels'] as List) {
       if (entry is! Map<String, dynamic> ||
           entry['production_approved'] != false ||
           entry['roku_result'] != 'not_tested' ||
-          entry['android_tv_result'] != 'not_tested') {
+          entry['android_tv_result'] != 'not_tested' ||
+          entry['status'] != 'experimental_not_physically_verified') {
         throw const FormatException('Unsafe LAB channel');
       }
       final url = entry['url'];
