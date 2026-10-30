@@ -54,6 +54,7 @@ jobs:
         run: |
           flutter create --platforms=android --project-name=rocha_plus "$RUNNER_TEMP/tv-scaffold"
           cp -R "$RUNNER_TEMP/tv-scaffold/android" android
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
           python3 tools/configure_android.py
           python3 tools/lab/configure.py
       - name: Test Android TV parity asset and loader
