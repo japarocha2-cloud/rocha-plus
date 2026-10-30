@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../live/channel.dart';
 import '../live/lab_catalog.dart';
 import '../live/lab_runtime.dart';
+import '../live/tv_parity_lab.dart';
 import 'feature_lab_screen.dart';
 import 'player_lab_screen.dart';
 
@@ -37,7 +38,7 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
 
   void _reload() {
     _configureFeatures();
-    final loading = loadLabCatalog().catchError((
+    final loading = (const bool.fromEnvironment('ROCHA_TV_PARITY_12') ? TvParityLab.load() : loadLabCatalog()).catchError((
       Object error,
       StackTrace stack,
     ) {
