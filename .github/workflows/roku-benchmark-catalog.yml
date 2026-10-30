@@ -58,7 +58,7 @@ jobs:
           config=json.loads(path.read_text())
           assert config["enabled"] is False
           config["enabled"]=True
-          path.write_text(json.dumps(config,indent=2)+"\\n")
+          path.write_text(json.dumps(config,indent=2)+"\n")
           PY
           npx --yes --package brighterscript@0.69.0 bsc --project platforms/roku/bsconfig.json
           mv build/roku/RochaPlus-Roku.zip build/roku/RochaPlus-Roku-0.6.1-Amostra12-LAB.zip
