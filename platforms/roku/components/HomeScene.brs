@@ -100,6 +100,14 @@ end function
 sub loadApprovedCatalogue()
   m.experimental = true
   raw = ReadAsciiFile("pkg:/catalog/benchmark-test.json")
+  ' A separate development package may opt into the 12-channel fixture.
+  ' Production/default behavior keeps the full existing benchmark catalog.
+  sampleConfig = ParseJson(ReadAsciiFile("pkg:/config/lab-sample.json"))
+  if type(sampleConfig) = "roAssociativeArray" then
+    if sampleConfig.enabled = true and sampleConfig.mode = "isolated_12" then
+      raw = ReadAsciiFile("pkg:/catalog/isolated-sample-12.json")
+    end if
+  end if
   parsed = ParseJson(raw)
   if parsed = invalid then return
   if type(parsed) <> "roArray" then return
