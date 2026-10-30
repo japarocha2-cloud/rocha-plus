@@ -1,0 +1,49 @@
+name: TV shared examples (experimental)
+on:
+  push:
+    branches:
+      - homolog/technical-candidate-20261028
+    paths:
+      - 'tools/*tv*catalog*.py'
+      - 'tools/*tv*fixtures*.py'
+      - 'tools/*shared_tv*.py'
+      - 'branding/lab_candidates.json'
+      - '.github/workflows/tv-shared-examples.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tv-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run isolated TV tests
+        run: |
+          PYTHONPATH=tools python -m unittest discover -s tools -p 'test_*tv*.py' -v
+      - name: Export identical Roku and Android TV examples
+        run: |
+          python tools/export_shared_tv_examples.py --limit 12
+          python tools/prepare_tv_channel_fixtures.py --limit 12
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("build/tv-shared-test")
+          roku=(root/"roku/catalog-test.json").read_bytes()
+          android=(root/"android-tv/catalog-test.json").read_bytes()
+          assert roku==android, "Roku/Android TV example parity failed"
+          records=json.loads(roku)
+          assert all(x["approved"] is False and x["quarantined"] is True for x in records)
+          assert len(records)>0, "No HTTPS candidates available"
+          print(f"{len(records)} experimental examples prepared identically")
+          PY
+      - name: Upload isolated examples (not app packages)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-tv-shared-examples
+          path: |
+            build/tv-shared-test/
+            build/tv-channel-fixtures/
+          retention-days: 14
