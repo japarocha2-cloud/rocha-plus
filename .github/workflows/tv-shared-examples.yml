@@ -20,6 +20,7 @@ permissions:
 jobs:
   tv-examples:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -47,16 +48,35 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.9'
+          cache: true
+      - name: Generate isolated Android TV LAB scaffold
+        run: |
+          flutter create --platforms=android --project-name=rocha_plus "$RUNNER_TEMP/tv-scaffold"
+          cp -R "$RUNNER_TEMP/tv-scaffold/android" android
+          python3 tools/configure_android.py
+          python3 tools/lab/configure.py
       - name: Test Android TV parity asset and loader
         run: |
           flutter pub get
-          flutter test test/tv_parity_lab_test.dart
-          dart analyze lib/src/live/tv_parity_lab.dart test/tv_parity_lab_test.dart
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
+          flutter analyze
+          flutter test
       - name: Build isolated Android TV debug APK (12 channels, no release)
         run: |
           flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true --dart-define=ROCHA_TV_PARITY_12=true
           mkdir -p build/tv-parity-apk
           cp build/app/outputs/flutter-apk/app-debug.apk build/tv-parity-apk/RochaPlus-AndroidTV-Paridade12-LAB-debug.apk
+          cp pubspec.lock build/tv-parity-apk/
+          cp build/lab/vlc-*.json build/tv-parity-apk/
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs build/tv-parity-apk/*.apk | tee build/tv-parity-apk/signature.txt
+          "$BUILD_TOOLS/aapt" dump badging build/tv-parity-apk/*.apk | tee build/tv-parity-apk/badging.txt
+          grep -q "package: name='com.rochaplus.app.lab'" build/tv-parity-apk/badging.txt
+          grep -q "application-debuggable" build/tv-parity-apk/badging.txt
+          grep -q "android.intent.category.LEANBACK_LAUNCHER" <("$BUILD_TOOLS/aapt" dump xmltree build/tv-parity-apk/*.apk AndroidManifest.xml)
           cd build/tv-parity-apk
           sha256sum RochaPlus-AndroidTV-Paridade12-LAB-debug.apk > SHA256SUMS
       - name: Upload Android TV debug APK (LAB only)
