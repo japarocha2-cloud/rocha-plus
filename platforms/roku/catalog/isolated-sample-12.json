@@ -1,0 +1,101 @@
+[
+  {
+    "id": "51ae6e35870aa2bc",
+    "name": "Rede Globo (1080p)",
+    "url": "https://cdn-sp2.satlabscloud.com.br/RBS_HD/index.m3u8?token=Mw3YKkujzIi9hYQJ6kAQjQvly2VdBNuGPjHOq",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.07,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/O02TF2r.png",
+    "roku_playback_verified": false
+  },
+  {
+    "id": "7a7a6d5684e6cdba",
+    "name": "SBT News (720p)",
+    "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8",
+    "group": "Notícias",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 2.6,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg",
+    "roku_playback_verified": false
+  },
+  {
+    "id": "12817064bb9bd5b3",
+    "name": "Gospel Cartoon (360p)",
+    "url": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8",
+    "group": "Infantil",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 0.97,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/yxjPno5.png",
+    "roku_playback_verified": false
+  },
+  {
+    "id": "c4dc51617bef8577",
+    "name": "ACC Digital Network (1080p)",
+    "url": "https://raycom-accdn-firetv.amagi.tv/playlist.m3u8",
+    "group": "Esportes",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.72,
+      "source_playlist": "catalogo_rocha_sports.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/V6Kaqha.png",
+    "roku_playback_verified": false
+  },
+  {
+    "id": "82b15c897f2566f4",
+    "name": "+MaisUm (720p)",
+    "url": "https://stream.ichibansys.com:3230/hybrid/play.m3u8",
+    "group": "Geral",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 1.76,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "roku_playback_verified": false
+  }
+]
