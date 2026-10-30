@@ -38,7 +38,8 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
 
   void _reload() {
     _configureFeatures();
-    final loading = (const bool.fromEnvironment('ROCHA_TV_PARITY_12') ? TvParityLab.load() : loadLabCatalog()).catchError((
+    const paritySample = bool.fromEnvironment('ROCHA_TV_PARITY_12');
+    final loading = (paritySample ? TvParityLab.load() : loadLabCatalog()).catchError((
       Object error,
       StackTrace stack,
     ) {
@@ -52,7 +53,7 @@ class _LabCatalogueLoaderState extends State<_LabCatalogueLoader> {
 
   Future<void> _configureFeatures() async {
     final configuration = await LabRuntime.configuration();
-    if (mounted && configuration['features'] == true) {
+    if (mounted && !const bool.fromEnvironment('ROCHA_TV_PARITY_12') && configuration['features'] == true) {
       setState(() => _features = true);
     }
   }
