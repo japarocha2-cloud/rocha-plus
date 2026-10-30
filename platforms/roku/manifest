@@ -2,7 +2,7 @@ title=Rocha+
 subtitle=TV aberta, conta e assinatura Rocha+
 major_version=0
 minor_version=6
-build_version=0
+build_version=1
 ui_resolutions=fhd
 splash_screen_color=#080713
 
@@ -11,3 +11,4 @@ mm_icon_focus_fhd=pkg:/images/channel-icon-fhd-v2.jpg
 
 splash_screen_hd=pkg:/images/splash-hd-v2.jpg
 splash_screen_fhd=pkg:/images/splash-hd-v2.jpg
+

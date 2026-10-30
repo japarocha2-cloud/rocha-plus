@@ -96,17 +96,29 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   return true
 end function
 
-' Only catalog-approved entries are counted. No source is silently added to the UI.
+' Isolated test snapshot. External AV detection is not Roku playback approval.
 sub loadApprovedCatalogue()
-  m.experimental = false
-  raw = ReadAsciiFile("pkg:/catalog/approved.json")
+  m.experimental = true
+  raw = ReadAsciiFile("pkg:/catalog/benchmark-test.json")
+  ' A separate development package may opt into the 12-channel fixture.
+  ' Production/default behavior keeps the full existing benchmark catalog.
+  sampleConfig = ParseJson(ReadAsciiFile("pkg:/config/lab-sample.json"))
+  if type(sampleConfig) = "roAssociativeArray" then
+    if sampleConfig.enabled = true and sampleConfig.mode = "isolated_12" then
+      raw = ReadAsciiFile("pkg:/catalog/isolated-sample-12.json")
+    end if
+  end if
   parsed = ParseJson(raw)
   if parsed = invalid then return
   if type(parsed) <> "roArray" then return
   for each item in parsed
     if type(item) = "roAssociativeArray" then
-      isApproved = (item.approved = true and item.status = "approved")
-      if isApproved and item.blocked <> true and item.quarantined <> true then
+      isCandidate = false
+      if item.status = "benchmark_av_detected" and type(item.evidence) = "roAssociativeArray"
+        evidence = item.evidence
+        isCandidate = (evidence.detection = "video_audio" and evidence.report = "Benchmark_RochaPlus_Catalogo.csv" and evidence.source_sha256 = "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914")
+      end if
+      if isCandidate and item.blocked <> true and item.quarantined <> true then
         if type(item.url) = "roString" and type(item.name) = "roString" then
           if (left(item.url, 8) = "https://") and instr(1, lcase(item.url), ".m3u8") > 0 then
             m.channels.push(item)
@@ -118,7 +130,7 @@ sub loadApprovedCatalogue()
   end for
 end sub
 
-' Roku native Video node; playback only after explicit selection of HTTPS HLS approved channel.
+' Roku native Video node; explicit selection of an HTTPS HLS test candidate.
 sub renderChannelState()
   panel = m.top.findNode("channelPanel")
   panel.visible = (m.area = 3 and not m.playing)
@@ -292,3 +304,4 @@ sub stopIntro()
  m.top.findNode("introHelp").visible = false
  m.top.setFocus(true)
 end sub
+

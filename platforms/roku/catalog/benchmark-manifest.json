@@ -1,0 +1,18 @@
+{
+  "source": "Benchmark_RochaPlus_Catalogo.csv",
+  "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+  "source_rows": 788,
+  "detections": {
+    "video_audio": 509,
+    "sem_sinal": 270,
+    "audio_apenas": 4,
+    "tempo_esgotado": 4,
+    "video_apenas": 1
+  },
+  "runtime_test_channels": 395,
+  "pending_rows": 393,
+  "positive_pending_rows": 114,
+  "roku_playback_verified": false,
+  "public_release_approved": false,
+  "baseline_commit": "3ac4cb0090cea8f8d291896504af63f4a7dc025f"
+}

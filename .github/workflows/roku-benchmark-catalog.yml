@@ -1,0 +1,71 @@
+name: Roku current benchmark catalogue
+on:
+  push:
+    branches: [feat/roku-current-catalog-20261029]
+    paths: ['platforms/roku/**', 'tools/import_roku_benchmark.py', 'tools/test_roku_benchmark.py', '.github/workflows/roku-benchmark-catalog.yml']
+permissions:
+  contents: read
+jobs:
+  roku-test-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check provenance, catalogue policy and preserved IDs
+        run: |
+          python3 tools/import_roku_benchmark.py --check
+          python3 -m unittest discover -s tools -p test_roku_benchmark.py -v
+      - name: Compile native Roku test package
+        run: npx --yes --package brighterscript@0.69.0 bsc --project platforms/roku/bsconfig.json
+      - name: Identify test package and include evidence
+        run: |
+          mv build/roku/RochaPlus-Roku.zip build/roku/RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip
+          cp platforms/roku/catalog/benchmark-manifest.json build/roku/
+          cp docs/auditoria/2026-10-29-roku-catalogo.md build/roku/
+          cd build/roku
+          sha256sum RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip > SHA256SUMS
+      - name: Validate isolated 12-channel sample
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("platforms/roku")
+          full=json.loads((root/"catalog/benchmark-test.json").read_text())
+          sample=json.loads((root/"catalog/isolated-sample-12.json").read_text())
+          config=json.loads((root/"config/lab-sample.json").read_text())
+          assert config["enabled"] is False
+          assert config["mode"] == "isolated_12"
+          assert len(sample) == 12
+          full_by_url={x["url"]:x for x in full}
+          assert len({x["url"] for x in sample}) == 12
+          for entry in sample:
+              assert entry["url"] in full_by_url
+              assert entry["id"] == full_by_url[entry["url"]]["id"]
+              assert entry["approved"] is False
+              assert entry["status"] == "benchmark_av_detected"
+              assert entry["evidence"]["detection"] == "video_audio"
+          print("Sample: 12 independent channels, IDs preserved, default disabled")
+          PY
+      - name: Build separate Roku sideload ZIP with sample enabled
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path("platforms/roku/config/lab-sample.json")
+          config=json.loads(path.read_text())
+          assert config["enabled"] is False
+          config["enabled"]=True
+          path.write_text(json.dumps(config,indent=2)+"\n")
+          PY
+          npx --yes --package brighterscript@0.69.0 bsc --project platforms/roku/bsconfig.json
+          mv build/roku/RochaPlus-Roku.zip build/roku/RochaPlus-Roku-0.6.1-Amostra12-LAB.zip
+          cd build/roku
+          sha256sum RochaPlus-Roku-0.6.1-Amostra12-LAB.zip >> SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-Roku-0.6.1-Catalogo395-Teste
+          path: build/roku/
+          if-no-files-found: error
