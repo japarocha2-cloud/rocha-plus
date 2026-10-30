@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-30",
+  "android": {
+    "source_commit": "4fba22f4ce2333dbfc1bc319f180baf08e7d5490",
+    "ci_run": 41048599655,
+    "ci_conclusion": "success",
+    "flutter_version": "3.47.9",
+    "flutter_tests_passed": 232,
+    "python_tv_tests_passed": 9,
+    "analysis": "No issues found",
+    "flags": {
+      "ROCHA_LAB_ONLY": true,
+      "ROCHA_TV_PARITY_12": true
+    },
+    "artifact_id": 12974306297,
+    "verification": {
+      "file": "RochaPlus-AndroidTV-Paridade12-LAB-debug.apk",
+      "bytes": 311840853,
+      "sha256": "39d19842f0de3d75c55586f7b1d267ff08fc78f0ee9c4d767b4a59149a0a6486",
+      "zip_crc_ok": true,
+      "package": "com.rochaplus.app.lab",
+      "debuggable": true,
+      "signature_v2_verified_by_ci_apksigner": true,
+      "signer": "Android Debug",
+      "certificate_sha256": "0940696e89f238040567406830cce312298ea33a127dad472707f34d8d67bb55",
+      "abis": {
+        "arm64-v8a": {
+          "elf_machine": 183,
+          "bits": 64
+        },
+        "armeabi-v7a": {
+          "elf_machine": 40,
+          "bits": 32
+        },
+        "x86_64": {
+          "elf_machine": 62,
+          "bits": 64
+        }
+      },
+      "parity_count": 12,
+      "packaged_parity_asset_matches_source": true,
+      "original_branding_preserved": {
+        "cast-reference.png": "a3fe1515a0b02658751d69fe309f1b3b59385c8d761df1707c574c5269ee70bf",
+        "dashboard-reference.png": "2fef70634394b3718e7398b81cde6bf100694f41ad45faf9b139885527ea7a15",
+        "home-tv-galaxy.png": "7086166ac171296ebdafa5baaefea8c6532ad5b4d96a751e2db454a0b3a6c429",
+        "intro-rocha-plus.mp4": "38ab41bdd22fef77aa9f450162c6e7e6ccdcb6d49f8436fb302f12c23b340b9f",
+        "rocha-wordmark-antennas.webp": "dbaeb34edfe535a566e302ee1ffbb295356738f1621e2fe60781f4fe454eac06",
+        "rocha_plus_icon.webp": "2f5831c1e5b7ab2e20ce279d46b59c4bd09408ae4835116dfc07be74e21ac459"
+      },
+      "physical_execution": "not_tested"
+    }
+  },
+  "roku": {
+    "ci_run": 40997693193,
+    "ci_conclusion": "success",
+    "artifact_id": 12951868037,
+    "compiler": "brighterscript 0.69.0",
+    "tests_passed": 6,
+    "evidence_reused_no_unchanged_build_rerun": true,
+    "verification": {
+      "commit": "acf04b7fa53b81f19d74a4398169c9b2d441f8fc",
+      "packages": [
+        {
+          "file": "RochaPlus-Roku-0.6.1-Amostra12-LAB.zip",
+          "sha256": "0e9c51cc3192ba3b4a6581136197799a09a3d3cfc9891975c9e26be7228a41f5",
+          "zip_crc_ok": true,
+          "full_count": 395,
+          "sample_count": 12,
+          "sample_enabled": true,
+          "all_unapproved": true,
+          "android_roku_same_ids_and_urls": true,
+          "compiler_generated_differences": [
+            "XML formatting/script ordering and bslib injection; semantic XML nodes and attributes verified unchanged",
+            "source/bslib.brs: compiler runtime"
+          ],
+          "xml_semantics_preserved": true,
+          "unexpected_source_mismatches": []
+        },
+        {
+          "file": "RochaPlus-Roku-0.6.1-Catalogo395-Teste.zip",
+          "sha256": "68334b09260b58ebdd5e3b82f0e8f891812fb9a382fb2d15ef6e0eae43299ff6",
+          "zip_crc_ok": true,
+          "full_count": 395,
+          "sample_count": 12,
+          "sample_enabled": false,
+          "all_unapproved": true,
+          "android_roku_same_ids_and_urls": true,
+          "compiler_generated_differences": [
+            "XML formatting/script ordering and bslib injection; semantic XML nodes and attributes verified unchanged",
+            "source/bslib.brs: compiler runtime"
+          ],
+          "xml_semantics_preserved": true,
+          "unexpected_source_mismatches": []
+        }
+      ]
+    }
+  },
+  "physical_tests": "not_executed",
+  "distribution_approved": false
+}
