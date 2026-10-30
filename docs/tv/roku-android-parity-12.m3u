@@ -1,0 +1,25 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="51ae6e35870aa2bc" tvg-logo="https://i.imgur.com/O02TF2r.png" group-title="TV aberta",Rede Globo (1080p)
+https://cdn-sp2.satlabscloud.com.br/RBS_HD/index.m3u8?token=Mw3YKkujzIi9hYQJ6kAQjQvly2VdBNuGPjHOq
+#EXTINF:-1 tvg-id="7a7a6d5684e6cdba" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg" group-title="Notícias",SBT News (720p)
+https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8
+#EXTINF:-1 tvg-id="12817064bb9bd5b3" tvg-logo="https://i.imgur.com/yxjPno5.png" group-title="Infantil",Gospel Cartoon (360p)
+https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8
+#EXTINF:-1 tvg-id="c4dc51617bef8577" tvg-logo="https://i.imgur.com/V6Kaqha.png" group-title="Esportes",ACC Digital Network (1080p)
+https://raycom-accdn-firetv.amagi.tv/playlist.m3u8
+#EXTINF:-1 tvg-id="82b15c897f2566f4" tvg-logo="" group-title="Geral",+MaisUm (720p)
+https://stream.ichibansys.com:3230/hybrid/play.m3u8
+#EXTINF:-1 tvg-id="1362e59e24bdda60" tvg-logo="https://i.imgur.com/IkZfa4j.png" group-title="TV aberta",SBT Interior (720p)
+https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8
+#EXTINF:-1 tvg-id="27675dcd97034e3a" tvg-logo="https://i.imgur.com/tc1ALuu.png" group-title="TV aberta",SBT Nacional (1080p)
+https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8
+#EXTINF:-1 tvg-id="de8339b635cf0bf2" tvg-logo="https://i.imgur.com/D8R0Af4.png" group-title="TV aberta",RedeTV! Parana
+https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8
+#EXTINF:-1 tvg-id="49cbfdf69c75279e" tvg-logo="https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png" group-title="TV aberta",Rede TV! Mais
+https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8
+#EXTINF:-1 tvg-id="06d0174691512ae8" tvg-logo="https://i.imgur.com/noqGfuy.png" group-title="TV aberta",TV Brasil Oeste (720p)
+https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8
+#EXTINF:-1 tvg-id="234129f5fff04bf0" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/CNN_Brasil.svg/960px-CNN_Brasil.svg.png" group-title="Notícias",CNN Brasil (1080p)
+https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8
+#EXTINF:-1 tvg-id="8ba09786771f6cea" tvg-logo="https://i.imgur.com/KgetM8j.png" group-title="TV aberta",Adesso TV (720p)
+https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8
