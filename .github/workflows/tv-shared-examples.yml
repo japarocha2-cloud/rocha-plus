@@ -52,6 +52,20 @@ jobs:
           flutter pub get
           flutter test test/tv_parity_lab_test.dart
           dart analyze lib/src/live/tv_parity_lab.dart test/tv_parity_lab_test.dart
+      - name: Build isolated Android TV debug APK (12 channels, no release)
+        run: |
+          flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true --dart-define=ROCHA_TV_PARITY_12=true
+          mkdir -p build/tv-parity-apk
+          cp build/app/outputs/flutter-apk/app-debug.apk build/tv-parity-apk/RochaPlus-AndroidTV-Paridade12-LAB-debug.apk
+          cd build/tv-parity-apk
+          sha256sum RochaPlus-AndroidTV-Paridade12-LAB-debug.apk > SHA256SUMS
+      - name: Upload Android TV debug APK (LAB only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-android-tv-parity12-lab-debug
+          path: build/tv-parity-apk/
+          retention-days: 14
+          if-no-files-found: error
       - name: Upload isolated examples (not app packages)
         uses: actions/upload-artifact@v4
         with:
