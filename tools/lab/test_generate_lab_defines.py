@@ -20,7 +20,8 @@ class LabDefinesTests(unittest.TestCase):
         self.assertEqual(result["ROCHA_ENTITLEMENT_URL"], "")
         self.assertEqual(result["ROCHA_FIREBASE_PROJECT_ID"], "demo-rocha-sandbox")
         self.assertEqual(result["ROCHA_PAYMENTS_ENABLED"], "false")
-        self.assertTrue(result["ROCHA_ENTITLEMENT_URL"].startswith("http://127.0.0.1:5001/"))
+        self.assertEqual(result["ROCHA_LAB_TRIAL_EXPIRY_DEMO"], "true")
+        self.assertEqual(result["ROCHA_LAB_EMULATOR_ONLY"], "true")
 
     def test_no_external_backend(self):
         for change in (
