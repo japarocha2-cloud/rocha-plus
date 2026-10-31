@@ -14,6 +14,7 @@ def generate(config):
     validate(config)
     return {
         "ROCHA_LAB_ONLY": "true",
+        "ROCHA_LAB_TRIAL_EXPIRY_DEMO": "true",
         "ROCHA_LAYOUT_PREVIEW": "false",
         "ROCHA_EXPERIMENTAL_SUBSCRIPTIONS": "true",
         "ROCHA_ENTITLEMENT_URL": config["entitlementUrl"],
