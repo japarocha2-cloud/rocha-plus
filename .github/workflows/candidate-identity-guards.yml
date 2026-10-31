@@ -1,0 +1,34 @@
+name: Rocha+ Candidate Identity Guards
+on:
+  push:
+    branches:
+      - work/candidate-build-guard-20261031
+    paths:
+      - 'tools/candidate/prepare_candidate.py'
+      - 'tools/candidate/identity.json'
+      - 'tools/candidate/test_candidate_identity_guards.py'
+      - '.github/workflows/candidate-identity-guards.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity-guards:
+    name: Candidate identity isolation (no secrets)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch under test
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run six isolated identity regression tests
+        run: python3 -m unittest -v tools/candidate/test_candidate_identity_guards.py
+      - name: Summarize
+        if: success()
+        run: |
+          echo 'Candidate identity guards: PASS (six unit tests only).' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No APK build, Firebase authentication, secret access or physical validation performed.' >> "$GITHUB_STEP_SUMMARY"
