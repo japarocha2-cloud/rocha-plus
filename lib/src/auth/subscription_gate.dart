@@ -20,6 +20,7 @@ class SubscriptionGate extends StatefulWidget {
   final Duration verificationTimeout;
   final Future<void> Function()? stopRemotePlayback;
   final PlaybackPermission? playbackPermission;
+  final bool showSubscriptionActions;
 
   const SubscriptionGate({
     super.key,
@@ -31,6 +32,7 @@ class SubscriptionGate extends StatefulWidget {
     this.verificationTimeout = const Duration(seconds: 12),
     this.stopRemotePlayback,
     this.playbackPermission,
+    this.showSubscriptionActions = true,
   });
 
   @override
@@ -196,7 +198,7 @@ class _SubscriptionGateState extends State<SubscriptionGate>
               onPressed: _checking ? null : _refresh,
               child: const Text('Verificar novamente'),
             ),
-            TextButton.icon(
+            if (widget.showSubscriptionActions) TextButton.icon(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => SubscriptionScreen(accountUid: widget.uid),
@@ -205,7 +207,8 @@ class _SubscriptionGateState extends State<SubscriptionGate>
               icon: const Icon(Icons.workspace_premium_outlined),
               label: const Text('Minha assinatura'),
             ),
-            TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
+            if (widget.showSubscriptionActions)
+              TextButton(onPressed: widget.onSignOut, child: const Text('Sair da conta')),
           ]),
         ),
       ),
