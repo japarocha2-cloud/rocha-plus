@@ -1,0 +1,42 @@
+name: Trial sandbox gate integration
+on:
+  push:
+    branches: [work/candidate-build-guard-20261031]
+    paths:
+      - 'qa/trial-sandbox/**'
+      - '.github/workflows/trial-sandbox-gate.yml'
+permissions:
+  contents: read
+jobs:
+  trial-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GCLOUD_PROJECT: demo-rocha-sandbox
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - name: Locked dependencies without lifecycle scripts
+        run: npm ci --prefix functions --ignore-scripts --no-audit --no-fund
+      - name: New emulator-to-gate contract evidence only
+        run: npx --yes firebase-tools@15.34.1 emulators:exec --only firestore --project demo-rocha-sandbox --config functions/sandbox/firebase.json 'node qa/trial-sandbox/emulator_decisions.cjs'
+      - run: flutter pub get
+      - name: Explicit opt-in only in this test process
+        run: flutter test qa/trial-sandbox/gate_emulator_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trial-sandbox-fictional-evidence
+          path: qa/trial-sandbox/evidence.json
+          if-no-files-found: error
