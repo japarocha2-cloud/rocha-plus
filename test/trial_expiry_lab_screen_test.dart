@@ -7,23 +7,20 @@ void main() {
   testWidgets('LAB fictitious trial grants, expires and restores locally',
       (tester) async {
     await tester.pumpWidget(const MaterialApp(home: TrialExpiryLabScreen()));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsOneWidget);
     expect(find.text('Minha assinatura'), findsNothing);
 
     await tester.tap(find.text('Simular vencimento'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsNothing);
     expect(find.text('TRIAL FICTÍCIO VENCIDO • LAB: reprodução bloqueada.'), findsOneWidget);
     expect(find.text('Minha assinatura'), findsNothing);
 
     await tester.tap(find.text('Simular trial válido'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsOneWidget);
     expect(find.text('Minha assinatura'), findsNothing);
@@ -34,20 +31,17 @@ void main() {
   testWidgets('LAB repeated expiry never opens real subscription actions',
       (tester) async {
     await tester.pumpWidget(const MaterialApp(home: TrialExpiryLabScreen()));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     for (var attempt = 0; attempt < 3; attempt++) {
       await tester.tap(find.text('Simular vencimento'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
       expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsNothing);
       expect(find.text('Minha assinatura'), findsNothing);
       expect(find.text('Sair da conta'), findsNothing);
 
       await tester.tap(find.text('Simular trial válido'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
       expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsOneWidget);
     }
 
@@ -61,15 +55,13 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       home: TrialExpiryLabScreen(playbackPermission: permission),
     ));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     final permit = permission.acquire();
     permit.ensureValid();
 
     await tester.tap(find.text('Simular vencimento'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(() => permit.ensureValid(), throwsStateError);
     expect(() => permission.acquire(), throwsStateError);
