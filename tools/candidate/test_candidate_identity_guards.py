@@ -48,6 +48,31 @@ class CandidateIdentityGuards(unittest.TestCase):
         with self.assertRaises(ValueError):
             candidate.firebase_configuration(fixture(web=False), FP)
 
+    def test_duplicate_android_registration_rejected(self):
+        data = fixture()
+        data["client"].append(data["client"][0].copy())
+        with self.assertRaisesRegex(ValueError, "missing or ambiguous"):
+            candidate.firebase_configuration(data, FP)
+
+    def test_missing_api_key_rejected(self):
+        data = fixture()
+        data["client"][0]["api_key"] = []
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            candidate.firebase_configuration(data, FP)
+
+    def test_wrong_firebase_app_project_number_rejected(self):
+        data = fixture()
+        data["client"][0]["client_info"]["mobilesdk_app_id"] = "1:999:android:wrong"
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            candidate.firebase_configuration(data, FP)
+
+    def test_multiple_web_oauth_clients_rejected(self):
+        data = fixture()
+        data["client"][0]["oauth_client"].append(
+            {"client_type": 3, "client_id": "other.apps.googleusercontent.com"})
+        with self.assertRaisesRegex(ValueError, "independent certificate"):
+            candidate.firebase_configuration(data, FP)
+
     def test_wrong_branch_and_event_rejected_before_key_access(self):
         with self.assertRaisesRegex(ValueError, "manual isolated branch"):
             candidate.prepare(Path("/tmp/candidate-scaffold"), Path("/tmp/candidate-private"),
