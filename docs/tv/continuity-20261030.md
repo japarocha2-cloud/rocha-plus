@@ -127,3 +127,14 @@ SHA-256, aparelho, canal e horário. Falha isolada não remove candidato.
 
 Somente após essas evidências classificar cada resultado físico; os candidatos
 permanecem experimentais e não aprovados para distribuição.
+
+
+## Retomada e confirmação independente — 31/10/2026
+
+- 🟢 Reconsultados via GitHub (somente leitura) os workflows Android `41048599655` e Roku `40997693193`: ambos status `completed`, conclusão `success`. Preservar testes verdes; não reexecutar.
+- 🟢 Android: artefato `12974306297` (`rocha-android-tv-parity12-lab-debug`), ainda listado como disponível, expiração informada 13/11/2026. A fonte do build permanece no commit `4fba22f4ce2333dbfc1bc319f180baf08e7d5490`.
+- 🟢 Roku: artefato `12951868037` (`RochaPlus-Roku-0.6.1-Catalogo395-Teste`), ainda listado como disponível, expiração informada 28/01/2027. Contém, segundo verificação anterior registrada, os ZIPs 395 candidatos e amostra LAB 12. Não reinterpretar o SHA-256 do ZIP de artefato como SHA-256 dos ZIPs internos.
+- 🟢 Conferido estado do PR #42: aberto, `draft=true`, `merged=false`.
+- 🟡 Confirmado que `docs/tv/physical-validation-20261030.md` continua com execução física **não executada**. O trabalho anterior gerou matriz/roteiro, não prova de áudio/vídeo em hardware. Falta indicar dispositivos de teste disponíveis para organizar coleta dirigida, mantendo separação Android/Roku.
+- 🔒 Esta retomada não realizou builds, instalação, novos testes, merge, publicação, cobrança, mudanças visuais, promoção de candidatos nem acesso a aparelhos reais. APK `com.rochaplus.app.lab` não é o APK independente `com.rochaplus.app.candidate`.
+- 👉 Próxima evidência útil: registros de execução do roteiro no(s) aparelho(s) físico(s), incluindo modelo, SHA-256 do pacote instalado, logs, canal, data/hora e observação. Somente nova regressão/alteração relacionada justifica reabrir testes verdes.
