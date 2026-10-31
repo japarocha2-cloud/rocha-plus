@@ -6,17 +6,20 @@ import '../live/lab_runtime.dart';
 import '../live/tv_parity_lab.dart';
 import 'feature_lab_screen.dart';
 import 'player_lab_screen.dart';
+import 'trial_expiry_lab_screen.dart';
 
 /// Test build entrypoint: no Firebase login, purchases, or catalogue mutation.
 /// This entry is compiled only by ROCHA_LAB_ONLY and never affects production.
 class RochaLabApp extends StatelessWidget {
   const RochaLabApp({super.key});
 
+  static const _expiryDemo = bool.fromEnvironment('ROCHA_LAB_TRIAL_EXPIRY_DEMO');
+
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Rocha+ Laboratório',
     theme: ThemeData.dark(useMaterial3: true),
-    home: const _LabCatalogueLoader(),
+    home: _expiryDemo ? const TrialExpiryLabScreen() : const _LabCatalogueLoader(),
   );
 }
 
