@@ -16,7 +16,8 @@ class LabDefinesTests(unittest.TestCase):
     def test_safe_defines(self):
         result = module.generate(valid())
         self.assertEqual(result["ROCHA_LAB_ONLY"], "true")
-        self.assertEqual(result["ROCHA_EXPERIMENTAL_SUBSCRIPTIONS"], "true")
+        self.assertEqual(result["ROCHA_EXPERIMENTAL_SUBSCRIPTIONS"], "false")
+        self.assertEqual(result["ROCHA_ENTITLEMENT_URL"], "")
         self.assertEqual(result["ROCHA_FIREBASE_PROJECT_ID"], "demo-rocha-sandbox")
         self.assertEqual(result["ROCHA_PAYMENTS_ENABLED"], "false")
         self.assertTrue(result["ROCHA_ENTITLEMENT_URL"].startswith("http://127.0.0.1:5001/"))
