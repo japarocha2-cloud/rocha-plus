@@ -8,6 +8,7 @@ on:
       - 'lib/src/screens/trial_expiry_lab_screen.dart'
       - 'lib/src/screens/lab_entry_screen.dart'
       - 'lib/src/auth/subscription_gate.dart'
+      - 'lib/src/auth/playback_permission.dart'
       - 'test/trial_expiry_lab_screen_test.dart'
       - '.github/workflows/lab-flutter-expiry-widget.yml'
   workflow_dispatch:
