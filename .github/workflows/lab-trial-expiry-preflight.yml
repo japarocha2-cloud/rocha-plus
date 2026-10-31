@@ -1,0 +1,27 @@
+name: LAB trial expiry preflight
+
+on:
+  push:
+    branches:
+      - lab/trial-expiry-isolated-20261031
+    paths:
+      - 'tools/lab/**'
+      - '.github/workflows/lab-trial-expiry-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-lab-config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate isolated LAB preflight
+        run: python -m unittest discover -s tools/lab -p 'test_trial_expiry_preflight.py' -v
