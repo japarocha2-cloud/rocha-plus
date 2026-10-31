@@ -40,3 +40,12 @@ Sem merge do PR #42/#44, publicação, pagamentos reais, alteração da versão 
 - 🟡 Commit `b386919`: roteiro de homologação física documentado em `docs/auditoria/2026-10-31-roteiro-fisico-candidata.md`. **Roteiro não significa execução física**.
 - 🔒 PR #42 e #44 permanecem sem merge; não publicar, não alterar Oficial, não cobrar de verdade. Teste físico nº 6 já verde permanece congelado.
 - 🟡 Próximo bloqueio: recuperar acesso privado à configuração Firebase/OAuth e à chave candidata após 04/11/2026, conferir identidade e assinatura e só então compilar/verificar o APK real.
+
+
+## Fechamento — cobertura do workflow de preflight
+
+- 🟢 Commit `e14924f`: workflow de testes da candidata passou a observar alterações em `.github/workflows/candidate-build-preflight.yml`, evitando lacuna de disparo em revisões futuras.
+- 🟢 CI Candidate Identity Guards #23 (`41220295319`): **success**.
+- 🟢 CI geral Subscription safety checks #129 (`41220295304`): **success**, incluindo Flutter, Backend, Android e Entitlement; APK experimental **skipped**.
+- 🟡 Pré-build manual na branch de homologação não executado nesta branch de trabalho; assinatura real, Firebase/OAuth privado e aparelho físico permanecem pendentes.
+- 🔒 PR #42 e #44 em draft, sem merge; não modificar a versão oficial, não publicar nem realizar pagamentos reais.
