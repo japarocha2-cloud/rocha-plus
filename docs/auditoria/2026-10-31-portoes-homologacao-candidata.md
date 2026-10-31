@@ -28,3 +28,11 @@ Escopo: branch de trabalho `work/candidate-build-guard-20261031` -> PR #44 -> `h
 
 ## Regras permanentes
 Sem merge do PR #42/#44, publicação, pagamentos reais, alteração da versão oficial ou mudança visual sem aprovação expressa. Resultados verdes anteriores não comprovam assinatura de APK real nem homologação física.
+
+
+## Continuidade — CI #125 e preparação física
+
+- 🟢 Commit `02c90d3`: testes simulados do verificador APK ampliados (versionName, ABI não permitida e ausência de SHA-1). CI Candidate Identity Guards #18 (`41219607566`) **success**; CI geral Subscription safety checks #125 (`41219607529`) **success**.
+- 🟡 Commit `b386919`: roteiro de homologação física documentado em `docs/auditoria/2026-10-31-roteiro-fisico-candidata.md`. **Roteiro não significa execução física**.
+- 🔒 PR #42 e #44 permanecem sem merge; não publicar, não alterar Oficial, não cobrar de verdade. Teste físico nº 6 já verde permanece congelado.
+- 🟡 Próximo bloqueio: recuperar acesso privado à configuração Firebase/OAuth e à chave candidata após 04/11/2026, conferir identidade e assinatura e só então compilar/verificar o APK real.
