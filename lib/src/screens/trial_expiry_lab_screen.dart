@@ -9,7 +9,9 @@ import '../auth/subscription_gate.dart';
 /// processes a payment or changes the device clock. It is not a production
 /// subscription verification and is reachable only from a LAB build.
 class TrialExpiryLabScreen extends StatefulWidget {
-  const TrialExpiryLabScreen({super.key});
+  const TrialExpiryLabScreen({super.key, this.playbackPermission});
+
+  final PlaybackPermission? playbackPermission;
 
   @override
   State<TrialExpiryLabScreen> createState() => _TrialExpiryLabScreenState();
@@ -18,7 +20,8 @@ class TrialExpiryLabScreen extends StatefulWidget {
 class _TrialExpiryLabScreenState extends State<TrialExpiryLabScreen> {
   bool _trialValid = true;
   int _revision = 0;
-  final PlaybackPermission _permission = PlaybackPermission();
+  late final PlaybackPermission _permission =
+      widget.playbackPermission ?? PlaybackPermission();
 
   Future<bool> _verify(String uid) async =>
       uid == 'lab-fictitious-user' && _trialValid;
