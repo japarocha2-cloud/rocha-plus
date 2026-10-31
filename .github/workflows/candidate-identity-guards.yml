@@ -11,6 +11,7 @@ on:
       - 'tools/candidate/build_preflight.py'
       - 'tools/candidate/test_build_preflight.py'
       - '.github/workflows/candidate-identity-guards.yml'
+      - '.github/workflows/candidate-build-preflight.yml'
   pull_request:
     branches:
       - homolog/technical-candidate-20261028
