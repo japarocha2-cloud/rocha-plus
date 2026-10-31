@@ -1,5 +1,9 @@
 """Regression tests for the LAB-only preflight; no network or SDK needed."""
 import importlib.util
+import json
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -55,6 +59,28 @@ class TrialExpiryPreflightTests(unittest.TestCase):
         for change in changes:
             with self.subTest(change=change), self.assertRaises(ValueError):
                 preflight.validate(valid() | change)
+
+    def test_cli_accepts_only_safe_configuration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "lab.json"
+            path.write_text(json.dumps(valid()), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(MODULE), str(path)],
+                capture_output=True, text=True, timeout=15,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout)["labPreflight"], "passed")
+
+    def test_cli_fails_closed_on_unsafe_configuration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "lab.json"
+            path.write_text(json.dumps(valid() | {"paymentsEnabled": True}), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(MODULE), str(path)],
+                capture_output=True, text=True, timeout=15,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertNotIn("rocha-plus-candidate", result.stderr)
 
     def test_unknown_keys_blocked(self):
         with self.assertRaises(ValueError):
