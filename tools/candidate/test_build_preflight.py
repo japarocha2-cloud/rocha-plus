@@ -1,5 +1,6 @@
 """Unit tests for the fail-closed candidate build preflight."""
 import unittest
+from unittest.mock import patch
 import build_preflight
 
 class BuildPreflightTests(unittest.TestCase):
@@ -17,6 +18,16 @@ class BuildPreflightTests(unittest.TestCase):
     def test_official_branch_rejected(self):
         with self.assertRaises(ValueError):
             build_preflight.check(self.valid() | {"GITHUB_REF": "refs/heads/main"})
+
+    def test_wrong_sha1_rejected_even_with_correct_length(self):
+        with patch.dict(build_preflight.SIGNER, {"SHA1": "0" * 40}):
+            with self.assertRaisesRegex(ValueError, "certificate mismatch"):
+                build_preflight.check(self.valid())
+
+    def test_wrong_sha256_rejected_even_with_correct_length(self):
+        with patch.dict(build_preflight.SIGNER, {"SHA256": "0" * 64}):
+            with self.assertRaisesRegex(ValueError, "certificate mismatch"):
+                build_preflight.check(self.valid())
 
     def test_subscription_enforcement_rejected(self):
         with self.assertRaises(ValueError):
