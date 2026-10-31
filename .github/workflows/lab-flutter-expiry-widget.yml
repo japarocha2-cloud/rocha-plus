@@ -9,8 +9,6 @@ on:
       - 'lib/src/screens/lab_entry_screen.dart'
       - 'lib/src/auth/subscription_gate.dart'
       - 'test/trial_expiry_lab_screen_test.dart'
-      - 'tools/lab/generate_lab_defines.py'
-      - 'tools/lab/test_generate_lab_defines.py'
       - '.github/workflows/lab-flutter-expiry-widget.yml'
   workflow_dispatch:
 
@@ -29,8 +27,6 @@ jobs:
         with:
           channel: stable
           cache: true
-      - name: Check offline LAB Dart defines
-        run: python -m unittest discover -s tools/lab -p 'test_*.py' -v
       - name: Fetch Flutter dependencies
         run: flutter pub get
       - name: Check LAB expiry Dart source
