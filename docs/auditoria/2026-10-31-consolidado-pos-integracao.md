@@ -109,3 +109,15 @@ Registro de continuidade em 31/10/2026. Este documento preserva conclusões veri
 - 🔴 **Ambiente privado não recuperado; assinatura bloqueada.** Confirmação histórica de localização/certificado não comprova acesso atual, custódia durável, backup cifrado ou restauração testada.
 - 🔒 Encerrada a investigação sem novas buscas nesta rodada. Não repetir tentativas concluídas sem fonte nova. Nenhum acesso privado, alteração de chave/alias/senha/certificado, compilação, teste ou publicação.
 - 👉 Retomada somente mediante nova fonte concreta: acesso efetivo ao ambiente original, referência verificável de tarefa/ambiente ainda preservado ou backup privado existente identificado pelo proprietário/custodiante. Não é necessário repetir a confirmação histórica. Antes de qualquer acesso aos arquivos privados, identificar os recursos e obter a autorização exigida pela missão de custódia.
+
+
+### Evidências fornecidas pelo proprietário — Firebase e arquivos locais (31/10/2026)
+
+- 🟢 Captura do console Firebase, Configurações do projeto: projeto `rocha-plus-candidate`, número `633579358750`, app Android `com.rochaplus.app.candidate` e suporte `rochaplus.app@gmail.com` visíveis. Evidência visual apresentada no chat, não inspeção remota direta por este executor.
+- 🟢 Captura de Authentication > Usuários: dois registros de usuários com provedor Google visíveis. Isso não comprova teste de login no APK candidato.
+- 🟢 Captura de Authentication > Método de login: provedor Google com status **ativado**. Não repetir a verificação inicial sem mudança/regressão; manter teste físico de login pendente.
+- 🟢 Proprietário informou ter baixado `google-services.json` no Windows e guardado o arquivo em pasta privada local dentro de Downloads. Conteúdo, integridade e integração ao runner ainda **não verificados**; não anexar ao Git, logs ou chat.
+- 🟡 Captura da pasta Downloads mostra arquivo com nome aparente `rocha-plus-candidate-0.1.0-candidate.3.apk` e ZIP relacionado. A existência visual **não comprova** pacote interno, assinatura, versão real, origem ou homologação. APK não foi anexado nem inspecionado por este executor; não instalar/publicar com base no nome.
+- 🔴 Custódia da chave privada original `candidate.p12`/`signing.json` e backup ainda sem acesso atual comprovado; não regenerar nem substituir certificado.
+- 👉 Próxima ação objetiva: receber somente o APK candidato existente, se disponibilizado pelo proprietário, para inspeção estática de metadados, ABIs e assinatura. Nunca solicitar senha ou chave privada no chat. Após análise, seguir apenas pendências não verdes.
+- 🔒 Esta atualização é documental, baseada em capturas e declarações do proprietário. Sem teste reexecutado, build, acesso a credenciais, alteração Firebase, merge, deploy, publicação, cobrança ou mudança de Oficial/LAB/PR #42.
