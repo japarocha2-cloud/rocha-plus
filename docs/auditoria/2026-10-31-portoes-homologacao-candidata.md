@@ -60,3 +60,13 @@ Sem merge do PR #42/#44, publicação, pagamentos reais, alteração da versão 
 - 🟡 A candidata padrão permanece com bloqueio por vencimento desligado; ensaio de expiração/gate depende de configuração sandbox isolada e expressamente aprovada, nunca produção nem pagamentos reais.
 - 🟡 `firebaseProvisioning: pending` permanece sem alteração até comprovação no ambiente privado. Assinatura real, APK e Android TV/Chromecast físicos continuam pendentes.
 - 🔒 Nenhuma autorização para merge, publicação, mudanças visuais/oficiais ou exposição de credenciais; testes verdes e teste físico nº 6 preservados.
+
+
+## Integração sandbox de trial e gate — CI 41222167987
+
+- 🟢 Commit `02593ee` (`02593ee34f8f987f98840adae0b035ce51840101`): criado ensaio integrado do Firestore Emulator até o endpoint e ao gate Flutter, com ativação experimental apenas no processo de teste.
+- 🟢 CI `Trial sandbox gate integration` (`41222167987`): job `trial-sandbox` concluído com **success**. Evidência automatizada cobre trial de 7 dias (604800000 ms), concessão única sob concorrência, negação no instante exato da expiração, bloqueio na rechecagem do gate, renovação fictícia, direitos independentes e estornos fictícios.
+- 🟢 Teste impede chamadas externas ao provedor; usa `demo-rocha-sandbox`, token fictício e respostas simuladas. Gate permanece desligado na candidata padrão. Verificações verdes anteriores preservadas.
+- 🟡 Este CI verifica contrato de respostas do endpoint/emulador consumidas pelo gate Flutter; **não** representa teste de rede real, pagamento, assinatura do APK ou execução física no Android TV/Chromecast.
+- 🟡 Pendências: Firebase/OAuth e assinatura privados, build/verify do APK candidato e homologação física, inclusive trial/expiração na candidata instalada.
+- 🔒 PRs #42/#44 verificados abertos e draft, sem merge. Nenhuma autorização para deploy, publicação, alteração visual ou versão oficial.
