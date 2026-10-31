@@ -37,6 +37,9 @@ class TrialExpiryPreflightTests(unittest.TestCase):
             "http://localhost:5001/rocha-plus-candidate/southamerica-east1/entitlement",
             "http://localhost:5001/demo-rocha-sandbox/southamerica-east1/entitlement?x=1",
             "http://localhost:5001@evil.example/demo-rocha-sandbox/southamerica-east1/entitlement",
+            "http://localhost:notaport/demo-rocha-sandbox/southamerica-east1/entitlement",
+            "http://localhost:99999/demo-rocha-sandbox/southamerica-east1/entitlement",
+            "http://localhost:5001/demo-rocha-sandbox/southamerica-east1/entitlement#fragment",
         ):
             with self.subTest(url=url), self.assertRaises(ValueError):
                 preflight.validate(valid() | {"entitlementUrl": url})
