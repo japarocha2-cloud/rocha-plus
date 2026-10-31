@@ -1,0 +1,37 @@
+name: Candidate Signed Build - Safe Preflight
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    name: Candidate branch and identity preflight (no secrets)
+    if: github.ref == 'refs/heads/homolog/technical-candidate-20261028'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify isolated candidate build request
+        env:
+          ROCHA_CANDIDATE_SUBSCRIPTIONS: 'false'
+        run: python3 tools/candidate/build_preflight.py
+      - name: Run candidate guard suite
+        run: python3 -m unittest discover -s tools/candidate -p 'test_*.py' -v
+      - name: Record scope
+        run: |
+          echo 'Only identity and candidate unit checks ran.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No signing secrets accessed; no Firebase login, APK build, release, deploy or publication.' >> "$GITHUB_STEP_SUMMARY"
+  wrong-branch:
+    name: Reject non-candidate branches
+    if: github.ref != 'refs/heads/homolog/technical-candidate-20261028'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed
+        run: |
+          echo "::error::Candidate preflight is restricted to homolog/technical-candidate-20261028."
+          exit 1
