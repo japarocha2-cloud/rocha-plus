@@ -8,6 +8,8 @@ on:
       - 'tools/candidate/identity.json'
       - 'tools/candidate/test_candidate_identity_guards.py'
       - 'tools/candidate/test_candidate.py'
+      - 'tools/candidate/build_preflight.py'
+      - 'tools/candidate/test_build_preflight.py'
       - '.github/workflows/candidate-identity-guards.yml'
   workflow_dispatch:
 permissions:
