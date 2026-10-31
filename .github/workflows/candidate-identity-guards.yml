@@ -7,6 +7,7 @@ on:
       - 'tools/candidate/prepare_candidate.py'
       - 'tools/candidate/identity.json'
       - 'tools/candidate/test_candidate_identity_guards.py'
+      - 'tools/candidate/test_candidate.py'
       - '.github/workflows/candidate-identity-guards.yml'
   workflow_dispatch:
 permissions:
@@ -25,10 +26,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run six isolated identity regression tests
-        run: python3 -m unittest -v tools/candidate/test_candidate_identity_guards.py
+      - name: Run candidate identity and signing unit regressions
+        run: python3 -m unittest discover -s tools/candidate -p 'test_*.py' -v
       - name: Summarize
         if: success()
         run: |
-          echo 'Candidate identity guards: PASS (six unit tests only).' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Candidate identity guards: PASS (candidate unit suite only).' >> "$GITHUB_STEP_SUMMARY"
           echo 'No APK build, Firebase authentication, secret access or physical validation performed.' >> "$GITHUB_STEP_SUMMARY"
