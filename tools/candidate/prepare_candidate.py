@@ -109,11 +109,18 @@ def firebase_configuration(source, fingerprints):
     return config
 
 
+def require_approved_signer(fingerprints):
+    approved = json.loads(Path(__file__).with_name('signer-public.json').read_text())
+    if fingerprints != approved:
+        raise ValueError('Candidate certificate must match approved public signing identity')
+
+
 def prepare(root, private, source, env):
     root, private = Path(root), private_path(private, root)
     if env.get('GITHUB_REF') != IDENTITY['branch'] or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
         raise ValueError('Candidate preparation requires manual isolated branch')
     fingerprints = inspect_signing(private)
+    require_approved_signer(fingerprints)
     config = firebase_configuration(source, fingerprints)
     enabled = env.get('ROCHA_CANDIDATE_SUBSCRIPTIONS', 'false')
     endpoint = env.get('ROCHA_CANDIDATE_ENTITLEMENT_URL', '')
@@ -160,6 +167,7 @@ def verify(apk, build_tools, private):
     if any(expected.get(k) != IDENTITY[k] for k in IDENTITY):
         raise ValueError('Candidate identity metadata mismatch')
     fingerprints = inspect_signing(private)
+    require_approved_signer(fingerprints)
     if expected.get('fingerprints') != fingerprints:
         raise ValueError('Candidate signing metadata mismatch')
     tools = Path(build_tools)

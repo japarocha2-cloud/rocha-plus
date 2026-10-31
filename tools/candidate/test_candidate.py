@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import prepare_candidate as candidate
 
-SHA = {'SHA1': 'ab' * 20, 'SHA256': 'cd' * 32}
+SHA = json.loads(Path(__file__).with_name('signer-public.json').read_text())
 
 
 def source():
