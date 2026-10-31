@@ -1,6 +1,7 @@
 """Preflight for candidate-only signed build; no secret material is read."""
 import json
 import os
+import re
 from pathlib import Path
 import sys
 
@@ -17,8 +18,11 @@ def check(env):
         raise ValueError("Candidate identity changed")
     if IDENTITY.get("productionApproved") is not False:
         raise ValueError("Candidate must never be production-approved by preflight")
-    if len(SIGNER.get("SHA1", "")) != 40 or len(SIGNER.get("SHA256", "")) != 64:
-        raise ValueError("Candidate public signing fingerprint missing")
+    for kind, expected in (("SHA1", "e2f0e4efa910b18b93fce60e9944f7ddf48ee02b"),
+                           ("SHA256", "1103e22ab107a77ad3e6ef8b0d327e44240b91b9a4c0bbbad2d258185e0c696b")):
+        actual = SIGNER.get(kind)
+        if not isinstance(actual, str) or not re.fullmatch(r"[a-f0-9]+", actual) or actual != expected:
+            raise ValueError("Candidate public signing certificate mismatch")
     if env.get("ROCHA_CANDIDATE_SUBSCRIPTIONS", "false") != "false":
         raise ValueError("Candidate subscription enforcement requires separate approval")
     return True
