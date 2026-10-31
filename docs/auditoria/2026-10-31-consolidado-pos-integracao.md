@@ -121,3 +121,14 @@ Registro de continuidade em 31/10/2026. Este documento preserva conclusões veri
 - 🔴 Custódia da chave privada original `candidate.p12`/`signing.json` e backup ainda sem acesso atual comprovado; não regenerar nem substituir certificado.
 - 👉 Próxima ação objetiva: receber somente o APK candidato existente, se disponibilizado pelo proprietário, para inspeção estática de metadados, ABIs e assinatura. Nunca solicitar senha ou chave privada no chat. Após análise, seguir apenas pendências não verdes.
 - 🔒 Esta atualização é documental, baseada em capturas e declarações do proprietário. Sem teste reexecutado, build, acesso a credenciais, alteração Firebase, merge, deploy, publicação, cobrança ou mudança de Oficial/LAB/PR #42.
+
+
+### Inspeção estática de APK fornecido pelo proprietário — 31/10/2026
+
+- 🟢 Recebido ZIP `rocha-plus-candidate-0.1.0-candidate.3-3.apk.zip` (um APK interno, CRC ZIP validado). APK extraído para análise local, sem instalação ou publicação; tamanho 211462263 bytes; SHA-256 do APK `e784dc4c1081529ca545b524ba1c1ebd82016959faebdd34d3f69915319b2089`.
+- 🟢 Manifest binário inspecionado: pacote `com.rochaplus.app.candidate`, `versionName=0.1.0-candidate.3`, `versionCode=3`, `minSdkVersion=24`, `targetSdkVersion=36`. Bibliotecas nativas para `arm64-v8a`, `armeabi-v7a`, `x86_64`.
+- 🟢 Bloco APK Signature Scheme v2 encontrado; certificado X.509 do assinante extraído do bloco e impressões SHA-1 `e2f0e4efa910b18b93fce60e9944f7ddf48ee02b` e SHA-256 `1103e22ab107a77ad3e6ef8b0d327e44240b91b9a4c0bbbad2d258185e0c696b` coincidem com `tools/candidate/signer-public.json`.
+- 🟡 Esta leitura do bloco e certificado **não substitui** verificação criptográfica completa por `apksigner verify`; não realizada porque Android build-tools/apksigner não estavam disponíveis neste executor. Não afirmar integridade da assinatura nem homologação física.
+- 🟡 O APK recebido tem versão `.3`/code 3, diferente da versão `.1`/code 1 planejada no roteiro anterior. Tratar como artefato posterior fornecido pelo proprietário, **sem presumir aprovação ou substituir automaticamente o plano**. Verificar procedência/CI antes de instalar.
+- 🔴 Chave privada original e senha continuam sem custódia atual comprovada; presença de certificado no APK não permite recuperar chave privada. Firebase Google Sign-In confirmado visualmente no console, mas teste físico do APK pendente.
+- 🔒 Inspeção somente leitura, sem executar APK, testes verdes, alterações de Oficial/LAB/PR #42, merge, deploy, pagamentos ou publicação.
