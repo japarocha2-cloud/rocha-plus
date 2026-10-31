@@ -55,6 +55,7 @@ class _TrialExpiryLabScreenState extends State<TrialExpiryLabScreen> {
           key: ValueKey(_revision),
           uid: 'lab-fictitious-user',
           verifyAccess: _verify,
+          showSubscriptionActions: false,
           playbackPermission: _permission,
           stopRemotePlayback: () async {},
           recheckInterval: const Duration(seconds: 2),
