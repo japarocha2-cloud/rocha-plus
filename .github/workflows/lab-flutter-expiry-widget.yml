@@ -1,0 +1,35 @@
+name: LAB Flutter expiry widget test
+
+on:
+  push:
+    branches:
+      - lab/trial-expiry-isolated-20261031
+    paths:
+      - 'lib/src/screens/trial_expiry_lab_screen.dart'
+      - 'lib/src/screens/lab_entry_screen.dart'
+      - 'lib/src/auth/subscription_gate.dart'
+      - 'test/trial_expiry_lab_screen_test.dart'
+      - '.github/workflows/lab-flutter-expiry-widget.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  widget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Fetch Flutter dependencies
+        run: flutter pub get
+      - name: Check LAB expiry Dart source
+        run: dart analyze lib/src/screens/trial_expiry_lab_screen.dart test/trial_expiry_lab_screen_test.dart
+      - name: Test fictitious trial expiry screen
+        run: flutter test test/trial_expiry_lab_screen_test.dart
