@@ -109,7 +109,7 @@ class CandidateTest(unittest.TestCase):
                 self.assertFalse((root / 'google-services.json').exists())
 
     def test_verifier_checks_real_binary_identity_signer_version_abis_and_hash(self):
-        for bad in [None, 'package', 'version', 'abi', 'signer', 'metadata']:
+        for bad in [None, 'package', 'version', 'version_name', 'abi', 'unsupported_abi', 'signer', 'missing_sha1', 'metadata']:
             with self.subTest(bad=bad), tempfile.TemporaryDirectory() as directory:
                 private = Path(directory)
                 apk = private / 'fixture.apk'
@@ -120,9 +120,9 @@ class CandidateTest(unittest.TestCase):
                 (private / 'expected.json').write_text(json.dumps(expected))
                 package = 'com.rochaplus.app.lab' if bad == 'package' else candidate.PACKAGE
                 version = '714' if bad == 'version' else '1'
-                abi = 'x86_64' if bad == 'abi' else 'arm64-v8a'
-                badging = f"package: name='{package}' versionCode='{version}' versionName='0.1.0-candidate.1'\nnative-code: '{abi}'\n"
-                signed = 'Signer #1 certificate SHA-1 digest: ' + SHA['SHA1'] + '\n'
+                abi = 'x86_64' if bad == 'abi' else ('mips' if bad == 'unsupported_abi' else 'arm64-v8a')
+                badging = f"package: name='{package}' versionCode='{version}' versionName='{'0.1.0' if bad == 'version_name' else '0.1.0-candidate.1'}'\nnative-code: '{abi}'\n"
+                signed = '' if bad == 'missing_sha1' else 'Signer #1 certificate SHA-1 digest: ' + SHA['SHA1'] + '\n'
                 signed += 'Signer #1 certificate SHA-256 digest: ' + ('00' * 32 if bad == 'signer' else SHA['SHA256']) + '\n'
                 def run(args, **kwargs):
                     return subprocess.CompletedProcess(args, 0, stdout=badging if 'badging' in args else signed)
