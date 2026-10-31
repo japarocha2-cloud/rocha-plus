@@ -59,6 +59,7 @@ class _TrialExpiryLabScreenState extends State<TrialExpiryLabScreen> {
           uid: 'lab-fictitious-user',
           verifyAccess: _verify,
           showSubscriptionActions: false,
+          blockedMessage: 'TRIAL FICTÍCIO VENCIDO • LAB: reprodução bloqueada.',
           playbackPermission: _permission,
           stopRemotePlayback: () async {},
           recheckInterval: const Duration(seconds: 2),
