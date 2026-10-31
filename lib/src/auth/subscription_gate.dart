@@ -21,6 +21,7 @@ class SubscriptionGate extends StatefulWidget {
   final Future<void> Function()? stopRemotePlayback;
   final PlaybackPermission? playbackPermission;
   final bool showSubscriptionActions;
+  final String? blockedMessage;
 
   const SubscriptionGate({
     super.key,
@@ -33,6 +34,7 @@ class SubscriptionGate extends StatefulWidget {
     this.stopRemotePlayback,
     this.playbackPermission,
     this.showSubscriptionActions = true,
+    this.blockedMessage,
   });
 
   @override
@@ -188,7 +190,7 @@ class _SubscriptionGateState extends State<SubscriptionGate>
             const SizedBox(height: 18),
             Text(_checking
                 ? 'Verificando sua assinatura...'
-                : 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.',
+                : (widget.blockedMessage ?? 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.'),
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             if (_remoteCleanupFailed)
