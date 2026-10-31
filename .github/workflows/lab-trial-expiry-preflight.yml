@@ -24,4 +24,4 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate isolated LAB preflight
-        run: python -m unittest discover -s tools/lab -p 'test_trial_expiry_preflight.py' -v
+        run: python -m unittest discover -s tools/lab -p 'test_*.py' -v
