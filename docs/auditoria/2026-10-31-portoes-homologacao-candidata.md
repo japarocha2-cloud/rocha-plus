@@ -49,3 +49,14 @@ Sem merge do PR #42/#44, publicação, pagamentos reais, alteração da versão 
 - 🟢 CI geral Subscription safety checks #129 (`41220295304`): **success**, incluindo Flutter, Backend, Android e Entitlement; APK experimental **skipped**.
 - 🟡 Pré-build manual na branch de homologação não executado nesta branch de trabalho; assinatura real, Firebase/OAuth privado e aparelho físico permanecem pendentes.
 - 🔒 PR #42 e #44 em draft, sem merge; não modificar a versão oficial, não publicar nem realizar pagamentos reais.
+
+
+## Auditoria Codex — certificado aprovado e CI final
+
+- 🟢 Commit `cd239d1` (`cd239d109c664048eebdbc8d383582dad5a2471a`): `prepare` e `verify` agora exigem que as impressões SHA-1/SHA-256 do certificado correspondam ao assinante público aprovado, sem aceitar apenas metadados autorreferentes. Adicionados testes de regressão do certificado não aprovado.
+- 🟢 GitHub Actions: Candidate Identity Guards #26 (`41221538520`) **success**; Subscription safety checks #131 (`41221538508`) **success**, incluindo Flutter, Backend, Android e Entitlement; job do APK **skipped**.
+- 🟢 Conferência dos PRs #42 e #44 no GitHub: ambos abertos, **draft**, **sem merge**; a correção está no head do PR #44.
+- 🟡 Revisão de players/Chromecast sem novo defeito comprovado conforme relatório do Codex; isso **não equivale a homologação física**.
+- 🟡 A candidata padrão permanece com bloqueio por vencimento desligado; ensaio de expiração/gate depende de configuração sandbox isolada e expressamente aprovada, nunca produção nem pagamentos reais.
+- 🟡 `firebaseProvisioning: pending` permanece sem alteração até comprovação no ambiente privado. Assinatura real, APK e Android TV/Chromecast físicos continuam pendentes.
+- 🔒 Nenhuma autorização para merge, publicação, mudanças visuais/oficiais ou exposição de credenciais; testes verdes e teste físico nº 6 preservados.
