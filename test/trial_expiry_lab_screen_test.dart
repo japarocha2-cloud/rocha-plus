@@ -18,7 +18,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('ACESSO FICTÍCIO LIBERADO • LAB'), findsNothing);
-    expect(find.text('Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.'), findsOneWidget);
+    expect(find.text('TRIAL FICTÍCIO VENCIDO • LAB: reprodução bloqueada.'), findsOneWidget);
     expect(find.text('Minha assinatura'), findsNothing);
 
     await tester.tap(find.text('Simular trial válido'));
