@@ -48,10 +48,24 @@ sub renderHomeChannels()
   m.homeCards = []
   rows = m.top.findNode("homeChannelCards")
   rows.removeChildrenIndex(rows.getChildCount(), 0)
-  for each c in m.allChannels
-    if m.homeCards.count() >= 4 then exit for
-    m.homeCards.push(c)
+  ' One representative per category; never duplicate a channel.
+  preferredGroups = ["TV aberta", "Notícias", "Esportes", "Infantil"]
+  for each groupName in preferredGroups
+    for each c in m.allChannels
+      if c.group = groupName then
+        m.homeCards.push(c)
+        exit for
+      end if
+    end for
+  end for
+  for each c in m.homeCards
     i = m.homeCards.count() - 1
+    for j = 0 to m.homeCards.count() - 1
+      if m.homeCards[j].id = c.id then
+        i = j
+        exit for
+      end if
+    end for
     tile = CreateObject("roSGNode", "Rectangle")
     tile.translation = [358 + i * 305, 728]
     tile.width = 269
