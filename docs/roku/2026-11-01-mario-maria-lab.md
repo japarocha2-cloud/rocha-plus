@@ -24,3 +24,11 @@ Preparação de branch isolada e especificação registradas. Ainda não há ZIP
 - `8a5eaff`: HomeScene.brs renderiza até quatro cartões com nomes do catálogo LAB e navegação por controle remoto.
 - **Pendente:** substituir `banner-demo.jpg` pela arte aprovada, auditar 372 remoções, validar autenticação, compilar com bsc, criar ZIP e testar em Roku físico.
 - **Atenção:** os cartões refletem os primeiros candidatos carregados, não um catálogo final homologado; não instalar como presente definitivo.
+
+## Revisão adicional
+- `fc42115`: cartões da Home selecionam o primeiro canal disponível de TV aberta, Notícias, Esportes e Infantil, sem inventar títulos.
+- O catálogo `benchmark-test.json` informa `approved:false`, `roku_playback_verified:false` e `distribution_authorization:unverified` para candidatos examinados. A integração não equivale a autorização de distribuição.
+- Não foi encontrada nesta revisão uma lista consolidada verificável das 372 remoções dentro de `docs/catalog`, `docs/auditoria` ou `docs/roku` nesta branch. Não afirmar que as exclusões já foram aplicadas.
+- `config/auth.json` ainda tem endpoint e billingEndpoint vazios; isso impede validar o fluxo completo de login.
+- O banner aprovado não está incorporado: o arquivo referenciado ainda é `banner-demo.jpg`.
+- Nenhum teste de compilação ou Roku físico foi executado nesta etapa.
