@@ -6,6 +6,7 @@ sub init()
   m.approvedCount = 0
   m.channels = []
   m.channelIndex = 0
+  m.homeCardIndex = -1
   m.playing = false
   m.registry = CreateObject("roRegistrySection", "RochaPlus")
   m.favorites = ParseJson(m.registry.Read("favorites"))
@@ -16,6 +17,7 @@ sub init()
   m.video.observeField("errorMsg", "onVideoError")
   loadApprovedCatalogue()
   m.allChannels = m.channels
+  renderHomeChannels()
   m.timer = m.top.findNode("playbackTimeout")
   m.timer.observeField("fire", "onPlaybackTimeout")
   renderFocus()
@@ -27,7 +29,7 @@ end sub
 sub renderFocus()
   focus = m.top.findNode("navFocus")
   focus.opacity = 0
-  if m.area = 0
+  if m.area = 0 and m.homeCardIndex < 0
     focus.opacity = 1
     focus.color = "0xD6B775FF"
     focus.translation = [18,184+84*m.nav]
@@ -35,8 +37,41 @@ sub renderFocus()
   for i = 0 to 6
     label = m.top.findNode("nav"+i.toStr())
     label.color = "0xFFFFFFFF"
-    if m.area = 0 and i = m.nav then label.color = "0x10091FFF"
+    if m.area = 0 and m.homeCardIndex < 0 and i = m.nav then label.color = "0x10091FFF"
   end for
+  cardFocus = m.top.findNode("homeCardFocus")
+  cardFocus.visible = (m.area = 0 and m.homeCardIndex >= 0 and m.homeCardIndex < m.homeCards.count())
+  if cardFocus.visible then cardFocus.translation = [350 + m.homeCardIndex * 305, 720]
+end sub
+
+sub renderHomeChannels()
+  m.homeCards = []
+  rows = m.top.findNode("homeChannelCards")
+  rows.removeChildrenIndex(rows.getChildCount(), 0)
+  for each c in m.allChannels
+    if m.homeCards.count() >= 4 then exit for
+    m.homeCards.push(c)
+    i = m.homeCards.count() - 1
+    tile = CreateObject("roSGNode", "Rectangle")
+    tile.translation = [358 + i * 305, 728]
+    tile.width = 269
+    tile.height = 174
+    tile.color = "0x181634FF"
+    rows.appendChild(tile)
+    name = CreateObject("roSGNode", "Label")
+    name.translation = [373 + i * 305, 778]
+    name.width = 238
+    name.height = 95
+    name.wrap = true
+    name.text = c.name
+    name.color = "0xFFFFFFFF"
+    rows.appendChild(name)
+  end for
+  if m.homeCards.count() = 0 then
+    m.top.findNode("homeChannelsHelp").text = "Nenhum canal de teste disponível. Confira o catálogo no laboratório."
+  else
+    m.top.findNode("homeChannelsHelp").text = "Seta direita: escolher canal • OK: assistir • Voltar: menu"
+  end if
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
@@ -70,6 +105,39 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
       return false
     end if
     renderChannelState()
+    renderFocus()
+    return true
+  end if
+  if m.area = 0 and m.homeCardIndex >= 0 then
+    if key = "right" then
+      m.homeCardIndex = (m.homeCardIndex + 1) mod m.homeCards.count()
+    else if key = "left" then
+      if m.homeCardIndex = 0 then
+        m.homeCardIndex = -1
+      else
+        m.homeCardIndex = m.homeCardIndex - 1
+      end if
+    else if key = "OK" then
+      chosen = m.homeCards[m.homeCardIndex]
+      openChannels(false)
+      for i = 0 to m.channels.count() - 1
+        if m.channels[i].id = chosen.id then
+          m.channelIndex = i
+          exit for
+        end if
+      end for
+      renderChannelState()
+      startPlayback()
+    else if key = "back" then
+      m.homeCardIndex = -1
+    else
+      return false
+    end if
+    renderFocus()
+    return true
+  end if
+  if m.area = 0 and key = "right" and m.homeCards.count() > 0 then
+    m.homeCardIndex = 0
     renderFocus()
     return true
   end if
