@@ -58,14 +58,8 @@ sub renderHomeChannels()
       end if
     end for
   end for
-  for each c in m.homeCards
-    i = m.homeCards.count() - 1
-    for j = 0 to m.homeCards.count() - 1
-      if m.homeCards[j].id = c.id then
-        i = j
-        exit for
-      end if
-    end for
+  for i = 0 to m.homeCards.count() - 1
+    c = m.homeCards[i]
     tile = CreateObject("roSGNode", "Rectangle")
     tile.translation = [358 + i * 305, 728]
     tile.width = 269
@@ -76,7 +70,7 @@ sub renderHomeChannels()
     name.translation = [373 + i * 305, 778]
     name.width = 238
     name.height = 95
-    name.wrap = true
+    name.numLines = 2
     name.text = c.name
     name.color = "0xFFFFFFFF"
     rows.appendChild(name)
@@ -114,6 +108,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
       startPlayback()
     else if key = "back" then
       m.area = 0
+      m.homeCardIndex = -1
       m.nav = 1
     else
       return false
@@ -133,6 +128,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
       end if
     else if key = "OK" then
       chosen = m.homeCards[m.homeCardIndex]
+      m.homeCardIndex = -1
       openChannels(false)
       for i = 0 to m.channels.count() - 1
         if m.channels[i].id = chosen.id then
