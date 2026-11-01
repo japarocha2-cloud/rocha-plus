@@ -99,35 +99,42 @@ end function
 ' Isolated test snapshot. External AV detection is not Roku playback approval.
 sub loadApprovedCatalogue()
   m.experimental = true
+  m.catalogueDiagnostic = "LAB: catálogo não iniciado"
   raw = ReadAsciiFile("pkg:/catalog/benchmark-test.json")
-  ' A separate development package may opt into the 12-channel fixture.
-  ' Production/default behavior keeps the full existing benchmark catalog.
   sampleConfig = ParseJson(ReadAsciiFile("pkg:/config/lab-sample.json"))
   if type(sampleConfig) = "roAssociativeArray" then
     if sampleConfig.enabled = true and sampleConfig.mode = "isolated_12" then
       raw = ReadAsciiFile("pkg:/catalog/isolated-sample-12.json")
     end if
   end if
-  parsed = ParseJson(raw)
-  if parsed = invalid
-    m.catalogueDiagnostic = "LAB: JSON do catálogo inválido ou ausente (" + len(raw).toStr().trim() + " bytes)"
+  if raw = invalid then
+    m.catalogueDiagnostic = "LAB: arquivo de catálogo ausente"
     return
   end if
-  if type(parsed) <> "roArray"
+  parsed = ParseJson(raw)
+  if parsed = invalid then
+    m.catalogueDiagnostic = "LAB: JSON inválido (" + len(raw).toStr().trim() + " bytes)"
+    return
+  end if
+  if type(parsed) <> "roArray" then
     m.catalogueDiagnostic = "LAB: catálogo não é uma lista"
     return
   end if
-  m.catalogueDiagnostic = "LAB: lidos " + parsed.count().toStr().trim() + " registros"
+  total = parsed.count()
+  eligible = 0
+  validStreams = 0
   for each item in parsed
     if type(item) = "roAssociativeArray" then
       isCandidate = false
-      if item.status = "benchmark_av_detected" and type(item.evidence) = "roAssociativeArray"
+      if item.status = "benchmark_av_detected" and type(item.evidence) = "roAssociativeArray" then
         evidence = item.evidence
         isCandidate = (evidence.detection = "video_audio" and evidence.report = "Benchmark_RochaPlus_Catalogo.csv" and evidence.source_sha256 = "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914")
       end if
       if isCandidate and item.blocked <> true and item.quarantined <> true then
-        if type(item.url) = "roString" and type(item.name) = "roString" then
-          if (left(item.url, 8) = "https://") and instr(1, lcase(item.url), ".m3u8") > 0 then
+        eligible = eligible + 1
+        if (type(item.url) = "roString" or type(item.url) = "String") and (type(item.name) = "roString" or type(item.name) = "String") then
+          if left(item.url, 8) = "https://" and instr(1, lcase(item.url), ".m3u8") > 0 then
+            validStreams = validStreams + 1
             m.channels.push(item)
             m.approvedCount = m.approvedCount + 1
           end if
@@ -135,7 +142,7 @@ sub loadApprovedCatalogue()
       end if
     end if
   end for
-  m.catalogueDiagnostic = m.catalogueDiagnostic + " • candidatos aceitos " + m.channels.count().toStr().trim()
+  m.catalogueDiagnostic = "LAB: " + total.toStr().trim() + " lidos / " + eligible.toStr().trim() + " elegíveis / " + validStreams.toStr().trim() + " HLS"
 end sub
 
 ' Roku native Video node; explicit selection of an HTTPS HLS test candidate.
