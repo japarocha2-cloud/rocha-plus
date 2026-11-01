@@ -19,3 +19,8 @@
 
 ## Estado
 Preparação de branch isolada e especificação registradas. Ainda não há ZIP instalado, compilação ou teste físico concluído.
+## Implementação parcial — 01/11/2026
+- `6c82229`: HomeScene.xml reserva banner horizontal 1540x475 e faixa Canais ao Vivo, mantendo a identidade cósmica.
+- `8a5eaff`: HomeScene.brs renderiza até quatro cartões com nomes do catálogo LAB e navegação por controle remoto.
+- **Pendente:** substituir `banner-demo.jpg` pela arte aprovada, auditar 372 remoções, validar autenticação, compilar com bsc, criar ZIP e testar em Roku físico.
+- **Atenção:** os cartões refletem os primeiros candidatos carregados, não um catálogo final homologado; não instalar como presente definitivo.
