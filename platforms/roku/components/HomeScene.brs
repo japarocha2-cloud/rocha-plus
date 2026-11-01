@@ -109,8 +109,15 @@ sub loadApprovedCatalogue()
     end if
   end if
   parsed = ParseJson(raw)
-  if parsed = invalid then return
-  if type(parsed) <> "roArray" then return
+  if parsed = invalid
+    m.catalogueDiagnostic = "LAB: JSON do catálogo inválido ou ausente (" + len(raw).toStr().trim() + " bytes)"
+    return
+  end if
+  if type(parsed) <> "roArray"
+    m.catalogueDiagnostic = "LAB: catálogo não é uma lista"
+    return
+  end if
+  m.catalogueDiagnostic = "LAB: lidos " + parsed.count().toStr().trim() + " registros"
   for each item in parsed
     if type(item) = "roAssociativeArray" then
       isCandidate = false
@@ -128,6 +135,7 @@ sub loadApprovedCatalogue()
       end if
     end if
   end for
+  m.catalogueDiagnostic = m.catalogueDiagnostic + " • candidatos aceitos " + m.channels.count().toStr().trim()
 end sub
 
 ' Roku native Video node; explicit selection of an HTTPS HLS test candidate.
@@ -158,7 +166,7 @@ sub renderChannelState()
   focus.translation = [390,286+(m.channelIndex mod 7)*86]
   if m.channels.count() = 0 then
     m.top.findNode("channelName").text = "Nenhum canal aprovado disponível"
-    m.top.findNode("channelHelp").text = "Não há transmissões liberadas neste pacote. Voltar retorna à Home."
+    m.top.findNode("channelHelp").text = m.catalogueDiagnostic + " • Nenhuma transmissão listada. Voltar: Home."
   else
     c = m.channels[m.channelIndex]
     m.top.findNode("channelName").text = c.name
