@@ -53,8 +53,14 @@ sub renderHomeChannels()
   for each groupName in preferredGroups
     for each c in m.allChannels
       if c.group = groupName then
-        m.homeCards.push(c)
-        exit for
+        alreadyShown = false
+        for each shown in m.homeCards
+          if shown.id = c.id then alreadyShown = true
+        end for
+        if not alreadyShown then
+          m.homeCards.push(c)
+          exit for
+        end if
       end if
     end for
   end for
