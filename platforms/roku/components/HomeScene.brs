@@ -11,6 +11,10 @@ sub init()
   m.favorites = ParseJson(m.registry.Read("favorites"))
   if m.favorites = invalid then m.favorites = []
   m.allChannels = []
+  m.checkupOpen = false
+  m.checkupChoice = 0
+  m.checkupRecords = ParseJson(m.registry.Read("roku_checkup_v1"))
+  if type(m.checkupRecords) <> "roAssociativeArray" then m.checkupRecords = {}
   m.video = m.top.findNode("channelVideo")
   m.video.observeField("state", "onVideoStateChanged")
   m.video.observeField("errorMsg", "onVideoError")
@@ -57,7 +61,11 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     return false
   end if
   if m.area = 3 then
-    if key = "options" then toggleFavorite()
+    if m.checkupOpen then return handleCheckupKey(key)
+    if key = "options" then
+      openCheckup()
+      return true
+    end if
     if key = "down" or key = "right" then
       if m.channels.count() > 0 then m.channelIndex = (m.channelIndex + 1) mod m.channels.count()
     else if key = "up" or key = "left" then
@@ -168,7 +176,7 @@ sub renderChannelState()
     c = m.channels[m.channelIndex]
     m.top.findNode("channelName").text = c.name
     if isFavorite(c.id) then m.top.findNode("channelName").text = "★ " + c.name
-    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  •  Setas: escolher   OK: assistir   *: favorito   Voltar: Home"
+    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  •  OK: assistir   *: check-up LAB   Voltar: Home"
   end if
 end sub
 
@@ -342,3 +350,62 @@ sub advanceBanner(direction as Integer)
   m.bannerIndex = (m.bannerIndex + direction + m.bannerSlides.count()) mod m.bannerSlides.count()
   m.bannerPoster.uri = m.bannerSlides[m.bannerIndex]
 end sub
+
+
+' LAB-only operator evaluation. The default cursor is APPROVE, but nothing is
+' written until the operator explicitly presses OK. No source catalog is edited.
+sub openCheckup()
+  if m.channels.count() = 0 then return
+  m.checkupOpen = true
+  m.checkupChoice = 0
+  renderCheckup()
+end sub
+
+sub renderCheckup()
+  overlay = m.top.findNode("checkupPanel")
+  overlay.visible = m.checkupOpen
+  if not m.checkupOpen then return
+  c = m.channels[m.channelIndex]
+  m.top.findNode("checkupTitle").text = "Check-up LAB: " + c.name
+  choices = ["APROVAR", "REPROVAR / OCULTAR", "PENDENTE", "RESTAURAR", "FAVORITO"]
+  output = ""
+  for i = 0 to choices.count() - 1
+    if i = m.checkupChoice then output = output + "> " else output = output + "   "
+    output = output + choices[i] + chr(10)
+  end for
+  m.top.findNode("checkupChoices").text = output
+end sub
+
+function handleCheckupKey(key as String) as Boolean
+  if key = "back" or key = "options" then
+    m.checkupOpen = false
+    renderCheckup()
+    return true
+  else if key = "down" then
+    m.checkupChoice = (m.checkupChoice + 1) mod 5
+  else if key = "up" then
+    m.checkupChoice = (m.checkupChoice + 4) mod 5
+  else if key = "OK" then
+    c = m.channels[m.channelIndex]
+    if m.checkupChoice = 4 then
+      toggleFavorite()
+    else
+      record = {id: c.id, name: c.name, group: c.group, decision: "approved"}
+      if m.checkupChoice = 1 then record.decision = "rejected"
+      if m.checkupChoice = 2 then record.decision = "pending"
+      if m.checkupChoice = 3 then record.decision = "restored"
+      m.checkupRecords[c.id] = record
+      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
+      m.registry.Flush()
+      m.status.text = "Check-up salvo: " + c.name + " (" + record.decision + ")"
+    end if
+    m.checkupOpen = false
+    renderCheckup()
+    renderChannelState()
+    return true
+  else
+    return true
+  end if
+  renderCheckup()
+  return true
+end function
