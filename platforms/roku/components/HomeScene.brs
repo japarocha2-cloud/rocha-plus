@@ -459,25 +459,41 @@ sub showCheckupReport()
   rejected = 0
   pending = 0
   restored = 0
+  untested = 0
   records = []
-  for each id in m.checkupRecords
-    item = m.checkupRecords[id]
-    if type(item) = "roAssociativeArray" then
-      records.push(item)
-      if item.decision = "approved" then approved = approved + 1
-      if item.decision = "rejected" then rejected = rejected + 1
-      if item.decision = "pending" then pending = pending + 1
-      if item.decision = "restored" then restored = restored + 1
-    end if
+  ' Export follows source catalog order. Absence of a decision means UNTESTED,
+  ' never APPROVED. This preserves the distinction for final homologation.
+  for each c in m.allChannels
+    item = m.checkupRecords[c.id]
+    decision = "untested"
+    if type(item) = "roAssociativeArray" then decision = item.decision
+    if decision = "approved" then approved = approved + 1
+    if decision = "rejected" then rejected = rejected + 1
+    if decision = "pending" then pending = pending + 1
+    if decision = "restored" then restored = restored + 1
+    if decision = "untested" then untested = untested + 1
+    records.push({id: c.id, name: c.name, group: c.group, decision: decision})
   end for
-  report = {schema: "rochaplus.roku.checkup.v1", source: "roku-lab", records: records}
+  report = {schema: "rochaplus.roku.checkup.v2", source: "roku-lab", records: records}
   print "ROCHAPLUS_CHECKUP_JSON_BEGIN"
   print FormatJson(report)
   print "ROCHAPLUS_CHECKUP_JSON_END"
-  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Total avaliados: " + records.count().toStr()
+  print "ROCHAPLUS_CHECKUP_CSV_BEGIN"
+  print "id,name,group,decision"
+  for each item in records
+    print csvCell(item.id) + "," + csvCell(item.name) + "," + csvCell(item.group) + "," + csvCell(item.decision)
+  end for
+  print "ROCHAPLUS_CHECKUP_CSV_END"
+  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Nao testados: " + untested.toStr() + chr(10) + "Total no catalogo: " + records.count().toStr()
   m.reportOpen = true
   m.top.findNode("reportPanel").visible = true
 end sub
+
+function csvCell(value as Dynamic) as String
+  output = ""
+  if value <> invalid then output = value.toStr()
+  return chr(34) + output.replace(chr(34), chr(34) + chr(34)) + chr(34)
+end function
 
 sub openRedDialog()
   if m.channels.count() = 0 then return
