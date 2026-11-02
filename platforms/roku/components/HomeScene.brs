@@ -492,7 +492,13 @@ end sub
 function csvCell(value as Dynamic) as String
   output = ""
   if value <> invalid then output = value.toStr()
-  return chr(34) + output.replace(chr(34), chr(34) + chr(34)) + chr(34)
+  escaped = chr(34)
+  for i = 1 to len(output)
+    letter = mid(output, i, 1)
+    if letter = chr(34) then escaped = escaped + chr(34)
+    escaped = escaped + letter
+  end for
+  return escaped + chr(34)
 end function
 
 sub openRedDialog()
