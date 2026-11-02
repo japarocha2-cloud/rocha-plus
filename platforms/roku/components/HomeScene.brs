@@ -124,7 +124,7 @@ sub loadApprovedCatalogue()
         isCandidate = (evidence.detection = "video_audio" and evidence.report = "Benchmark_RochaPlus_Catalogo.csv" and evidence.source_sha256 = "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914")
       end if
       if isCandidate and item.blocked <> true and item.quarantined <> true then
-        if type(item.url) = "roString" and type(item.name) = "roString" then
+        if (type(item.url) = "roString" or type(item.url) = "String") and (type(item.name) = "roString" or type(item.name) = "String") then
           if (left(item.url, 8) = "https://") and instr(1, lcase(item.url), ".m3u8") > 0 then
             m.channels.push(item)
             m.approvedCount = m.approvedCount + 1
