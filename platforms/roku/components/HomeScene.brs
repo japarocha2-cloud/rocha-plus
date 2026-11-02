@@ -13,6 +13,7 @@ sub init()
   m.allChannels = []
   m.checkupOpen = false
   m.checkupChoice = 0
+  m.showRejected = false
   m.checkupRecords = ParseJson(m.registry.Read("roku_checkup_v1"))
   if type(m.checkupRecords) <> "roAssociativeArray" then m.checkupRecords = {}
   m.video = m.top.findNode("channelVideo")
@@ -62,6 +63,11 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   end if
   if m.area = 3 then
     if m.checkupOpen then return handleCheckupKey(key)
+    if key = "play" then
+      m.showRejected = not m.showRejected
+      refreshVisibleChannels()
+      return true
+    end if
     if key = "options" then
       openCheckup()
       return true
@@ -176,7 +182,7 @@ sub renderChannelState()
     c = m.channels[m.channelIndex]
     m.top.findNode("channelName").text = c.name
     if isFavorite(c.id) then m.top.findNode("channelName").text = "★ " + c.name
-    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  •  OK: assistir   *: check-up LAB   Voltar: Home"
+    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  • OK: assistir   *: check-up   Play: mostrar/ocultar reprovados"
   end if
 end sub
 
@@ -238,15 +244,36 @@ sub onVideoError()
 end sub
 
 sub openChannels(favoritesOnly as boolean)
- m.favoritesOnly = favoritesOnly
- m.channels = []
- for each c in m.allChannels
-  if not favoritesOnly or isFavorite(c.id) then m.channels.push(c)
- end for
- m.channelIndex = 0
- m.area = 3
- renderChannelState()
+  m.favoritesOnly = favoritesOnly
+  m.activeCategory = ""
+  refreshVisibleChannels()
+  m.area = 3
 end sub
+
+function isRejected(id as String) as Boolean
+  record = m.checkupRecords[id]
+  if type(record) <> "roAssociativeArray" then return false
+  return record.decision = "rejected"
+end function
+
+sub refreshVisibleChannels()
+  currentId = ""
+  if m.channels.count() > 0 and m.channelIndex < m.channels.count() then currentId = m.channels[m.channelIndex].id
+  visible = []
+  for each c in m.allChannels
+    categoryOk = (m.activeCategory = "" or c.group = m.activeCategory)
+    favoriteOk = (not m.favoritesOnly or isFavorite(c.id))
+    rejectionOk = (m.showRejected or not isRejected(c.id))
+    if categoryOk and favoriteOk and rejectionOk then visible.push(c)
+  end for
+  m.channels = visible
+  m.channelIndex = 0
+  for i = 0 to m.channels.count() - 1
+    if m.channels[i].id = currentId then m.channelIndex = i
+  end for
+  renderChannelState()
+end sub
+
 function isFavorite(id as string) as boolean
  for each f in m.favorites
   if f = id then return true
@@ -276,14 +303,9 @@ sub onPlaybackTimeout()
 end sub
 
 sub filterCategory(category as integer)
- groups = ["", "", "Esportes", "Notícias", "Infantil"]
- filtered = []
- for each c in m.allChannels
-  if c.group = groups[category] then filtered.push(c)
- end for
- m.channels = filtered
- m.channelIndex = 0
- renderChannelState()
+  groups = ["", "", "Esportes", "Notícias", "Infantil"]
+  m.activeCategory = groups[category]
+  refreshVisibleChannels()
 end sub
 
 sub initIntro()
@@ -401,7 +423,7 @@ function handleCheckupKey(key as String) as Boolean
     end if
     m.checkupOpen = false
     renderCheckup()
-    renderChannelState()
+    refreshVisibleChannels()
     return true
   else
     return true
