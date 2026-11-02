@@ -165,3 +165,7 @@ Cópia local do repositório: `C:/Users/Administrador/Documents/ChatGPT/Rocha +/
 4. Atualizar este relatório e anexar evidências por etapa;commit/push apenas no LAB. Sem merge,publicação,alteração de assinaturas/pagamentos ou identidade visual.
 
 Nenhuma senha,token,chave privada ou credencial foi incluída neste relatório.
+
+## Etapa técnica seguinte — investigação histórica (02/11/2026)
+
+Continuidade da base07a3f2f. [Relatório de investigação](../roku/technical-followup-20261102/README.md). Inventário ampliado de100para todos os1.442artefatos listados;77branches,sem tags/releases. Artefato histórico12691257099 inspecionado:11.333URLs/479elegíveis/zeroaprovados;fonte finalC6 e remoções01/11 ainda não encontradas. Catálogos preservados. Imagem original beIN Sports Haber recuperada e conferida;incorporação ao pacote pendente neste checkpoint. As577associações e os40testes verdes anteriores permanecem preservados. Código/ZIP0.6.4 ainda não alterados.

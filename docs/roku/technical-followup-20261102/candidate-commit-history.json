@@ -1,0 +1,1223 @@
+[
+  {
+    "query": "commits?sha=2394b12379f84111fcaa9b0944eb31726c3bc45a&per_page=100",
+    "commits": [
+      {
+        "sha": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+        "message": "docs(candidate): record successful sandbox trial gate CI and physical pending",
+        "date": "2026-10-31T17:00:47Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/2394b12379f84111fcaa9b0944eb31726c3bc45a"
+      },
+      {
+        "sha": "02593ee34f8f987f98840adae0b035ce51840101",
+        "message": "test(sandbox): connect emulator trial and renewal decisions to opt-in gate",
+        "date": "2026-10-31T16:57:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/02593ee34f8f987f98840adae0b035ce51840101"
+      },
+      {
+        "sha": "280fbaf42c92d54bfed605435c0f8584ca6a5b91",
+        "message": "docs(candidate): record Codex signer fix and verified CI 26/131",
+        "date": "2026-10-31T16:53:15Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/280fbaf42c92d54bfed605435c0f8584ca6a5b91"
+      },
+      {
+        "sha": "cd239d109c664048eebdbc8d383582dad5a2471a",
+        "message": "fix(candidate): bind preparation and APK verification to approved signer",
+        "date": "2026-10-31T16:49:29Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cd239d109c664048eebdbc8d383582dad5a2471a"
+      },
+      {
+        "sha": "538b298d709920d9da754bdd58ccb1a0eeba7987",
+        "message": "docs(candidate): close CI 129 green and record preflight workflow coverage",
+        "date": "2026-10-31T16:39:00Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/538b298d709920d9da754bdd58ccb1a0eeba7987"
+      },
+      {
+        "sha": "e14924fa13a1003fab5f670986ac87d056f0d1c4",
+        "message": "ci(candidate): run identity guards when manual preflight workflow changes",
+        "date": "2026-10-31T16:33:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e14924fa13a1003fab5f670986ac87d056f0d1c4"
+      },
+      {
+        "sha": "e5450e0da5df9b6f343ad8fab9eacdda8dbaf334",
+        "message": "docs(candidate): fix audit report newline formatting after PR review",
+        "date": "2026-10-31T16:29:26Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e5450e0da5df9b6f343ad8fab9eacdda8dbaf334"
+      },
+      {
+        "sha": "8b7454238be05693cceb4b25e9f630906b5bcce5",
+        "message": "docs(candidate): record CI 125 green and physical QA readiness",
+        "date": "2026-10-31T16:27:59Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8b7454238be05693cceb4b25e9f630906b5bcce5"
+      },
+      {
+        "sha": "b3869196ebafcd43854896a11de1686166c2e420",
+        "message": "docs(candidate): prepare physical QA gates without repeating frozen approved test",
+        "date": "2026-10-31T16:27:07Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b3869196ebafcd43854896a11de1686166c2e420"
+      },
+      {
+        "sha": "02c90d3b9719b3c4ca46e68f1f23abc4c33fd2cf",
+        "message": "test(candidate): reject wrong APK version name, unsupported ABI and absent SHA1",
+        "date": "2026-10-31T16:25:17Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/02c90d3b9719b3c4ca46e68f1f23abc4c33fd2cf"
+      },
+      {
+        "sha": "3ccc6f722c3af6cce38c50452cca320a7d1fe36b",
+        "message": "docs(candidate): record successful Flutter CI 123 and OAuth guards CI 15",
+        "date": "2026-10-31T16:24:36Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/3ccc6f722c3af6cce38c50452cca320a7d1fe36b"
+      },
+      {
+        "sha": "6a6fa508c94dc629d4ded4cfcc895b46f675ed06",
+        "message": "test(candidate): cover duplicate Firebase registrations and incomplete OAuth config",
+        "date": "2026-10-31T16:21:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/6a6fa508c94dc629d4ded4cfcc895b46f675ed06"
+      },
+      {
+        "sha": "effdf00d072b40ab229aaa99b4a58740d06597cc",
+        "message": "docs(candidate): record green Flutter CI 121 and identity CI 12",
+        "date": "2026-10-31T16:19:00Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/effdf00d072b40ab229aaa99b4a58740d06597cc"
+      },
+      {
+        "sha": "7adf1158d250de717981d2207ed0b1b9c08fa83a",
+        "message": "test(candidate): block official Firebase, package, production flag and missing signer",
+        "date": "2026-10-31T15:59:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7adf1158d250de717981d2207ed0b1b9c08fa83a"
+      },
+      {
+        "sha": "a09c9b9ee1c592d1a701ed633415760a0000ac11",
+        "message": "docs(candidate): record verified green checks and four-stage homologation gates",
+        "date": "2026-10-31T15:50:35Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a09c9b9ee1c592d1a701ed633415760a0000ac11"
+      },
+      {
+        "sha": "fe9409f97e029df2b7ea5ca33c8142d0bc120f18",
+        "message": "test(candidate): reject same-length incorrect signing fingerprints",
+        "date": "2026-10-31T15:45:34Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/fe9409f97e029df2b7ea5ca33c8142d0bc120f18"
+      },
+      {
+        "sha": "4ab952db1d6d539bccbe50e14c8c0471ea57cabf",
+        "message": "fix(candidate): verify exact approved certificate fingerprints",
+        "date": "2026-10-31T15:45:29Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/4ab952db1d6d539bccbe50e14c8c0471ea57cabf"
+      },
+      {
+        "sha": "cdd6ab72ed2d15c92d86d9f2167906a70e262ab0",
+        "message": "ci(candidate): validate identity guards on candidate PR without secrets",
+        "date": "2026-10-31T15:39:24Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cdd6ab72ed2d15c92d86d9f2167906a70e262ab0"
+      },
+      {
+        "sha": "1e00e1d974e6a98ec605da9c7e1ac35d7a91d31c",
+        "message": "ci(candidate): trigger guard suite on preflight code and test changes",
+        "date": "2026-10-31T15:35:26Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1e00e1d974e6a98ec605da9c7e1ac35d7a91d31c"
+      },
+      {
+        "sha": "f6c2604d7ab4ec2d01d3f12722380fb519eae683",
+        "message": "ci(candidate): stage manual fail-closed preflight without signing secrets",
+        "date": "2026-10-31T15:31:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f6c2604d7ab4ec2d01d3f12722380fb519eae683"
+      },
+      {
+        "sha": "65bed0a4beb4074898b7fda20bd44086169ba91a",
+        "message": "test(candidate): cover manual branch and subscription preflight guards",
+        "date": "2026-10-31T15:30:40Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/65bed0a4beb4074898b7fda20bd44086169ba91a"
+      },
+      {
+        "sha": "5c93e2cbd1fea9d6296f8cb68e60edf12688674d",
+        "message": "build(candidate): add fail-closed preflight for isolated manual homologation",
+        "date": "2026-10-31T15:30:33Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5c93e2cbd1fea9d6296f8cb68e60edf12688674d"
+      },
+      {
+        "sha": "db2f9ed876e8d9cc58ef4453d97f9d4f09871c29",
+        "message": "ci(candidate): include existing signing and APK verifier unit suite",
+        "date": "2026-10-31T15:28:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/db2f9ed876e8d9cc58ef4453d97f9d4f09871c29"
+      },
+      {
+        "sha": "45a64c587e30378e94221a649a88df1d709d7013",
+        "message": "ci(candidate): run six identity isolation guards without secrets",
+        "date": "2026-10-31T15:27:24Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/45a64c587e30378e94221a649a88df1d709d7013"
+      },
+      {
+        "sha": "b33508b3277f4fcb8e2595f277258723418c0304",
+        "message": "test(candidate): add isolated Firebase identity and branch guard regressions [skip ci]",
+        "date": "2026-10-31T15:20:26Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b33508b3277f4fcb8e2595f277258723418c0304"
+      },
+      {
+        "sha": "2378d780f4c9ef79f0d3c0c220b3430adbc56003",
+        "message": "chore(tv): record verified LAB packages and physical checklist [skip ci]",
+        "date": "2026-10-30T11:41:05Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/2378d780f4c9ef79f0d3c0c220b3430adbc56003"
+      },
+      {
+        "sha": "4fba22f4ce2333dbfc1bc319f180baf08e7d5490",
+        "message": "fix(android tv): compile LAB against required Android API 37",
+        "date": "2026-10-30T11:30:42Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/4fba22f4ce2333dbfc1bc319f180baf08e7d5490"
+      },
+      {
+        "sha": "33c6623cc1fb5383d6e4febcae05a55e27c508fe",
+        "message": "fix(android tv): generate LAB scaffold and verify debug APK evidence",
+        "date": "2026-10-30T11:24:08Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/33c6623cc1fb5383d6e4febcae05a55e27c508fe"
+      },
+      {
+        "sha": "d99425311a1e109a7818b4cc313d2e542d696d0f",
+        "message": "ci(android tv): build isolated 12-channel debug APK and SHA256 artifact",
+        "date": "2026-10-30T11:15:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/d99425311a1e109a7818b4cc313d2e542d696d0f"
+      },
+      {
+        "sha": "0f96356e3b5302901b25479cb3ff7dfa0205f1b5",
+        "message": "ci(tv): execute Android parity loader tests in existing TV workflow",
+        "date": "2026-10-30T11:15:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0f96356e3b5302901b25479cb3ff7dfa0205f1b5"
+      },
+      {
+        "sha": "bdffe80eb0bfc41fb0304e2e86d26592f7bd0f4c",
+        "message": "fix(android): fail closed on parity sample size and experimental status",
+        "date": "2026-10-30T11:14:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bdffe80eb0bfc41fb0304e2e86d26592f7bd0f4c"
+      },
+      {
+        "sha": "c0664bd0452917beb5a9ae8b498ce004eb2f5bbe",
+        "message": "fix(android lab): prevent feature override of isolated parity sample",
+        "date": "2026-10-30T11:14:25Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/c0664bd0452917beb5a9ae8b498ce004eb2f5bbe"
+      },
+      {
+        "sha": "09891ae2ef9166a430e089e82f2d586b355c5184",
+        "message": "feat: opt-in shared Roku sample in Android lab entry",
+        "date": "2026-10-30T11:13:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/09891ae2ef9166a430e089e82f2d586b355c5184"
+      },
+      {
+        "sha": "28342b11affb62a887e06331b66f38a670ecf96b",
+        "message": "test: assert Android and Roku LAB parity fixture constraints",
+        "date": "2026-10-30T11:11:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/28342b11affb62a887e06331b66f38a670ecf96b"
+      },
+      {
+        "sha": "5e81a9e046236ccf993418e2451e8582c9762d3e",
+        "message": "build: include parity fixture asset for isolated Android TV lab",
+        "date": "2026-10-30T11:11:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5e81a9e046236ccf993418e2451e8582c9762d3e"
+      },
+      {
+        "sha": "9d68315027c34da78ed3d2dcba2e737d9c396abc",
+        "message": "feat(android): add isolated opt-in TV parity fixture loader",
+        "date": "2026-10-30T11:11:35Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9d68315027c34da78ed3d2dcba2e737d9c396abc"
+      },
+      {
+        "sha": "5511d1b94e5b6893ae5339d2a522f6f941d027ad",
+        "message": "testdata: add Android TV LAB playlist matching Roku 12-channel sample",
+        "date": "2026-10-30T10:34:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5511d1b94e5b6893ae5339d2a522f6f941d027ad"
+      },
+      {
+        "sha": "5c8c99832a7945a66dcbc7c4467c56784e3312a6",
+        "message": "testdata: align Android TV and Roku LAB on exact same twelve candidate streams",
+        "date": "2026-10-30T10:34:06Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5c8c99832a7945a66dcbc7c4467c56784e3312a6"
+      },
+      {
+        "sha": "ef7b0d9d99b0e45208fc361287b0ba0dabbf7b5b",
+        "message": "testdata: pin 12 diverse shared Roku and Android TV channel examples",
+        "date": "2026-10-30T01:45:47Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/ef7b0d9d99b0e45208fc361287b0ba0dabbf7b5b"
+      },
+      {
+        "sha": "8b4cae715486eb8b0c4d1267d0a165a91661ce81",
+        "message": "ci: validate and package isolated Roku Android TV test examples",
+        "date": "2026-10-30T01:40:48Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8b4cae715486eb8b0c4d1267d0a165a91661ce81"
+      },
+      {
+        "sha": "cb52141795caa7521cf15f9408c6078fdcf813d4",
+        "message": "test: ensure Roku Android TV fixture parity without approval bypass",
+        "date": "2026-10-30T01:40:01Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cb52141795caa7521cf15f9408c6078fdcf813d4"
+      },
+      {
+        "sha": "fda6cfdf55e907fda93bc5b2a9a46a2bda9ce371",
+        "message": "feat: export identical isolated test examples for Roku and Android TV",
+        "date": "2026-10-30T01:39:55Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/fda6cfdf55e907fda93bc5b2a9a46a2bda9ce371"
+      },
+      {
+        "sha": "c800470d182f0d08cd7a85585d1fa5b7925e47c1",
+        "message": "test: isolate per-channel TV fixtures and guard approval state",
+        "date": "2026-10-30T01:38:54Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/c800470d182f0d08cd7a85585d1fa5b7925e47c1"
+      },
+      {
+        "sha": "30bc263637fe346e8bf319f3b0a38ec08d749bc1",
+        "message": "feat: generate isolated channel fixtures for Roku and Android TV tests",
+        "date": "2026-10-30T01:38:49Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/30bc263637fe346e8bf319f3b0a38ec08d749bc1"
+      },
+      {
+        "sha": "06834c778a3ea62de8d47bea7a87bc8cbca4c450",
+        "message": "test: cover empty, blocked and approved TV catalog gate",
+        "date": "2026-10-30T01:37:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/06834c778a3ea62de8d47bea7a87bc8cbca4c450"
+      },
+      {
+        "sha": "bbcfd507715826f1c3e6f27f83e8e0a97f340e05",
+        "message": "test: add fail-closed TV catalog audit without altering approved streams",
+        "date": "2026-10-30T01:37:30Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bbcfd507715826f1c3e6f27f83e8e0a97f340e05"
+      },
+      {
+        "sha": "954076a8c936d42b5dcee737290d2e1ad7a5ec05",
+        "message": "docs: preparar homologação conjunta Roku e Android TV sem publicação",
+        "date": "2026-10-30T01:36:25Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/954076a8c936d42b5dcee737290d2e1ad7a5ec05"
+      },
+      {
+        "sha": "1b9a9686a03f1f3ca5fe1806739fa42c5ee7ac64",
+        "message": "docs: record candidate Google Sign-In and private OAuth configuration validation [skip ci]",
+        "date": "2026-10-28T17:35:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1b9a9686a03f1f3ca5fe1806739fa42c5ee7ac64"
+      },
+      {
+        "sha": "ed152389bf7c120349bcbe9bbf36ff5ace77d819",
+        "message": "docs: record authorized Android candidate app and certificate registration [skip ci]",
+        "date": "2026-10-28T13:34:22Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/ed152389bf7c120349bcbe9bbf36ff5ace77d819"
+      },
+      {
+        "sha": "77785147c8cb13aa7143d8b53499986044f56a7b",
+        "message": "docs: record authorized candidate Firebase project creation [skip ci]",
+        "date": "2026-10-28T13:29:27Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/77785147c8cb13aa7143d8b53499986044f56a7b"
+      },
+      {
+        "sha": "6ca4c998373840dd025862b11bba06f54989b6ee",
+        "message": "docs: record owner-confirmed original candidate key recovery [skip ci]",
+        "date": "2026-10-28T13:26:22Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/6ca4c998373840dd025862b11bba06f54989b6ee"
+      },
+      {
+        "sha": "2c24733432270aa8512a381be5651fc12e9a44cc",
+        "message": "docs: confirm authenticated Firebase project inventory [skip ci]",
+        "date": "2026-10-28T13:19:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/2c24733432270aa8512a381be5651fc12e9a44cc"
+      },
+      {
+        "sha": "05b37e60f0acd7249119e1db578830ff8ea4191f",
+        "message": "docs: finalize candidate environment handoff and custody procedure [skip ci]",
+        "date": "2026-10-28T12:55:59Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/05b37e60f0acd7249119e1db578830ff8ea4191f"
+      },
+      {
+        "sha": "9dc46a4ae1124c09dc04c6061a1776f001541ec0",
+        "message": "docs: record candidate build readiness and private custody blockers [skip ci]",
+        "date": "2026-10-28T12:47:55Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9dc46a4ae1124c09dc04c6061a1776f001541ec0"
+      },
+      {
+        "sha": "98160d47f7a0ca341fbd7f80eda3db72fe0acb60",
+        "message": "docs: record sandbox candidate CI and preserved historical receipt evidence [skip ci]",
+        "date": "2026-10-28T12:42:38Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/98160d47f7a0ca341fbd7f80eda3db72fe0acb60"
+      },
+      {
+        "sha": "9e49c5eb817c04bd2efea03b9d9c70d737b0bfcf",
+        "message": "test: isolate Mercado Pago sandbox reconciliation and candidate signing configuration",
+        "date": "2026-10-28T12:32:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9e49c5eb817c04bd2efea03b9d9c70d737b0bfcf"
+      },
+      {
+        "sha": "4bb02cb48cf159ccc953e4f35e991bfea5d50357",
+        "message": "ci: route isolated sandbox and candidate checks without repeating green suites [skip ci]",
+        "date": "2026-10-28T12:28:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/4bb02cb48cf159ccc953e4f35e991bfea5d50357"
+      },
+      {
+        "sha": "8962a64c634dcda88661e7dd421ba8a4e20a414b",
+        "message": "docs: record emulator CI evidence and explicit sandbox blocker [skip ci]",
+        "date": "2026-10-28T12:16:46Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8962a64c634dcda88661e7dd421ba8a4e20a414b"
+      },
+      {
+        "sha": "e1d7e692bf237c96375ef93bdc2eb8f62cb83fef",
+        "message": "test: validate concurrent entitlement transactions in isolated Firestore Emulator",
+        "date": "2026-10-28T12:14:00Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e1d7e692bf237c96375ef93bdc2eb8f62cb83fef"
+      },
+      {
+        "sha": "5e9096a1c9fc4f2cbd98944646e5b6f5d1d4e9e8",
+        "message": "ci: preserve green suites during isolated emulator checks [skip ci]",
+        "date": "2026-10-28T12:13:05Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5e9096a1c9fc4f2cbd98944646e5b6f5d1d4e9e8"
+      },
+      {
+        "sha": "9cbafdfcfe7963751a35f605f62a9b2f7c102992",
+        "message": "docs: record candidate CI success and remaining distribution gates [skip ci]",
+        "date": "2026-10-28T12:01:24Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9cbafdfcfe7963751a35f605f62a9b2f7c102992"
+      },
+      {
+        "sha": "a1cd34792f65f44ade64be6b215fa625d6ea66e6",
+        "message": "fix: expose server-owned trial dates on isolated candidate branch",
+        "date": "2026-10-28T11:58:25Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a1cd34792f65f44ade64be6b215fa625d6ea66e6"
+      },
+      {
+        "sha": "61780147654b42709070702a677eec24b33a2ac5",
+        "message": "test: repeated refunds and mixed plans remain idempotent",
+        "date": "2026-10-28T06:42:08Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/61780147654b42709070702a677eec24b33a2ac5"
+      },
+      {
+        "sha": "a50b88339d4fec692b794e611536cdbd4ba014fe",
+        "message": "docs: reconcile yellow homologation gates with tested code and CI evidence",
+        "date": "2026-10-28T06:41:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a50b88339d4fec692b794e611536cdbd4ba014fe"
+      },
+      {
+        "sha": "818decb52eaff693670d6d68752fa1fbc4ebf7b3",
+        "message": "test: repeated concurrent payment replay does not stack entitlement",
+        "date": "2026-10-28T06:37:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/818decb52eaff693670d6d68752fa1fbc4ebf7b3"
+      },
+      {
+        "sha": "dcab2485dbcac3c4de6984cc9bef1236363b7d7d",
+        "message": "test: reject invalid reviewed claims and preserve expired trial on replay",
+        "date": "2026-10-28T06:35:32Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/dcab2485dbcac3c4de6984cc9bef1236363b7d7d"
+      },
+      {
+        "sha": "08669ad7a8b6264999d729c4bca122ccf9093ae4",
+        "message": "test: reject inconsistent snapshot ledger without writes",
+        "date": "2026-10-28T06:18:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/08669ad7a8b6264999d729c4bca122ccf9093ae4"
+      },
+      {
+        "sha": "e027ee8d3c245f58a33af2b14bd8191785bcde32",
+        "message": "fix: validate snapshot payment event identity before preserving ledger",
+        "date": "2026-10-28T06:18:33Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e027ee8d3c245f58a33af2b14bd8191785bcde32"
+      },
+      {
+        "sha": "e3f4c2d05e0acf82c2304b9db7e85462a1ecf679",
+        "message": "test: snapshot reconciliation preserves reviewed ledger audit fields",
+        "date": "2026-10-28T06:16:13Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e3f4c2d05e0acf82c2304b9db7e85462a1ecf679"
+      },
+      {
+        "sha": "7a0764e64e4dd29c348045dd58722ba1d0c0f11f",
+        "message": "fix: prevent snapshot reconciliation from erasing reviewed grant ledger",
+        "date": "2026-10-28T06:16:06Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7a0764e64e4dd29c348045dd58722ba1d0c0f11f"
+      },
+      {
+        "sha": "75cb15ede75e34e0096b19b30e094eeafc7de36e",
+        "message": "test: reject corrupted existing payment event identity",
+        "date": "2026-10-28T06:13:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/75cb15ede75e34e0096b19b30e094eeafc7de36e"
+      },
+      {
+        "sha": "9f13503d7c4c10150ce2677473a277485e66f50f",
+        "message": "fix: validate existing payment event identity before reconciliation",
+        "date": "2026-10-28T06:13:47Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9f13503d7c4c10150ce2677473a277485e66f50f"
+      },
+      {
+        "sha": "bf4b645b616e9e57a3c22b7fdc3336c1e4225160",
+        "message": "test: fail closed on inconsistent payment ledger document ID",
+        "date": "2026-10-28T06:11:58Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bf4b645b616e9e57a3c22b7fdc3336c1e4225160"
+      },
+      {
+        "sha": "74135ca1d8532008e8888ecf95f5b391c723186f",
+        "message": "fix: reject mismatched payment ledger document identities",
+        "date": "2026-10-28T06:11:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/74135ca1d8532008e8888ecf95f5b391c723186f"
+      },
+      {
+        "sha": "cfe2fde2ed4845e6f563853f49e265792a75b497",
+        "message": "test: preserve valid annual entitlement when another payment is refunded",
+        "date": "2026-10-28T06:11:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cfe2fde2ed4845e6f563853f49e265792a75b497"
+      },
+      {
+        "sha": "cbdb952fcdd1ba3948241fbe12b44d57f8502b29",
+        "message": "test: use past approval date for expired renewal fixture",
+        "date": "2026-10-28T06:08:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cbdb952fcdd1ba3948241fbe12b44d57f8502b29"
+      },
+      {
+        "sha": "1ba5d4b037c529856ce0893cf0de25a1da290b29",
+        "message": "test: cover expired renewal and fail-closed reconciliation boundaries",
+        "date": "2026-10-28T06:01:58Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1ba5d4b037c529856ce0893cf0de25a1da290b29"
+      },
+      {
+        "sha": "ab0d90a6804990f4fa778e7b483d33353e7a949c",
+        "message": "test: cover actual entitlement endpoint trial and paid expiry boundaries",
+        "date": "2026-10-27T23:43:38Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/ab0d90a6804990f4fa778e7b483d33353e7a949c"
+      },
+      {
+        "sha": "c5cf28af77bd2791c209f96d7ee7ee1c530be59a",
+        "message": "ci: preserve manual-only signed LAB guard and record physical access check",
+        "date": "2026-10-27T23:19:54Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/c5cf28af77bd2791c209f96d7ee7ee1c530be59a"
+      },
+      {
+        "sha": "d8c46f7fcd4a9c5524d24ec53f3f0cd282ee03c3",
+        "message": "ci: prepare isolated signed subscription LAB 714 for physical validation",
+        "date": "2026-10-27T23:18:12Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/d8c46f7fcd4a9c5524d24ec53f3f0cd282ee03c3"
+      },
+      {
+        "sha": "1baa04d3236b69d428c3403b23dc98dd011afffd",
+        "message": "fix: replace forbidden USB test samples with verified Media3 and Mux sources",
+        "date": "2026-10-27T16:20:02Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1baa04d3236b69d428c3403b23dc98dd011afffd"
+      },
+      {
+        "sha": "7954893f395e7b5244abc9b395ab8bfdaec7f40e",
+        "message": "chore: apply consistent Flutter analysis rules before isolated USB build",
+        "date": "2026-10-27T16:00:38Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7954893f395e7b5244abc9b395ab8bfdaec7f40e"
+      },
+      {
+        "sha": "0d30a35ae3edfc13cb4adb80579b7e818841144f",
+        "message": "test: prepare independent debug USB variant for connected phone and Chromecast",
+        "date": "2026-10-27T15:57:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0d30a35ae3edfc13cb4adb80579b7e818841144f"
+      },
+      {
+        "sha": "2321b26293250f57ba15304637a8e155bc8f7b96",
+        "message": "fix: recreate VLC surfaces for new controllers and focus TV recovery",
+        "date": "2026-10-27T15:38:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/2321b26293250f57ba15304637a8e155bc8f7b96"
+      },
+      {
+        "sha": "de701acad9a992f16b452432674d526fe0738398",
+        "message": "test: use bounded frames for VLC's hidden animated placeholder",
+        "date": "2026-10-27T11:35:36Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/de701acad9a992f16b452432674d526fe0738398"
+      },
+      {
+        "sha": "af84b5a0f2a5dcc3814f043d6dbef09c6513ac65",
+        "message": "test: exercise VLC native view lifecycle and Android TV remote controls",
+        "date": "2026-10-27T11:32:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/af84b5a0f2a5dcc3814f043d6dbef09c6513ac65"
+      },
+      {
+        "sha": "29a785eaae605f6ecc3c1f4c63d6b9219af51f3e",
+        "message": "fix: clear Cast error attribution when receiver switches media",
+        "date": "2026-10-27T11:21:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/29a785eaae605f6ecc3c1f4c63d6b9219af51f3e"
+      },
+      {
+        "sha": "f9b576bb6a297871f612424f3b535ae2de8c3f6b",
+        "message": "fix: honor latest Cast state and recover from unavailable player preferences",
+        "date": "2026-10-27T11:19:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f9b576bb6a297871f612424f3b535ae2de8c3f6b"
+      },
+      {
+        "sha": "88e539a7c0bf282a77394ffa4b627b18c6ef504c",
+        "message": "test: dispose simulated player controllers through the inherited lifecycle",
+        "date": "2026-10-27T10:43:03Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/88e539a7c0bf282a77394ffa4b627b18c6ef504c"
+      },
+      {
+        "sha": "bfa5fec4f0533eb9f44c1ed57d23d16b9113af02",
+        "message": "fix: focus TV controls directly and repair lifecycle regression test",
+        "date": "2026-10-27T10:40:09Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bfa5fec4f0533eb9f44c1ed57d23d16b9113af02"
+      },
+      {
+        "sha": "919d05e03e6274908df5d4a159de2661296e96f3",
+        "message": "fix: observe Cast confirmation events and show server-owned subscription status",
+        "date": "2026-10-27T10:37:10Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/919d05e03e6274908df5d4a159de2661296e96f3"
+      },
+      {
+        "sha": "903bfad7528781f2a5807955e7ce52c1e05e3f37",
+        "message": "fix: preserve unverified catalogue feeds and restore cached channels safely",
+        "date": "2026-10-27T03:15:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/903bfad7528781f2a5807955e7ce52c1e05e3f37"
+      },
+      {
+        "sha": "98726a4b12cf76204b6b0d171b8d6cd60391dc9a",
+        "message": "tools(catalog): add reversible current-vs-historical M3U triage",
+        "date": "2026-10-27T01:17:02Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/98726a4b12cf76204b6b0d171b8d6cd60391dc9a"
+      },
+      {
+        "sha": "bf6b0050cb9aaaf6b82875155b9fea7f890910a8",
+        "message": "ci(catalog): run false-positive reachability regression tests",
+        "date": "2026-10-27T01:14:46Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bf6b0050cb9aaaf6b82875155b9fea7f890910a8"
+      },
+      {
+        "sha": "99214b353ebc1e497dd0e43c5d5d5c492c16d3ec",
+        "message": "test(catalog): guard against false channel removal on HEAD errors",
+        "date": "2026-10-27T01:14:43Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/99214b353ebc1e497dd0e43c5d5d5c492c16d3ec"
+      },
+      {
+        "sha": "9130160d95e5c91a747777d647457fdb94910586",
+        "message": "docs(catalog): triage all 788 historical stream results without premature removals",
+        "date": "2026-10-27T01:06:00Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9130160d95e5c91a747777d647457fdb94910586"
+      },
+      {
+        "sha": "1e5a030d6f48f1fe7d748aed1f18542d9413b064",
+        "message": "docs(catalog): reuse 788 historical stream measurements and retain evidence levels",
+        "date": "2026-10-27T01:03:02Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1e5a030d6f48f1fe7d748aed1f18542d9413b064"
+      },
+      {
+        "sha": "fa606006a0189b255b928965b018a0d9da6740fe",
+        "message": "fix(catalog): never remove channels based on HEAD-only failures",
+        "date": "2026-10-27T01:01:01Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/fa606006a0189b255b928965b018a0d9da6740fe"
+      },
+      {
+        "sha": "a7cfbbfec1a170016536eb19aacee30a79b23c70",
+        "message": "ci: include catalog regression tests on catalog edits",
+        "date": "2026-10-27T00:52:28Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a7cfbbfec1a170016536eb19aacee30a79b23c70"
+      },
+      {
+        "sha": "4977ce50410f9380114e9c4a32e567de39a639da",
+        "message": "test(catalog): preserve regional identity and normalize display tags",
+        "date": "2026-10-27T00:52:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/4977ce50410f9380114e9c4a32e567de39a639da"
+      }
+    ]
+  },
+  {
+    "query": "commits?sha=2394b12379f84111fcaa9b0944eb31726c3bc45a&path=branding/lab_candidates.json&per_page=100",
+    "commits": [
+      {
+        "sha": "ec15a7737103242e97eede3b4cbbf7bf6c605519",
+        "message": "LAB #34: auditable catalog inventory, resumable Android cohorts and pixel/PCM evidence",
+        "date": "2026-10-20T00:58:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/ec15a7737103242e97eede3b4cbbf7bf6c605519"
+      }
+    ]
+  },
+  {
+    "query": "commits?sha=5f4a28cadfa8cd69a555a544344c22db3851a783&per_page=100",
+    "commits": [
+      {
+        "sha": "5f4a28cadfa8cd69a555a544344c22db3851a783",
+        "message": "feat(lab): clear untested channels or entire channel list",
+        "date": "2026-10-19T17:40:28Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5f4a28cadfa8cd69a555a544344c22db3851a783"
+      },
+      {
+        "sha": "014a577939e19b1086662a58d7c619c914177c19",
+        "message": "fix(windows): allow current MSVC and upload R.L Windows package",
+        "date": "2026-10-19T15:54:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/014a577939e19b1086662a58d7c619c914177c19"
+      },
+      {
+        "sha": "f9c672847fff420907765f6de38f9e8c2211e621",
+        "message": "feat(lab): remove individual channels and clear classified with confirmation",
+        "date": "2026-10-18T03:08:42Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f9c672847fff420907765f6de38f9e8c2211e621"
+      },
+      {
+        "sha": "1472748270e7b6fc142ad1d9646818514eb33883",
+        "message": "fix(lab): export positives using Save As dialog on Windows",
+        "date": "2026-10-18T02:11:07Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1472748270e7b6fc142ad1d9646818514eb33883"
+      },
+      {
+        "sha": "98b32902a732b6bc3f3b542c056539722964334d",
+        "message": "feat(lab): show R.L branding in app title and main screen",
+        "date": "2026-10-18T02:08:58Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/98b32902a732b6bc3f3b542c056539722964334d"
+      },
+      {
+        "sha": "b940efebce92464b34d313d741a864729c80464b",
+        "message": "feat(lab): name and icon R.L on Windows",
+        "date": "2026-10-18T02:08:49Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b940efebce92464b34d313d741a864729c80464b"
+      },
+      {
+        "sha": "bda3daa5017e90b3c79eed073bd40e2001573fac",
+        "message": "feat(lab): name and icon R.L on Android",
+        "date": "2026-10-18T02:08:46Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/bda3daa5017e90b3c79eed073bd40e2001573fac"
+      },
+      {
+        "sha": "9ee07ee4a438ac6481c2d60448406d3b845ca9b1",
+        "message": "feat(lab): generate distinctive R.L icon for Android and Windows",
+        "date": "2026-10-18T02:08:34Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9ee07ee4a438ac6481c2d60448406d3b845ca9b1"
+      },
+      {
+        "sha": "32bebc7af29230b58e3d6f5d3a8c790ea3d5c54d",
+        "message": "ci(lab): compile Windows desktop EXE and package supporting files",
+        "date": "2026-10-18T01:55:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/32bebc7af29230b58e3d6f5d3a8c790ea3d5c54d"
+      },
+      {
+        "sha": "6f0d3100861406fd211bad0bb2195a45c3cc79f3",
+        "message": "feat(lab): initialize Windows video player backend",
+        "date": "2026-10-18T01:55:30Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/6f0d3100861406fd211bad0bb2195a45c3cc79f3"
+      },
+      {
+        "sha": "118f321f24624886200eb1442247c8dbbecd13d5",
+        "message": "feat(lab): add Windows media kit playback backend",
+        "date": "2026-10-18T01:55:28Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/118f321f24624886200eb1442247c8dbbecd13d5"
+      },
+      {
+        "sha": "10aab7a2459161f70287ec2e6f566354b59882ac",
+        "message": "ci(lab): build separate Android channel testing utility",
+        "date": "2026-10-18T01:52:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/10aab7a2459161f70287ec2e6f566354b59882ac"
+      },
+      {
+        "sha": "f4c38925c7121b2a9de4fa59e05ab15810f02a4b",
+        "message": "feat(lab): import M3U, test playback, persist verdicts, export approved playlist",
+        "date": "2026-10-18T01:52:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f4c38925c7121b2a9de4fa59e05ab15810f02a4b"
+      },
+      {
+        "sha": "229bc1d876363861b8706dd4b4734a57bd88fd90",
+        "message": "feat(lab): add local M3U picker and approved export dependencies",
+        "date": "2026-10-18T01:51:47Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/229bc1d876363861b8706dd4b4734a57bd88fd90"
+      },
+      {
+        "sha": "e8b4c057f5a29c4edae6ea81f54f61eeed8f0163",
+        "message": "feat(catalog): add SBC Kids to isolated owner-test APK v6\n\nPreserve every existing channel and frozen v5. Synchronize the experimental platform catalogs; retain unverified distribution status. Add Android native playback diagnostics and verify three bundled infant channels.",
+        "date": "2026-10-17T16:34:48Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e8b4c057f5a29c4edae6ea81f54f61eeed8f0163"
+      },
+      {
+        "sha": "7d52eb5411b96f343b95a2dfd873a70445b9605d",
+        "message": "docs(catalog): verify SBC Kids sample and record infant channel candidates\n\nKeep every candidate unapproved pending source/distribution confirmation and Android/Cast tests. Preserve frozen APK v5 and all runtime/catalog files.",
+        "date": "2026-10-17T16:28:25Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7d52eb5411b96f343b95a2dfd873a70445b9605d"
+      },
+      {
+        "sha": "a92a585d61bc79f5dd6ac06eb6ff0d7120e234e0",
+        "message": "docs: record user-approved frozen images APK v5",
+        "date": "2026-10-17T13:48:26Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a92a585d61bc79f5dd6ac06eb6ff0d7120e234e0"
+      },
+      {
+        "sha": "82c3bbc3204b6d4921c3f2948d14cde073cff037",
+        "message": "feat(images): apply prepared artwork on approved frozen layout v4\n\nPreserve the approved layout geometry and theme. Share category illustrations on phone and TV, restore the original landscape Bau artwork, and illustrate the advertising placeholder. Build isolated signed candidate v5 and verify all six image bytes inside the APK.",
+        "date": "2026-10-17T13:30:06Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/82c3bbc3204b6d4921c3f2948d14cde073cff037"
+      },
+      {
+        "sha": "a4a5585a557a519af300a613c4ae36a41d297f40",
+        "message": "docs: preserve approved mobile layout concept and original artwork for resuming later",
+        "date": "2026-10-17T13:14:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a4a5585a557a519af300a613c4ae36a41d297f40"
+      },
+      {
+        "sha": "9d65de9f4adddb6d3b7e567859a82a52b7375997",
+        "message": "fix(layout): keep vertical banner gestures scrolling the Home on small phones",
+        "date": "2026-10-17T11:01:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9d65de9f4adddb6d3b7e567859a82a52b7375997"
+      },
+      {
+        "sha": "b609486aa1ed4dc84e24e635faaf27d43c9439f0",
+        "message": "ci: build signed isolated APK with approved Home layout",
+        "date": "2026-10-17T10:59:19Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b609486aa1ed4dc84e24e635faaf27d43c9439f0"
+      },
+      {
+        "sha": "9801f13ca46ad07f520b73a4599e6d32ad942be1",
+        "message": "fix(layout): size mobile advertising horizontally and arrange categories in two columns",
+        "date": "2026-10-17T10:37:33Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9801f13ca46ad07f520b73a4599e6d32ad942be1"
+      },
+      {
+        "sha": "72c569b4471f73081a2108cd59383aadbd6f050d",
+        "message": "feat: prepare isolated Asaas sandbox payment reconciliation with ownership and refund guards",
+        "date": "2026-10-17T08:03:25Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/72c569b4471f73081a2108cd59383aadbd6f050d"
+      },
+      {
+        "sha": "9a9f78f6eb10441e8d4b4b7d2f8ef9bc18b15650",
+        "message": "docs: record recovered channel evidence and draft influencer commission rules",
+        "date": "2026-10-17T07:24:34Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9a9f78f6eb10441e8d4b4b7d2f8ef9bc18b15650"
+      },
+      {
+        "sha": "9ade44d8a0c41fa8d897592b248168dc1487d5ad",
+        "message": "fix: pin Android preferences before JNI regression that prevents catalogue loading",
+        "date": "2026-10-17T06:21:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9ade44d8a0c41fa8d897592b248168dc1487d5ad"
+      },
+      {
+        "sha": "a391a27d7010ab6294f1615122ff685e21b7531c",
+        "message": "diagnostic: reproduce packaged catalogue loading on Android release",
+        "date": "2026-10-17T06:10:56Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a391a27d7010ab6294f1615122ff685e21b7531c"
+      },
+      {
+        "sha": "72ba0098ab51e071f2da30a7508fc6e662d88289",
+        "message": "fix: provision isolated Firebase registration and require signed Google login configuration",
+        "date": "2026-10-17T05:03:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/72ba0098ab51e071f2da30a7508fc6e662d88289"
+      },
+      {
+        "sha": "54b4d3b0fe5e701521bd75760da5a46ac6b7355c",
+        "message": "fix: preserve Android namespace during candidate isolation and verify APK launcher",
+        "date": "2026-10-17T04:51:15Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/54b4d3b0fe5e701521bd75760da5a46ac6b7355c"
+      },
+      {
+        "sha": "6451992062ef0ccea753efdd28ce156ca208a08e",
+        "message": "fix: use HTTPS for external advertiser referral",
+        "date": "2026-10-17T04:49:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/6451992062ef0ccea753efdd28ce156ca208a08e"
+      },
+      {
+        "sha": "7f4ccda8c754e5f5b1e5ae28850770eb36f8b36c",
+        "message": "fix: allow enlarged carousel copy to fit and resolve isolated launcher",
+        "date": "2026-10-17T04:48:19Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7f4ccda8c754e5f5b1e5ae28850770eb36f8b36c"
+      },
+      {
+        "sha": "5db846cc310eea6275a430beff752f2a87519667",
+        "message": "fix: prevent small-screen category card RenderFlex overflow",
+        "date": "2026-10-17T04:24:56Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5db846cc310eea6275a430beff752f2a87519667"
+      },
+      {
+        "sha": "3dd0af517912ba3ea7973898237b41808ee4fd77",
+        "message": "fix: prevent category card overflow in small phone and TV text scale tests",
+        "date": "2026-10-17T02:10:57Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/3dd0af517912ba3ea7973898237b41808ee4fd77"
+      },
+      {
+        "sha": "a7799148d5d9c18637e3248a41c19d75f4e96994",
+        "message": "fix: wrap conditional in braces for Dart analyzer",
+        "date": "2026-10-17T02:05:43Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a7799148d5d9c18637e3248a41c19d75f4e96994"
+      },
+      {
+        "sha": "e7ee42cc92971f474ea45acbb019a8d620764eb3",
+        "message": "fix: wrap conditional in braces for Dart analyzer",
+        "date": "2026-10-17T02:05:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e7ee42cc92971f474ea45acbb019a8d620764eb3"
+      },
+      {
+        "sha": "0f54122cf872219de4315817c613eaeb9d8e18cb",
+        "message": "fix: enclose conditional body in braces for Dart analyzer",
+        "date": "2026-10-17T02:05:31Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0f54122cf872219de4315817c613eaeb9d8e18cb"
+      },
+      {
+        "sha": "a966db66c32b1ccf84b21513909a75e0d0db3f74",
+        "message": "fix: synchronize web TV shared account adapter with canonical implementation",
+        "date": "2026-10-17T01:56:48Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a966db66c32b1ccf84b21513909a75e0d0db3f74"
+      },
+      {
+        "sha": "e0b781ed0e9370e88992fabc20794e35e4e864b3",
+        "message": "ci: trigger Soul TV candidate build on every branch push",
+        "date": "2026-10-17T01:49:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e0b781ed0e9370e88992fabc20794e35e4e864b3"
+      },
+      {
+        "sha": "697fca4c9f7852d9adc045c698be6f7da727f9ef",
+        "message": "ci: harden isolated Soul TV APK checks and disclose Firebase debug limitations",
+        "date": "2026-10-17T01:43:32Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/697fca4c9f7852d9adc045c698be6f7da727f9ef"
+      },
+      {
+        "sha": "1a76951f8311d4986ed7c00e58ff62152bf7af44",
+        "message": "ci: add isolated APK smoke test for Soul TV catalog candidate",
+        "date": "2026-10-17T01:41:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1a76951f8311d4986ed7c00e58ff62152bf7af44"
+      },
+      {
+        "sha": "8915487f3963bcbfac68badeef4e982c9a213381",
+        "message": "docs: registrar fontes HLS candidatas e limites de verificação Soul TV",
+        "date": "2026-10-17T01:38:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8915487f3963bcbfac68badeef4e982c9a213381"
+      },
+      {
+        "sha": "baa0355122a818759ba089f9882c50198c775a1a",
+        "message": "docs: registrar canais Soul TV solicitados e validações pendentes",
+        "date": "2026-10-17T01:35:17Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/baa0355122a818759ba089f9882c50198c775a1a"
+      },
+      {
+        "sha": "cdabf918e3b71b1565789721eeeaa633f531a628",
+        "message": "feat: add official SBC TV source with decode evidence and isolated APK 4302",
+        "date": "2026-10-17T01:23:57Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cdabf918e3b71b1565789721eeeaa633f531a628"
+      },
+      {
+        "sha": "40f5de75400f7d65c6df896e2b815b4a9edf6449",
+        "message": "docs: record signed APK 4301 hash and complete regression results",
+        "date": "2026-10-17T00:20:13Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/40f5de75400f7d65c6df896e2b815b4a9edf6449"
+      },
+      {
+        "sha": "ca301e0eec211ab75b35e5742901f9595826f4fa",
+        "message": "docs: explain live Cast candidate, evidence and remaining device validation",
+        "date": "2026-10-17T00:18:31Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/ca301e0eec211ab75b35e5742901f9595826f4fa"
+      },
+      {
+        "sha": "567062800979cf7084c9038d12a940199d9ddf11",
+        "message": "fix: cancel stale Cast confirmations when another session takes over",
+        "date": "2026-10-17T00:11:50Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/567062800979cf7084c9038d12a940199d9ddf11"
+      },
+      {
+        "sha": "091a0ff2520d9ef1b37cfc37991a612e490b233e",
+        "message": "fix: load Cast live edge and recover stalled broadcasts with bounded retries",
+        "date": "2026-10-17T00:10:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/091a0ff2520d9ef1b37cfc37991a612e490b233e"
+      },
+      {
+        "sha": "0982e78a447277a843e919573547a5af2278a6ed",
+        "message": "docs: record physical Cast failure evidence and targeted recovery tests",
+        "date": "2026-10-17T00:03:46Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0982e78a447277a843e919573547a5af2278a6ed"
+      },
+      {
+        "sha": "f9ff88c46fa9c0c2636e478b64dd30a0c5ca67a3",
+        "message": "fix: handle receiver media failure after live playback starts",
+        "date": "2026-10-17T00:02:15Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f9ff88c46fa9c0c2636e478b64dd30a0c5ca67a3"
+      },
+      {
+        "sha": "a0a404b407cc7d13626774817d3dc12b101a1ebd",
+        "message": "docs: record Cast disconnect recovery and passing regression evidence",
+        "date": "2026-10-16T23:44:02Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a0a404b407cc7d13626774817d3dc12b101a1ebd"
+      },
+      {
+        "sha": "068f6035ee1b8fc8c7654b412bfa5f1b8bfc43dc",
+        "message": "test: unmount private navigator when simulating access removal",
+        "date": "2026-10-16T23:42:45Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/068f6035ee1b8fc8c7654b412bfa5f1b8bfc43dc"
+      },
+      {
+        "sha": "8c14742a12a203f1697862806ba89cdfc73831aa",
+        "message": "fix: retain disconnect recovery after leaving Cast controls",
+        "date": "2026-10-16T23:41:29Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8c14742a12a203f1697862806ba89cdfc73831aa"
+      },
+      {
+        "sha": "91e7155f9f23dc6710d3f2cfdba17159ec94b392",
+        "message": "fix: resume live playback when confirmed Cast session ends",
+        "date": "2026-10-16T23:41:10Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/91e7155f9f23dc6710d3f2cfdba17159ec94b392"
+      },
+      {
+        "sha": "3ac4cb0090cea8f8d291896504af63f4a7dc025f",
+        "message": "docs: record Roku parity gaps and measured limits of Cast audit",
+        "date": "2026-10-16T23:37:35Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/3ac4cb0090cea8f8d291896504af63f4a7dc025f"
+      },
+      {
+        "sha": "a13aa9bdee7ca1175ad594d0f44608c0b3e17a18",
+        "message": "test: isolate real loopback transport from widget HTTP overrides",
+        "date": "2026-10-16T23:36:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a13aa9bdee7ca1175ad594d0f44608c0b3e17a18"
+      },
+      {
+        "sha": "55ac7f64f2b19a2e9f03f87501fe398a719b6c99",
+        "message": "test: audit cast continuity with synthetic HLS and virtual access time",
+        "date": "2026-10-16T23:34:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/55ac7f64f2b19a2e9f03f87501fe398a719b6c99"
+      },
+      {
+        "sha": "999b104e9034449d0c6815d21258848a8efba7e3",
+        "message": "fix: keep expired-account payment rechecks neutral until server response",
+        "date": "2026-10-15T14:58:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/999b104e9034449d0c6815d21258848a8efba7e3"
+      },
+      {
+        "sha": "27036f9be83272a4b6c9e6647c8acd9f195dc3ac",
+        "message": "test: verify playback deadline during delayed refresh and bound CI",
+        "date": "2026-10-15T14:51:36Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/27036f9be83272a4b6c9e6647c8acd9f195dc3ac"
+      },
+      {
+        "sha": "c8cf097ffc43df0e6573e7043f5344d5fbaa27a1",
+        "message": "ci: fetch pinned baseline and document read-only trial audit",
+        "date": "2026-10-15T14:49:22Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/c8cf097ffc43df0e6573e7043f5344d5fbaa27a1"
+      },
+      {
+        "sha": "7c8fd6eb41b36a7a637a47dce9c631e36f7916d4",
+        "message": "fix: require account server acknowledgement before trial Home",
+        "date": "2026-10-15T14:47:59Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/7c8fd6eb41b36a7a637a47dce9c631e36f7916d4"
+      },
+      {
+        "sha": "946c38bf724d83050ac5e093f4b7f1a700b9a328",
+        "message": "ci: compare full tests with immutable frozen baseline and verify Firestore rules",
+        "date": "2026-10-15T14:46:57Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/946c38bf724d83050ac5e093f4b7f1a700b9a328"
+      },
+      {
+        "sha": "406c08d3ddc2466ce4627a97d5e371a2e98c0478",
+        "message": "test: verify delayed signout and diagnose requested trial read-only",
+        "date": "2026-10-15T14:44:27Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/406c08d3ddc2466ce4627a97d5e371a2e98c0478"
+      },
+      {
+        "sha": "10e09d2407175e9629605b74aea2b9eefbb3d19f",
+        "message": "fix: resolve login access before checkout and isolate trial by account",
+        "date": "2026-10-15T14:42:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/10e09d2407175e9629605b74aea2b9eefbb3d19f"
+      },
+      {
+        "sha": "fa1f048b1960a706ba143a145a1608c4d4329922",
+        "message": "build(mobile): bundle uploaded original Baú banner artwork",
+        "date": "2026-10-15T14:13:33Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/fa1f048b1960a706ba143a145a1608c4d4329922"
+      },
+      {
+        "sha": "f9d3eb662fee52b940ef52d130b2396b6a1b8ea5",
+        "message": "feat(mobile): display original Baú artwork without cropping in ad carousel",
+        "date": "2026-10-15T14:13:19Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f9d3eb662fee52b940ef52d130b2396b6a1b8ea5"
+      },
+      {
+        "sha": "cdda156cf9c6bc808a0411c75aa3482ccc4e7d2a",
+        "message": "Add files via upload",
+        "date": "2026-10-15T14:11:39Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cdda156cf9c6bc808a0411c75aa3482ccc4e7d2a"
+      },
+      {
+        "sha": "f68c4fdfe85a44c5458ee67f4c6cb9c0c68a5f6b",
+        "message": "Criar pasta de banners comerciais Rocha+",
+        "date": "2026-10-15T14:07:45Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f68c4fdfe85a44c5458ee67f4c6cb9c0c68a5f6b"
+      },
+      {
+        "sha": "cfdccdcffc2a94595339167ddf6f7af37d899b0a",
+        "message": "refactor(mobile): label existing sponsor card Baú without changing stored destination",
+        "date": "2026-10-15T13:32:07Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/cfdccdcffc2a94595339167ddf6f7af37d899b0a"
+      },
+      {
+        "sha": "f49bba884fa95febbc637f9d588ef8b9c84cfaa6",
+        "message": "fix(mobile): handle nullable adult confirmation in banner tap",
+        "date": "2026-10-15T12:50:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f49bba884fa95febbc637f9d588ef8b9c84cfaa6"
+      },
+      {
+        "sha": "0df804f3799ab87f79010d36c23f8c39bf1acb4e",
+        "message": "ci: build signed GanheBR mobile-only test candidate on isolated branch",
+        "date": "2026-10-15T12:47:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0df804f3799ab87f79010d36c23f8c39bf1acb4e"
+      },
+      {
+        "sha": "dcbcd7d69a8d1e97304ab83e8bcfc52fe7e0e150",
+        "message": "feat(mobile): connect GanheBR test card to opt-in external destination",
+        "date": "2026-10-15T12:47:17Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/dcbcd7d69a8d1e97304ab83e8bcfc52fe7e0e150"
+      },
+      {
+        "sha": "49ac8f9f868de4e7eafc6d5f33eb54bbc308a151",
+        "message": "feat(ads): stage adult-gated mobile-only GanheBR referral destination",
+        "date": "2026-10-15T10:12:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/49ac8f9f868de4e7eafc6d5f33eb54bbc308a151"
+      },
+      {
+        "sha": "adcc5f05721ebe4a06b8d5c84be489ba8dce6ccc",
+        "message": "feat: portrait artwork exclusively for mobile category buttons",
+        "date": "2026-10-15T09:56:37Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/adcc5f05721ebe4a06b8d5c84be489ba8dce6ccc"
+      },
+      {
+        "sha": "f33cf9adce3b6c37429f2634da256041687fbd3b",
+        "message": "ci: build signed category fit candidate above frozen 4005",
+        "date": "2026-10-15T09:35:52Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f33cf9adce3b6c37429f2634da256041687fbd3b"
+      },
+      {
+        "sha": "9a1a68a7777a2522c5cdf10827e3c855f069cdfd",
+        "message": "ci: check category fitting with existing Flutter layout tests",
+        "date": "2026-10-15T09:33:23Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9a1a68a7777a2522c5cdf10827e3c855f069cdfd"
+      },
+      {
+        "sha": "5cabdd91c1d5cddb639f57e6884c5b75c4593d1a",
+        "message": "fix: preserve full category artwork without zoom or cropping",
+        "date": "2026-10-15T09:33:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5cabdd91c1d5cddb639f57e6884c5b75c4593d1a"
+      },
+      {
+        "sha": "86bdabe25cf53f74d59c1061d95e500ee9fb4f6b",
+        "message": "feat: rehearse single-account Spark payment reconciliation without writes",
+        "date": "2026-10-15T08:37:36Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/86bdabe25cf53f74d59c1061d95e500ee9fb4f6b"
+      },
+      {
+        "sha": "f77702a6b13774567e9fba9936ece14700a5edff",
+        "message": "feat: read-only end-to-end test subscriber lookup across Firebase and Mercado Pago",
+        "date": "2026-10-15T08:28:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/f77702a6b13774567e9fba9936ece14700a5edff"
+      },
+      {
+        "sha": "b6ef09eee5a1aa31f9dea59e94b2c8588725a0a8",
+        "message": "test: execute production-write CLI guardrails without network or Firebase",
+        "date": "2026-10-15T08:25:40Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b6ef09eee5a1aa31f9dea59e94b2c8588725a0a8"
+      },
+      {
+        "sha": "414a7294155e2b1d8f08470ac031b056b3ea50c8",
+        "message": "test: require double confirmation of production account UID",
+        "date": "2026-10-15T08:23:23Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/414a7294155e2b1d8f08470ac031b056b3ea50c8"
+      },
+      {
+        "sha": "b5314c8051d1ef1ed440f5815b0a57f441ced7ad",
+        "message": "safety: require explicit matching UID confirmation for production reconciliation",
+        "date": "2026-10-15T08:23:14Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/b5314c8051d1ef1ed440f5815b0a57f441ced7ad"
+      },
+      {
+        "sha": "98f40a6546832cb23ea7d9a96502daa91780baf7",
+        "message": "test: exempt owner reconciliation has no billing side effects",
+        "date": "2026-10-15T08:20:23Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/98f40a6546832cb23ea7d9a96502daa91780baf7"
+      },
+      {
+        "sha": "5c79794584d1db865eafc47f6ae0fa6a5b691f41",
+        "message": "fix: reject owner before any recurring store writes",
+        "date": "2026-10-15T08:20:11Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/5c79794584d1db865eafc47f6ae0fa6a5b691f41"
+      },
+      {
+        "sha": "9a874a922cd50569b8e32f1623a5291a5f07ab7e",
+        "message": "test: exempt owner cannot be changed by Spark payment projection",
+        "date": "2026-10-15T08:16:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/9a874a922cd50569b8e32f1623a5291a5f07ab7e"
+      },
+      {
+        "sha": "382a50e6ef7d3f15b22bcdfeb82c18c2da9feb83",
+        "message": "fix: protect exempt administrator in core Spark payment projection",
+        "date": "2026-10-15T08:16:40Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/382a50e6ef7d3f15b22bcdfeb82c18c2da9feb83"
+      },
+      {
+        "sha": "a72f4727eda51531f330813f6c110d8354bd90c4",
+        "message": "test: simulate pending to approved to refund Spark access lifecycle",
+        "date": "2026-10-15T08:04:17Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/a72f4727eda51531f330813f6c110d8354bd90c4"
+      },
+      {
+        "sha": "d7d4ceca6faa32142ae89aee284fdbcf36458da6",
+        "message": "test: protect expired payment access and reject sandbox seller projection",
+        "date": "2026-10-15T07:59:51Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/d7d4ceca6faa32142ae89aee284fdbcf36458da6"
+      },
+      {
+        "sha": "e66c6824c039ad0a02d367599c51633eacb9e5d5",
+        "message": "fix: targeted subscriber diagnosis must confirm exactly one eligible account",
+        "date": "2026-10-15T07:43:53Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/e66c6824c039ad0a02d367599c51633eacb9e5d5"
+      },
+      {
+        "sha": "3b8da9faf8a0e39c3bd132f1c0e4bb7eecf3dad3",
+        "message": "fix(billing): use verified plan search path in active payment service",
+        "date": "2026-10-15T07:42:06Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/3b8da9faf8a0e39c3bd132f1c0e4bb7eecf3dad3"
+      },
+      {
+        "sha": "8a17c96cee93d104d0dc98ccf9bdd7683cad9d14",
+        "message": "test: safeguard reconciliation runner against bulk writes",
+        "date": "2026-10-15T07:39:21Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/8a17c96cee93d104d0dc98ccf9bdd7683cad9d14"
+      },
+      {
+        "sha": "35b04ab4b74c1e85df7645cbf4a2a656281e293b",
+        "message": "safety: skip exempt owner and forbid mass payment writes",
+        "date": "2026-10-15T07:37:43Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/35b04ab4b74c1e85df7645cbf4a2a656281e293b"
+      },
+      {
+        "sha": "75337757865fb722c9c12f549593168abe419e98",
+        "message": "ci: add explicitly confirmed manual owner exemption with safety tests",
+        "date": "2026-10-15T07:28:22Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/75337757865fb722c9c12f549593168abe419e98"
+      },
+      {
+        "sha": "628d4a9047ed120624192ec8f24bd28d8b5afb47",
+        "message": "test: protect existing paid projection during owner grant",
+        "date": "2026-10-15T07:27:54Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/628d4a9047ed120624192ec8f24bd28d8b5afb47"
+      },
+      {
+        "sha": "15786ed4614737c98b946db6e929646b2a8963a9",
+        "message": "fix: preserve Spark billing projection consistency when granting owner exemption",
+        "date": "2026-10-15T07:27:42Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/15786ed4614737c98b946db6e929646b2a8963a9"
+      },
+      {
+        "sha": "1eabbc1f24e5cbe492c9da82531b3228ad289637",
+        "message": "ci: validate owner exemption by verified Google account without Firebase writes",
+        "date": "2026-10-15T07:25:55Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/1eabbc1f24e5cbe492c9da82531b3228ad289637"
+      },
+      {
+        "sha": "241a8f7bccbafa9832df872ae1a0e7d38da29802",
+        "message": "fix: resolve admin exemption by verified owner email instead of manual UID",
+        "date": "2026-10-15T07:25:41Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/241a8f7bccbafa9832df872ae1a0e7d38da29802"
+      },
+      {
+        "sha": "008f128769aa0a312a6f36bc316343f173b8281b",
+        "message": "ci: show privacy-safe owner-readiness failure stage",
+        "date": "2026-10-15T07:20:58Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/008f128769aa0a312a6f36bc316343f173b8281b"
+      },
+      {
+        "sha": "0457bcde319546e0bf2aa3eb70e67543d424cd99",
+        "message": "ci: rerun verified owner read-only entitlement readiness",
+        "date": "2026-10-15T07:19:20Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/0457bcde319546e0bf2aa3eb70e67543d424cd99"
+      },
+      {
+        "sha": "110d0210786ef641cfa5075c44b8c86801274eea",
+        "message": "test: guard owner no-charge access against unauthorized grants",
+        "date": "2026-10-15T07:18:18Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/110d0210786ef641cfa5075c44b8c86801274eea"
+      },
+      {
+        "sha": "fab67a1e75a447caeb4bf637953f4b6852469962",
+        "message": "ci: verify owner Google identity and Spark entitlement readiness without writes",
+        "date": "2026-10-15T07:17:12Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/fab67a1e75a447caeb4bf637953f4b6852469962"
+      },
+      {
+        "sha": "59dbe22ba3536d0c4ef226a763c139db377f00ef",
+        "message": "ci: run corrected read-only commercial plan readiness",
+        "date": "2026-10-15T07:14:58Z",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/commit/59dbe22ba3536d0c4ef226a763c139db377f00ef"
+      }
+    ]
+  }
+]

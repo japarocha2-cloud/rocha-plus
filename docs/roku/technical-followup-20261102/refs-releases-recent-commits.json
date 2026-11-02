@@ -1,0 +1,635 @@
+[
+  {
+    "endpoint": "branches?per_page=100",
+    "data": [
+      {
+        "name": "audit/roku-cast-continuity-20261016",
+        "commit": {
+          "sha": "3ac4cb0090cea8f8d291896504af63f4a7dc025f",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/3ac4cb0090cea8f8d291896504af63f4a7dc025f"
+        },
+        "protected": false
+      },
+      {
+        "name": "backup/rocha-plus-build-353-2026-10-08",
+        "commit": {
+          "sha": "231bca553bdd2417ae33bab68fd324d783febdf1",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/231bca553bdd2417ae33bab68fd324d783febdf1"
+        },
+        "protected": false
+      },
+      {
+        "name": "checkpoint/mobile-layout-approved-20261014",
+        "commit": {
+          "sha": "9648ef7d4b9ec9e58538f16a03f4a73ae2d1e7bf",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9648ef7d4b9ec9e58538f16a03f4a73ae2d1e7bf"
+        },
+        "protected": false
+      },
+      {
+        "name": "checkpoint/mobile-sbc-kids6-approved-20261017",
+        "commit": {
+          "sha": "e8b4c057f5a29c4edae6ea81f54f61eeed8f0163",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/e8b4c057f5a29c4edae6ea81f54f61eeed8f0163"
+        },
+        "protected": false
+      },
+      {
+        "name": "checkpoint/rl-login6001-approved-20261018",
+        "commit": {
+          "sha": "e9ae497ab6e5d5375448dcc6846f7ee7e59c8936",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/e9ae497ab6e5d5375448dcc6846f7ee7e59c8936"
+        },
+        "protected": false
+      },
+      {
+        "name": "dev/founder-annual-app-integration",
+        "commit": {
+          "sha": "52698b75a671db5132d867a785901a6377c5de5f",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/52698b75a671db5132d867a785901a6377c5de5f"
+        },
+        "protected": false
+      },
+      {
+        "name": "docs/mercado-pago-continuity-20261031",
+        "commit": {
+          "sha": "ea247a35e86be228c61d8310a28037fda6995cb3",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/ea247a35e86be228c61d8310a28037fda6995cb3"
+        },
+        "protected": false
+      },
+      {
+        "name": "draft/planos-fundadores-termos-site",
+        "commit": {
+          "sha": "471fe5d55c3bb0f1786d845f26bc47e77981c250",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/471fe5d55c3bb0f1786d845f26bc47e77981c250"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/account-cloud-favorites",
+        "commit": {
+          "sha": "64e9656b3a284b9fd9ed466ed3560fa8b350fde9",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/64e9656b3a284b9fd9ed466ed3560fa8b350fde9"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/admin-login-firebase-20261014",
+        "commit": {
+          "sha": "eed6dcd5735fb3c3cc17aea282258a37c70b68b1",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/eed6dcd5735fb3c3cc17aea282258a37c70b68b1"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/admin-trial-test-apk-20261014",
+        "commit": {
+          "sha": "9f518f8b2b3c77827f76807ecbd09cd5028deaf0",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9f518f8b2b3c77827f76807ecbd09cd5028deaf0"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/amambai-news-carousel-20261018",
+        "commit": {
+          "sha": "b45d23f8695bf9b162bf2848428296ef8d3eb861",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/b45d23f8695bf9b162bf2848428296ef8d3eb861"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/android-tv-universal-20261018",
+        "commit": {
+          "sha": "7dc54fbff0f6713148f191cff27a2afa974d6a80",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/7dc54fbff0f6713148f191cff27a2afa974d6a80"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/cast-responsive-panel-layout",
+        "commit": {
+          "sha": "195214ff8fdbac759ae1cd09c07fac6b1c7e3143",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/195214ff8fdbac759ae1cd09c07fac6b1c7e3143"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/cazetv-official-embed",
+        "commit": {
+          "sha": "a91bcc6701edf11a6c95f53fb28717810d8932b4",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/a91bcc6701edf11a6c95f53fb28717810d8932b4"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/channel-lab-import-export-20261017",
+        "commit": {
+          "sha": "5f4a28cadfa8cd69a555a544344c22db3851a783",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/5f4a28cadfa8cd69a555a544344c22db3851a783"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/dual-player-lab-20261020",
+        "commit": {
+          "sha": "ad675662b482dc9c8f36658534b94f584bc77541",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/ad675662b482dc9c8f36658534b94f584bc77541"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/favorites-billing-integration",
+        "commit": {
+          "sha": "8e0e3e36f19b3ab6f8a60894cd42185ae5f8483e",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/8e0e3e36f19b3ab6f8a60894cd42185ae5f8483e"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/home-featured-carousel-layout",
+        "commit": {
+          "sha": "61d9c4438d388c16fc5efc0baed8d2bf0971f030",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/61d9c4438d388c16fc5efc0baed8d2bf0971f030"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/http-https-hls-lab-20261019",
+        "commit": {
+          "sha": "f5d3609ad0253bc6d05159bf6c1e774dc7822a77",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/f5d3609ad0253bc6d05159bf6c1e774dc7822a77"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/layout-proportions-20261017",
+        "commit": {
+          "sha": "9d65de9f4adddb6d3b7e567859a82a52b7375997",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9d65de9f4adddb6d3b7e567859a82a52b7375997"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/mercadopago-trial-20261013",
+        "commit": {
+          "sha": "473abcaa25f7618a84ad8ea96bc0a40be8551091",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/473abcaa25f7618a84ad8ea96bc0a40be8551091"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/mobile-asaas-550-20261015",
+        "commit": {
+          "sha": "f0f0fb68cb2a6dda6e63aac7e30752f7ee252129",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/f0f0fb68cb2a6dda6e63aac7e30752f7ee252129"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/mobile-ganhebr-link-20261015",
+        "commit": {
+          "sha": "fa1f048b1960a706ba143a145a1608c4d4329922",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/fa1f048b1960a706ba143a145a1608c4d4329922"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/mobile-home-layout-20261014",
+        "commit": {
+          "sha": "ea35314659f3c9aafa8a919eb864da7ee7c7e956",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/ea35314659f3c9aafa8a919eb864da7ee7c7e956"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/office-installers-20261022",
+        "commit": {
+          "sha": "07b811d29f968c16ebfd2eae15707038c79d5998",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/07b811d29f968c16ebfd2eae15707038c79d5998"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/play-billing-test-only",
+        "commit": {
+          "sha": "442708cd40dfa45b62b59ca5ccfd513ed5dcfb63",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/442708cd40dfa45b62b59ca5ccfd513ed5dcfb63"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/required-social-login",
+        "commit": {
+          "sha": "94b0bd27ed14ba0a9f21680a21c70d443da3fa1b",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/94b0bd27ed14ba0a9f21680a21c70d443da3fa1b"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/rocha-lab-positives-test-20261018",
+        "commit": {
+          "sha": "e9ae497ab6e5d5375448dcc6846f7ee7e59c8936",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/e9ae497ab6e5d5375448dcc6846f7ee7e59c8936"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/roku-account-and-icon-20261012",
+        "commit": {
+          "sha": "6f12b2fc62de56e508fafce834d1765eb1621298",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/6f12b2fc62de56e508fafce834d1765eb1621298"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/roku-current-catalog-20261029",
+        "commit": {
+          "sha": "47b1471bc6b802343bbfffb6ec9655a93eeb1913",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/47b1471bc6b802343bbfffb6ec9655a93eeb1913"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/sbc-catalog-20261016",
+        "commit": {
+          "sha": "cdabf918e3b71b1565789721eeeaa633f531a628",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/cdabf918e3b71b1565789721eeeaa633f531a628"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/shared-verified-catalog-20261012",
+        "commit": {
+          "sha": "6f12b2fc62de56e508fafce834d1765eb1621298",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/6f12b2fc62de56e508fafce834d1765eb1621298"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/site-office-estudando-empresas-20261020",
+        "commit": {
+          "sha": "a7a77c5a5fdd78fe7c1d20550aae51ae9af02a34",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/a7a77c5a5fdd78fe7c1d20550aae51ae9af02a34"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/soul-tv-candidates-20261016",
+        "commit": {
+          "sha": "f017eb7e9bdb806b2fe20d03dcfa89f07cfd102f",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/f017eb7e9bdb806b2fe20d03dcfa89f07cfd102f"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/spark-payment-confirmation-20261015",
+        "commit": {
+          "sha": "86bdabe25cf53f74d59c1061d95e500ee9fb4f6b",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/86bdabe25cf53f74d59c1061d95e500ee9fb4f6b"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/tv-cosmic-home-isolated",
+        "commit": {
+          "sha": "cc89ad02f8764d5bbe86ab0c695cadb25b53fd65",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/cc89ad02f8764d5bbe86ab0c695cadb25b53fd65"
+        },
+        "protected": false
+      },
+      {
+        "name": "feat/tv-visual-review-20261012",
+        "commit": {
+          "sha": "32a20073f8a8912d1587794184777da5a9f51c06",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/32a20073f8a8912d1587794184777da5a9f51c06"
+        },
+        "protected": false
+      },
+      {
+        "name": "feature/channel-health-cmd",
+        "commit": {
+          "sha": "572b6fbf8059e0f843ddc5e580f58183ee6832a0",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/572b6fbf8059e0f843ddc5e580f58183ee6832a0"
+        },
+        "protected": false
+      },
+      {
+        "name": "feature/home-card-carousel",
+        "commit": {
+          "sha": "ec14171bdf77623efd30cb5be198ab38200f9f8a",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/ec14171bdf77623efd30cb5be198ab38200f9f8a"
+        },
+        "protected": false
+      },
+      {
+        "name": "feature/tv-auto-fullscreen-20261011",
+        "commit": {
+          "sha": "0d7b3f3891ee10262cca980e8943da864dd1eecb",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/0d7b3f3891ee10262cca980e8943da864dd1eecb"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/account-favorites-covers-20261013",
+        "commit": {
+          "sha": "d64872c2c14f7c003d42c9fbda9b886d1741b8d0",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/d64872c2c14f7c003d42c9fbda9b886d1741b8d0"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/cast-disconnect-resume-20261016",
+        "commit": {
+          "sha": "0982e78a447277a843e919573547a5af2278a6ed",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/0982e78a447277a843e919573547a5af2278a6ed"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/cast-live-continuity-20261016",
+        "commit": {
+          "sha": "40f5de75400f7d65c6df896e2b815b4a9edf6449",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/40f5de75400f7d65c6df896e2b815b4a9edf6449"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/channel-slow-start-no-auto-quarantine-20261016",
+        "commit": {
+          "sha": "9d4d3f7322e6c04599c98090254c4dd89c0ec2e6",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9d4d3f7322e6c04599c98090254c4dd89c0ec2e6"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/explicit-signed-beta-artifacts",
+        "commit": {
+          "sha": "695bcdaae4e9be1a042fc0a503963d9b26749138",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/695bcdaae4e9be1a042fc0a503963d9b26749138"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/favoritos-capas-canais-20261013",
+        "commit": {
+          "sha": "c3c89b02bf7f5c5e15ad3a1f385099227e6bd308",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/c3c89b02bf7f5c5e15ad3a1f385099227e6bd308"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/layout-preview-when-firebase-unconfigured",
+        "commit": {
+          "sha": "0efb4280d828f14a593f4a0f2c1a212b9cd404f7",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/0efb4280d828f14a593f4a0f2c1a212b9cd404f7"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/login-trial-access-race-20261015",
+        "commit": {
+          "sha": "999b104e9034449d0c6815d21258848a8efba7e3",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/999b104e9034449d0c6815d21258848a8efba7e3"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/mobile-category-cover-fit-20261015",
+        "commit": {
+          "sha": "adcc5f05721ebe4a06b8d5c84be489ba8dce6ccc",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/adcc5f05721ebe4a06b8d5c84be489ba8dce6ccc"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/subscription-access-20261026",
+        "commit": {
+          "sha": "61780147654b42709070702a677eec24b33a2ac5",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/61780147654b42709070702a677eec24b33a2ac5"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/tv-sports-catalog-recovery",
+        "commit": {
+          "sha": "acfb516b621129e8ffd5a1a2df8989c2f874e9f0",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/acfb516b621129e8ffd5a1a2df8989c2f874e9f0"
+        },
+        "protected": false
+      },
+      {
+        "name": "fix/verified-only-catalog-20261011",
+        "commit": {
+          "sha": "475eda77281e6de456df873b44c6fdd005613be1",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/475eda77281e6de456df873b44c6fdd005613be1"
+        },
+        "protected": false
+      },
+      {
+        "name": "freeze/apk-538-20261014",
+        "commit": {
+          "sha": "473abcaa25f7618a84ad8ea96bc0a40be8551091",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/473abcaa25f7618a84ad8ea96bc0a40be8551091"
+        },
+        "protected": false
+      },
+      {
+        "name": "freeze/mobile-4107-approved-20261015",
+        "commit": {
+          "sha": "999b104e9034449d0c6815d21258848a8efba7e3",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/999b104e9034449d0c6815d21258848a8efba7e3"
+        },
+        "protected": false
+      },
+      {
+        "name": "freeze/mobile-bau-approved-20261015",
+        "commit": {
+          "sha": "fa1f048b1960a706ba143a145a1608c4d4329922",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/fa1f048b1960a706ba143a145a1608c4d4329922"
+        },
+        "protected": false
+      },
+      {
+        "name": "freeze/mobile-images5-approved-20261017",
+        "commit": {
+          "sha": "82c3bbc3204b6d4921c3f2948d14cde073cff037",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/82c3bbc3204b6d4921c3f2948d14cde073cff037"
+        },
+        "protected": false
+      },
+      {
+        "name": "freeze/mobile-layout4-approved-20261017",
+        "commit": {
+          "sha": "9d65de9f4adddb6d3b7e567859a82a52b7375997",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9d65de9f4adddb6d3b7e567859a82a52b7375997"
+        },
+        "protected": false
+      },
+      {
+        "name": "frozen/build-353-baseline",
+        "commit": {
+          "sha": "231bca553bdd2417ae33bab68fd324d783febdf1",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/231bca553bdd2417ae33bab68fd324d783febdf1"
+        },
+        "protected": false
+      },
+      {
+        "name": "frozen/build-510-physical-approved",
+        "commit": {
+          "sha": "9652b3dbc60ad962e570c9afe17e6f19c58a291f",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/9652b3dbc60ad962e570c9afe17e6f19c58a291f"
+        },
+        "protected": false
+      },
+      {
+        "name": "frozen/build-538-spark-alert-approved",
+        "commit": {
+          "sha": "473abcaa25f7618a84ad8ea96bc0a40be8551091",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/473abcaa25f7618a84ad8ea96bc0a40be8551091"
+        },
+        "protected": false
+      },
+      {
+        "name": "homolog/technical-candidate-20261028",
+        "commit": {
+          "sha": "3254d0503dd72984682b9080da5d4d21c24f2458",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/3254d0503dd72984682b9080da5d4d21c24f2458"
+        },
+        "protected": false
+      },
+      {
+        "name": "lab/roku-catalog-diagnostics-20261031",
+        "commit": {
+          "sha": "86a1b892693cdb60a2203b8d7a96054c48ba390e",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/86a1b892693cdb60a2203b8d7a96054c48ba390e"
+        },
+        "protected": false
+      },
+      {
+        "name": "lab/roku-mario-maria-20261101",
+        "commit": {
+          "sha": "ebf6514d5b70c82c702cd57798d4ce07ee58e34c",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/ebf6514d5b70c82c702cd57798d4ce07ee58e34c"
+        },
+        "protected": false
+      },
+      {
+        "name": "lab/roku-visual-covers-performance-20261102",
+        "commit": {
+          "sha": "07a3f2f3a528d24aa09f4605dd146d99f2ef77d6",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/07a3f2f3a528d24aa09f4605dd146d99f2ef77d6"
+        },
+        "protected": false
+      },
+      {
+        "name": "lab/trial-expiry-isolated-20261031",
+        "commit": {
+          "sha": "baafd12910965bea40f0eff163613ce0309f7d1d",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/baafd12910965bea40f0eff163613ce0309f7d1d"
+        },
+        "protected": false
+      },
+      {
+        "name": "main",
+        "commit": {
+          "sha": "d18478c07f235435139c974c602665837dcd0975",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/d18478c07f235435139c974c602665837dcd0975"
+        },
+        "protected": false
+      },
+      {
+        "name": "test/live-payment-pilot-20261015",
+        "commit": {
+          "sha": "2ec685e0352c73a25162c0a3b58cb2ecf5a24f1f",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/2ec685e0352c73a25162c0a3b58cb2ecf5a24f1f"
+        },
+        "protected": false
+      },
+      {
+        "name": "test/tv-morena-source-review-20261017",
+        "commit": {
+          "sha": "dc88b80008ac4cad08101462f3da9c5b6794132a",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/dc88b80008ac4cad08101462f3da9c5b6794132a"
+        },
+        "protected": false
+      },
+      {
+        "name": "v2-build-validation",
+        "commit": {
+          "sha": "b882a47355d520fd48a3432f803c239c18288414",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/b882a47355d520fd48a3432f803c239c18288414"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/administrative-security",
+        "commit": {
+          "sha": "bce21cc0700475db59b6645c77a2fbf248ea6939",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/bce21cc0700475db59b6645c77a2fbf248ea6939"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/candidate-build-guard-20261031",
+        "commit": {
+          "sha": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/2394b12379f84111fcaa9b0944eb31726c3bc45a"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/channel-health",
+        "commit": {
+          "sha": "19ff54168f0161f50f00ee4d0cd450d379373e35",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/19ff54168f0161f50f00ee4d0cd450d379373e35"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/code-sweep",
+        "commit": {
+          "sha": "c0baf1a69a97ff1b2a7b08144eafe69208ab49ff",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/c0baf1a69a97ff1b2a7b08144eafe69208ab49ff"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/fiscal-quality",
+        "commit": {
+          "sha": "f3093f492e67c36a4502edc118add17f033a5f82",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/f3093f492e67c36a4502edc118add17f033a5f82"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/sports-player",
+        "commit": {
+          "sha": "a2c77583d5749e4c0a209e2fa9320c044ec83c57",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/a2c77583d5749e4c0a209e2fa9320c044ec83c57"
+        },
+        "protected": false
+      },
+      {
+        "name": "work/visual",
+        "commit": {
+          "sha": "8af40e100006c73e29233ff5e6adbde183bebf5e",
+          "url": "https://api.github.com/repos/japarocha2-cloud/rocha-plus/commits/8af40e100006c73e29233ff5e6adbde183bebf5e"
+        },
+        "protected": false
+      }
+    ]
+  },
+  {
+    "endpoint": "tags?per_page=100",
+    "data": []
+  },
+  {
+    "endpoint": "releases?per_page=100",
+    "data": []
+  },
+  {
+    "endpoint": "commits?since=2026-10-30T00:00:00Z&until=2026-11-02T23:59:59Z&per_page=100",
+    "data": []
+  }
+]

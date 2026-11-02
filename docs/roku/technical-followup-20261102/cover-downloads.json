@@ -1,0 +1,175 @@
+[
+  {
+    "url": "https://eitv6.cdn.broadpeak.io/account351-i1438/channel/53/quadrada_-3-_pequeno-1723832301.png",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html",
+    "originalBytes": 2334,
+    "originalSha256": "8609fbf6d25103698c09480062dd212a9f8e8acbc3d320f599bd871cef1a7048",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/f/f4/TikTok_Radio.svg",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 5796,
+    "originalSha256": "391f650c8f8fd3534a7911cc32a82a45ffdf08dfb4cfa26ef5ce57b693f29f0d",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://i2.paste.pics/bf68b159547597c39574aec9dd7c626a.png",
+    "valid": false,
+    "reason": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://assets.antenaplay.ro/2024/02/23/XUKfJwir4MxNeP4nHtG7.png",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 5760,
+    "originalSha256": "a3a35577c27c4bca23614e2eef7cda4af59fcb9b8437b59cad1779c1123c4d3f",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/2/27/BeinSports1.svg/revision/latest?cb=20230910184457",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 5953,
+    "originalSha256": "74b90434f1b75935dd9efe017100466f7f57132116a10c41bd30afd726430685",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/4/40/BeinSports2.svg/revision/latest?cb=20230910185720",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 5953,
+    "originalSha256": "d21640339cdc3850c34b18027bb72acd6ad008d180b9c471c20464cce66838da",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/5/53/BeIN_Sports_3_2017_Rectangle.png/revision/latest/scale-to-width-down/1000?cb=20251213114000",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 6143,
+    "originalSha256": "37584d466b307497782a8951d01779e656cb4a7de0ee56c713dc15957833fffd",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/9/96/Logo_bein_sports_4.png/revision/latest/scale-to-width-down/1000?cb=20251213115820",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 6092,
+    "originalSha256": "a94c922e9391fcf3deca38ee9753eb313ace70a784ba1acaa85700f59281ecb6",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://static.wikia.nocookie.net/logopedia/images/1/14/BeIN%2Bsports%2B5.png/revision/latest/scale-to-width-down/1000?cb=20251214104942",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 6089,
+    "originalSha256": "d93dc9ee1485d9e08e8342b6a8bd68d7a4694c28de4eed632a214857e44c1c4e",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://i.imgur.com/QWo0x7S.jpg",
+    "http": 200,
+    "retryAfter": null,
+    "contentType": "image/jpeg",
+    "originalBytes": 11964,
+    "originalSha256": "92be42be0896b958baacf92d2da30b0bb78e84478ab9387c49aa1f6018dfc35b",
+    "valid": true,
+    "format": "jpeg",
+    "originalFile": "097de801326b8f8b4b1b.jpg",
+    "width": 221,
+    "height": 146,
+    "uri": "pkg:/images/android-logos/097de801326b8f8b4b1b.png",
+    "outputWidth": 163,
+    "outputHeight": 108,
+    "packagedBytes": 26723,
+    "packagedSha256": "2b06dfc46cc54c8f02f80b083127cea9f083be163d42597b29f2fcfd292c6fb0"
+  },
+  {
+    "url": "https://www.sms.cz/kategorie/televize/bmp/loga/velka/golfchannel.png",
+    "valid": false,
+    "reason": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://assets.antenaplay.ro/2024/10/25/SN0nevshXwKDcZ2Tw1jm.png",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 5760,
+    "originalSha256": "d4102b6da778e2a34c93437652d086b7250c2ff21d8c70a48b8a6644a2f592cc",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://storage.googleapis.com/soultv-prod-media/media/brand/LOGO_TV_DIFUS%C3%83O_100x100px_doiivZN.png",
+    "http": 404,
+    "retryAfter": null,
+    "contentType": "application/xml; charset=UTF-8",
+    "originalBytes": 133,
+    "originalSha256": "881aa5538ac02efb941f6cbef4e784f5e4a4a0c70611cc6b7e7e461f21c65f97",
+    "valid": false,
+    "reason": "http_404"
+  },
+  {
+    "url": "https://a.jsrdn.com/hls/23208/cindie-tv/logo_20250225_222520_68.png",
+    "http": 403,
+    "retryAfter": null,
+    "contentType": "application/xml",
+    "originalBytes": 263,
+    "originalSha256": "924945c457037cad00513b0d5c086fb4b9da9f4d4d530bfaee3f779aa9920567",
+    "valid": false,
+    "reason": "http_403"
+  },
+  {
+    "url": "https://videocdn.bamboo-cloud.com/p/11294/sp/1129400/thumbnail/entry_id/0_vjhh0bly/version/100012/width/1920",
+    "http": 404,
+    "retryAfter": null,
+    "contentType": "text/html; charset=UTF-8",
+    "originalBytes": 0,
+    "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "valid": false,
+    "reason": "http_404"
+  },
+  {
+    "url": "https://tv.laboralsst.com.br/logo.png",
+    "valid": false,
+    "reason": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://storage.googleapis.com/soultv-prod-media/media/img/mobile/featured/bg_mobile.jpg",
+    "http": 404,
+    "retryAfter": null,
+    "contentType": "application/xml; charset=UTF-8",
+    "originalBytes": 133,
+    "originalSha256": "881aa5538ac02efb941f6cbef4e784f5e4a4a0c70611cc6b7e7e461f21c65f97",
+    "valid": false,
+    "reason": "http_404"
+  },
+  {
+    "url": "https://storage.googleapis.com/soultv-prod-media/media/brand/Logomarca_CANAL_START_100X100_PNG_CrAzZzP.png",
+    "http": 404,
+    "retryAfter": null,
+    "contentType": "application/xml; charset=UTF-8",
+    "originalBytes": 133,
+    "originalSha256": "881aa5538ac02efb941f6cbef4e784f5e4a4a0c70611cc6b7e7e461f21c65f97",
+    "valid": false,
+    "reason": "http_404"
+  }
+]

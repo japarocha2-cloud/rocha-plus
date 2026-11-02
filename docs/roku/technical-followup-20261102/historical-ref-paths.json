@@ -1,0 +1,1112 @@
+[
+  {
+    "branch": "feat/channel-lab-import-export-20261017",
+    "sha": "5f4a28cadfa8cd69a555a544344c22db3851a783",
+    "paths": [
+      {
+        "path": ".github/workflows/cast-live-candidate.yml",
+        "sha": "6b9424097ae69da4d2c3d4ded2ed158261e5d5a7",
+        "size": 4881
+      },
+      {
+        "path": ".github/workflows/catalog-runtime-check.yml",
+        "sha": "30f1375231f725ff2390ab45f5591e3c74033296",
+        "size": 2590
+      },
+      {
+        "path": ".github/workflows/commercial-plan-audit.yml",
+        "sha": "08161fb2061c611a94177101cf9d84b1a462780a",
+        "size": 3118
+      },
+      {
+        "path": ".github/workflows/roku-cast-audit.yml",
+        "sha": "a61bc44014f01e4a817ba0664303d3ca83cd57b9",
+        "size": 1850
+      },
+      {
+        "path": ".github/workflows/soul-tv-candidate.yml",
+        "sha": "db8d8e613bc16f98edcc044eb183bb0429b2eb23",
+        "size": 3398
+      },
+      {
+        "path": "billing/tools/audit-test-subscriber.mjs",
+        "sha": "f6e7745d684c38dc31a1874bb122bf489fa505ef",
+        "size": 2058
+      },
+      {
+        "path": "catalog/approved.json",
+        "sha": "3562bc964af05aefcd439be25c7bc5d69cc150c1",
+        "size": 88458
+      },
+      {
+        "path": "catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "docs/audit-roku-cast-20261016.md",
+        "sha": "e45ddcc92da39676aee2a9b0f7d2899c536c6748",
+        "size": 4804
+      },
+      {
+        "path": "docs/audits/build-501-apk-evidence.json",
+        "sha": "be31972cb7b16eda9243a31703c0d8f4c8eb320c",
+        "size": 726
+      },
+      {
+        "path": "docs/audits/build-501-physical-test.md",
+        "sha": "b28daefa0e9908bd5baf7d76e0ff1ae63e7d3b98",
+        "size": 14481
+      },
+      {
+        "path": "docs/candidate-validation.md",
+        "sha": "3e0881caa5c4d299fe03bf7c3724cc514136c64f",
+        "size": 7093
+      },
+      {
+        "path": "docs/catalog/build504-baseline.md",
+        "sha": "f633aeb0d0751fce1c72135c08d362790bc68cd8",
+        "size": 2867
+      },
+      {
+        "path": "docs/catalog/channel-followup-20261017.md",
+        "sha": "f31fe1de4cc66d00d38f4e8c51ab6ce68651d259",
+        "size": 4390
+      },
+      {
+        "path": "docs/catalog/infantil-candidates-20261017.json",
+        "sha": "158af68e4a31b374ae5dd86bbc80dc6f767553d1",
+        "size": 4325
+      },
+      {
+        "path": "docs/catalog/infantil-expansion-20261017.md",
+        "sha": "5b256aefcb9a7a40e78914eb97814b52b583d1bd",
+        "size": 5679
+      },
+      {
+        "path": "docs/catalog/sbc-20261016.json",
+        "sha": "029de40c8f89d15b70e9266ac7faef5ea3638daf",
+        "size": 649
+      },
+      {
+        "path": "docs/catalog/sbt-20261013.json",
+        "sha": "eefc3067921540cf75b81fba2fde3829dd9c30bf",
+        "size": 1653
+      },
+      {
+        "path": "docs/catalog/soul-tv-candidates-20261016.md",
+        "sha": "86309672c73026360dd6d21f2ac818a8c65f33d5",
+        "size": 2341
+      },
+      {
+        "path": "docs/catalog/tvmaisbrasil-20261017.json",
+        "sha": "c96e076ad7f8ae398a2b705f9a477942c5af9814",
+        "size": 933
+      },
+      {
+        "path": "docs/login-trial-access-audit-20261015.md",
+        "sha": "d0f28b4902f164a50e2c5324768591bc30f98630",
+        "size": 5154
+      },
+      {
+        "path": "lib/catalog_probe.dart",
+        "sha": "7e5693364fd8e1abdc3f1326ebbeb073ec4e2aab",
+        "size": 1945
+      },
+      {
+        "path": "platforms/roku/catalog/approved.json",
+        "sha": "3562bc964af05aefcd439be25c7bc5d69cc150c1",
+        "size": 88458
+      },
+      {
+        "path": "platforms/roku/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "platforms/web-tv/catalog/approved.json",
+        "sha": "3562bc964af05aefcd439be25c7bc5d69cc150c1",
+        "size": 88458
+      },
+      {
+        "path": "platforms/web-tv/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "test/cast_continuity_audit_test.dart",
+        "sha": "45d1729f4314dd254832b00f622c7442cf76311a",
+        "size": 2493
+      },
+      {
+        "path": "test/cast_hls_continuity_audit_test.dart",
+        "sha": "81b6826fd890134ed5896988cc1998d515b4452b",
+        "size": 1920
+      },
+      {
+        "path": "test/packaged_catalog_test.dart",
+        "sha": "b7acd644edb157cf6b41b4c5567676d113186b90",
+        "size": 1811
+      },
+      {
+        "path": "test/reviewed_catalog_fixture.dart",
+        "sha": "a188d7266bd06b89603ab2290d4b1b9e5ba1d5cd",
+        "size": 867
+      },
+      {
+        "path": "tools/candidate_firebase.test.mjs",
+        "sha": "5fa1683aee56e8f8168b8881f578d2b6f41a10f7",
+        "size": 1689
+      },
+      {
+        "path": "tools/prepare_candidate_firebase.mjs",
+        "sha": "2499fc800c4af13f3f3ea9f5e0ef46609a2c3f2d",
+        "size": 6377
+      }
+    ]
+  },
+  {
+    "branch": "feat/soul-tv-candidates-20261016",
+    "sha": "f017eb7e9bdb806b2fe20d03dcfa89f07cfd102f",
+    "paths": [
+      {
+        "path": ".github/workflows/cast-live-candidate.yml",
+        "sha": "6b9424097ae69da4d2c3d4ded2ed158261e5d5a7",
+        "size": 4881
+      },
+      {
+        "path": ".github/workflows/catalog-runtime-check.yml",
+        "sha": "30f1375231f725ff2390ab45f5591e3c74033296",
+        "size": 2590
+      },
+      {
+        "path": ".github/workflows/commercial-plan-audit.yml",
+        "sha": "08161fb2061c611a94177101cf9d84b1a462780a",
+        "size": 3118
+      },
+      {
+        "path": ".github/workflows/roku-cast-audit.yml",
+        "sha": "a61bc44014f01e4a817ba0664303d3ca83cd57b9",
+        "size": 1850
+      },
+      {
+        "path": ".github/workflows/soul-tv-candidate.yml",
+        "sha": "db8d8e613bc16f98edcc044eb183bb0429b2eb23",
+        "size": 3398
+      },
+      {
+        "path": "billing/tools/audit-test-subscriber.mjs",
+        "sha": "f6e7745d684c38dc31a1874bb122bf489fa505ef",
+        "size": 2058
+      },
+      {
+        "path": "catalog/approved.json",
+        "sha": "543653983dbf5b68f6c2884a4afb061fa8a99a1b",
+        "size": 89762
+      },
+      {
+        "path": "catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "docs/audit-roku-cast-20261016.md",
+        "sha": "e45ddcc92da39676aee2a9b0f7d2899c536c6748",
+        "size": 4804
+      },
+      {
+        "path": "docs/audits/build-501-apk-evidence.json",
+        "sha": "be31972cb7b16eda9243a31703c0d8f4c8eb320c",
+        "size": 726
+      },
+      {
+        "path": "docs/audits/build-501-physical-test.md",
+        "sha": "b28daefa0e9908bd5baf7d76e0ff1ae63e7d3b98",
+        "size": 14481
+      },
+      {
+        "path": "docs/candidate-validation.md",
+        "sha": "3e0881caa5c4d299fe03bf7c3724cc514136c64f",
+        "size": 7093
+      },
+      {
+        "path": "docs/catalog/build504-baseline.md",
+        "sha": "f633aeb0d0751fce1c72135c08d362790bc68cd8",
+        "size": 2867
+      },
+      {
+        "path": "docs/catalog/channel-followup-20261017.md",
+        "sha": "f31fe1de4cc66d00d38f4e8c51ab6ce68651d259",
+        "size": 4390
+      },
+      {
+        "path": "docs/catalog/infantil-candidates-20261017.json",
+        "sha": "d58c0866640e32106ddd81d023d1add62fb66a4b",
+        "size": 4660
+      },
+      {
+        "path": "docs/catalog/infantil-expansion-20261017.md",
+        "sha": "5b256aefcb9a7a40e78914eb97814b52b583d1bd",
+        "size": 5679
+      },
+      {
+        "path": "docs/catalog/infantil-more-candidates-20261017.json",
+        "sha": "860b65a1fbfd60036faeade578c2c09d9135eb71",
+        "size": 9151
+      },
+      {
+        "path": "docs/catalog/sbc-20261016.json",
+        "sha": "029de40c8f89d15b70e9266ac7faef5ea3638daf",
+        "size": 649
+      },
+      {
+        "path": "docs/catalog/sbt-20261013.json",
+        "sha": "eefc3067921540cf75b81fba2fde3829dd9c30bf",
+        "size": 1653
+      },
+      {
+        "path": "docs/catalog/soul-tv-candidates-20261016.md",
+        "sha": "86309672c73026360dd6d21f2ac818a8c65f33d5",
+        "size": 2341
+      },
+      {
+        "path": "docs/catalog/tvmaisbrasil-20261017.json",
+        "sha": "c96e076ad7f8ae398a2b705f9a477942c5af9814",
+        "size": 933
+      },
+      {
+        "path": "docs/login-trial-access-audit-20261015.md",
+        "sha": "d0f28b4902f164a50e2c5324768591bc30f98630",
+        "size": 5154
+      },
+      {
+        "path": "lib/catalog_probe.dart",
+        "sha": "bc0960fe987ab30be3fc1d54edbc939d2d109ebe",
+        "size": 2230
+      },
+      {
+        "path": "platforms/roku/catalog/approved.json",
+        "sha": "543653983dbf5b68f6c2884a4afb061fa8a99a1b",
+        "size": 89762
+      },
+      {
+        "path": "platforms/roku/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "platforms/web-tv/catalog/approved.json",
+        "sha": "543653983dbf5b68f6c2884a4afb061fa8a99a1b",
+        "size": 89762
+      },
+      {
+        "path": "platforms/web-tv/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "test/cast_continuity_audit_test.dart",
+        "sha": "45d1729f4314dd254832b00f622c7442cf76311a",
+        "size": 2493
+      },
+      {
+        "path": "test/cast_hls_continuity_audit_test.dart",
+        "sha": "81b6826fd890134ed5896988cc1998d515b4452b",
+        "size": 1920
+      },
+      {
+        "path": "test/packaged_catalog_test.dart",
+        "sha": "6e625aeda761747f1cdcc82e5c9c00268cf665b3",
+        "size": 1959
+      },
+      {
+        "path": "test/reviewed_catalog_fixture.dart",
+        "sha": "a188d7266bd06b89603ab2290d4b1b9e5ba1d5cd",
+        "size": 867
+      },
+      {
+        "path": "tools/candidate_firebase.test.mjs",
+        "sha": "5fa1683aee56e8f8168b8881f578d2b6f41a10f7",
+        "size": 1689
+      },
+      {
+        "path": "tools/prepare_candidate_firebase.mjs",
+        "sha": "2499fc800c4af13f3f3ea9f5e0ef46609a2c3f2d",
+        "size": 6377
+      }
+    ]
+  },
+  {
+    "branch": "homolog/technical-candidate-20261028",
+    "sha": "3254d0503dd72984682b9080da5d4d21c24f2458",
+    "paths": [
+      {
+        "path": ".github/workflows/candidate-build-preflight.yml",
+        "sha": "36515f2e895be1191093b7d8457afd9193057103",
+        "size": 1366
+      },
+      {
+        "path": ".github/workflows/candidate-identity-guards.yml",
+        "sha": "6aa42aed019c8725178084df78e9f300e56f1270",
+        "size": 1563
+      },
+      {
+        "path": ".github/workflows/candidate-sandbox.yml",
+        "sha": "4cea64931b9d94e417eef7377d8ef38ce9cbc552",
+        "size": 1414
+      },
+      {
+        "path": ".github/workflows/homologation-login.yml",
+        "sha": "1c0d9cc65e1cd5c5f74b4fed9a1e2ca856bbfe4a",
+        "size": 3316
+      },
+      {
+        "path": ".github/workflows/sandbox-receipt-audit.yml",
+        "sha": "fd9f79a23de05d501f01b50909f7bc87e2f13ae5",
+        "size": 976
+      },
+      {
+        "path": ".github/workflows/test-subscriber-payment-audit.yml",
+        "sha": "14d04a4122ba871ff9aef2c27524b045545dd46c",
+        "size": 934
+      },
+      {
+        "path": "branding/lab_candidates.json",
+        "sha": "a457e62cde13c7c82d0c8ca12816b83af2594395",
+        "size": 410636
+      },
+      {
+        "path": "docs/auditoria/2026-10-26-equipe-catalogo.md",
+        "sha": "3abb90734c2c1f6fe3054ee3524fd46d06dbbabd",
+        "size": 7618
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-assinatura-fisica.md",
+        "sha": "0b0819496fb16f55898057bfd4527cde26368972",
+        "size": 1919
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-catalogo-seguranca.md",
+        "sha": "098b2bfc981e8d71903a301e0a4a4969f99b56b3",
+        "size": 1848
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-correcoes-pendentes.md",
+        "sha": "20a73b2e58d2667a1139d4565aa706f8c80db1aa",
+        "size": 1939
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-homologacao-funcional.md",
+        "sha": "83242d5df36ba1401267736912a37ed6a3657468",
+        "size": 4899
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-teste-usb-fisico.md",
+        "sha": "79fe43185c5f66015aa1d0be150d758d5c687ca9",
+        "size": 2799
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-vlc-superficie-tv.md",
+        "sha": "e86eb070b0f5984cda4a69f1bded0ada38e422df",
+        "size": 2584
+      },
+      {
+        "path": "docs/auditoria/2026-10-28-candidata-tecnica.md",
+        "sha": "2a97b6a0552069f000f8b0a6fdd6703ea63a0efd",
+        "size": 51089
+      },
+      {
+        "path": "docs/auditoria/2026-10-29-preparacao-roku-android-tv.md",
+        "sha": "b6ff20268190f16097d17f144897af93f73708db",
+        "size": 3281
+      },
+      {
+        "path": "docs/auditoria/2026-10-31-consolidado-pos-integracao.md",
+        "sha": "6c48b8c07501e1cc8193ad7ba97c9633c12a995d",
+        "size": 28590
+      },
+      {
+        "path": "docs/auditoria/2026-10-31-portoes-homologacao-candidata.md",
+        "sha": "7ed360d399fda1a76355c8824b5b40befa058c51",
+        "size": 7698
+      },
+      {
+        "path": "docs/auditoria/2026-10-31-roteiro-fisico-candidata.md",
+        "sha": "b3e9c0cfba6fe677e25496352ce0e81643dbbd95",
+        "size": 2451
+      },
+      {
+        "path": "docs/auditoria/matriz-fisica-20261027.csv",
+        "sha": "428023fe7b471d35c96ab6fefbbe55aa89eccf64",
+        "size": 195
+      },
+      {
+        "path": "docs/candidate-validation.md",
+        "sha": "3e0881caa5c4d299fe03bf7c3724cc514136c64f",
+        "size": 7093
+      },
+      {
+        "path": "docs/lab/issue34-inventory-summary.json",
+        "sha": "080e7d58d6674dbda30d51ed6f67d202207c9f52",
+        "size": 4333
+      },
+      {
+        "path": "docs/plantao/2026-10-25-assinatura-lab.md",
+        "sha": "9ceaefaa645ae5f51005ee86239b4b7a6de0427e",
+        "size": 4027
+      },
+      {
+        "path": "docs/plantao/2026-10-25-audio-infraestrutura.md",
+        "sha": "39bd72ed2af52bd1f8ad91c69ea18ea3c928dfe3",
+        "size": 3402
+      },
+      {
+        "path": "docs/plantao/2026-10-25-correcao.md",
+        "sha": "7e9e41d823d8289638a0cac57ce938319f9dd12d",
+        "size": 3824
+      },
+      {
+        "path": "docs/plantao/2026-10-25-homologacao-login.md",
+        "sha": "d9bd59422212d54ff6b67897d46a154c148fae4c",
+        "size": 4955
+      },
+      {
+        "path": "docs/plantao/2026-10-25-secret-formato.md",
+        "sha": "b86aea312a4122a72b9ccb452704134dcb92c751",
+        "size": 2491
+      },
+      {
+        "path": "docs/plantao/2026-10-25.md",
+        "sha": "69fe64189ea3a83c3fb1d4196ff096ffa4ebb2d5",
+        "size": 9808
+      },
+      {
+        "path": "docs/plantao/2026-10-26-assinaturas-auditoria.md",
+        "sha": "76b151f2edbbfa5421d799a030068a25f487dd89",
+        "size": 2452
+      },
+      {
+        "path": "docs/plantao/2026-10-26-audio-api-comparison.md",
+        "sha": "4443350dbacdda3a016929ca27904971820f38c6",
+        "size": 2065
+      },
+      {
+        "path": "docs/plantao/2026-10-26-audio-null-sink.md",
+        "sha": "8442f11a5b35fe2dc40cd8e77fb68d078f8a6de7",
+        "size": 2317
+      },
+      {
+        "path": "docs/plantao/2026-10-26-cast-load-order.md",
+        "sha": "ef52e4bf8f19a01214062707de1050849ee7c105",
+        "size": 3329
+      },
+      {
+        "path": "docs/plantao/2026-10-26-conta-paga-diagnostico.md",
+        "sha": "8263334956d1640628e0b160da88c8c4967bf71f",
+        "size": 3714
+      },
+      {
+        "path": "docs/plantao/2026-10-26-finalizacao-destaques.md",
+        "sha": "db8a5c63cd863ade6f87595bb0c66326b80a5508",
+        "size": 2773
+      },
+      {
+        "path": "docs/plantao/2026-10-26-firebase-preflight.md",
+        "sha": "91480ba960234e4d9b27e987d381d6576eb2842d",
+        "size": 5950
+      },
+      {
+        "path": "docs/plantao/2026-10-26-globo-sbt.md",
+        "sha": "166098c27ee149005d49cbc33e0241d11a449ed2",
+        "size": 11365
+      },
+      {
+        "path": "docs/plantao/2026-10-26-subscription-menu.md",
+        "sha": "586c4e0f5526750fe24523fce519a1feff3fc0cd",
+        "size": 1409
+      },
+      {
+        "path": "docs/plantao/gist-globo-consented-check-20261026.json",
+        "sha": "efe83f2c0d3832b83fd92efbf0c111a63d68acae",
+        "size": 552
+      },
+      {
+        "path": "docs/plantao/gist-globo-passive-20261026.json",
+        "sha": "9307bed01770eea76b394971e394ab08cc870ee9",
+        "size": 815
+      },
+      {
+        "path": "docs/plantao/gist-globo1-test-20261026.json",
+        "sha": "35c5e375ed7a4f55d711450a068dc7aa8d8c7698",
+        "size": 167
+      },
+      {
+        "path": "docs/tv/continuity-20261030.md",
+        "sha": "8f4b0b8cefa328aacb1a624c7984af591d3ddf12",
+        "size": 9469
+      },
+      {
+        "path": "firebase.homologacao.json",
+        "sha": "733857758e740dd5807155e888bcdb2b0a622d34",
+        "size": 289
+      },
+      {
+        "path": "lib/src/live/catalog_presentation.dart",
+        "sha": "b3ad6d9f0592fb0aedb49764536bfda74af96cd3",
+        "size": 3017
+      },
+      {
+        "path": "lib/src/live/lab_catalog.dart",
+        "sha": "17b8383db3ff727cb09c45d78f23816fffb20ab9",
+        "size": 2037
+      },
+      {
+        "path": "test/channel_catalog_identity_test.dart",
+        "sha": "42f9080dffdecff05ad0afe064e05a8a12670e17",
+        "size": 640
+      },
+      {
+        "path": "tools/audit_tv_catalog.py",
+        "sha": "1c6213145c2b4baf23e9d179855d722032b5bb2d",
+        "size": 2305
+      },
+      {
+        "path": "tools/candidate/README.md",
+        "sha": "49ecd73aa5c19b0ba7f49c44626253d9655aca21",
+        "size": 4502
+      },
+      {
+        "path": "tools/candidate/build_preflight.py",
+        "sha": "92d336612a7893aeec0ea54e2fbea0f92d4aef76",
+        "size": 1821
+      },
+      {
+        "path": "tools/candidate/identity.json",
+        "sha": "4cbfd22603623c8e9e2b17d61e88867060444d43",
+        "size": 281
+      },
+      {
+        "path": "tools/candidate/prepare_candidate.py",
+        "sha": "7868b9d0110f737421aee26088966a4615bd69d2",
+        "size": 11351
+      },
+      {
+        "path": "tools/candidate/signer-public.json",
+        "sha": "9e8a97b383d63c8c7349206da20eed1627d5f9ac",
+        "size": 137
+      },
+      {
+        "path": "tools/candidate/test_approved_signer_regression.py",
+        "sha": "5b79b902dd973a464c48f666b379fcab1704f27f",
+        "size": 1910
+      },
+      {
+        "path": "tools/candidate/test_build_preflight.py",
+        "sha": "ff43b7e0a97f97862f35c7266ea61bb6bc9a0275",
+        "size": 2592
+      },
+      {
+        "path": "tools/candidate/test_candidate.py",
+        "sha": "a7154c70eb8220986fa88819fb42ad141f8b1a5e",
+        "size": 8200
+      },
+      {
+        "path": "tools/candidate/test_candidate_identity_guards.py",
+        "sha": "4880b7dd9c6a35bd9927d2a286346b9e527f7f4e",
+        "size": 3832
+      },
+      {
+        "path": "tools/compare_catalog.py",
+        "sha": "2caad4e4c835ccaee721acac6f85f2abeb6f4fb9",
+        "size": 3008
+      },
+      {
+        "path": "tools/export_shared_tv_examples.py",
+        "sha": "b3c17e81de52765643e7456c36e508ba9a900ab6",
+        "size": 2076
+      },
+      {
+        "path": "tools/lab/catalog.py",
+        "sha": "aee61412430c00e28edc1ff1e68fdf3cc5b2155a",
+        "size": 11309
+      },
+      {
+        "path": "tools/lab/test_catalog.py",
+        "sha": "ace01cd0f50908ad0e33160fc297d9b1c768a74c",
+        "size": 2143
+      },
+      {
+        "path": "tools/prepare_homologation.py",
+        "sha": "dd68542d5f872b6da26293ff7d969f4c81d97b95",
+        "size": 10214
+      },
+      {
+        "path": "tools/test_audit_tv_catalog.py",
+        "sha": "df73b4c399b797547a0459a40a7ac4de28db4f4d",
+        "size": 1231
+      },
+      {
+        "path": "tools/test_export_shared_tv_examples.py",
+        "sha": "c95c2bbb26b837d58e0f81e328be549548fdafc3",
+        "size": 1314
+      },
+      {
+        "path": "tools/test_homologation.py",
+        "sha": "f39b5b4f362de4ad9f9b532a86f63de49a69008e",
+        "size": 10819
+      }
+    ]
+  },
+  {
+    "branch": "lab/roku-catalog-diagnostics-20261031",
+    "sha": "86a1b892693cdb60a2203b8d7a96054c48ba390e",
+    "paths": [
+      {
+        "path": ".github/workflows/commercial-plan-audit.yml",
+        "sha": "08161fb2061c611a94177101cf9d84b1a462780a",
+        "size": 3118
+      },
+      {
+        "path": ".github/workflows/roku-benchmark-catalog.yml",
+        "sha": "c5a90c8347cbd146bd79b937c796b4e23d5413f4",
+        "size": 3208
+      },
+      {
+        "path": ".github/workflows/roku-cast-audit.yml",
+        "sha": "5f2106d48034b9deeab01f35c530bd97ec50127d",
+        "size": 1575
+      },
+      {
+        "path": "billing/tools/audit-test-subscriber.mjs",
+        "sha": "f6e7745d684c38dc31a1874bb122bf489fa505ef",
+        "size": 2058
+      },
+      {
+        "path": "catalog/approved.json",
+        "sha": "0be5b101293f2a8032dfb25895a4bd8fc99f9af6",
+        "size": 87437
+      },
+      {
+        "path": "catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "docs/audit-roku-cast-20261016.md",
+        "sha": "e45ddcc92da39676aee2a9b0f7d2899c536c6748",
+        "size": 4804
+      },
+      {
+        "path": "docs/auditoria/2026-10-29-roku-catalogo.md",
+        "sha": "95122bb836deb0ba7da1e0356b1b6b7f36e7f98e",
+        "size": 3717
+      },
+      {
+        "path": "docs/audits/build-501-apk-evidence.json",
+        "sha": "be31972cb7b16eda9243a31703c0d8f4c8eb320c",
+        "size": 726
+      },
+      {
+        "path": "docs/audits/build-501-physical-test.md",
+        "sha": "b28daefa0e9908bd5baf7d76e0ff1ae63e7d3b98",
+        "size": 14481
+      },
+      {
+        "path": "docs/candidate-validation.md",
+        "sha": "3e0881caa5c4d299fe03bf7c3724cc514136c64f",
+        "size": 7093
+      },
+      {
+        "path": "docs/catalog/build504-baseline.md",
+        "sha": "f633aeb0d0751fce1c72135c08d362790bc68cd8",
+        "size": 2867
+      },
+      {
+        "path": "docs/catalog/sbt-20261013.json",
+        "sha": "eefc3067921540cf75b81fba2fde3829dd9c30bf",
+        "size": 1653
+      },
+      {
+        "path": "docs/login-trial-access-audit-20261015.md",
+        "sha": "d0f28b4902f164a50e2c5324768591bc30f98630",
+        "size": 5154
+      },
+      {
+        "path": "platforms/roku/catalog/Benchmark_RochaPlus_Catalogo.csv",
+        "sha": "ec4e60fdca23bd7f631ae0edf2509b1da6f1fb13",
+        "size": 103663
+      },
+      {
+        "path": "platforms/roku/catalog/approved.json",
+        "sha": "0be5b101293f2a8032dfb25895a4bd8fc99f9af6",
+        "size": 87437
+      },
+      {
+        "path": "platforms/roku/catalog/benchmark-manifest.json",
+        "sha": "1920f1940bf63bea8c3fe8af8a7c64de9e81c980",
+        "size": 522
+      },
+      {
+        "path": "platforms/roku/catalog/benchmark-pending.json",
+        "sha": "dd742bb23e2c6ff2ab1c58db60a2df85b5e61a51",
+        "size": 280407
+      },
+      {
+        "path": "platforms/roku/catalog/benchmark-test.json",
+        "sha": "25555e9fc0493bbeb2f957fbd6e2707c230a1481",
+        "size": 261351
+      },
+      {
+        "path": "platforms/roku/catalog/isolated-sample-12.json",
+        "sha": "a80107a213ff0670f79aa5f9a03de460c194c80f",
+        "size": 8291
+      },
+      {
+        "path": "platforms/roku/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "platforms/web-tv/catalog/approved.json",
+        "sha": "0be5b101293f2a8032dfb25895a4bd8fc99f9af6",
+        "size": 87437
+      },
+      {
+        "path": "platforms/web-tv/catalog/quarantine.json",
+        "sha": "931284d300d0fd3e6971d23b3cc3e496efdf088f",
+        "size": 27271
+      },
+      {
+        "path": "test/cast_continuity_audit_test.dart",
+        "sha": "45d1729f4314dd254832b00f622c7442cf76311a",
+        "size": 2493
+      },
+      {
+        "path": "test/cast_hls_continuity_audit_test.dart",
+        "sha": "81b6826fd890134ed5896988cc1998d515b4452b",
+        "size": 1920
+      },
+      {
+        "path": "test/reviewed_catalog_fixture.dart",
+        "sha": "a188d7266bd06b89603ab2290d4b1b9e5ba1d5cd",
+        "size": 867
+      }
+    ]
+  },
+  {
+    "branch": "work/candidate-build-guard-20261031",
+    "sha": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+    "paths": [
+      {
+        "path": ".github/workflows/candidate-build-preflight.yml",
+        "sha": "36515f2e895be1191093b7d8457afd9193057103",
+        "size": 1366
+      },
+      {
+        "path": ".github/workflows/candidate-identity-guards.yml",
+        "sha": "6aa42aed019c8725178084df78e9f300e56f1270",
+        "size": 1563
+      },
+      {
+        "path": ".github/workflows/candidate-sandbox.yml",
+        "sha": "4cea64931b9d94e417eef7377d8ef38ce9cbc552",
+        "size": 1414
+      },
+      {
+        "path": ".github/workflows/homologation-login.yml",
+        "sha": "1c0d9cc65e1cd5c5f74b4fed9a1e2ca856bbfe4a",
+        "size": 3316
+      },
+      {
+        "path": ".github/workflows/sandbox-receipt-audit.yml",
+        "sha": "fd9f79a23de05d501f01b50909f7bc87e2f13ae5",
+        "size": 976
+      },
+      {
+        "path": ".github/workflows/test-subscriber-payment-audit.yml",
+        "sha": "14d04a4122ba871ff9aef2c27524b045545dd46c",
+        "size": 934
+      },
+      {
+        "path": "branding/lab_candidates.json",
+        "sha": "a457e62cde13c7c82d0c8ca12816b83af2594395",
+        "size": 410636
+      },
+      {
+        "path": "docs/auditoria/2026-10-26-equipe-catalogo.md",
+        "sha": "3abb90734c2c1f6fe3054ee3524fd46d06dbbabd",
+        "size": 7618
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-assinatura-fisica.md",
+        "sha": "0b0819496fb16f55898057bfd4527cde26368972",
+        "size": 1919
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-catalogo-seguranca.md",
+        "sha": "098b2bfc981e8d71903a301e0a4a4969f99b56b3",
+        "size": 1848
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-correcoes-pendentes.md",
+        "sha": "20a73b2e58d2667a1139d4565aa706f8c80db1aa",
+        "size": 1939
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-homologacao-funcional.md",
+        "sha": "83242d5df36ba1401267736912a37ed6a3657468",
+        "size": 4899
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-teste-usb-fisico.md",
+        "sha": "79fe43185c5f66015aa1d0be150d758d5c687ca9",
+        "size": 2799
+      },
+      {
+        "path": "docs/auditoria/2026-10-27-vlc-superficie-tv.md",
+        "sha": "e86eb070b0f5984cda4a69f1bded0ada38e422df",
+        "size": 2584
+      },
+      {
+        "path": "docs/auditoria/2026-10-28-candidata-tecnica.md",
+        "sha": "2a97b6a0552069f000f8b0a6fdd6703ea63a0efd",
+        "size": 51089
+      },
+      {
+        "path": "docs/auditoria/2026-10-29-preparacao-roku-android-tv.md",
+        "sha": "b6ff20268190f16097d17f144897af93f73708db",
+        "size": 3281
+      },
+      {
+        "path": "docs/auditoria/2026-10-31-portoes-homologacao-candidata.md",
+        "sha": "7ed360d399fda1a76355c8824b5b40befa058c51",
+        "size": 7698
+      },
+      {
+        "path": "docs/auditoria/2026-10-31-roteiro-fisico-candidata.md",
+        "sha": "b3e9c0cfba6fe677e25496352ce0e81643dbbd95",
+        "size": 2451
+      },
+      {
+        "path": "docs/auditoria/matriz-fisica-20261027.csv",
+        "sha": "428023fe7b471d35c96ab6fefbbe55aa89eccf64",
+        "size": 195
+      },
+      {
+        "path": "docs/candidate-validation.md",
+        "sha": "3e0881caa5c4d299fe03bf7c3724cc514136c64f",
+        "size": 7093
+      },
+      {
+        "path": "docs/lab/issue34-inventory-summary.json",
+        "sha": "080e7d58d6674dbda30d51ed6f67d202207c9f52",
+        "size": 4333
+      },
+      {
+        "path": "docs/plantao/2026-10-25-assinatura-lab.md",
+        "sha": "9ceaefaa645ae5f51005ee86239b4b7a6de0427e",
+        "size": 4027
+      },
+      {
+        "path": "docs/plantao/2026-10-25-audio-infraestrutura.md",
+        "sha": "39bd72ed2af52bd1f8ad91c69ea18ea3c928dfe3",
+        "size": 3402
+      },
+      {
+        "path": "docs/plantao/2026-10-25-correcao.md",
+        "sha": "7e9e41d823d8289638a0cac57ce938319f9dd12d",
+        "size": 3824
+      },
+      {
+        "path": "docs/plantao/2026-10-25-homologacao-login.md",
+        "sha": "d9bd59422212d54ff6b67897d46a154c148fae4c",
+        "size": 4955
+      },
+      {
+        "path": "docs/plantao/2026-10-25-secret-formato.md",
+        "sha": "b86aea312a4122a72b9ccb452704134dcb92c751",
+        "size": 2491
+      },
+      {
+        "path": "docs/plantao/2026-10-25.md",
+        "sha": "69fe64189ea3a83c3fb1d4196ff096ffa4ebb2d5",
+        "size": 9808
+      },
+      {
+        "path": "docs/plantao/2026-10-26-assinaturas-auditoria.md",
+        "sha": "76b151f2edbbfa5421d799a030068a25f487dd89",
+        "size": 2452
+      },
+      {
+        "path": "docs/plantao/2026-10-26-audio-api-comparison.md",
+        "sha": "4443350dbacdda3a016929ca27904971820f38c6",
+        "size": 2065
+      },
+      {
+        "path": "docs/plantao/2026-10-26-audio-null-sink.md",
+        "sha": "8442f11a5b35fe2dc40cd8e77fb68d078f8a6de7",
+        "size": 2317
+      },
+      {
+        "path": "docs/plantao/2026-10-26-cast-load-order.md",
+        "sha": "ef52e4bf8f19a01214062707de1050849ee7c105",
+        "size": 3329
+      },
+      {
+        "path": "docs/plantao/2026-10-26-conta-paga-diagnostico.md",
+        "sha": "8263334956d1640628e0b160da88c8c4967bf71f",
+        "size": 3714
+      },
+      {
+        "path": "docs/plantao/2026-10-26-finalizacao-destaques.md",
+        "sha": "db8a5c63cd863ade6f87595bb0c66326b80a5508",
+        "size": 2773
+      },
+      {
+        "path": "docs/plantao/2026-10-26-firebase-preflight.md",
+        "sha": "91480ba960234e4d9b27e987d381d6576eb2842d",
+        "size": 5950
+      },
+      {
+        "path": "docs/plantao/2026-10-26-globo-sbt.md",
+        "sha": "166098c27ee149005d49cbc33e0241d11a449ed2",
+        "size": 11365
+      },
+      {
+        "path": "docs/plantao/2026-10-26-subscription-menu.md",
+        "sha": "586c4e0f5526750fe24523fce519a1feff3fc0cd",
+        "size": 1409
+      },
+      {
+        "path": "docs/plantao/gist-globo-consented-check-20261026.json",
+        "sha": "efe83f2c0d3832b83fd92efbf0c111a63d68acae",
+        "size": 552
+      },
+      {
+        "path": "docs/plantao/gist-globo-passive-20261026.json",
+        "sha": "9307bed01770eea76b394971e394ab08cc870ee9",
+        "size": 815
+      },
+      {
+        "path": "docs/plantao/gist-globo1-test-20261026.json",
+        "sha": "35c5e375ed7a4f55d711450a068dc7aa8d8c7698",
+        "size": 167
+      },
+      {
+        "path": "docs/tv/continuity-20261030.md",
+        "sha": "a25361968bf4120a3f8fdeeb71b765177d1018e1",
+        "size": 7750
+      },
+      {
+        "path": "firebase.homologacao.json",
+        "sha": "733857758e740dd5807155e888bcdb2b0a622d34",
+        "size": 289
+      },
+      {
+        "path": "lib/src/live/catalog_presentation.dart",
+        "sha": "b3ad6d9f0592fb0aedb49764536bfda74af96cd3",
+        "size": 3017
+      },
+      {
+        "path": "lib/src/live/lab_catalog.dart",
+        "sha": "17b8383db3ff727cb09c45d78f23816fffb20ab9",
+        "size": 2037
+      },
+      {
+        "path": "test/channel_catalog_identity_test.dart",
+        "sha": "42f9080dffdecff05ad0afe064e05a8a12670e17",
+        "size": 640
+      },
+      {
+        "path": "tools/audit_tv_catalog.py",
+        "sha": "1c6213145c2b4baf23e9d179855d722032b5bb2d",
+        "size": 2305
+      },
+      {
+        "path": "tools/candidate/README.md",
+        "sha": "49ecd73aa5c19b0ba7f49c44626253d9655aca21",
+        "size": 4502
+      },
+      {
+        "path": "tools/candidate/build_preflight.py",
+        "sha": "92d336612a7893aeec0ea54e2fbea0f92d4aef76",
+        "size": 1821
+      },
+      {
+        "path": "tools/candidate/identity.json",
+        "sha": "4cbfd22603623c8e9e2b17d61e88867060444d43",
+        "size": 281
+      },
+      {
+        "path": "tools/candidate/prepare_candidate.py",
+        "sha": "7868b9d0110f737421aee26088966a4615bd69d2",
+        "size": 11351
+      },
+      {
+        "path": "tools/candidate/signer-public.json",
+        "sha": "9e8a97b383d63c8c7349206da20eed1627d5f9ac",
+        "size": 137
+      },
+      {
+        "path": "tools/candidate/test_approved_signer_regression.py",
+        "sha": "5b79b902dd973a464c48f666b379fcab1704f27f",
+        "size": 1910
+      },
+      {
+        "path": "tools/candidate/test_build_preflight.py",
+        "sha": "ff43b7e0a97f97862f35c7266ea61bb6bc9a0275",
+        "size": 2592
+      },
+      {
+        "path": "tools/candidate/test_candidate.py",
+        "sha": "a7154c70eb8220986fa88819fb42ad141f8b1a5e",
+        "size": 8200
+      },
+      {
+        "path": "tools/candidate/test_candidate_identity_guards.py",
+        "sha": "4880b7dd9c6a35bd9927d2a286346b9e527f7f4e",
+        "size": 3832
+      },
+      {
+        "path": "tools/compare_catalog.py",
+        "sha": "2caad4e4c835ccaee721acac6f85f2abeb6f4fb9",
+        "size": 3008
+      },
+      {
+        "path": "tools/export_shared_tv_examples.py",
+        "sha": "b3c17e81de52765643e7456c36e508ba9a900ab6",
+        "size": 2076
+      },
+      {
+        "path": "tools/lab/catalog.py",
+        "sha": "aee61412430c00e28edc1ff1e68fdf3cc5b2155a",
+        "size": 11309
+      },
+      {
+        "path": "tools/lab/test_catalog.py",
+        "sha": "ace01cd0f50908ad0e33160fc297d9b1c768a74c",
+        "size": 2143
+      },
+      {
+        "path": "tools/prepare_homologation.py",
+        "sha": "dd68542d5f872b6da26293ff7d969f4c81d97b95",
+        "size": 10214
+      },
+      {
+        "path": "tools/test_audit_tv_catalog.py",
+        "sha": "df73b4c399b797547a0459a40a7ac4de28db4f4d",
+        "size": 1231
+      },
+      {
+        "path": "tools/test_export_shared_tv_examples.py",
+        "sha": "c95c2bbb26b837d58e0f81e328be549548fdafc3",
+        "size": 1314
+      },
+      {
+        "path": "tools/test_homologation.py",
+        "sha": "f39b5b4f362de4ad9f9b532a86f63de49a69008e",
+        "size": 10819
+      }
+    ]
+  }
+]
