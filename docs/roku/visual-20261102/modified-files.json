@@ -1,0 +1,924 @@
+{
+  "baselineCommit": "86796a8b50b9c2ef865f6acfb9a96daf90a4b50d",
+  "implementationCommit": "db3fd257b1cbef7b1f96cd725b2621d1dd0defb1",
+  "changes": [
+    {
+      "path": "platforms/roku-lab-visual/components/Account.brs",
+      "status": "modified",
+      "before": "ef1880508902f0dee5923d9b79dc65ec3b386fb9",
+      "after": "b382fddd89eb25ae21c71d15a0bd693c299db3a1"
+    },
+    {
+      "path": "platforms/roku-lab-visual/components/HomeScene.brs",
+      "status": "modified",
+      "before": "6b989e70eaf18680c36063f32698001a1b2c9e28",
+      "after": "19a0d5331491952e138701e51318ad0868ac93fa"
+    },
+    {
+      "path": "platforms/roku-lab-visual/components/HomeScene.xml",
+      "status": "modified",
+      "before": "6d43aa465f5dae463fc9cbfaec5320ba5a41f08c",
+      "after": "45c51b50e13673cbeaf7b9afce9f9cbff8094daa"
+    },
+    {
+      "path": "platforms/roku-lab-visual/components/ChannelBrowser.brs",
+      "status": "added",
+      "before": null,
+      "after": "4f495fb77e4ccc9f9eccf214ff8d8c6f5152382a"
+    },
+    {
+      "path": "platforms/roku-lab-visual/config/cover-map.json",
+      "status": "added",
+      "before": null,
+      "after": "9844651db5a41e8b8062d3c4dca71cef5acc1671"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/01b50f222181a6f4b78f.png",
+      "status": "added",
+      "before": null,
+      "after": "91befd1c29f1c40a89cd2a4000bfe62c944448ae"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/01fe06fec8b3a4ec44af.png",
+      "status": "added",
+      "before": null,
+      "after": "c3faa914851d5de45cb81569e22868ef08e3d504"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/03316c1bc85c2696b3b0.png",
+      "status": "added",
+      "before": null,
+      "after": "6b52bab39474735ffd35f4227ac6b23d9fc30fcf"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/0486aa584d2a02862f9b.png",
+      "status": "added",
+      "before": null,
+      "after": "7342ef3306c38c3d6510df19f9e37d9515a6dcb4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/049d2e890807444a8792.png",
+      "status": "added",
+      "before": null,
+      "after": "bdf906f46f2aebc3840c8159143e6ce16f47474e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/04a95b541d3e8055f76d.png",
+      "status": "added",
+      "before": null,
+      "after": "c3016fdb30190468b98684cbaf1f603b4659a612"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/0579795a3126c2fcf373.png",
+      "status": "added",
+      "before": null,
+      "after": "6ea523125b6b79af65fa42d4b6c344e20dfc3f61"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/068ebb1ffe08d485ddeb.png",
+      "status": "added",
+      "before": null,
+      "after": "05853ce713db3bca3e2f2f79e6561db12c6af09c"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/075491badf839acbf9bb.png",
+      "status": "added",
+      "before": null,
+      "after": "f629063a2641a74f5784e7337aeb8ac2cfa387c5"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/09273f32f6ed9c9f91a4.png",
+      "status": "added",
+      "before": null,
+      "after": "4e29a3cadde48d856e9aa0120e1143dafb287d75"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/1554b3d4fc88ed446134.png",
+      "status": "added",
+      "before": null,
+      "after": "965bde4cbdbfacf33aed7ba79b0ecff001e267ee"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/18027bf5170cb14c8460.png",
+      "status": "added",
+      "before": null,
+      "after": "e06b9df777e23555004c30e239e9defa37e03f17"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/18cd753ca3aab68062a3.png",
+      "status": "added",
+      "before": null,
+      "after": "995996c3aa0b0ac4e9e08195b761e10b31b147d9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/19f5bf9ff458a7dadfbb.png",
+      "status": "added",
+      "before": null,
+      "after": "ea1dc22dc7bbb0f91b6b74f5237e25f667f9dcf9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/1b6cd4fb5c107b94d2ff.png",
+      "status": "added",
+      "before": null,
+      "after": "8ecc5a0b7b554ab76b05c7416ce0052e750fdbdb"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/1c7272a8203b8caf1f52.png",
+      "status": "added",
+      "before": null,
+      "after": "0264943bc5ee90f85df1f65877552b9655a7ab43"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/2262db155106f096c04a.png",
+      "status": "added",
+      "before": null,
+      "after": "17ba3bb4eac3efe326298aa7fa9054560b27d086"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/2405f9015458cec4aae7.png",
+      "status": "added",
+      "before": null,
+      "after": "65dd8d4c2d9a7f2ea56f7472ab7a448a6db80cae"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/26126dcf81a2184985f7.png",
+      "status": "added",
+      "before": null,
+      "after": "7c16fe2afb8ea7fef78b2b180c3b45f333789a30"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/27a2b193da1f1396b48f.png",
+      "status": "added",
+      "before": null,
+      "after": "4a1609a399e3faca243600b5dd911dfd35dbac2f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/28c08ecb9e88ab4c29af.png",
+      "status": "added",
+      "before": null,
+      "after": "43994c937de141ed99657f438571d0d5325e4268"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/28e6aa5915c65fcf2f34.png",
+      "status": "added",
+      "before": null,
+      "after": "dbca4c767d04a6577e6cae0237c4a14c7331e3d1"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/2dff80126b0e144a3fd0.png",
+      "status": "added",
+      "before": null,
+      "after": "00bedf50d825e738567aaf2991f9af139882c138"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/2f26e9fcc5de091e4d95.png",
+      "status": "added",
+      "before": null,
+      "after": "c7b7a0747fa649c2dc8590e8e8dc0db03b37aa8d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/31a715ff3dad054be7ff.png",
+      "status": "added",
+      "before": null,
+      "after": "28461a00826a077ec47c501d0321515d34483705"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3340d9051dc3aa14be25.png",
+      "status": "added",
+      "before": null,
+      "after": "acd3352f512fffecf62dfb46e67e8b629410fbdc"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/334b53d126557b5aa8bd.png",
+      "status": "added",
+      "before": null,
+      "after": "bd07ee6bf03ed5aa4e89df290bcb1632c4c50f21"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/36847f9bc6cd74ba7c3b.png",
+      "status": "added",
+      "before": null,
+      "after": "95539b512cd48c27bc59f6ab3950900107a74de3"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/37491a72ee65656ea273.png",
+      "status": "added",
+      "before": null,
+      "after": "fef97990af5fe5f4bf6e70e49d2d902e45f6b886"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3940be36e544f821e24b.png",
+      "status": "added",
+      "before": null,
+      "after": "c1a646749a7cf0c81dcc0e14e5fae78589858c2c"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3b3d624a7acd141a2076.png",
+      "status": "added",
+      "before": null,
+      "after": "89eee5459794e982a9ae5daef817be62e6baa2e4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3beb23dddfb6727e79e9.png",
+      "status": "added",
+      "before": null,
+      "after": "083696897d63cd52ad194fca2b0d8853c60a4050"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3fa42f071f666742df08.png",
+      "status": "added",
+      "before": null,
+      "after": "ca0f24b57461d528ac8848d5045d47d08c86f37e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3fc6eb7891b2c474486b.png",
+      "status": "added",
+      "before": null,
+      "after": "5e16aa3644a75682d30cf6503a38c4abcf829aa9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/3fef2604fa43e759030e.png",
+      "status": "added",
+      "before": null,
+      "after": "7096792a4354810c2e351e4b613cf48a0fc4ff44"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/40be6e7dc7203ae4dac5.png",
+      "status": "added",
+      "before": null,
+      "after": "fb2125b5cf191b89cc86eee361dc00249b7268ab"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/40ea835f9fff0bf83460.png",
+      "status": "added",
+      "before": null,
+      "after": "d9eed3853cd1e3e404012c1e66ba6e5fd86897f6"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/415295323011dc72baa7.png",
+      "status": "added",
+      "before": null,
+      "after": "70a5cc120570555a3baa269fb6a08d70dabc7db1"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/44874c45bec669a47a8e.png",
+      "status": "added",
+      "before": null,
+      "after": "f11a3dfbd00ec6faf88256e029c2d38a2be5caa2"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/46b360364f8813a2fea4.png",
+      "status": "added",
+      "before": null,
+      "after": "688c54753ee91ea9bd02ed9120e5ddaa15a72ac9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/49ad1b57a91feecc10bc.png",
+      "status": "added",
+      "before": null,
+      "after": "e3defdd61b185ad604259d86eafa56cf08945652"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/4bf5a2cc0b17c9e41236.png",
+      "status": "added",
+      "before": null,
+      "after": "68d5e09de54cb82153aca768b8fb122ccf9edd5e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/4c922d3082b63ed2be34.png",
+      "status": "added",
+      "before": null,
+      "after": "f29a000b0c635ef2f0f8f19f1d90708fec975112"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/4e38d74805de2442601a.png",
+      "status": "added",
+      "before": null,
+      "after": "4af654baaabafb44d2cb38dd8c86315287239326"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/4f38a5ec3a8c9272e8d1.png",
+      "status": "added",
+      "before": null,
+      "after": "03b9a88a253f98772f342fd9d4de9e684d65df37"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/504bdbcd089d764d25d1.png",
+      "status": "added",
+      "before": null,
+      "after": "4a6f3b708f9bdbe6161db5ca2706606462e39f87"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/54262e9e1f81dc6276fe.png",
+      "status": "added",
+      "before": null,
+      "after": "756a519610381f3d632ab1a32b9fd007685c3d94"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/5577100b0adbc576fac1.png",
+      "status": "added",
+      "before": null,
+      "after": "12bc3744d33fc6b24e043ec17f84e2317e782abf"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/593bdd3fe6d5840a52bc.png",
+      "status": "added",
+      "before": null,
+      "after": "106ae71e0097e615f22b71ee63ef972c8c6cce63"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/593f749d3e6911b68825.png",
+      "status": "added",
+      "before": null,
+      "after": "79fea8fda8fd9b432a008c1914d81f5323792a1f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/5a6417c8dbd8fff33d2e.png",
+      "status": "added",
+      "before": null,
+      "after": "92fd7bd205408507af3d33734a936cc2b6223a4b"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/5e772164f45510d77aca.png",
+      "status": "added",
+      "before": null,
+      "after": "e3dde92f5e1d32caba6020cc45d43238c77795bd"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/629d5631afc4333ae3c2.png",
+      "status": "added",
+      "before": null,
+      "after": "5bb3c46c00bf94499d67456c987ff051a44320df"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/63af6c60ffc1a92a2b8c.png",
+      "status": "added",
+      "before": null,
+      "after": "9ff6009b04fe352d6a51223803467c2565131ff6"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/653066c9d3ca999c31e9.png",
+      "status": "added",
+      "before": null,
+      "after": "fa2660864370cd047f35d5e320c0c83f74345b9d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/65a0704923dd78f2cef5.png",
+      "status": "added",
+      "before": null,
+      "after": "cf3a21ac3dafc4fc3ba2cac26b7689f510a3554c"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/66e5e9cf4e7bb8ea2882.png",
+      "status": "added",
+      "before": null,
+      "after": "251ee2b77bb6cc30dc580daacb5284eb7e014b8f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/6840f526bfe8d5cd4b02.png",
+      "status": "added",
+      "before": null,
+      "after": "979d6f4368a2e31fd26ee1700d34bf5bfecec450"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/6f1c2ec605388c71b30b.png",
+      "status": "added",
+      "before": null,
+      "after": "3fd24c19fc1eca677eea438319f944407bf63e5f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/70cb94574d80b5438aee.png",
+      "status": "added",
+      "before": null,
+      "after": "9f5c86d3a6c932cb8359c1b6d453ae4fa590c70e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/724d9057ec622abdcbea.png",
+      "status": "added",
+      "before": null,
+      "after": "a1027092d575036d830919dc28b5fbb02bdb68bb"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/76369a61db331c399e35.png",
+      "status": "added",
+      "before": null,
+      "after": "43e0d2895561d2361212f79b06d05f7e67f114b6"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/780a8c819f02a9ceb8c6.png",
+      "status": "added",
+      "before": null,
+      "after": "3563676ff8afb754473a6e5939e1b5b5c74f9c46"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/7d55b6bba542c7a13eb5.png",
+      "status": "added",
+      "before": null,
+      "after": "0d0efa99719864095e6eabcdc96bd388fd6ead48"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/81a023112d44a7395112.png",
+      "status": "added",
+      "before": null,
+      "after": "9da7e18cc8726d120255d94169fc674841984ff0"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/85f2da3f36daac199852.png",
+      "status": "added",
+      "before": null,
+      "after": "28ddf06c35d3adaf840ab7ce1c29c9796b2faae4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/86528e01bf3eab72b06b.png",
+      "status": "added",
+      "before": null,
+      "after": "d0e0f91f20c266c033e6324341237f3bbcec89f8"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/86c3a3970deb3b7d6693.png",
+      "status": "added",
+      "before": null,
+      "after": "215bfbaa7e923265697bdf2455a83af95a59b25d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/880165f31553b153278b.png",
+      "status": "added",
+      "before": null,
+      "after": "8198ab947f6d692b6ad455762942c435baaf6d57"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/886985067a75bb91d710.png",
+      "status": "added",
+      "before": null,
+      "after": "267849410ffd1c508d3aa36a99e47b3ebf73774b"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/890cb651e0ed47df3c3f.png",
+      "status": "added",
+      "before": null,
+      "after": "4ee2fb3323b95b71fa840034180ae4cb037ac04e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/891ed7507c00a37ad0c2.png",
+      "status": "added",
+      "before": null,
+      "after": "f382037141850498adc5b5c9e207688ea6f98114"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8967a4cad741e28dee19.png",
+      "status": "added",
+      "before": null,
+      "after": "216b1481b330aa53fd4b113cf84a397ce54f3406"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8986fa365656b065dd57.png",
+      "status": "added",
+      "before": null,
+      "after": "10568ba21e69d4c1bf1bcdb718552a25b574732f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8b020dbfc63fea4025b0.png",
+      "status": "added",
+      "before": null,
+      "after": "f2c39ce2573313fb82fb483cb375766c67843c8f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8b626889f7088f172b4e.png",
+      "status": "added",
+      "before": null,
+      "after": "ab1b19fcc6e46691d73cff4c433ba797e6d84ed5"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8bec9fe46e6f26661f82.png",
+      "status": "added",
+      "before": null,
+      "after": "51d681c2e82a34df079ddaf3f16f9fb4886657e9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/8da68429012f9faf5211.png",
+      "status": "added",
+      "before": null,
+      "after": "531cd3171fdcbb16728ee91c5b71422807bb8f39"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/95192e6b066e9508a09c.png",
+      "status": "added",
+      "before": null,
+      "after": "cbae812c96c5205f63d6e1c8f60f94e016e2df0e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/96ff767fbde534c4ad51.png",
+      "status": "added",
+      "before": null,
+      "after": "7f0558d304dcf09c069123b7ce12f440ae183fc6"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/9b2f0ef35f76ef270bfc.png",
+      "status": "added",
+      "before": null,
+      "after": "4d79c78dac43253773994877786684c3528dd025"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/9c522608091ef18c9298.png",
+      "status": "added",
+      "before": null,
+      "after": "418baf6a5f4f3bd92db6128a6bc1688fc2802f13"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a00a295c72e5f2207a04.png",
+      "status": "added",
+      "before": null,
+      "after": "9bbd2c3b17377d25fbaecfbdef81f2490748c812"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a1a345fdbf399c125652.png",
+      "status": "added",
+      "before": null,
+      "after": "5813b01abb05b1450852a7fdfe16ecb9ffb4bd47"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a2de9151f4b9e64e26d9.png",
+      "status": "added",
+      "before": null,
+      "after": "82395b29aafb77dfde8c3c2c78066342f33504d4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a3a23326bed24df57a7e.png",
+      "status": "added",
+      "before": null,
+      "after": "bd3c09c1af3684230c11cfd59713ab066b5e929d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a6ed4e76591e27e904d7.png",
+      "status": "added",
+      "before": null,
+      "after": "6376979cb3e7b1dbbab60f13c925c1100a0264b4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/a8128193e5a92713909e.png",
+      "status": "added",
+      "before": null,
+      "after": "7feaec86da0aed6f0f5d112278d1888233265b25"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/aacbab342633c2e44506.png",
+      "status": "added",
+      "before": null,
+      "after": "e27f3a7b860e6610cda906c8dc532b0b965213ce"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/abc77f683da9f9de86af.png",
+      "status": "added",
+      "before": null,
+      "after": "817f693b35fe2da5a971723fe4bc353d528b2803"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ac45d4f66e5804eb59ef.png",
+      "status": "added",
+      "before": null,
+      "after": "b36fda5f1909d01a5ae1c56013b0fe47a22de44e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/af240637f2e6f64d83f9.png",
+      "status": "added",
+      "before": null,
+      "after": "a4670f91cceae771539c93a3b967524ddda7f19a"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b0f339c0448e6e4c03ee.png",
+      "status": "added",
+      "before": null,
+      "after": "04423a82a556c7036e403fad14a094797abc75f7"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b132d8748057274a36f9.png",
+      "status": "added",
+      "before": null,
+      "after": "4f574f9924726710c13ef068f94498e4ce0e004c"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b284c7246260737f2e8d.png",
+      "status": "added",
+      "before": null,
+      "after": "019b1e5f3d1340d7c521d6aef4c6dc6f4d493b41"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b58c49398a27eb205293.png",
+      "status": "added",
+      "before": null,
+      "after": "012550914db644ff51a53c1067d677fcfae7b63d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b670f8d75ee28faa071c.png",
+      "status": "added",
+      "before": null,
+      "after": "53180e7702278fed78194be01151b9feca318eb8"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/b9b0173c6692ebe1367f.png",
+      "status": "added",
+      "before": null,
+      "after": "1bae5bc2d88684282351acfac081c3c72ccfc420"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ba3c5c427257cb6be322.png",
+      "status": "added",
+      "before": null,
+      "after": "1f46fe4258766044c2552be8489dc2e700841c22"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/bbc83b75c38b06e32f10.png",
+      "status": "added",
+      "before": null,
+      "after": "8525ea877967bf70065bca54979e93b96da99626"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/bbf639068d32e77b6c36.png",
+      "status": "added",
+      "before": null,
+      "after": "310325e2a80fe1b4452c8a80f609622aa16b7500"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c04029eb582ef1f23512.png",
+      "status": "added",
+      "before": null,
+      "after": "912749d606aa7743e5deaa0efccd5085a2c1cd94"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c07b96a729e4dbce8911.png",
+      "status": "added",
+      "before": null,
+      "after": "9ff6a5cef2531c4009419022b49f27d88623361e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c1cec20debafdf3d6802.png",
+      "status": "added",
+      "before": null,
+      "after": "2d195c961f6506cf9a7e9fdf770f7ce85f643c4d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c2d309e9d987d1930fc9.png",
+      "status": "added",
+      "before": null,
+      "after": "79d8bdfb437ecfa6d8898a99e78afb844d7b6409"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c34704056128af01b716.png",
+      "status": "added",
+      "before": null,
+      "after": "ac601c4d1fa53ff944efba0b416683b8a6098c5b"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c37998698866d8f16983.png",
+      "status": "added",
+      "before": null,
+      "after": "7e4075e0ce3a1faea20204c9ee647f7b14d737fa"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c4fd12eb7316a92d1d3e.png",
+      "status": "added",
+      "before": null,
+      "after": "93249993c860f49b328aed725459f846bc81dc81"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c6d03ab5ce67342c5c6a.png",
+      "status": "added",
+      "before": null,
+      "after": "44692e2cc2b17832e24139f49a122a1cb1eb84df"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c7305534cdcb74cc2a4b.png",
+      "status": "added",
+      "before": null,
+      "after": "654951b7baea820bf88ab00b554dc6e49c16d714"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c77339b445c944aebcc6.png",
+      "status": "added",
+      "before": null,
+      "after": "c049ba40e1c40938a44a128d850d53e671503ea9"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/c7e56b0403011c86037e.png",
+      "status": "added",
+      "before": null,
+      "after": "4b4907831b7e30fa24d1dcb0c25176c8f73a6044"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/cbe5f06a0e524051480f.png",
+      "status": "added",
+      "before": null,
+      "after": "5709d7f0b5683978d9dac806541e3fb45ac87ef4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/cc34ff46f54e4b529d96.png",
+      "status": "added",
+      "before": null,
+      "after": "2983150f086273b75f6f093f273333be5d54f217"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ccf56b469c5e2ffdd67e.png",
+      "status": "added",
+      "before": null,
+      "after": "1f19053e082cc2f18487a2110f8ea73c1af306ec"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d287137a6a6ed214026f.png",
+      "status": "added",
+      "before": null,
+      "after": "14347ee4525b50f620e8f0494924e9a56b655da4"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d2ee49e77d264f1c4f2e.png",
+      "status": "added",
+      "before": null,
+      "after": "509d375fefca5d909a794ca1cad10f88a8d8e332"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d338ce653f4f9fe0a2ba.png",
+      "status": "added",
+      "before": null,
+      "after": "726b3458781c70f82ce8668694f977d43cd12822"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d47b29ce9b2c5fdc7265.png",
+      "status": "added",
+      "before": null,
+      "after": "8584981b623ea8b6f0867147c17da5488b8513e8"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d5007c745f86d2fd359f.png",
+      "status": "added",
+      "before": null,
+      "after": "4b197939fbb9b8c8f7d09cd6fdcbb0279d72612f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d5991932c06a3b948fe8.png",
+      "status": "added",
+      "before": null,
+      "after": "0b77c0c74e9435659dd24deb4edea901e219a6dd"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d6c8c96a223bf8a45d59.png",
+      "status": "added",
+      "before": null,
+      "after": "68a372184bcae1c56b1c8298f059dfbf262d65ca"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/d8815e23588e4bb1ed7e.png",
+      "status": "added",
+      "before": null,
+      "after": "1d0e24911a98805c901f1dc078bc79666c6b776e"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/dcb8594ee4ded18a64a6.png",
+      "status": "added",
+      "before": null,
+      "after": "2859aef4466bfb6be79d9c7c1ee680bfcd930a7f"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/df2aae752910036e4a04.png",
+      "status": "added",
+      "before": null,
+      "after": "cbfd047998329fd3439db2cff57dad0cff86ed20"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/dfaf2da03338ebb9b8df.png",
+      "status": "added",
+      "before": null,
+      "after": "6448e485b653edf907cf275888fb27b990b06932"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/e3c19bc6f6b06f7967aa.png",
+      "status": "added",
+      "before": null,
+      "after": "c7a12e973cfa0842f6bf3300b16fe26af1fc543b"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/e9d93af433b41b5f7036.png",
+      "status": "added",
+      "before": null,
+      "after": "b7614714c73f7615fd7fa23daa3856c94fd9acad"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/eb8a98cddb9395837fd9.png",
+      "status": "added",
+      "before": null,
+      "after": "1ef3f46ae99a3f4ec8e168982fa7d53643d40e55"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ebf8fb945c95ac85ae5d.png",
+      "status": "added",
+      "before": null,
+      "after": "155b1145181c3246308d21924efacc1f28149459"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/edc9f2f3b30e01d8e137.png",
+      "status": "added",
+      "before": null,
+      "after": "2543a5a68786e0632d25e98b3b2febc9592823f0"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ef1418fd7143b8b04b5b.png",
+      "status": "added",
+      "before": null,
+      "after": "c3924f94f67ffb8e23f7a5198b77b582d829c247"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f0645767f5f883d09687.png",
+      "status": "added",
+      "before": null,
+      "after": "2b093b376e286f13d31d7d0330d00fa7ede54e04"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f1536caaa2def103d3b4.png",
+      "status": "added",
+      "before": null,
+      "after": "b1e5d0d3bb5f5f2c32087e3d33956a7cadb1f715"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f3b46a551ddbbe9b40d3.png",
+      "status": "added",
+      "before": null,
+      "after": "465ca9dd446b43c2d2464828dbd3fbfda5bd025d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f3ba5d6d022ac48511a4.png",
+      "status": "added",
+      "before": null,
+      "after": "0d1300ddfc50858245f0e9e756b4d540c11fc637"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f74ad73927de8d43774c.png",
+      "status": "added",
+      "before": null,
+      "after": "20648aeb8f9fd710bfbda830a428f44ab6e2ee43"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/f9487ad489e58538efaa.png",
+      "status": "added",
+      "before": null,
+      "after": "edf39499f27a666e592cbc05f5730c0df6f22ca5"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/fb45567d52fd874ef991.png",
+      "status": "added",
+      "before": null,
+      "after": "1a420b7c24393d6497e13102dac1bae3c985f007"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/fd326800ba06c3b3be1b.png",
+      "status": "added",
+      "before": null,
+      "after": "834369ad64f1588aac6ae9a9ff1c87ed1e7b43fe"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/fdeb89fb68bfb90afe1e.png",
+      "status": "added",
+      "before": null,
+      "after": "93d4ca21eef5a75e4e253f72b362168021103d20"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/logos/ffde3144d617c62ea3ad.png",
+      "status": "added",
+      "before": null,
+      "after": "be2fdfafca1564279f6b0507934254cfacd251c6"
+    },
+    {
+      "path": "platforms/roku-lab-visual/images/rocha-wordmark-original.png",
+      "status": "added",
+      "before": null,
+      "after": "87c40f879e14e6be7efaf237da86cd32477ddd3b"
+    },
+    {
+      "path": "tools/roku_visual_lab.mjs",
+      "status": "added",
+      "before": null,
+      "after": "cd242ad7e67fc02a1ffb79e007a8f7f3f10c61fb"
+    },
+    {
+      "path": "tests/roku-visual/baseline-allocation.brs",
+      "status": "added",
+      "before": null,
+      "after": "c726c2be9b677984eb2e1ec458a8666b498b262f"
+    },
+    {
+      "path": "tests/roku-visual/browser-harness.brs",
+      "status": "added",
+      "before": null,
+      "after": "bee3c5bced03c4c682a104c5d1a7687ddb6a03cd"
+    },
+    {
+      "path": "tests/roku-visual/run-tests.mjs",
+      "status": "added",
+      "before": null,
+      "after": "0a00787502e9ed8fc44e7de86df096294aa9572c"
+    },
+    {
+      "path": "tests/roku-visual/simulator-api.mjs",
+      "status": "added",
+      "before": null,
+      "after": "58e81edfc73a3ce9118b782b23817cefa2b43b0a"
+    }
+  ]
+}

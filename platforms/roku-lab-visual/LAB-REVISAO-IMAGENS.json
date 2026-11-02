@@ -1,0 +1,12 @@
+{
+  "changes": [
+    "Home OK opens favorites without hijacking DOWN sidebar navigation",
+    "Channel posters use scaleToFit and larger centered image area",
+    "Available broadcaster logo URLs prioritized over provisional local placeholder covers"
+  ],
+  "limitations": [
+    "No new original Android artwork imported",
+    "No Roku physical test",
+    "Banner carousel still only one configured approved slide"
+  ]
+}

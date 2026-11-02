@@ -1,0 +1,14 @@
+{
+  "originalBytes": 7502762,
+  "packagedBytes": 2420376,
+  "originalPixels": 24189588,
+  "packagedPixels": 3166754,
+  "assets": 142,
+  "estimatedRgbaReductionPercent": 86.91,
+  "assetBytesReductionPercent": 67.74,
+  "baselineAllocationsPer100Renders": 4000,
+  "afterAllocationsPer1000Renders": 0,
+  "poolNodes": 35,
+  "fpsMeasured": false,
+  "note": "Dimensions and allocation counts are measured; RGBA estimates are theoretical and are not observed process/GPU memory or FPS."
+}

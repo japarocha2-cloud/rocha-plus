@@ -1,0 +1,53 @@
+{
+  "simulatorVersion": "2.6.2",
+  "engineSha256": "6bb88becc5cb429b6f9a01110509b11aa7597a9dc5d51a18ce5cdea6253f2fbb",
+  "syntax": [
+    {
+      "file": "HomeScene.brs",
+      "statements": 31,
+      "errors": 0
+    },
+    {
+      "file": "ChannelBrowser.brs",
+      "statements": 16,
+      "errors": 0
+    },
+    {
+      "file": "Account.brs",
+      "statements": 19,
+      "errors": 0
+    },
+    {
+      "file": "PairingRequest.brs",
+      "statements": 2,
+      "errors": 0
+    }
+  ],
+  "xmlIds": 52,
+  "tests": [
+    "clock uses supported Roku date methods",
+    "seven reusable slots",
+    "Home opens no stream",
+    "selection waits for debounce",
+    "one preview content starts",
+    "preview has right-hand bounds",
+    "rapid navigation stops old stream",
+    "debounce starts only final selection",
+    "playing clears loading and timeout",
+    "fullscreen reuses preview content",
+    "Back restores same preview",
+    "Back stops preview and returns categories",
+    "unavailable channel keeps list and error",
+    "focus changes do not loop failed stream",
+    "OK explicitly retries unavailable channel",
+    "access denial stops pending preview",
+    "timeout leaves unavailable message",
+    "empty category clears decoder",
+    "missing art never gets invented logo",
+    "1000 selection renders allocate no SceneGraph nodes",
+    "row pool remains bounded across pages"
+  ],
+  "passed": 21,
+  "durationMs": 6378,
+  "limitation": "Headless interpreter with mocked SceneGraph nodes and no network or media decoder; does not establish physical playback, audio, memory, or FPS."
+}

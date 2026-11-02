@@ -1,0 +1,47 @@
+{
+  "source": 607,
+  "runtime": 599,
+  "unchangedExistingFilter": true,
+  "excluded": [
+    {
+      "id": "5e018afa96c529a3",
+      "name": "UniTV Porto Alegre (480p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "b0141e3f39b8c5cb",
+      "name": "AXN White (United States) Portugal (576p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "3cc70e5dc395a3e3",
+      "name": "AXN (Portugal) (1080p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "54531c576de019f6",
+      "name": "Telecine Action (1080p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "c7786e542e0bd7a0",
+      "name": "MCM Pop (580p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "c4ba4a2eefaddd01",
+      "name": "GloboNews (1080p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "c9076b11d7ac7b7c",
+      "name": "TLC Latin America Brazil (720p)",
+      "reason": "not_hls"
+    },
+    {
+      "id": "1fa57528b46d4d35",
+      "name": "RecordTV Interior SP",
+      "reason": "not_hls"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "candidateBranch": "work/candidate-build-guard-20261031",
+  "candidateHead": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+  "checkedDocuments": [
+    "docs/auditoria/2026-10-28-candidata-tecnica.md",
+    "docs/auditoria/2026-10-31-portoes-homologacao-candidata.md",
+    "docs/lab/issue34-inventory-summary.json",
+    "docs/tv/continuity-20261030.md"
+  ],
+  "issueSearch": [
+    {
+      "term": "\"Candidata 6\"",
+      "count": 1,
+      "items": [
+        {
+          "number": 6,
+          "title": "Prepara login obrigatório Google/Apple e proteção das rotas",
+          "url": "https://github.com/japarocha2-cloud/rocha-plus/pull/6"
+        }
+      ]
+    },
+    {
+      "term": "\"372\"",
+      "count": 0,
+      "items": []
+    },
+    {
+      "term": "\"remoções\"",
+      "count": 0,
+      "items": []
+    },
+    {
+      "term": "\"430\"",
+      "count": 2,
+      "items": [
+        {
+          "number": 10,
+          "title": "Layout Rocha+ | Controles Cast responsivos para celular e TV",
+          "url": "https://github.com/japarocha2-cloud/rocha-plus/pull/10"
+        },
+        {
+          "number": 9,
+          "title": "Layout Rocha+ | Carrossel compacto e responsivo na Home",
+          "url": "https://github.com/japarocha2-cloud/rocha-plus/pull/9"
+        }
+      ]
+    }
+  ],
+  "finalCandidate6CatalogLocated": false,
+  "removalExport20261101Located": false,
+  "userHistoricalCounts": {
+    "remainingApproximately": 430,
+    "previousRemovals": 372
+  },
+  "decision": "Preserve all packaged catalogs byte-for-byte. Do not infer approval from presence or historical counts."
+}

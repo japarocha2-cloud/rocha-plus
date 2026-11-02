@@ -1,0 +1,31 @@
+{
+  "simulatorVersion": "2.6.2",
+  "engineVersion": "2.6.1",
+  "installation": "accepted_and_launched",
+  "packageSha256": "88b48ff003423c35f3f991ded03704a5ceb75febe3e1a2285c21af7872072d63",
+  "observed": [
+    "Home with original wordmark, galaxy, original banner, PET, reserved Bau and clock",
+    "Seven-row vertical browser with local logos and right preview area",
+    "Loading state and unavailable channel message",
+    "Back returns to categories and stops preview",
+    "Infantil shows missing approved artwork explicitly as Capa pendente"
+  ],
+  "mediaPlayerQuery": "state=close",
+  "playbackApproved": false,
+  "audioApproved": false,
+  "fpsApproved": false,
+  "fpsEndpointLimitation": "BRS Desktop /query/graphics-frame-rate returns a constant 0.000000 in its implementation; it was not used as a measurement.",
+  "screenshots": [
+    "home-entrega.png",
+    "canais-entrega.png",
+    "categorias-entrega.png",
+    "esportes-entrega.png",
+    "infantil-pendencias.png"
+  ],
+  "limitations": [
+    "No physical Roku available",
+    "No stable media playback/audio evidenced",
+    "Fast ECP key sequences lost inputs at short intervals; 800ms pacing was used for final category check",
+    "Windows screenshot helper timed out; native simulator installer/screenshot/ECP APIs were used"
+  ]
+}
