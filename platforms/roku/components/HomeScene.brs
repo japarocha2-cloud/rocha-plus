@@ -22,6 +22,7 @@ sub init()
   renderChannelState()
   initAccount()
   initIntro()
+  initBannerCarousel()
 end sub
 
 sub renderFocus()
@@ -71,6 +72,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     end if
     renderChannelState()
     renderFocus()
+    return true
+  end if
+  if m.nav = 0 and (key = "left" or key = "right") then
+    if key = "left" then advanceBanner(-1) else advanceBanner(1)
     return true
   end if
   if key = "down" then
@@ -305,3 +310,35 @@ sub stopIntro()
  m.top.setFocus(true)
 end sub
 
+
+' Commercial home carousel. Only artwork explicitly listed in the approved
+' configuration is eligible; family/LAB artwork is never loaded implicitly.
+sub initBannerCarousel()
+  m.bannerPoster = m.top.findNode("homeBanner")
+  m.bannerTimer = m.top.findNode("bannerTimer")
+  m.bannerSlides = ["pkg:/images/banner-demo.jpg"]
+  config = ParseJson(ReadAsciiFile("pkg:/config/commercial-banners.json"))
+  if type(config) = "roAssociativeArray" and type(config.slides) = "roArray"
+    approved = []
+    for each slide in config.slides
+      if type(slide) = "roString" and left(slide, 12) = "pkg:/images/" then
+        if instr(1, lcase(slide), "mario") = 0 and instr(1, lcase(slide), "maria") = 0 and instr(1, lcase(slide), "avos") = 0 then approved.push(slide)
+      end if
+    end for
+    if approved.count() > 0 then m.bannerSlides = approved
+  end if
+  m.bannerIndex = 0
+  m.bannerPoster.uri = m.bannerSlides[0]
+  m.bannerTimer.observeField("fire", "onBannerTimer")
+  if m.bannerSlides.count() > 1 then m.bannerTimer.control = "start"
+end sub
+
+sub onBannerTimer()
+  if m.area = 0 and not m.playing and not m.introPlaying then advanceBanner(1)
+end sub
+
+sub advanceBanner(direction as Integer)
+  if m.bannerSlides.count() < 2 then return
+  m.bannerIndex = (m.bannerIndex + direction + m.bannerSlides.count()) mod m.bannerSlides.count()
+  m.bannerPoster.uri = m.bannerSlides[m.bannerIndex]
+end sub
