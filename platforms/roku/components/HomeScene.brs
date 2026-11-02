@@ -15,6 +15,8 @@ sub init()
   m.checkupChoice = 0
   m.showRejected = false
   m.reportOpen = false
+  m.redDialogOpen = false
+  m.redDialogConfirm = false
   m.checkupRecords = ParseJson(m.registry.Read("roku_checkup_v1"))
   if type(m.checkupRecords) <> "roAssociativeArray" then m.checkupRecords = {}
   m.video = m.top.findNode("channelVideo")
@@ -48,6 +50,7 @@ end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
   if not press then return false
+  if m.redDialogOpen then return handleRedDialog(key)
   if m.reportOpen then
     if key = "back" or key = "OK" then
       m.reportOpen = false
@@ -62,6 +65,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   if m.authorized and not hasBillingAccess() then onBillingExpiry()
   if not m.authorized then return accountKey(key)
   if m.playing then
+    if key = "red" then
+      openRedDialog()
+      return true
+    end if
     if key = "back" then
       stopPlayback()
       return true
@@ -71,6 +78,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   end if
   if m.area = 3 then
     if m.checkupOpen then return handleCheckupKey(key)
+    if key = "red" then
+      openRedDialog()
+      return true
+    end if
     if key = "play" then
       m.showRejected = not m.showRejected
       refreshVisibleChannels()
@@ -466,4 +477,55 @@ sub showCheckupReport()
   m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Total avaliados: " + records.count().toStr()
   m.reportOpen = true
   m.top.findNode("reportPanel").visible = true
+end sub
+
+sub openRedDialog()
+  if m.channels.count() = 0 then return
+  m.redDialogOpen = true
+  m.redDialogConfirm = false
+  m.top.findNode("redDialogPanel").visible = true
+  renderRedDialog()
+end sub
+
+sub renderRedDialog()
+  if not m.redDialogOpen then return
+  c = m.channels[m.channelIndex]
+  m.top.findNode("redDialogTitle").text = "Remover canal da lista? " + c.name
+  if m.redDialogConfirm then
+    m.top.findNode("redDialogOptions").text = "> SIM, REMOVER       CANCELAR"
+  else
+    m.top.findNode("redDialogOptions").text = "  SIM, REMOVER     > CANCELAR"
+  end if
+end sub
+
+function handleRedDialog(key as String) as Boolean
+  if key = "back" or key = "red" then
+    closeRedDialog()
+    return true
+  end if
+  if key = "left" or key = "right" then
+    m.redDialogConfirm = not m.redDialogConfirm
+    renderRedDialog()
+    return true
+  end if
+  if key = "OK" then
+    if m.redDialogConfirm and m.channels.count() > 0 then
+      c = m.channels[m.channelIndex]
+      m.checkupRecords[c.id] = {id: c.id, name: c.name, group: c.group, decision: "rejected"}
+      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
+      m.registry.Flush()
+      if m.playing then stopPlayback()
+      m.status.text = "Canal ocultado no LAB: " + c.name
+      closeRedDialog()
+      refreshVisibleChannels()
+    else
+      closeRedDialog()
+    end if
+  end if
+  return true
+end function
+
+sub closeRedDialog()
+  m.redDialogOpen = false
+  m.top.findNode("redDialogPanel").visible = false
 end sub
