@@ -6,7 +6,7 @@ O projeto de identidade/cobrança existente é **rocha-plus**. A conta solicitad
 
 Dois pagamentos específicos foram consultados:aprovados,modo real,pagador e recebedor correspondentes,sem reembolso informado nesses dois registros. Não são publicados e-mail,UID,IDs de pagamento,valores ou comprovantes.
 
-**Isso ainda não estabelece direito comercial aplicado.** A consultaSpark retornou paidUntil=null e paidAccessCurrent=false. A projeção é somente preview,com revisão de duração e ledger pendente;readyToApply=false. Não conceder paid,não somar períodos,não duplicar cobrança ou concessão.
+**Isso ainda não estabelece direito comercial aplicado.** A consultaSpark retornou paidUntil=null e paidAccessCurrent=false. A projeção é somente preview, com revisão de duração; readyToApply=false. A leitura complementar do ledger confirmou ausência de direito aplicado nos registros consultados. Não conceder paid,não somar períodos,não duplicar cobrança ou concessão.
 
 Fonte atual:[run40354015839,attempt2](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40354015839/attempts/2),job125409233413,iniciado02/11/2026 e concluído success. O run original é de26/10,mas foi repetido somente o job de leitura,com fonte imutável55461ffea352aa26eec1c5e02cfd595db0ddcc00. Não confundir created_at original com run_started_at da nova tentativa. Script revisado:FirebasegetUser/getFirestore.get e MercadoPagoGET;zero escrituras,nenhum acesso concedido.
 
@@ -25,13 +25,17 @@ firebase-project-map.json contém caminhos e commits de origem. O repositório j
 
 ## Cobertura e consulta adicional do ledger
 
-A repetição do diagnóstico anterior consultaSpark e provedor,mas não valida o ledger de pagamentos já processados. Por isso não concluir que todo direito é ausente só porque paidUntilSpark está vazio.
+A repetição do diagnóstico anterior consulta Spark e provedor. A auditoria complementar de 02/11/2026 às 13:49:14 (Brasília; 16:49:14 UTC) leu os registros de direitos já armazenados e os mesmos dois pagamentos.
+
+[Resultado sanitizado](stored-rights-current.json): conta Google verificada e Spark encontrados; Spark sem paidUntil e sem acesso pago atual. Registro legado de usuário e projeção Spark ausentes. Para ambas as referências, não foram encontrados registro legado de pagamento, confirmação manual Spark ou entrada no ledger do usuário. Zero escritas ou concessões. A cobertura é dos stores e referências listados, não uma afirmação sobre qualquer base possível.
+
+Os pagamentos aprovados são evidência financeira; não constituem automaticamente período comercial aplicado. Revisão de duração e eventual conciliação idempotente dependem de autorização específica, fora desta etapa LAB.
 
 Foi preparada auditoria adicional exclusivamente de leitura:.github/workflows/roku-lab-stored-rights.yml e tools/roku-lab-access/stored-rights-audit.mjs. Ela consulta oUID exato autenticado,rochaBillingUsers,rochaSparkAccounts,projeçãoSpark e os registros correspondentes aos mesmos dois pagamentos. Não usa store.user(),apply(),reconciliadores,transações,checkout,webhook ou método de escrita. O cálculo legado é puro e apenas descreve dados já armazenados.
 
 O sujeito e as referências são obtidos de diagnóstico público anterior fixado por commit eSHA256,sem copiar identificadores pessoais para os novos arquivos. Nada é avaliado como código remoto. Resultado contém apenas flags sem e-mail,UID,GoogleSubject ouIDs financeiros. Fonte Admin deve pertencer explicitamente a rocha-plus.
 
-Seis testes de segurança locais aprovados:sem escrita/concessão,saída privada,UID divergente rejeitado,registro ausente não vira paid,relógio servidor obrigatório e escopo de duas referências numéricas. Resultado da nova execução será anexado após confirmação.
+Seis testes de segurança locais aprovados:sem escrita/concessão,saída privada,UID divergente rejeitado,registro ausente não vira paid,relógio servidor obrigatório e escopo de duas referências numéricas. Execução confirmada: [CI 41485146238](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41485146238), commit [aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0](https://github.com/japarocha2-cloud/rocha-plus/commit/aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0), job 125413393047, concluído com sucesso em 02/11/2026. Os seis testes também passaram no CI.
 
 ## O que falta de fato
 

@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Entrega atual preparada: LAB 0.6.6 para homologação por conta, DESATIVADO até confirmar/configurar a identidade. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
+Entrega atual preparada: LAB 0.6.6 para homologação por conta, DESATIVADO até configurar runtime HTTPS e aprovação móvel autenticada. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -22,8 +22,8 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 - Projeto comprovado da conta existente:rocha-plus. CandidataAndroid usa rocha-plus-candidate;emulador demo-rocha-spark não é produção. Não usar o nome doGitHub como IDFirebase.
 - Consulta autenticada de02/11/2026,16:41:51UTC:conta existente,verificada,ativa,Google eSpark confirmados. Dois pagamentos consultados aprovados,pagador/recebedor correspondentes,sem reembolso informado.
-- Direito aplicado não confirmado:paidUntilSpark=null,projeção pronta para aplicar=false;duração eledger ainda exigem revisão. Zero escritas,cobranças ou concessões. Leitura pelo run40354015839,attempt2,job125409233413.
-- Auditoria complementar de ledger preparada na branchLAB,apenas leituras,seis testes de privacidade/segurança aprovados. Aguardar resultado do novoCI antes de concluir cobertura dos registros.
+- Direito aplicado não confirmado:paidUntilSpark=null,projeção pronta para aplicar=false;duração ainda exige revisão; ledger consultado separadamente abaixo. Zero escritas,cobranças ou concessões. Leitura pelo run40354015839,attempt2,job125409233413.
+- Auditoria complementar concluída em 02/11/2026, 13:49:14 (Brasília): Spark sem direito pago atual; usuário legado/projeção ausentes; nenhum registro aplicado encontrado para as duas referências nos stores consultados. [Evidência sanitizada](../roku/firebase-verification-20261102/stored-rights-current.json). Zero escritas/concessões. [CI 41485146238](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41485146238) aprovado, seis testes de segurança aprovados no CI, commit [aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0](https://github.com/japarocha2-cloud/rocha-plus/commit/aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0). Não aplicar assinatura nem somar períodos sem revisão e autorização comercial específica.
 -0.6.6 preservado no commitb47ccf3,HTTP200 ehash a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4 reconfirmados.71testes anteriores preservados;nada noRoku mudou. BRS ativo ainda0.6.4.
 - Acesso temporário continua PREPARADO/DESATIVADO. Não falta maisID nem leitura para o diagnóstico concluído;faltamruntimeHTTPSLAB,verificador seguro nesse runtime eaprovação móvel real. Proposta privada vinculada arocha-plus,sem habilitar nem ampliar prazo.
 
@@ -36,12 +36,12 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 [Relatório e fluxo completo](../roku/lab-access-20261102/README.md),[situação da conta](../roku/lab-access-20261102/account-verification.json),[versão observada](../roku/lab-access-20261102/version-diagnosis.json),[testes de servidor](../roku/lab-access-20261102/server-tests.json),[cliente](../roku/lab-access-20261102/client-lease-tests.json),[comportamento](../roku/lab-access-20261102/behavior-tests.json),[pacote](../roku/lab-access-20261102/package-tests.json).
 
 - Causa: firstStart+7200s no registro local de physical_test_2h; essa rotina retorna antes da consulta comercial. Endpoints comerciais vazios. Bloqueio não prova falta de pagamento. BRS local confirmado em0.6.4;0.6.5também mantém o limite antigo.
-- Conta fornecida pelo proprietário:cadastro, pagamento e direito pago NÃO VERIFICADOS por fonte autenticada. Zero cobranças, concessões pagas ou escritas em produção. E-mail/proposta privados fora do GitHub. Consulta pela interface interrompida porque URL não pôde ser confirmada; sem credencial administrativa disponível.
+- Situação atual da conta: cadastro verificado/ativo com Google e dois pagamentos aprovados confirmados por leitura autenticada. Nenhum direito pago aplicado encontrado nos stores e referências consultados. A ausência anterior de acesso Admin local foi superada usando CI existente; não exportar seu segredo. E-mail/proposta mantidos privados. Zero cobranças ou concessões.
 - Preparado0.6.6:modo account_homologation, código8 caracteres/10min, conta existente e verificada, proposta absoluta de24h, leases60s. Um celular, duasTVs, duasreproduções no serviçoLAB; troca móvel preservaTVs. Não implantado nem homologado em produção.
 - ZIP seguro por padrão:enabled=false, endpoint vazio. Não libera testes reais até concluir configuração/identidade. Nunca substituir isso por paid ou rearmar o relógio de2h.
 -71 verificações locais aprovadas(33 comportamento+20 servidor+14 cliente+4 pacote), zero falhas finais. Testes reais de conta, pagamento, vinculação e hardware não executados.578capas/29 pendências e catálogo607/599 preservados.
 - ZIP preparado em artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip,4.536.431 bytes, SHA256 a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4.
-- Próximo passo:informar projeto correto/consulta administrativa autorizada, verificar conta e vínculo financeiro somente por leitura; integrarHTTPS e aprovação móvel noLAB e só então habilitar a autorização temporária. Sem merge, publicação ou produção.
+- Próximo passo: configurar runtime HTTPS isolado com verificador para rocha-plus e aprovação móvel autenticada; validar vínculo, expiração, limites de dispositivos e streams antes de habilitar autorização LAB. Projeto e consulta da conta já resolvidos. Não usar o diagnóstico como concessão comercial. Sem merge, publicação ou produção.
 
 ## Entrega anterior — LAB 0.6.5
 

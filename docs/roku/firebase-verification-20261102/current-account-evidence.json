@@ -44,5 +44,13 @@
         "entitlementGranted": false
       }
     }
+  },
+  "storedRightsAudit": {
+    "checkedAt": "2026-11-02T16:49:14.928Z",
+    "evidence": "stored-rights-current.json",
+    "existingPaymentLedgerChecked": true,
+    "appliedPaidEntitlementFound": false,
+    "writes": 0,
+    "note": "payment.existingPaymentLedgerChecked=false preserves the original 16:41 preview; this later read closes that diagnostic gap."
   }
 }

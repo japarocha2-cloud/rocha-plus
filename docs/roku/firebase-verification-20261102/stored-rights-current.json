@@ -1,0 +1,60 @@
+{
+  "project": "rocha-plus",
+  "accountReference": "owner-requested account (private)",
+  "checkedAt": "2026-11-02T16:49:14.928Z",
+  "readOnly": true,
+  "writes": 0,
+  "sourceCommit": "aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0",
+  "sourceRun": 41485146238,
+  "sourceJob": 125413393047,
+  "sourceUrl": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41485146238",
+  "ciConclusion": "success",
+  "safetyTests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "accountFound": true,
+  "verifiedGoogleAccount": true,
+  "spark": {
+    "recordFound": true,
+    "paidUntilPresent": false,
+    "paidAccessCurrent": false
+  },
+  "legacy": {
+    "recordFound": false,
+    "uidBindingConfirmed": false,
+    "computedState": null,
+    "activePaidFromExistingLedger": false
+  },
+  "projection": {
+    "exists": false,
+    "consistent": null
+  },
+  "specifiedPaymentLedgerChecks": [
+    {
+      "legacyPaymentRecordExists": false,
+      "legacyRecordMatchesUid": null,
+      "manualConfirmationExists": false,
+      "manualConfirmationMatchesIdentity": null,
+      "inExistingUserLedger": false
+    },
+    {
+      "legacyPaymentRecordExists": false,
+      "legacyRecordMatchesUid": null,
+      "manualConfirmationExists": false,
+      "manualConfirmationMatchesIdentity": null,
+      "inExistingUserLedger": false
+    }
+  ],
+  "commercialAccessGranted": false,
+  "coverage": [
+    "Firebase Auth exact requested account",
+    "rochaSparkAccounts",
+    "rochaBillingUsers",
+    "rochaSparkBillingProjections",
+    "rochaBillingPayments for same two references",
+    "rochaSparkPaymentConfirmations for same two references"
+  ],
+  "limitation": "No applied paid entitlement found in checked stores; not a statement about every possible store or payment. No production reconciliation authorized.",
+  "logHandling": "Only visible non-sensitive flags transcribed; GitHub-masked delimiters not unmasked."
+}

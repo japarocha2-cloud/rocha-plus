@@ -3,7 +3,7 @@
   "registration": "verified_active_google_account",
   "payment": "two_provider_payments_approved_with_payer_and_merchant_match",
   "paidEntitlement": "not_established",
-  "reason": "Authenticated read-only rerun completed; Spark paidUntil null; duration policy and existing ledger still require review",
+  "reason": "Authenticated reads confirmed two approved provider payments, but no applied paid right in checked Spark/legacy stores or records for those references; duration policy requires review before any authorized reconciliation.",
   "productionWrites": 0,
   "commercialAccessGranted": false,
   "labAuthorization": {
@@ -29,5 +29,12 @@
   "previousObservation": {
     "commit": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d",
     "status": "not_verified before CI access was located"
+  },
+  "storedRightsAudit": {
+    "checkedAt": "2026-11-02T16:49:14.928Z",
+    "evidence": "../firebase-verification-20261102/stored-rights-current.json",
+    "sourceRun": 41485146238,
+    "existingPaymentLedgerChecked": true,
+    "appliedPaidEntitlementFound": false
   }
 }
