@@ -1,0 +1,229 @@
+[
+  {
+    "id": "51ae6e35870aa2bc",
+    "name": "Rede Globo (1080p)",
+    "url": "https://cdn-sp2.satlabscloud.com.br/RBS_HD/index.m3u8?token=Mw3YKkujzIi9hYQJ6kAQjQvly2VdBNuGPjHOq",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.07,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/O02TF2r.png"
+  },
+  {
+    "id": "7a7a6d5684e6cdba",
+    "name": "SBT News (720p)",
+    "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8",
+    "group": "Notícias",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 2.6,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg"
+  },
+  {
+    "id": "12817064bb9bd5b3",
+    "name": "Gospel Cartoon (360p)",
+    "url": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8",
+    "group": "Infantil",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 0.97,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/yxjPno5.png"
+  },
+  {
+    "id": "c4dc51617bef8577",
+    "name": "ACC Digital Network (1080p)",
+    "url": "https://raycom-accdn-firetv.amagi.tv/playlist.m3u8",
+    "group": "Esportes",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.72,
+      "source_playlist": "catalogo_rocha_sports.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/V6Kaqha.png"
+  },
+  {
+    "id": "82b15c897f2566f4",
+    "name": "+MaisUm (720p)",
+    "url": "https://stream.ichibansys.com:3230/hybrid/play.m3u8",
+    "group": "Geral",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 1.76,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    }
+  },
+  {
+    "id": "1362e59e24bdda60",
+    "name": "SBT Interior (720p)",
+    "url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 1.16,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/IkZfa4j.png"
+  },
+  {
+    "id": "27675dcd97034e3a",
+    "name": "SBT Nacional (1080p)",
+    "url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 0.64,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/tc1ALuu.png"
+  },
+  {
+    "id": "de8339b635cf0bf2",
+    "name": "RedeTV! Parana",
+    "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.04,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/D8R0Af4.png"
+  },
+  {
+    "id": "49cbfdf69c75279e",
+    "name": "Rede TV! Mais",
+    "url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 0.71,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png"
+  },
+  {
+    "id": "06d0174691512ae8",
+    "name": "TV Brasil Oeste (720p)",
+    "url": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 4.75,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/noqGfuy.png"
+  },
+  {
+    "id": "234129f5fff04bf0",
+    "name": "CNN Brasil (1080p)",
+    "url": "https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8",
+    "group": "Notícias",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 3.06,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/CNN_Brasil.svg/960px-CNN_Brasil.svg.png"
+  },
+  {
+    "id": "8ba09786771f6cea",
+    "name": "Adesso TV (720p)",
+    "url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8",
+    "group": "TV aberta",
+    "status": "benchmark_av_detected",
+    "approved": false,
+    "evidence": {
+      "report": "Benchmark_RochaPlus_Catalogo.csv",
+      "source_sha256": "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914",
+      "detection": "video_audio",
+      "detection_seconds": 2.28,
+      "source_playlist": "catalogo_rocha_br.m3u",
+      "error": "",
+      "roku_playback_verified": false,
+      "distribution_authorization": "unverified"
+    },
+    "logo": "https://i.imgur.com/KgetM8j.png"
+  }
+]

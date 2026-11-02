@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "mode": "isolated_12",
+  "note": "Only enable in sideload lab builds. Default full benchmark catalog remains intact."
+}

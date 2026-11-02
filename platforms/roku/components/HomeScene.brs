@@ -11,6 +11,14 @@ sub init()
   m.favorites = ParseJson(m.registry.Read("favorites"))
   if m.favorites = invalid then m.favorites = []
   m.allChannels = []
+  m.checkupOpen = false
+  m.checkupChoice = 0
+  m.showRejected = false
+  m.reportOpen = false
+  m.redDialogOpen = false
+  m.redDialogConfirm = false
+  m.checkupRecords = ParseJson(m.registry.Read("roku_checkup_v1"))
+  if type(m.checkupRecords) <> "roAssociativeArray" then m.checkupRecords = {}
   m.video = m.top.findNode("channelVideo")
   m.video.observeField("state", "onVideoStateChanged")
   m.video.observeField("errorMsg", "onVideoError")
@@ -22,6 +30,7 @@ sub init()
   renderChannelState()
   initAccount()
   initIntro()
+  initBannerCarousel()
 end sub
 
 sub renderFocus()
@@ -41,6 +50,14 @@ end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
   if not press then return false
+  if m.redDialogOpen then return handleRedDialog(key)
+  if m.reportOpen then
+    if key = "back" or key = "OK" then
+      m.reportOpen = false
+      m.top.findNode("reportPanel").visible = false
+    end if
+    return true
+  end if
   if m.introPlaying
     if key = "OK" or key = "back" then stopIntro()
     return true
@@ -48,6 +65,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   if m.authorized and not hasBillingAccess() then onBillingExpiry()
   if not m.authorized then return accountKey(key)
   if m.playing then
+    if key = "red" then
+      openRedDialog()
+      return true
+    end if
     if key = "back" then
       stopPlayback()
       return true
@@ -56,7 +77,20 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     return false
   end if
   if m.area = 3 then
-    if key = "options" then toggleFavorite()
+    if m.checkupOpen then return handleCheckupKey(key)
+    if key = "red" then
+      openRedDialog()
+      return true
+    end if
+    if key = "play" then
+      m.showRejected = not m.showRejected
+      refreshVisibleChannels()
+      return true
+    end if
+    if key = "options" then
+      openCheckup()
+      return true
+    end if
     if key = "down" or key = "right" then
       if m.channels.count() > 0 then m.channelIndex = (m.channelIndex + 1) mod m.channels.count()
     else if key = "up" or key = "left" then
@@ -73,6 +107,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     renderFocus()
     return true
   end if
+  if m.nav = 0 and (key = "left" or key = "right") then
+    if key = "left" then advanceBanner(-1) else advanceBanner(1)
+    return true
+  end if
   if key = "down" then
     m.nav = (m.nav + 1) mod 7
   else if key = "up" then
@@ -81,7 +119,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     if m.nav = 0 then
       m.status.text = "Escolha TV ao Vivo ou uma categoria no menu."
     else if m.nav = 6 then
-      m.status.text = "Conta e assinatura Rocha+ • Assine no celular com a mesma conta."
+      showCheckupReport()
     else
       openChannels(m.nav = 5)
       if m.nav >= 2 and m.nav <= 4 then filterCategory(m.nav)
@@ -96,18 +134,30 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
   return true
 end function
 
-' Only catalog-approved entries are counted. No source is silently added to the UI.
+' Isolated test snapshot. External AV detection is not Roku playback approval.
 sub loadApprovedCatalogue()
-  m.experimental = false
-  raw = ReadAsciiFile("pkg:/catalog/approved.json")
+  m.experimental = true
+  raw = ReadAsciiFile("pkg:/catalog/benchmark-test.json")
+  ' A separate development package may opt into the 12-channel fixture.
+  ' Production/default behavior keeps the full existing benchmark catalog.
+  sampleConfig = ParseJson(ReadAsciiFile("pkg:/config/lab-sample.json"))
+  if type(sampleConfig) = "roAssociativeArray" then
+    if sampleConfig.enabled = true and sampleConfig.mode = "isolated_12" then
+      raw = ReadAsciiFile("pkg:/catalog/isolated-sample-12.json")
+    end if
+  end if
   parsed = ParseJson(raw)
   if parsed = invalid then return
   if type(parsed) <> "roArray" then return
   for each item in parsed
     if type(item) = "roAssociativeArray" then
-      isApproved = (item.approved = true and item.status = "approved")
-      if isApproved and item.blocked <> true and item.quarantined <> true then
-        if type(item.url) = "roString" and type(item.name) = "roString" then
+      isCandidate = false
+      if item.status = "benchmark_av_detected" and type(item.evidence) = "roAssociativeArray"
+        evidence = item.evidence
+        isCandidate = (evidence.detection = "video_audio" and evidence.report = "Benchmark_RochaPlus_Catalogo.csv" and evidence.source_sha256 = "17095a366a0ec73ac6cc85be27469500d3a10aac4df89ebf137ae0c54d424914")
+      end if
+      if isCandidate and item.blocked <> true and item.quarantined <> true then
+        if (type(item.url) = "roString" or type(item.url) = "String") and (type(item.name) = "roString" or type(item.name) = "String") then
           if (left(item.url, 8) = "https://") and instr(1, lcase(item.url), ".m3u8") > 0 then
             m.channels.push(item)
             m.approvedCount = m.approvedCount + 1
@@ -118,7 +168,7 @@ sub loadApprovedCatalogue()
   end for
 end sub
 
-' Roku native Video node; playback only after explicit selection of HTTPS HLS approved channel.
+' Roku native Video node; explicit selection of an HTTPS HLS test candidate.
 sub renderChannelState()
   panel = m.top.findNode("channelPanel")
   panel.visible = (m.area = 3 and not m.playing)
@@ -151,7 +201,7 @@ sub renderChannelState()
     c = m.channels[m.channelIndex]
     m.top.findNode("channelName").text = c.name
     if isFavorite(c.id) then m.top.findNode("channelName").text = "★ " + c.name
-    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  •  Setas: escolher   OK: assistir   *: favorito   Voltar: Home"
+    m.top.findNode("channelHelp").text = (m.channelIndex + 1).toStr().trim() + " / " + m.channels.count().toStr().trim() + "  • OK: assistir   *: check-up   Play: mostrar/ocultar reprovados"
   end if
 end sub
 
@@ -213,15 +263,36 @@ sub onVideoError()
 end sub
 
 sub openChannels(favoritesOnly as boolean)
- m.favoritesOnly = favoritesOnly
- m.channels = []
- for each c in m.allChannels
-  if not favoritesOnly or isFavorite(c.id) then m.channels.push(c)
- end for
- m.channelIndex = 0
- m.area = 3
- renderChannelState()
+  m.favoritesOnly = favoritesOnly
+  m.activeCategory = ""
+  refreshVisibleChannels()
+  m.area = 3
 end sub
+
+function isRejected(id as String) as Boolean
+  record = m.checkupRecords[id]
+  if type(record) <> "roAssociativeArray" then return false
+  return record.decision = "rejected"
+end function
+
+sub refreshVisibleChannels()
+  currentId = ""
+  if m.channels.count() > 0 and m.channelIndex < m.channels.count() then currentId = m.channels[m.channelIndex].id
+  visible = []
+  for each c in m.allChannels
+    categoryOk = (m.activeCategory = "" or c.group = m.activeCategory)
+    favoriteOk = (not m.favoritesOnly or isFavorite(c.id))
+    rejectionOk = (m.showRejected or not isRejected(c.id))
+    if categoryOk and favoriteOk and rejectionOk then visible.push(c)
+  end for
+  m.channels = visible
+  m.channelIndex = 0
+  for i = 0 to m.channels.count() - 1
+    if m.channels[i].id = currentId then m.channelIndex = i
+  end for
+  renderChannelState()
+end sub
+
 function isFavorite(id as string) as boolean
  for each f in m.favorites
   if f = id then return true
@@ -251,14 +322,9 @@ sub onPlaybackTimeout()
 end sub
 
 sub filterCategory(category as integer)
- groups = ["", "", "Esportes", "Notícias", "Infantil"]
- filtered = []
- for each c in m.allChannels
-  if c.group = groups[category] then filtered.push(c)
- end for
- m.channels = filtered
- m.channelIndex = 0
- renderChannelState()
+  groups = ["", "", "Esportes", "Notícias", "Infantil"]
+  m.activeCategory = groups[category]
+  refreshVisibleChannels()
 end sub
 
 sub initIntro()
@@ -291,4 +357,197 @@ sub stopIntro()
  m.introVideo.visible = false
  m.top.findNode("introHelp").visible = false
  m.top.setFocus(true)
+end sub
+
+
+' Commercial home carousel. Only artwork explicitly listed in the approved
+' configuration is eligible; family/LAB artwork is never loaded implicitly.
+sub initBannerCarousel()
+  m.bannerPoster = m.top.findNode("homeBanner")
+  m.bannerTimer = m.top.findNode("bannerTimer")
+  m.bannerSlides = ["pkg:/images/banner-demo.jpg"]
+  config = ParseJson(ReadAsciiFile("pkg:/config/commercial-banners.json"))
+  if type(config) = "roAssociativeArray" and type(config.slides) = "roArray"
+    approved = []
+    for each slide in config.slides
+      if type(slide) = "roString" and left(slide, 12) = "pkg:/images/" then
+        if instr(1, lcase(slide), "mario") = 0 and instr(1, lcase(slide), "maria") = 0 and instr(1, lcase(slide), "avos") = 0 then approved.push(slide)
+      end if
+    end for
+    if approved.count() > 0 then m.bannerSlides = approved
+  end if
+  m.bannerIndex = 0
+  m.bannerPoster.uri = m.bannerSlides[0]
+  m.bannerTimer.observeField("fire", "onBannerTimer")
+  if m.bannerSlides.count() > 1 then m.bannerTimer.control = "start"
+end sub
+
+sub onBannerTimer()
+  if m.area = 0 and not m.playing and not m.introPlaying then advanceBanner(1)
+end sub
+
+sub advanceBanner(direction as Integer)
+  if m.bannerSlides.count() < 2 then return
+  m.bannerIndex = (m.bannerIndex + direction + m.bannerSlides.count()) mod m.bannerSlides.count()
+  m.bannerPoster.uri = m.bannerSlides[m.bannerIndex]
+end sub
+
+
+' LAB-only operator evaluation. The default cursor is APPROVE, but nothing is
+' written until the operator explicitly presses OK. No source catalog is edited.
+sub openCheckup()
+  if m.channels.count() = 0 then return
+  m.checkupOpen = true
+  m.checkupChoice = 0
+  renderCheckup()
+end sub
+
+sub renderCheckup()
+  overlay = m.top.findNode("checkupPanel")
+  overlay.visible = m.checkupOpen
+  if not m.checkupOpen then return
+  c = m.channels[m.channelIndex]
+  m.top.findNode("checkupTitle").text = "Check-up LAB: " + c.name
+  choices = ["APROVAR", "REPROVAR (REGISTRAR)", "PENDENTE", "RESTAURAR", "FAVORITO"]
+  output = ""
+  for i = 0 to choices.count() - 1
+    if i = m.checkupChoice then output = output + "> " else output = output + "   "
+    output = output + choices[i] + chr(10)
+  end for
+  m.top.findNode("checkupChoices").text = output
+end sub
+
+function handleCheckupKey(key as String) as Boolean
+  if key = "back" or key = "options" then
+    m.checkupOpen = false
+    renderCheckup()
+    return true
+  else if key = "down" then
+    m.checkupChoice = (m.checkupChoice + 1) mod 5
+  else if key = "up" then
+    m.checkupChoice = (m.checkupChoice + 4) mod 5
+  else if key = "OK" then
+    c = m.channels[m.channelIndex]
+    if m.checkupChoice = 4 then
+      toggleFavorite()
+    else
+      record = {id: c.id, name: c.name, group: c.group, decision: "approved"}
+      if m.checkupChoice = 1 then record.decision = "rejected"
+      if m.checkupChoice = 2 then record.decision = "pending"
+      if m.checkupChoice = 3 then record.decision = "restored"
+      m.checkupRecords[c.id] = record
+      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
+      m.registry.Flush()
+      m.status.text = "Check-up salvo: " + c.name + " (" + record.decision + ")"
+    end if
+    m.checkupOpen = false
+    renderCheckup()
+    refreshVisibleChannels()
+    return true
+  else
+    return true
+  end if
+  renderCheckup()
+  return true
+end function
+
+
+' Local report: display totals on TV and emit structured JSON to the Roku
+' developer debug console. No upload endpoint or external transmission.
+sub showCheckupReport()
+  approved = 0
+  rejected = 0
+  pending = 0
+  restored = 0
+  untested = 0
+  records = []
+  ' Export follows source catalog order. Absence of a decision means UNTESTED,
+  ' never APPROVED. This preserves the distinction for final homologation.
+  for each c in m.allChannels
+    item = m.checkupRecords[c.id]
+    decision = "untested"
+    if type(item) = "roAssociativeArray" then decision = item.decision
+    if decision = "approved" then approved = approved + 1
+    if decision = "rejected" then rejected = rejected + 1
+    if decision = "pending" then pending = pending + 1
+    if decision = "restored" then restored = restored + 1
+    if decision = "untested" then untested = untested + 1
+    records.push({id: c.id, name: c.name, group: c.group, decision: decision})
+  end for
+  report = {schema: "rochaplus.roku.checkup.v2", source: "roku-lab", records: records}
+  print "ROCHAPLUS_CHECKUP_JSON_BEGIN"
+  print FormatJson(report)
+  print "ROCHAPLUS_CHECKUP_JSON_END"
+  print "ROCHAPLUS_CHECKUP_CSV_BEGIN"
+  print "id,name,group,decision"
+  for each item in records
+    print csvCell(item.id) + "," + csvCell(item.name) + "," + csvCell(item.group) + "," + csvCell(item.decision)
+  end for
+  print "ROCHAPLUS_CHECKUP_CSV_END"
+  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Nao testados: " + untested.toStr() + chr(10) + "Total no catalogo: " + records.count().toStr()
+  m.reportOpen = true
+  m.top.findNode("reportPanel").visible = true
+end sub
+
+function csvCell(value as Dynamic) as String
+  output = ""
+  if value <> invalid then output = value.toStr()
+  escaped = chr(34)
+  for i = 1 to len(output)
+    letter = mid(output, i, 1)
+    if letter = chr(34) then escaped = escaped + chr(34)
+    escaped = escaped + letter
+  end for
+  return escaped + chr(34)
+end function
+
+sub openRedDialog()
+  if m.channels.count() = 0 then return
+  m.redDialogOpen = true
+  m.redDialogConfirm = false
+  m.top.findNode("redDialogPanel").visible = true
+  renderRedDialog()
+end sub
+
+sub renderRedDialog()
+  if not m.redDialogOpen then return
+  c = m.channels[m.channelIndex]
+  m.top.findNode("redDialogTitle").text = "Remover canal da lista? " + c.name
+  if m.redDialogConfirm then
+    m.top.findNode("redDialogOptions").text = "> SIM, REMOVER       CANCELAR"
+  else
+    m.top.findNode("redDialogOptions").text = "  SIM, REMOVER     > CANCELAR"
+  end if
+end sub
+
+function handleRedDialog(key as String) as Boolean
+  if key = "back" or key = "red" then
+    closeRedDialog()
+    return true
+  end if
+  if key = "left" or key = "right" then
+    m.redDialogConfirm = not m.redDialogConfirm
+    renderRedDialog()
+    return true
+  end if
+  if key = "OK" then
+    if m.redDialogConfirm and m.channels.count() > 0 then
+      c = m.channels[m.channelIndex]
+      m.checkupRecords[c.id] = {id: c.id, name: c.name, group: c.group, decision: "rejected"}
+      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
+      m.registry.Flush()
+      if m.playing then stopPlayback()
+      m.status.text = "Canal ocultado no LAB: " + c.name
+      closeRedDialog()
+      refreshVisibleChannels()
+    else
+      closeRedDialog()
+    end if
+  end if
+  return true
+end function
+
+sub closeRedDialog()
+  m.redDialogOpen = false
+  m.top.findNode("redDialogPanel").visible = false
 end sub

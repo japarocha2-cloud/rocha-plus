@@ -1,0 +1,60 @@
+name: Roku commercial sideload ZIP (LAB only)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/roku-current-catalog-20261029
+    paths:
+      - 'platforms/roku/**'
+      - '.github/workflows/roku-commercial-sideload.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Roku source and package root
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd platforms/roku
+          test -s manifest
+          test -s source/main.brs
+          test -s components/HomeScene.xml
+          test -s components/HomeScene.brs
+          test -s components/Account.brs
+          test -s images/galaxy.jpg
+          test -s images/banner-demo.jpg
+          python3 - <<'PY'
+          import json, pathlib, xml.etree.ElementTree as ET
+          root = pathlib.Path('.')
+          ET.parse(root/'components/HomeScene.xml')
+          for path in (root/'catalog').glob('*.json'):
+              json.loads(path.read_text(encoding='utf-8'))
+          for path in (root/'config').glob('*.json'):
+              json.loads(path.read_text(encoding='utf-8'))
+          manifest = (root/'manifest').read_text()
+          assert 'title=Rocha+' in manifest
+          assert 'mm_icon_focus_hd=' in manifest
+          print('Manifest, XML and JSON validated')
+          PY
+      - name: Package Roku sideload ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cd platforms/roku
+          zip -q -r ../../dist/RochaPlus-Roku-Comercial-LAB.zip manifest source components catalog config images -x '*.DS_Store'
+          cd ../..
+          unzip -t dist/RochaPlus-Roku-Comercial-LAB.zip
+          unzip -Z1 dist/RochaPlus-Roku-Comercial-LAB.zip | grep -Fx manifest
+          unzip -Z1 dist/RochaPlus-Roku-Comercial-LAB.zip | grep -Fx source/main.brs
+          unzip -Z1 dist/RochaPlus-Roku-Comercial-LAB.zip | grep -Fx components/HomeScene.xml
+      - name: Upload development-only ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-Roku-Comercial-LAB
+          path: dist/RochaPlus-Roku-Comercial-LAB.zip
+          if-no-files-found: error
+          retention-days: 7
