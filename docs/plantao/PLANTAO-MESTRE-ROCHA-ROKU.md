@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Esta etapa entrega o LAB 0.6.4 com capas e interface corrigidas. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
+Entrega atual: LAB 0.6.5 com uma capa adicional; o histórico do LAB 0.6.4 permanece abaixo. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -13,6 +13,19 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 4. Preserve os resultados aprovados. Ao concluir cada etapa técnica, atualize este arquivo, faça commit/push apenas na branch LAB e confira links/SHAs remotos.
 5. Próxima prioridade: localizar catálogo final e exportação de remoções da C6; em paralelo, testar este ZIP em Roku física.
 
+
+## Entrega técnica mais recente — LAB 0.6.5
+
+[Relatório completo](../roku/technical-followup-20261102/README.md),[auditoria das30 pendências](../roku/technical-followup-20261102/pending-30-audit.json),[29ainda pendentes](../roku/technical-followup-20261102/pending-covers.csv),[revisão de desempenho](../roku/technical-followup-20261102/performance-review.md),[roteiro físico](../roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md),[resultados físicos NÃO EXECUTADOS](../roku/technical-followup-20261102/physical-results.csv).
+
+- Checkpoint de pesquisa persistido:79df0398de07968058e585a967587fa183ee0f90. Todos os1.442 artefatos listados inventariados; apenas o conteúdo do catálogo histórico selecionado foi inspecionado, não todos os1.442. FonteC6/remoções01/11 continuam não encontradas.
+- Recuperada uma capa original adicional:beIN Sports Haber. Total578 associações/534 texturas;577 anteriores preservadas. Restam29 pendências(10HTTP403,4HTTP404,3 TLS/DNS,5sem logo,7sem identidade exata).
+- Novo ZIP artifacts/roku-lab/20261102/followup/RochaPlus-Roku-LAB-0.6.5-CAPA-HABER-20261102.zip:4.533.575 bytes, SHA256 3e9f11df58b01374b09eafe786a47888466906e06f9c8e42693560cdd14089a9. OriginalJPEG eSHA256SUMS no mesmo diretório.
+- Só capa, mapa e versão mudaram no pacote. Catálogos607/599, ordem, exclusões, BRS/XML, Android eRokuoficial preservados byte a byte. Nenhuma homologação alterada.
+- 13 testes de dados/preservação relacionados aprovados; zero falhas.30 cenários de comportamento verdes anteriores preservados sem repetição. CI nova não executada. Nenhuma aprovação física;21 casos preparados e não executados.0.6.5também não foi executado no BRS nativo.
+- Revisão não demonstrou defeito que justificasse refatoração de desempenho. FPS/RAM, texturas/decoders reais e reprodução contínua continuam dependentes do roteiro físico.
+- Continuidade:use esta seção atual; contagens577/30 e ZIP0.6.4 abaixo são históricos. Não reconstruir catálogo e não reutilizar aprovações de triagemCI.
+
 ## Estado confirmado e commits
 
 - Base remota preservada: [ebf6514d5b70c82c702cd57798d4ce07ee58e34c](https://github.com/japarocha2-cloud/rocha-plus/commit/ebf6514d5b70c82c702cd57798d4ce07ee58e34c).
@@ -23,7 +36,7 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 - CI do commit atual: zero check-runs e zero execuções de Actions, verificados via API. Commits de persistência usam [skip ci]. **40 testes locais aprovados não são CI.** [Download remoto e hashes conferidos](../roku/android-sync-20261102/remote-verification.json). Veja [estado GitHub](../roku/android-sync-20261102/github-status.json) e [Actions do repositório](https://github.com/japarocha2-cloud/rocha-plus/actions).
 - O histórico local anterior (86796a8, db3fd25, d13ea8d) pertence ao trabalho preparatório; os SHAs canônicos para continuidade são os links remotos acima.
 
-## ZIP experimental mais recente
+## ZIP anterior — LAB 0.6.4 (histórico)
 
 [Baixar Roku LAB 0.6.4 — Android, capas e catálogo](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/f5cce4b70d40edcb6a342312215a1b2314b79589/artifacts/roku-lab/20261102/RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip)
 
@@ -96,7 +109,7 @@ PET foi mantida; não preencher ou mover canais sem fonte homologada. Favoritos 
 - Correspondência exige stream exato (ou alternativa declarada) E identidade normalizada. Só nome semelhante não basta; conflitos não são aceitos. Resolução/acentos/anotações são normalizados apenas para comparar; nomes/IDs armazenados não mudam. Nenhum status de aprovação transferido.
 - Revisão visual das393 imagens em nove folhas; BabyFirst (duas variantes), Box Kids TV, Cartoon Network Latin America Brazil, Disney Portugal, Disney Latin America, Disney Mexico e Disney Panregional HD conferidos. Parte dessas prioridades também foi vista no BRS.
 - [449 linhas com origem, IDs e decisão](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/audit/pending-449-audit.json), [cobertura final](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/cover-coverage.json), [downloads/hashes](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/audit/image-downloads.json), [folhas de contato](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/contact-sheets).
-- [30 pendências, canal e motivo exato](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/pending-covers.csv):4 HTTP403,4 HTTP404,3 falhas de rede/TLS (CRTV Chile: cadeia de certificado;Golf Channel:DH fraco;Laboral TV:DNS),3 registros Android sem logo,16 sem identidade exata nas fontes verificadas. TLS não foi desabilitado.
+- [30 pendências, canal e motivo exato](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/pending-covers.csv):4 HTTP403,4 HTTP404,3 falhas de rede/TLS (CRTV Chile: cadeia de certificado; Golf Channel:DH fraco; Laboral TV:DNS),3 registros Android sem logo,16 sem identidade exata nas fontes verificadas. TLS não foi desabilitado.
 - 420 PNGs antigos eram cartas geradas com nome, não logos oficiais. Mantidos nas fontes/ZIPs históricos e excluídos do pacote novo. Não contados como recuperação. Pendentes mostram o estado previsto pela interface, sem criar arte genérica.
 
 ## Visual e decisões congeladas
@@ -116,9 +129,9 @@ Não houve substituição de arte oficial por imagem de IA.
 | Pool de canais |recriado a cada render|7 linhas /42 nós|
 | Texturas finais |dimensões variáveis|533 PNGs192x108;2.181.118 bytes|
 
-Pools lazy:6categorias/24nós e6favoritos/30nós. Sete texturas representam580.608bytes RGBA teóricos, excluindo vídeo, fundos, renderer e cache do simulador. **Não é medida de RAM do processo.** Queixa anterior de15FPS vazio/2–3FPS com app é relato do usuário; não foi medida independentemente. Endpoint ECP deFPS retorna0 fixo nessa versão e não serve de evidência. FPS real e memória real não medidos.
+Pools lazy:6 categorias/24 nós e6 favoritos/30 nós. Sete texturas representam580.608 bytes RGBA teóricos, excluindo vídeo, fundos, renderer e cache do simulador. **Não é medida de RAM do processo.** Queixa anterior de15FPS vazio/2–3FPS com app é relato do usuário; não foi medida independentemente. Endpoint ECP deFPS retorna0 fixo nessa versão e não serve de evidência. FPS real e memória real não medidos.
 
-Aprovados:30 cenários BrightScript com SceneGraph simulado +10 testes de identidade/pacote;zero falhas. Cinco scripts com sintaxe aceita pelo engine instalado;56IDs XML únicos e referências conferidas. CRC e14JSON válidos,577mapeamentos sem imagem ausente;catálogo e artes preservadas por hash.
+Aprovados:30 cenários BrightScript com SceneGraph simulado +10 testes de identidade/pacote; zero falhas. Cinco scripts com sintaxe aceita pelo engine instalado;56IDs XML únicos e referências conferidas. CRC e14 JSON válidos,577 mapeamentos sem imagem ausente; catálogo e artes preservadas por hash.
 [Resultados de comportamento](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/automated-tests.json), [identidade](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/artwork-identity-tests.json), [métricas](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/performance.json), [cache](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/cache-optimization.json).
 
 BRS Desktop2.6.2 (engine2.6.1) instalado: observados Home, categorias, capas infantis, prévia e tela cheia de Gospel Cartoon com imagem, Voltar e favoritos vazios. [Capturas nativas](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102/screenshots).
@@ -126,18 +139,18 @@ Não executados/comprovados:áudio, reprodução contínua de todos os canais, R
 
 ## Reproduzir sem repetir trabalho já aprovado
 
-1. Baixe o ZIP atual e confira SHA256. Abra no BRS Desktop2.6.2;aguarde inicialização. Use a branch experimental, não a versão oficial.
-2. Categorias → Infantil: confira capas/nomes;troque rapidamente e aguarde350ms;somente uma prévia deve permanecer. Assistir/OK abre tela cheia;Voltar retorna à lista,depois categorias,depois Home.
-3. Percorra categorias até PET e confira ordem;sem fonte C6,não reorganizar. Favoritos:use dados de teste do próprio testador e opções*,verifique grade3x2,retorno e persistência. Não alterar favoritos reais sem exportação.
-4. Em Roku física,registre primeiro quadro,áudio,buffering,timeout25s,trocas rápidas,rede indisponível/retorno,uso de RAM,FPS e CPU na mesma configuração antes/depois. Registre aparelho/firmware/rede.
+1. Baixe o ZIP atual e confira SHA256. Abra no BRS Desktop2.6.2; aguarde inicialização. Use a branch experimental, não a versão oficial.
+2. Categorias → Infantil: confira capas/nomes; troque rapidamente e aguarde350ms; somente uma prévia deve permanecer. Assistir/OK abre tela cheia; Voltar retorna à lista, depois categorias, depois Home.
+3. Percorra categorias até PET e confira ordem; sem fonte C6, não reorganizar. Favoritos:use dados de teste do próprio testador e opções*, verifique grade3x2, retorno e persistência. Não alterar favoritos reais sem exportação.
+4. Em Roku física, registre primeiro quadro, áudio, buffering, timeout25s, trocas rápidas, rede indisponível/retorno, uso de RAM, FPS e CPU na mesma configuração antes/depois. Registre aparelho/firmware/rede.
 5. Testes locais com Node.js:
 ```powershell
 node tests/roku-visual/verify.mjs "C:\CAMINHO\BrightScript Simulator\resources\app.asar"
 ```
 [Runner](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/tests/roku-visual/verify.mjs) usa módulos nativos e engine instalado. [Harness](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/tests/roku-visual). Não requer acessar streams.
-6. Build reproduzível:importe build de tools/roku_visual_lab.mjs e passe `{excludeProvisionalCovers:true,onlyMappedLogoFiles:true}`;fonte platforms/roku-lab-visual. Defaults são históricos e não representam o ZIP v2.
-7. [API local do simulador](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/tests/roku-visual/simulator-api.mjs) permite upload/ECP/captura. A captura aguarda a escrita assíncrona do PNG;evite interpretar frame anterior como falha de navegação.
-8. Não repetir suítes verdes sem mudança relacionada;novos testes físicos e obtenção de fonteC6 permanecem necessários.
+6. Build reproduzível:importe build de tools/roku_visual_lab.mjs e passe `{excludeProvisionalCovers:true, onlyMappedLogoFiles:true}`; fonte platforms/roku-lab-visual. Defaults são históricos e não representam o ZIP v2.
+7. [API local do simulador](https://github.com/japarocha2-cloud/rocha-plus/blob/f5cce4b70d40edcb6a342312215a1b2314b79589/tests/roku-visual/simulator-api.mjs) permite upload/ECP/captura. A captura aguarda a escrita assíncrona do PNG; evite interpretar frame anterior como falha de navegação.
+8. Não repetir suítes verdes sem mudança relacionada; novos testes físicos e obtenção de fonteC6 permanecem necessários.
 
 ## Materiais persistentes e histórico dos ZIPs
 
@@ -145,27 +158,27 @@ node tests/roku-visual/verify.mjs "C:\CAMINHO\BrightScript Simulator\resources\a
 
 | Arquivo | Situação | SHA256 |
 |---|---|---|
-|references/RochaPlus-Roku-LAB-HOME-VISUAL-EXPERIMENTAL-20261102.zip|entrada,4.847.890bytes|3dce918642e43a07ab31a83f725dd02fd952242578b6bf541e4ad38ada21849a|
-|references/RochaPlus-Roku-LAB-REVISAO-CAPAS-NAVEGACAO-20261102.zip|entrada,4.823.625bytes|602477cd52c0df1d47f56d5fde4b34c0372d841156a171901784a5c446aa3211|
-|RochaPlus-Roku-LAB-VISUAL-CAPAS-DESEMPENHO-20261102.zip|etapa1,7.325.578bytes|88b48ff003423c35f3f991ded03704a5ceb75febe3e1a2285c21af7872072d63|
-|RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip|MAIS RECENTE,4.521.472bytes|6725384fb64b5af4e8058d068c7e094560c3cd81fc1bb30cb4358a811a72f848|
+|references/RochaPlus-Roku-LAB-HOME-VISUAL-EXPERIMENTAL-20261102.zip|entrada,4.847.890 bytes|3dce918642e43a07ab31a83f725dd02fd952242578b6bf541e4ad38ada21849a|
+|references/RochaPlus-Roku-LAB-REVISAO-CAPAS-NAVEGACAO-20261102.zip|entrada,4.823.625 bytes|602477cd52c0df1d47f56d5fde4b34c0372d841156a171901784a5c446aa3211|
+|RochaPlus-Roku-LAB-VISUAL-CAPAS-DESEMPENHO-20261102.zip|etapa1,7.325.578 bytes|88b48ff003423c35f3f991ded03704a5ceb75febe3e1a2285c21af7872072d63|
+|RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip|MAIS RECENTE,4.521.472 bytes|6725384fb64b5af4e8058d068c7e094560c3cd81fc1bb30cb4358a811a72f848|
 |references/LOGOS-ORIGINAIS-RECUPERADOS-20261102.zip|142 originais da etapa1|0bda12f1a65e63ad7170af2398d1677c2dad83015369cb96d6ddb6883548c6b6|
-|references/LOGOS-ORIGINAIS-ANDROID-RECUPERADOS-20261102.zip|393 novos originais,24.203.804bytes|d70c12b10c31613b4cd8d0c5600f5706623165769e20f9aa75a17358fdfb3ba9|
+|references/LOGOS-ORIGINAIS-ANDROID-RECUPERADOS-20261102.zip|393 novos originais,24.203.804 bytes|d70c12b10c31613b4cd8d0c5600f5706623165769e20f9aa75a17358fdfb3ba9|
 
 [Baixar originais Android recuperados](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/f5cce4b70d40edcb6a342312215a1b2314b79589/artifacts/roku-lab/20261102/references/LOGOS-ORIGINAIS-ANDROID-RECUPERADOS-20261102.zip).
-[Auditoria anterior preservada](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/visual-20261102);seus449pendentes e21testes descrevem a etapa1,superada pelos resultados atuais,sem apagar o histórico.
-Os APKs inspecionados permanecem apenas nos caminhos persistentes do computador,sem upload do Android: `C:/Users/Administrador/Downloads/rocha-plus-candidate-0.1.0-candidate.3-3.apk` e `C:/Users/Administrador/Desktop/Rocha+/app-release.apk`. Hashes/manifestos em apk-inventory.json;inventário fonte equivalente já está no GitHub. O trabalho Roku não depende de recuperar esses APKs.
-Cópia local do repositório: `C:/Users/Administrador/Documents/ChatGPT/Rocha +/repository`;ZIP também em `C:/Users/Administrador/Documents/ChatGPT/Rocha +/deliverables`. Downloads intermediários/inspeções em references/ e inspection/ do workspace são auxiliares;materiais necessários à continuidade estão nos commits/arquivos persistidos acima.
+[Auditoria anterior preservada](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/visual-20261102); seus449pendentes e21 testes descrevem a etapa1, superada pelos resultados atuais, sem apagar o histórico.
+Os APKs inspecionados permanecem apenas nos caminhos persistentes do computador, sem upload do Android: `C:/Users/Administrador/Downloads/rocha-plus-candidate-0.1.0-candidate.3-3.apk` e `C:/Users/Administrador/Desktop/Rocha+/app-release.apk`. Hashes/manifestos em apk-inventory.json; inventário fonte equivalente já está no GitHub. O trabalho Roku não depende de recuperar esses APKs.
+Cópia local do repositório: `C:/Users/Administrador/Documents/ChatGPT/Rocha +/repository`; ZIP também em `C:/Users/Administrador/Documents/ChatGPT/Rocha +/deliverables`. Downloads intermediários/inspeções em references/ e inspection/ do workspace são auxiliares; materiais necessários à continuidade estão nos commits/arquivos persistidos acima.
 
 ## Pendências e próximos passos
 
-1. Recuperar exportação final C6 congelada31/10,lista de removidos01/11,categorias/ordem e favoritos exportáveis. Comparar IDs/URLs e exclusões com evidência antes de qualquer alteração. Nunca restaurar removidos.
-2. Resolver as30capas conforme CSV,com imagem original e associação verificável;não usar imagens inventadas,nem desabilitar TLS para contornar falhas.
-3. Testar Roku físico e medir desempenho;validar áudio/stream único/rede/favoritos,sem reabrir homologação Android.
-4. Atualizar este relatório e anexar evidências por etapa;commit/push apenas no LAB. Sem merge,publicação,alteração de assinaturas/pagamentos ou identidade visual.
+1. Recuperar exportação final C6 congelada31/10, lista de removidos01/11, categorias/ordem e favoritos exportáveis. Comparar IDs/URLs e exclusões com evidência antes de qualquer alteração. Nunca restaurar removidos.
+2. Resolver as30capas conforme CSV, com imagem original e associação verificável; não usar imagens inventadas, nem desabilitar TLS para contornar falhas.
+3. Testar Roku físico e medir desempenho; validar áudio/stream único/rede/favoritos, sem reabrir homologação Android.
+4. Atualizar este relatório e anexar evidências por etapa; commit/push apenas no LAB. Sem merge, publicação, alteração de assinaturas/pagamentos ou identidade visual.
 
-Nenhuma senha,token,chave privada ou credencial foi incluída neste relatório.
+Nenhuma senha, token, chave privada ou credencial foi incluída neste relatório.
 
 ## Etapa técnica seguinte — investigação histórica (02/11/2026)
 
-Continuidade da base07a3f2f. [Relatório de investigação](../roku/technical-followup-20261102/README.md). Inventário ampliado de100para todos os1.442artefatos listados;77branches,sem tags/releases. Artefato histórico12691257099 inspecionado:11.333URLs/479elegíveis/zeroaprovados;fonte finalC6 e remoções01/11 ainda não encontradas. Catálogos preservados. Imagem original beIN Sports Haber recuperada e conferida;incorporação ao pacote pendente neste checkpoint. As577associações e os40testes verdes anteriores permanecem preservados. Código/ZIP0.6.4 ainda não alterados.
+Continuidade da base07a3f2f. [Relatório de investigação](../roku/technical-followup-20261102/README.md). Inventário ampliado de100para todos os1.442 artefatos listados;77 branches, sem tags/releases. Artefato histórico12691257099 inspecionado:11.333 URLs/479 elegíveis/zeroaprovados; fonte finalC6 e remoções01/11 ainda não encontradas. Catálogos preservados. Imagem original beIN Sports Haber recuperada e conferida; incorporação ao pacote pendente neste checkpoint. As577 associações e os40 testes verdes anteriores permanecem preservados. Código/ZIP0.6.4 ainda não alterados.

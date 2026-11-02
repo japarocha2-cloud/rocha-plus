@@ -1,0 +1,907 @@
+[
+  {
+    "rokuId": "302efb65c52bb517",
+    "rokuName": "Cultura Fast (720p)",
+    "category": "TV aberta",
+    "originalIndex": 19,
+    "streamSha256": "302efb65c52bb517dc58643791f5f8f13c6908b572e9ec18db216c782cd39547",
+    "androidMatches": [
+      {
+        "name": "Cultura Fast (720p)",
+        "ids": [
+          "CulturaFast.br@SD"
+        ],
+        "channelKey": "CulturaFast.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://eitv6.cdn.broadpeak.io/account351-i1438/channel/53/quadrada_-3-_pequeno-1723832301.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://eitv6.cdn.broadpeak.io/account351-i1438/channel/53/quadrada_-3-_pequeno-1723832301.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "6d184034600e86ad",
+    "rokuName": "Plenitude TV",
+    "category": "TV aberta",
+    "originalIndex": 36,
+    "streamSha256": "6d184034600e86ad18303d14a0e07dd10d4aeed10cf6c02f4c2787d99d33f695",
+    "androidMatches": [
+      {
+        "name": "Plenitude TV",
+        "ids": [
+          "PlenitudeTV.br@SD"
+        ],
+        "channelKey": "PlenitudeTV.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": null,
+        "sourceApproved": false
+      }
+    ],
+    "logo": null,
+    "decision": "android_record_has_no_logo",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "android_record_has_no_logo"
+  },
+  {
+    "rokuId": "46dbeee74c7b110a",
+    "rokuName": "TikTok Radio Brasil (1080p)",
+    "category": "TV aberta",
+    "originalIndex": 48,
+    "streamSha256": "46dbeee74c7b110ae45c9ce1afc0d4145f2aadee9aaa85e40ddacb9905bd44f9",
+    "androidMatches": [
+      {
+        "name": "TikTok Radio Brasil (1080p)",
+        "ids": [
+          "TikTokRadioBrasil.br@HD"
+        ],
+        "channelKey": "TikTokRadioBrasil.br@HD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/f/f4/TikTok_Radio.svg",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/f/f4/TikTok_Radio.svg",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "f9036fdbff38d914",
+    "rokuName": "CRTV (Chile) (720p)",
+    "category": "Esportes",
+    "originalIndex": 89,
+    "streamSha256": "f9036fdbff38d9141603c89b0d4c4713d68eb7e361f92fa73fe26d5376fe8b76",
+    "androidMatches": [
+      {
+        "name": "CRTV (Chile) (720p)",
+        "ids": [
+          "CRTV.cl@SD"
+        ],
+        "channelKey": "CRTV.cl@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://i2.paste.pics/bf68b159547597c39574aec9dd7c626a.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://i2.paste.pics/bf68b159547597c39574aec9dd7c626a.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "TypeError: fetch failed",
+    "networkDetail": "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"
+  },
+  {
+    "rokuId": "a4391204a906462c",
+    "rokuName": "Formula 1 AntenaPlay (576p) [Not 24/7]",
+    "category": "Esportes",
+    "originalIndex": 109,
+    "streamSha256": "a4391204a906462c4d229881ad07dd9c23323185f22ac7223fe8b966b50aacc0",
+    "androidMatches": [
+      {
+        "name": "Formula 1 AntenaPlay (576p) [Not 24/7]",
+        "ids": [
+          "Formula1AntenaPlay.ro@SD"
+        ],
+        "channelKey": "Formula1AntenaPlay.ro@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://assets.antenaplay.ro/2024/02/23/XUKfJwir4MxNeP4nHtG7.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://assets.antenaplay.ro/2024/02/23/XUKfJwir4MxNeP4nHtG7.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "a0b9a94ef726c0e4",
+    "rokuName": "Persiana Fight",
+    "category": "Esportes",
+    "originalIndex": 132,
+    "streamSha256": "a0b9a94ef726c0e46ebd8e77a04ec089cc42e18a76465682a7b68e3de5ed7c67",
+    "androidMatches": [
+      {
+        "name": "Persiana Fight",
+        "ids": [
+          "PersianaFight.fr@HD"
+        ],
+        "channelKey": "PersianaFight.fr@HD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": null,
+        "sourceApproved": false
+      }
+    ],
+    "logo": null,
+    "decision": "android_record_has_no_logo",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "android_record_has_no_logo"
+  },
+  {
+    "rokuId": "6e6f9a7bbc704335",
+    "rokuName": "TVS Sports Bureau (720p)",
+    "category": "Esportes",
+    "originalIndex": 161,
+    "streamSha256": "6e6f9a7bbc7043355794595232400c46d8173d737c097298c8d4f5be2c84a334",
+    "androidMatches": [
+      {
+        "name": "TVS Sports Bureau (720p)",
+        "ids": [
+          "TVSSportsBureau.us@SD"
+        ],
+        "channelKey": "TVSSportsBureau.us@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": null,
+        "sourceApproved": false
+      }
+    ],
+    "logo": null,
+    "decision": "android_record_has_no_logo",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "android_record_has_no_logo"
+  },
+  {
+    "rokuId": "83b66c63249ad53f",
+    "rokuName": "beIN Sports 1 Turk",
+    "category": "Esportes",
+    "originalIndex": 180,
+    "streamSha256": "83b66c63249ad53f9f23da0d00406dd3214eba887362bd9b3d59d33395c4ba9b",
+    "androidMatches": [
+      {
+        "name": "beIN Sports 1 Turk",
+        "ids": [
+          "beINSports1Turk.tr@SD"
+        ],
+        "channelKey": "beINSports1Turk.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/2/27/BeinSports1.svg/revision/latest?cb=20230910184457",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/2/27/BeinSports1.svg/revision/latest?cb=20230910184457",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "4ece0d87383b2abb",
+    "rokuName": "beIN Sports 2 Turk",
+    "category": "Esportes",
+    "originalIndex": 181,
+    "streamSha256": "4ece0d87383b2abbd2751c0a71ce5b69f52691e677efb71cccb93219595eddb7",
+    "androidMatches": [
+      {
+        "name": "beIN Sports 2 Turk",
+        "ids": [
+          "beINSports2Turk.tr@SD"
+        ],
+        "channelKey": "beINSports2Turk.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/4/40/BeinSports2.svg/revision/latest?cb=20230910185720",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/4/40/BeinSports2.svg/revision/latest?cb=20230910185720",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "3636f3bf3ab0bc4a",
+    "rokuName": "beIN Sports 3 Turk",
+    "category": "Esportes",
+    "originalIndex": 182,
+    "streamSha256": "3636f3bf3ab0bc4a2d169b39dcd8c97e100717e81b8044b9ae0a5c687acbde50",
+    "androidMatches": [
+      {
+        "name": "beIN Sports 3 Turk",
+        "ids": [
+          "beINSports3Turk.tr@SD"
+        ],
+        "channelKey": "beINSports3Turk.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/5/53/BeIN_Sports_3_2017_Rectangle.png/revision/latest/scale-to-width-down/1000?cb=20251213114000",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/5/53/BeIN_Sports_3_2017_Rectangle.png/revision/latest/scale-to-width-down/1000?cb=20251213114000",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "d42d4361c3641d1f",
+    "rokuName": "beIN Sports 4 Turk",
+    "category": "Esportes",
+    "originalIndex": 183,
+    "streamSha256": "d42d4361c3641d1f350bba2e6d6f51b6cd6379a31e452755fb3d8167ffbf160d",
+    "androidMatches": [
+      {
+        "name": "beIN Sports 4 Turk",
+        "ids": [
+          "beINSports4Turk.tr@SD"
+        ],
+        "channelKey": "beINSports4Turk.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/9/96/Logo_bein_sports_4.png/revision/latest/scale-to-width-down/1000?cb=20251213115820",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/9/96/Logo_bein_sports_4.png/revision/latest/scale-to-width-down/1000?cb=20251213115820",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "f94d2f1e7e7923d5",
+    "rokuName": "beIN Sports 5 Turk",
+    "category": "Esportes",
+    "originalIndex": 184,
+    "streamSha256": "f94d2f1e7e7923d503ae2daf81546ae4a543b9c56100bad12af2b4a77352272d",
+    "androidMatches": [
+      {
+        "name": "beIN Sports 5 Turk",
+        "ids": [
+          "beINSports5Turk.tr@SD"
+        ],
+        "channelKey": "beINSports5Turk.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://static.wikia.nocookie.net/logopedia/images/1/14/BeIN%2Bsports%2B5.png/revision/latest/scale-to-width-down/1000?cb=20251214104942",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://static.wikia.nocookie.net/logopedia/images/1/14/BeIN%2Bsports%2B5.png/revision/latest/scale-to-width-down/1000?cb=20251214104942",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "d8766cba28a96cfe",
+    "rokuName": "beIN Sports Haber",
+    "category": "Esportes",
+    "originalIndex": 185,
+    "streamSha256": "d8766cba28a96cfe0d0cee9531ff9cf53052d4b361f8e96b358be3e2c267b150",
+    "androidMatches": [
+      {
+        "name": "beIN Sports Haber",
+        "ids": [
+          "beINSportsHaber.tr@SD"
+        ],
+        "channelKey": "beINSportsHaber.tr@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://i.imgur.com/QWo0x7S.jpg",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://i.imgur.com/QWo0x7S.jpg",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "recovered",
+    "resolvedUri": "pkg:/images/cache/16111760b88f1d4cd3b01f36.png",
+    "imageSha256": "16111760b88f1d4cd3b01f3622ff84a551e1cd3e44abd0f809d42c20140a5467",
+    "originalImageSha256": "92be42be0896b958baacf92d2da30b0bb78e84478ab9387c49aa1f6018dfc35b",
+    "visualReview": "original beIN SPORTS HABER lettering and identity visually confirmed"
+  },
+  {
+    "rokuId": "278499947d0c82e7",
+    "rokuName": "Golf Channel",
+    "category": "Esportes",
+    "originalIndex": 229,
+    "streamSha256": "278499947d0c82e7050c47c6c53eb3ba7bff2c0751500d03a6d3af024b7503c2",
+    "androidMatches": [
+      {
+        "name": "Golf Channel",
+        "ids": [
+          "GolfChannel.cz@SD"
+        ],
+        "channelKey": "GolfChannel.cz@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://www.sms.cz/kategorie/televize/bmp/loga/velka/golfchannel.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://www.sms.cz/kategorie/televize/bmp/loga/velka/golfchannel.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "TypeError: fetch failed",
+    "networkDetail": "ERR_SSL_DH_KEY_TOO_SMALL"
+  },
+  {
+    "rokuId": "05739d5fdc7d6f3b",
+    "rokuName": "HTV Sports",
+    "category": "Esportes",
+    "originalIndex": 230,
+    "streamSha256": "05739d5fdc7d6f3bd0e9ce6aef326bbfb9a27e7dacf0488e662a9c7b3189fd77",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "64db0a491f846b8f",
+    "rokuName": "NHL AntenaPlay",
+    "category": "Esportes",
+    "originalIndex": 260,
+    "streamSha256": "64db0a491f846b8fb8d78d1088d815d3aa53acd0b5bd25b7dffbacc84c4d3615",
+    "androidMatches": [
+      {
+        "name": "NHL AntenaPlay",
+        "ids": [
+          "NHLAntenaPlay.ro@SD"
+        ],
+        "channelKey": "NHLAntenaPlay.ro@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://assets.antenaplay.ro/2024/10/25/SN0nevshXwKDcZ2Tw1jm.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://assets.antenaplay.ro/2024/10/25/SN0nevshXwKDcZ2Tw1jm.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "7e2a7345116388c1",
+    "rokuName": "Pluto TV Snooker 900 (Germany) (720p)",
+    "category": "Esportes",
+    "originalIndex": 327,
+    "streamSha256": "7e2a7345116388c1775f3c1e3427f4fbc56e445e0585ff41dc24204fe1386a1d",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "98305f6d0701e1b1",
+    "rokuName": "Pluto TV Snooker 900 (Germany) ES (720p)",
+    "category": "Esportes",
+    "originalIndex": 328,
+    "streamSha256": "98305f6d0701e1b1d14fcec04b3b6cbba37004e45fb71a5aee2d410c07ae6095",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "dbd0bda3b6d5c589",
+    "rokuName": "Pluto TV Snooker 900 (Germany) FR (720p)",
+    "category": "Esportes",
+    "originalIndex": 329,
+    "streamSha256": "dbd0bda3b6d5c5890dbc22d06b0198468bd205584f3b5aab2b9e59fce94033cf",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "561cbc4ef94720a1",
+    "rokuName": "Pluto TV Snooker 900 (Germany) GB (720p)",
+    "category": "Esportes",
+    "originalIndex": 330,
+    "streamSha256": "561cbc4ef94720a1d87bb3a82ecd89b3f56887a7175a2c52f1580005ccee02bc",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "fc6bbecf91fe9c53",
+    "rokuName": "Pluto TV Snooker 900 (Germany) IT (720p)",
+    "category": "Esportes",
+    "originalIndex": 331,
+    "streamSha256": "fc6bbecf91fe9c53e65b98e730ab9cf2de0fca1737031f3012bb9e155276c215",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "fe59f8b08ff77d1d",
+    "rokuName": "TV Difusao (720p)",
+    "category": "Geral",
+    "originalIndex": 385,
+    "streamSha256": "fe59f8b08ff77d1d3eea310fa084315daba895e3401d4db3f8bb50d0897a1e9e",
+    "androidMatches": [
+      {
+        "name": "TV Difusao (720p)",
+        "ids": [
+          "TVDifusao.br@SD"
+        ],
+        "channelKey": "TVDifusao.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://storage.googleapis.com/soultv-prod-media/media/brand/LOGO_TV_DIFUS%C3%83O_100x100px_doiivZN.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://storage.googleapis.com/soultv-prod-media/media/brand/LOGO_TV_DIFUS%C3%83O_100x100px_doiivZN.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_404"
+  },
+  {
+    "rokuId": "6e19f305723f59d1",
+    "rokuName": "CINDIE TV (1080p)",
+    "category": "Filmes",
+    "originalIndex": 432,
+    "streamSha256": "d42157c2d954f7013433dc00a655e55cd2367ac9aff506643d8127bac9cce6b5",
+    "androidMatches": [
+      {
+        "name": "CINDIE TV (1080p)",
+        "ids": [
+          "CINDIETV.br@HD"
+        ],
+        "channelKey": "CINDIETV.br@HD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://a.jsrdn.com/hls/23208/cindie-tv/logo_20250225_222520_68.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://a.jsrdn.com/hls/23208/cindie-tv/logo_20250225_222520_68.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_403"
+  },
+  {
+    "rokuId": "91bfce4067fff615",
+    "rokuName": "New Channel Pop! (480p)",
+    "category": "Infantil",
+    "originalIndex": 451,
+    "streamSha256": "16eee7ad38888b5bd7c5252fda4421a5f845b0fcf9d197e10675c0c237d06e6a",
+    "androidMatches": [
+      {
+        "name": "New Channel Pop! (480p)",
+        "ids": [
+          "NewChannelPop.ca@SD"
+        ],
+        "channelKey": "NewChannelPop.ca@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://videocdn.bamboo-cloud.com/p/11294/sp/1129400/thumbnail/entry_id/0_vjhh0bly/version/100012/width/1920",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://videocdn.bamboo-cloud.com/p/11294/sp/1129400/thumbnail/entry_id/0_vjhh0bly/version/100012/width/1920",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_404"
+  },
+  {
+    "rokuId": "0820f48eeeab62b9",
+    "rokuName": "Laboral TV (360p)",
+    "category": "Outros",
+    "originalIndex": 498,
+    "streamSha256": "a14f60a05c980d8de2e26ea20ca37169ab4cce994f3dac1a926033996548f93d",
+    "androidMatches": [
+      {
+        "name": "Laboral TV (360p)",
+        "ids": [
+          "LaboralTV.br@SD"
+        ],
+        "channelKey": "LaboralTV.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://tv.laboralsst.com.br/logo.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://tv.laboralsst.com.br/logo.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "TypeError: fetch failed",
+    "networkDetail": "ENOTFOUND"
+  },
+  {
+    "rokuId": "ef8facdd45ad0831",
+    "rokuName": "Novo Tempo (720p)",
+    "category": "Religiosos",
+    "originalIndex": 540,
+    "streamSha256": "79aecaa592ad560e5a000eb993d8d37d26ed5def4d3b77eb4abcb8b6b36a2a85",
+    "androidMatches": [
+      {
+        "name": "Novo Tempo (720p)",
+        "ids": [
+          "NovoTempo.br@SD"
+        ],
+        "channelKey": "NovoTempo.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": null,
+        "sourceApproved": false
+      }
+    ],
+    "logo": null,
+    "decision": "android_record_has_no_logo",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "android_record_has_no_logo"
+  },
+  {
+    "rokuId": "15455b9490d67221",
+    "rokuName": "Rede Seculo 21 (720p)",
+    "category": "Religiosos",
+    "originalIndex": 541,
+    "streamSha256": "c37d2a6ffbe99c1da5608288756f8e5066905454c6ffe8398180307ea6e45c12",
+    "androidMatches": [
+      {
+        "name": "Rede Seculo 21 (720p)",
+        "ids": [
+          "RedeSeculo21.br@SD"
+        ],
+        "channelKey": "RedeSeculo21.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": null,
+        "sourceApproved": false
+      }
+    ],
+    "logo": null,
+    "decision": "android_record_has_no_logo",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "android_record_has_no_logo"
+  },
+  {
+    "rokuId": "16e8efbd6eefee73",
+    "rokuName": "Series Classic (720p)",
+    "category": "Séries",
+    "originalIndex": 550,
+    "streamSha256": "75e3e5ecf8b5b51b8b48c7519607b2a36c0b23bf40cf23fbc76a6f081ae17349",
+    "androidMatches": [
+      {
+        "name": "Series Classic (720p)",
+        "ids": [
+          "SeriesClassic.br@SD"
+        ],
+        "channelKey": "SeriesClassic.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://storage.googleapis.com/soultv-prod-media/media/img/mobile/featured/bg_mobile.jpg",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://storage.googleapis.com/soultv-prod-media/media/img/mobile/featured/bg_mobile.jpg",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_404"
+  },
+  {
+    "rokuId": "8cfb1575ec9cbf69",
+    "rokuName": "Globo",
+    "category": "TV ao Vivo",
+    "originalIndex": 553,
+    "streamSha256": "31f55d560c0bf9a22c2b6adb8791ec1967f8956e1f453dfb915a224b35651e9d",
+    "androidMatches": [],
+    "logo": null,
+    "decision": "no_exact_identity_in_checked_android_sources",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "no_exact_identity_in_checked_android_sources"
+  },
+  {
+    "rokuId": "1d72b74714b3aa89",
+    "rokuName": "Canal START (720p)",
+    "category": "TV ao Vivo",
+    "originalIndex": 561,
+    "streamSha256": "42d52e23f8c394106f3c724f6cd69b6daacc4973eab7be741ab94d076ebfd13c",
+    "androidMatches": [
+      {
+        "name": "Canal START (720p)",
+        "ids": [
+          "CanalSTART.br@SD"
+        ],
+        "channelKey": "CanalSTART.br@SD",
+        "source": "github_actions_catalog_inventory",
+        "sourceSha256": "006519b1eea19a3b42a95d03468b054dba5ac5af5887f0fb5cccf6462c5e443b",
+        "matchedBy": "exact_stream_and_normalized_channel_name",
+        "logo": "https://storage.googleapis.com/soultv-prod-media/media/brand/Logomarca_CANAL_START_100X100_PNG_CrAzZzP.png",
+        "sourceApproved": false
+      }
+    ],
+    "logo": "https://storage.googleapis.com/soultv-prod-media/media/brand/Logomarca_CANAL_START_100X100_PNG_CrAzZzP.png",
+    "decision": "download_and_validate",
+    "approvedStatusTransferred": false,
+    "artifact": {
+      "id": 12691257099,
+      "run": 40405750673,
+      "sourceCommit": "f9689e0b7ef0cdb1e71385ef0ab023025b326525",
+      "date": "2026-10-26",
+      "catalogApproval": false
+    },
+    "result": "pending",
+    "reason": "http_404"
+  }
+]

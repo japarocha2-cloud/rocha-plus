@@ -1,0 +1,36 @@
+{
+  "dataResult": {
+    "passed": 10,
+    "failed": 0,
+    "tests": [
+      "exact stream and channel identity admit original artwork",
+      "same name with another stream is not guessed",
+      "same stream with another regional identity is not reassigned",
+      "declared original alternate stream is accepted",
+      "conflicting original logo associations remain pending",
+      "artwork association never transfers approval",
+      "already recovered records are preserved",
+      "resolution and accents normalize without changing the stored identity",
+      "all original catalog files remain byte-identical",
+      "30-row audit reconciles with 578 usable mappings and no missing packaged images"
+    ],
+    "scope": "Identity safety, unchanged catalog and packaged map integrity; no playback approval."
+  },
+  "deltaResult": {
+    "passed": 3,
+    "failed": 0,
+    "tests": [
+      "all 577 previous artwork associations and image bytes preserved",
+      "package delta contains only one image, map association and version; all code and catalogs byte-identical",
+      "new Haber association has exact source identity, preserved original and 192x108 PNG with matching hashes"
+    ],
+    "physicalTestsExecuted": false
+  },
+  "passed": 13,
+  "failed": 0,
+  "previousBehaviorTests": {
+    "passed": 30,
+    "rerun": false,
+    "reason": "All BrightScript and XML bytes unchanged; preserve prior green results."
+  }
+}
