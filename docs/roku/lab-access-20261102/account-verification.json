@@ -1,9 +1,9 @@
 {
   "accountReference": "owner-supplied account (kept private)",
-  "registration": "not_verified",
-  "payment": "not_verified",
-  "paidEntitlement": "not_verified",
-  "reason": "No authenticated Admin Auth/Firestore/provider access available; browser verification stopped because current URL could not be confirmed",
+  "registration": "verified_active_google_account",
+  "payment": "two_provider_payments_approved_with_payer_and_merchant_match",
+  "paidEntitlement": "not_established",
+  "reason": "Authenticated read-only rerun completed; Spark paidUntil null; duration policy and existing ledger still require review",
   "productionWrites": 0,
   "commercialAccessGranted": false,
   "labAuthorization": {
@@ -12,6 +12,22 @@
     "ownerEmailKeptOutsideRepository": true,
     "requiresVerifiedIdentityAndExistingActiveAccount": true,
     "maxDurationHours": 24,
-    "fixedProposalExpiry": 1793716792101
+    "fixedProposalExpiry": 1793716792101,
+    "identityProjectId": "rocha-plus",
+    "remainingPrerequisites": [
+      "isolated HTTPS LAB runtime",
+      "secure identity verifier in that runtime",
+      "authenticated mobile approval",
+      "end-to-end lease/device tests"
+    ]
+  },
+  "project": "rocha-plus",
+  "checkedAt": "2026-11-02T16:41:51Z",
+  "evidence": "../firebase-verification-20261102/current-account-evidence.json",
+  "sourceRun": 40354015839,
+  "sourceAttempt": 2,
+  "previousObservation": {
+    "commit": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d",
+    "status": "not_verified before CI access was located"
   }
 }

@@ -1,0 +1,64 @@
+{
+  "verifiedAt": "2026-11-02T16:41:51Z",
+  "projects": [
+    {
+      "id": "rocha-plus",
+      "role": "Existing commercial identity and Spark billing project",
+      "proof": [
+        {
+          "commit": "05d39da7051b9795e3ca0a34fe4809ebd5aa6b44",
+          "path": ".github/workflows/build.yml",
+          "detail": "ROCHA_SPARK_FIREBASE_PROJECT_ID=rocha-plus"
+        },
+        {
+          "commit": "05d39da7051b9795e3ca0a34fe4809ebd5aa6b44",
+          "path": ".github/workflows/firebase-connectivity.yml",
+          "detail": "Admin project and service-account project guards"
+        },
+        {
+          "commit": "55461ffea352aa26eec1c5e02cfd595db0ddcc00",
+          "path": "backend/entitlement/diagnostics/paid_account_readonly.mjs",
+          "detail": "Exact requested account; current authenticated rerun matched existing account"
+        }
+      ],
+      "currentReadConfirmed": true
+    },
+    {
+      "id": "rocha-plus-candidate",
+      "role": "Isolated Android candidate identity; not substituted for commercial billing",
+      "proof": [
+        {
+          "commit": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+          "path": "tools/candidate/identity.json",
+          "detail": "firebaseProject=rocha-plus-candidate; package=com.rochaplus.app.candidate"
+        },
+        {
+          "commit": "3254d0503dd72984682b9080da5d4d21c24f2458",
+          "path": "docs/auditoria/2026-10-31-consolidado-pos-integracao.md",
+          "detail": "Historical console observation and provisioning commits; not a current account lookup"
+        }
+      ],
+      "currentReadConfirmed": false
+    },
+    {
+      "id": "demo-rocha-spark",
+      "role": "Firestore rules emulator fixture only",
+      "proof": [
+        {
+          "commit": "05d39da7051b9795e3ca0a34fe4809ebd5aa6b44",
+          "path": "billing/spark/rules.test.mjs",
+          "detail": "initializeTestEnvironment fixture"
+        }
+      ],
+      "currentReadConfirmed": false
+    }
+  ],
+  "rokuLab": {
+    "identityProjectPrepared": "rocha-plus",
+    "separateFirebaseProjectProven": false,
+    "scope": "roku-lab/homologation",
+    "endpointConfigured": false,
+    "enabled": false
+  },
+  "githubRepositoryIsNotFirebaseProjectId": true
+}

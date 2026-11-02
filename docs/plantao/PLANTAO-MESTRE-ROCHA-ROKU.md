@@ -15,11 +15,23 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 
 
+
+## Verificação Firebase atual — conta confirmada, direito aplicado ainda não estabelecido
+
+[Relatório e mapa de projetos](../roku/firebase-verification-20261102/README.md),[evidência atual sanitizada](../roku/firebase-verification-20261102/current-account-evidence.json),[ZIP0.6.6 reconferido](../roku/firebase-verification-20261102/zip-066-reverification.json).
+
+- Projeto comprovado da conta existente:rocha-plus. CandidataAndroid usa rocha-plus-candidate;emulador demo-rocha-spark não é produção. Não usar o nome doGitHub como IDFirebase.
+- Consulta autenticada de02/11/2026,16:41:51UTC:conta existente,verificada,ativa,Google eSpark confirmados. Dois pagamentos consultados aprovados,pagador/recebedor correspondentes,sem reembolso informado.
+- Direito aplicado não confirmado:paidUntilSpark=null,projeção pronta para aplicar=false;duração eledger ainda exigem revisão. Zero escritas,cobranças ou concessões. Leitura pelo run40354015839,attempt2,job125409233413.
+- Auditoria complementar de ledger preparada na branchLAB,apenas leituras,seis testes de privacidade/segurança aprovados. Aguardar resultado do novoCI antes de concluir cobertura dos registros.
+-0.6.6 preservado no commitb47ccf3,HTTP200 ehash a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4 reconfirmados.71testes anteriores preservados;nada noRoku mudou. BRS ativo ainda0.6.4.
+- Acesso temporário continua PREPARADO/DESATIVADO. Não falta maisID nem leitura para o diagnóstico concluído;faltamruntimeHTTPSLAB,verificador seguro nesse runtime eaprovação móvel real. Proposta privada vinculada arocha-plus,sem habilitar nem ampliar prazo.
+
 ## Etapa de acesso LAB — 0.6.6 preparado, não ativado
 
 [ZIP 0.6.6 PREPARADO](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip) · [Commit do código e testes](https://github.com/japarocha2-cloud/rocha-plus/commit/b47ccf380152acf3d2ee996fbea1d01c6d5a099d) · [Relatório de acesso](https://github.com/japarocha2-cloud/rocha-plus/blob/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/docs/roku/lab-access-20261102/README.md) · [Configuração desativada](https://github.com/japarocha2-cloud/rocha-plus/blob/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/platforms/roku-lab-visual/config/lab-access.json). Download HTTP200 e SHA256 conferidos;[verificação remota](../roku/lab-access-20261102/remote-verification.json).
 
-**Ainda não libera testes reais:** faltam projeto correto,consulta autenticada da conta/entitlement e configuração doHTTPSLAB/aprovação móvel. Não houve ativação real nem confirmação de pagamento. O commit deste relatório é posterior ao código,com SHA no histórico do arquivo.
+**Atualização:** projeto e cadastro confirmados;pagamentos aprovados localizados,mas direito aplicado ainda não estabelecido. Ainda faltamHTTPSLAB eaprovação móvel. Não houve ativação ou concessão comercial. O commit deste relatório é posterior ao código,com SHA no histórico do arquivo.
 
 [Relatório e fluxo completo](../roku/lab-access-20261102/README.md),[situação da conta](../roku/lab-access-20261102/account-verification.json),[versão observada](../roku/lab-access-20261102/version-diagnosis.json),[testes de servidor](../roku/lab-access-20261102/server-tests.json),[cliente](../roku/lab-access-20261102/client-lease-tests.json),[comportamento](../roku/lab-access-20261102/behavior-tests.json),[pacote](../roku/lab-access-20261102/package-tests.json).
 

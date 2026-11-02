@@ -1,0 +1,218 @@
+[
+  {
+    "workflowId": 397171628,
+    "total": 7,
+    "runs": [
+      {
+        "id": 40354015839,
+        "name": "Paid account diagnostic (read-only)",
+        "branch": "feat/dual-player-lab-20261020",
+        "sha": "55461ffea352aa26eec1c5e02cfd595db0ddcc00",
+        "event": "push",
+        "date": "2026-10-26T15:55:04Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40354015839",
+        "path": ".github/workflows/paid-account-readonly.yml"
+      },
+      {
+        "id": 40351814361,
+        "name": "Paid account diagnostic (read-only)",
+        "branch": "feat/dual-player-lab-20261020",
+        "sha": "6b7faf8a1b920427b64b5353ee2d17672b139648",
+        "event": "push",
+        "date": "2026-10-26T15:41:36Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40351814361",
+        "path": ".github/workflows/paid-account-readonly.yml"
+      },
+      {
+        "id": 40343908566,
+        "name": "Paid account diagnostic (read-only)",
+        "branch": "feat/dual-player-lab-20261020",
+        "sha": "d93976169736e0c6c15126497caae93f2067e6d8",
+        "event": "push",
+        "date": "2026-10-26T14:53:32Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40343908566",
+        "path": ".github/workflows/paid-account-readonly.yml"
+      },
+      {
+        "id": 40343848900,
+        "name": "Paid account diagnostic (read-only)",
+        "branch": "feat/dual-player-lab-20261020",
+        "sha": "4a7483d0b3ecd5c7aec9e877da7dcf5acbb12d36",
+        "event": "push",
+        "date": "2026-10-26T14:53:09Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40343848900",
+        "path": ".github/workflows/paid-account-readonly.yml"
+      },
+      {
+        "id": 40342449660,
+        "name": "Paid account diagnostic (read-only)",
+        "branch": "feat/dual-player-lab-20261020",
+        "sha": "7d55ee6fa786adc7c10ec9abb4294531b7a19ab9",
+        "event": "push",
+        "date": "2026-10-26T14:44:29Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/40342449660",
+        "path": ".github/workflows/paid-account-readonly.yml"
+      }
+    ]
+  },
+  {
+    "workflowId": 385662682,
+    "total": 1,
+    "runs": [
+      {
+        "id": 38754099660,
+        "name": "Access Trial Account Diagnostic (read-only)",
+        "branch": "fix/login-trial-access-race-20261015",
+        "sha": "406c08d3ddc2466ce4627a97d5e371a2e98c0478",
+        "event": "push",
+        "date": "2026-10-15T14:44:31Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38754099660",
+        "path": ".github/workflows/access-account-diagnostic.yml"
+      }
+    ]
+  },
+  {
+    "workflowId": 385234250,
+    "total": 3,
+    "runs": [
+      {
+        "id": 38698147222,
+        "name": "Rocha+ Owner Access Readiness",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "008f128769aa0a312a6f36bc316343f173b8281b",
+        "event": "push",
+        "date": "2026-10-15T07:21:00Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38698147222",
+        "path": ".github/workflows/owner-access-readiness.yml"
+      },
+      {
+        "id": 38697964302,
+        "name": "Rocha+ Owner Access Readiness",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "0457bcde319546e0bf2aa3eb70e67543d424cd99",
+        "event": "push",
+        "date": "2026-10-15T07:19:23Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38697964302",
+        "path": ".github/workflows/owner-access-readiness.yml"
+      },
+      {
+        "id": 38697730703,
+        "name": "Rocha+ Owner Access Readiness",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "fab67a1e75a447caeb4bf637953f4b6852469962",
+        "event": "push",
+        "date": "2026-10-15T07:17:14Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38697730703",
+        "path": ".github/workflows/owner-access-readiness.yml"
+      }
+    ]
+  },
+  {
+    "workflowId": 385212921,
+    "total": 3,
+    "runs": [
+      {
+        "id": 38695509424,
+        "name": "Rocha+ Firebase Read-only Connectivity",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "97a56f2502363473e6664298295a81ce689ba6ec",
+        "event": "push",
+        "date": "2026-10-15T06:56:45Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38695509424",
+        "path": ".github/workflows/firebase-connectivity.yml"
+      },
+      {
+        "id": 38695219246,
+        "name": "Rocha+ Firebase Read-only Connectivity",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "adc8afbc1ca2f969743b5a284da5f8052c6dca3e",
+        "event": "push",
+        "date": "2026-10-15T06:53:58Z",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38695219246",
+        "path": ".github/workflows/firebase-connectivity.yml"
+      },
+      {
+        "id": 38695076900,
+        "name": "Rocha+ Firebase Read-only Connectivity",
+        "branch": "feat/spark-payment-confirmation-20261015",
+        "sha": "b70ea7a94f5854d2524dfee550b6d59ee25d4b39",
+        "event": "push",
+        "date": "2026-10-15T06:52:36Z",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38695076900",
+        "path": ".github/workflows/firebase-connectivity.yml"
+      }
+    ]
+  },
+  {
+    "workflowId": 385254084,
+    "total": 1,
+    "runs": [
+      {
+        "id": 38702188535,
+        "name": "Rocha+ Single Account Payment Diagnosis",
+        "branch": "main",
+        "sha": "316675df6485138e6968fc43a5b0e6df4237cc83",
+        "event": "workflow_dispatch",
+        "date": "2026-10-15T07:56:44Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38702188535",
+        "path": ".github/workflows/single-account-diagnosis.yml"
+      }
+    ]
+  },
+  {
+    "workflowId": 385261903,
+    "total": 2,
+    "runs": [
+      {
+        "id": 38701669909,
+        "name": "Rocha+ Resolve Test Account (read-only)",
+        "branch": "main",
+        "sha": "316675df6485138e6968fc43a5b0e6df4237cc83",
+        "event": "workflow_dispatch",
+        "date": "2026-10-15T07:52:12Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38701669909",
+        "path": ".github/workflows/resolve-test-account.yml"
+      },
+      {
+        "id": 38701471887,
+        "name": "Rocha+ Resolve Test Account (read-only)",
+        "branch": "main",
+        "sha": "51d3121921d5dc540ee2af86cccdbacfddd512e6",
+        "event": "workflow_dispatch",
+        "date": "2026-10-15T07:50:28Z",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/38701471887",
+        "path": ".github/workflows/resolve-test-account.yml"
+      }
+    ]
+  }
+]

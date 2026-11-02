@@ -1,0 +1,6 @@
+{
+  "status": 200,
+  "devVersion": "0.6.4",
+  "checkedAt": "2026-11-02T16:44:28.425Z",
+  "source": "local ECP /query/active-app; XML declaration excluded"
+}

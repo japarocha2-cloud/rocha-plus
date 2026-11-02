@@ -1,0 +1,13 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "existing ledger can be inspected without granting or writing access",
+    "output excludes email, UID, subject and payment identifiers",
+    "another UID ledger is rejected",
+    "absent stored ledger never becomes paid",
+    "unconfirmed server time fails closed",
+    "only the two scoped numeric payment references may be read"
+  ],
+  "fixtureOnly": true
+}

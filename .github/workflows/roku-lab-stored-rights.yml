@@ -1,0 +1,30 @@
+name: Roku LAB Stored Rights Audit (read-only)
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - .github/workflows/roku-lab-stored-rights.yml
+      - tools/roku-lab-access/stored-rights-audit.mjs
+      - tools/roku-lab-access/run-stored-rights-audit.mjs
+permissions:
+  contents: read
+jobs:
+  read-requested-account:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/lab/roku-visual-covers-performance-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Check read-only audit safety fixtures
+        run: node --input-type=module -e "import {runStoredRightsTests} from './tests/roku-visual/stored-rights-audit.test.mjs'; console.log(await runStoredRightsTests())"
+      - name: Inspect only the requested account records without writes
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node tools/roku-lab-access/run-stored-rights-audit.mjs

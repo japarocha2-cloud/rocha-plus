@@ -1,0 +1,48 @@
+{
+  "project": "rocha-plus",
+  "accountReference": "owner-requested account (private)",
+  "checkedAt": "2026-11-02T16:41:51Z",
+  "sourceRun": 40354015839,
+  "attempt": 2,
+  "sourceJob": 125409233413,
+  "sourceCommit": "55461ffea352aa26eec1c5e02cfd595db0ddcc00",
+  "targetConfirmedByScript": true,
+  "readOnly": true,
+  "writes": 0,
+  "accessGrantedByCheck": false,
+  "firebase": {
+    "accountFound": true,
+    "emailVerified": true,
+    "disabled": false,
+    "googleLinked": true,
+    "sparkAccountFound": true,
+    "paidUntil": null,
+    "paidAccessCurrent": false
+  },
+  "payment": {
+    "entitlementValidated": false,
+    "previewReadyToApply": false,
+    "requiresDurationPolicyReview": true,
+    "existingPaymentLedgerChecked": false,
+    "specifiedPaymentChecks": {
+      "monthly": {
+        "lookupConfirmed": true,
+        "status": "approved",
+        "liveMode": true,
+        "merchantMatches": true,
+        "payerMatches": true,
+        "noRefundReported": true,
+        "entitlementGranted": false
+      },
+      "annual": {
+        "lookupConfirmed": true,
+        "status": "approved",
+        "liveMode": true,
+        "merchantMatches": true,
+        "payerMatches": true,
+        "noRefundReported": true,
+        "entitlementGranted": false
+      }
+    }
+  }
+}

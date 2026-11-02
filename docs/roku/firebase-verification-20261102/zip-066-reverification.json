@@ -1,0 +1,37 @@
+{
+  "codeCommit": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d",
+  "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip",
+  "status": 200,
+  "bytes": 4536431,
+  "sha256": "a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4",
+  "files": 572,
+  "manifest": "title=Rocha+\nsubtitle=LAB experimental Android/capas — sem cobrança\nmajor_version=0\nminor_version=6\nbuild_version=6\nui_resolutions=fhd\nsplash_screen_color=#080713\n\nmm_icon_focus_hd=pkg:/images/channel-icon-hd-v2.jpg\nmm_icon_focus_fhd=pkg:/images/channel-icon-fhd-v2.jpg\n\nsplash_screen_hd=pkg:/images/splash-hd-fullscreen.jpg\nsplash_screen_fhd=pkg:/images/splash-fhd-fullscreen.jpg\n\n",
+  "config": {
+    "enabled": false,
+    "environment": "roku-lab",
+    "scope": "homologation",
+    "endpoint": "",
+    "reason": "Prepared only; requires verified account and isolated HTTPS service"
+  },
+  "tests": {
+    "behavior-tests.json": {
+      "passed": 33,
+      "failed": 0
+    },
+    "server-tests.json": {
+      "passed": 20,
+      "failed": 0
+    },
+    "client-lease-tests.json": {
+      "passed": 14,
+      "failed": 0
+    },
+    "package-tests.json": {
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "totalPassed": 71,
+  "testsRerun": false,
+  "physicalExecuted": false
+}

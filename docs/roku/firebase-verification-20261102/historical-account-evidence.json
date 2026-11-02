@@ -1,0 +1,30 @@
+{
+  "project": "rocha-plus",
+  "accountReference": "owner-requested account; no identifier published",
+  "historicalOnly": true,
+  "asOf": "2026-10-26T15:55:04Z",
+  "sourceRun": 40354015839,
+  "sourceJob": 121681479625,
+  "targetConfirmedByScript": true,
+  "sourceScriptCommit": "55461ffea352aa26eec1c5e02cfd595db0ddcc00",
+  "readOnly": true,
+  "writes": 0,
+  "accessGrantedByCheck": false,
+  "firebase": {
+    "accountFound": true,
+    "emailVerified": true,
+    "disabled": false,
+    "googleLinked": true,
+    "sparkAccountFound": true,
+    "paidUntil": null,
+    "paidAccessCurrentAtRun": false
+  },
+  "payment": {
+    "entitlementValidated": false,
+    "previewReadyToApply": false,
+    "historicalApprovedPaymentsWithMatchingPayerAndMerchant": true,
+    "requiresDurationPolicyReview": true,
+    "existingPaymentLedgerChecked": false
+  },
+  "currentState": "not_requeried; historical observation does not establish current registration or payment"
+}

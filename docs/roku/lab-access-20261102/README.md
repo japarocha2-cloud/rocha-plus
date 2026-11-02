@@ -1,3 +1,5 @@
+> Atualização de02/11/2026:projeto rocha-plus e cadastro da conta confirmados porCI autenticado;pagamentos aprovados localizados,sem direito aplicado estabelecido. [Consulta atual](../firebase-verification-20261102/README.md). As limitações de acesso administrativo abaixo descrevem a etapa anterior;HTTPSLAB eaprovação móvel ainda pendentes.
+
 # Acesso de homologação Roku LAB — 02/11/2026
 
 **Estado real: preparado e testado com fixtures; não ativado para a conta real.** Cadastro, pagamento e direito comercial permanecem NÃO VERIFICADOS. Nenhuma conta foi marcada como paga, criada, alterada ou cobrada. Nenhum backend foi implantado.
