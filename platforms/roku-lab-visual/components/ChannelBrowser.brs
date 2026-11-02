@@ -22,6 +22,12 @@ sub initChannelBrowser()
     bg.width = 620
     bg.height = 86
     slot.appendChild(bg)
+    coverBg = CreateObject("roSGNode", "Rectangle")
+    coverBg.translation = [12, 8]
+    coverBg.width = 124
+    coverBg.height = 70
+    coverBg.color = "0x777777FF"
+    slot.appendChild(coverBg)
     cover = CreateObject("roSGNode", "Poster")
     cover.translation = [12, 8]
     cover.width = 124
@@ -43,7 +49,7 @@ sub initChannelBrowser()
     hint.font = "font:SmallSystemFont"
     slot.appendChild(hint)
     rows.appendChild(slot)
-    m.channelSlots.push({node:slot, bg:bg, cover:cover, label:label, hint:hint})
+    m.channelSlots.push({node:slot, bg:bg, cover:cover, coverBg:coverBg, label:label, hint:hint})
   end for
 end sub
 
@@ -58,6 +64,7 @@ sub renderChannelState()
   visible = (m.area = 3 and not m.playing)
   m.top.findNode("channelPanel").visible = visible
   m.top.findNode("categoryPanel").visible = (m.area = 4)
+  m.top.findNode("favoriteGridPanel").visible = (m.area = 5)
   m.top.findNode("homeContent").visible = (m.area = 0 and not m.playing)
   m.top.findNode("homeClock").visible = (m.area = 0 and not m.playing)
   homeVisible = (m.area = 0 and not m.playing)
@@ -80,6 +87,7 @@ sub renderChannelState()
       end if
     end if
   end if
+  if m.area = 5 then renderFavoriteGallery()
   if not visible then return
   m.top.findNode("emptyChannels").visible = (m.channels.count() = 0)
   page = int(m.channelIndex / 7)
@@ -101,6 +109,7 @@ sub renderChannelState()
       end if
       if rebind
         uri = channelCover(entry)
+        slot.coverBg.visible = (uri <> "")
         if slot.cover.uri <> uri then slot.cover.uri = uri
         slot.label.text = entry.name
       end if
@@ -156,8 +165,9 @@ function handleChannelBrowserKey(key as String) as Boolean
   else if key = "back"
     stopPreview()
     m.area = 4
+    if m.channelReturnArea = 5 then m.area = 5
     m.previewButtonFocus = false
-    renderCategoryList()
+    if m.area = 4 then renderCategoryList()
   else
     return false
   end if

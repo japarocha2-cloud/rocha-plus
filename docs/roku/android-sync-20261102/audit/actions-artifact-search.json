@@ -1,0 +1,60 @@
+{
+  "status": 200,
+  "total": 1442,
+  "examinedLatest": 100,
+  "matches": [
+    {
+      "id": 12778908400,
+      "name": "rocha-plus-homologacao-subscription-lab",
+      "created_at": "2026-10-27T23:32:31Z",
+      "expired": false,
+      "workflowRun": {
+        "id": 40601852385,
+        "repository_id": 1402485454,
+        "head_repository_id": 1402485454,
+        "head_branch": "fix/subscription-access-20261026",
+        "head_sha": "c5cf28af77bd2791c209f96d7ee7ee1c530be59a"
+      }
+    },
+    {
+      "id": 12698546158,
+      "name": "rocha-plus-homologacao-subscription-lab",
+      "created_at": "2026-10-26T23:57:37Z",
+      "expired": false,
+      "workflowRun": {
+        "id": 40422345307,
+        "repository_id": 1402485454,
+        "head_repository_id": 1402485454,
+        "head_branch": "fix/subscription-access-20261026",
+        "head_sha": "195bb1e14871e24ed5963dac440548f0854975a8"
+      }
+    },
+    {
+      "id": 12697428874,
+      "name": "rocha-plus-homologacao-login-lab",
+      "created_at": "2026-10-26T23:36:19Z",
+      "expired": false,
+      "workflowRun": {
+        "id": 40419850739,
+        "repository_id": 1402485454,
+        "head_repository_id": 1402485454,
+        "head_branch": "fix/subscription-access-20261026",
+        "head_sha": "425f14bd7c95ac24010083b32281029830f4fefa"
+      }
+    },
+    {
+      "id": 12676883598,
+      "name": "rocha-plus-homologacao-login-lab",
+      "created_at": "2026-10-26T18:41:33Z",
+      "expired": false,
+      "workflowRun": {
+        "id": 40379020439,
+        "repository_id": 1402485454,
+        "head_repository_id": 1402485454,
+        "head_branch": "feat/dual-player-lab-20261020",
+        "head_sha": "2b48d62c47614b908babfdafe4cd586a8cabfe21"
+      }
+    }
+  ],
+  "message": null
+}

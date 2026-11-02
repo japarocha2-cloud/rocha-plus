@@ -1,0 +1,56 @@
+{
+  "roku": {
+    "sourceCount": 607,
+    "runtimeCount": 599,
+    "categories": [
+      "Geral",
+      "TV ao Vivo",
+      "Esportes",
+      "Notícias",
+      "Infantil",
+      "Filmes",
+      "Séries",
+      "Documentários",
+      "Educação",
+      "Cultura",
+      "Comédia",
+      "Culinária",
+      "Entretenimento",
+      "Música",
+      "Religiosos",
+      "Estilo de Vida",
+      "Vida ao Ar Livre",
+      "Viagens",
+      "PET",
+      "Futebol",
+      "Outros"
+    ],
+    "approvedFileCount": 190,
+    "quarantineFileCount": 159
+  },
+  "androidReference": {
+    "versionName": "0.1.0-candidate.3",
+    "versionCode": 3,
+    "package": "com.rochaplus.app.candidate",
+    "metadataCount": 479,
+    "metadataApprovalCount": 0,
+    "metadataSha256": "3d4577b3bc06d415c0c86822da433fbb7f764b67cfc5a8268c79dc9c914d7bd8",
+    "sourceCommit": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+    "candidate6": false
+  },
+  "crossMatch": {
+    "rokuRowsWithExactAndroidNameAndStream": 422,
+    "missingExactAndroidIdentity": 185
+  },
+  "candidate6FinalCatalogLocated": false,
+  "removalsExportLocated": false,
+  "favoritesExportLocated": false,
+  "action": "Artwork only was synchronized where exact identity was verified. No admission, category, ordering, exclusion, approval or favorite state was copied from candidate 3 or live directories.",
+  "initialOrderPerUser": [
+    "Geral",
+    "TV ao Vivo",
+    "Esportes",
+    "Notícias",
+    "Infantil"
+  ]
+}

@@ -1,0 +1,16 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {runTests} from './run-tests.mjs';
+import {runArtworkTests} from './android-artwork.test.mjs';
+import {readZip,build,sha256} from '../../tools/roku_visual_lab.mjs';
+const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const lab=path.join(repo,'platforms/roku-lab-visual');
+const asar=process.argv[2];
+if(!asar)throw Error('Use: node tests/roku-visual/verify.mjs "CAMINHO/resources/app.asar" [ZIP]');
+const zip=process.argv[3]||path.join(repo,'artifacts/roku-lab/20261102/RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip');
+const bytes=await fs.readFile(zip),files=readZip(bytes);
+const preserved=JSON.parse(await fs.readFile(path.join(repo,'docs/roku/visual-20261102/preserved-assets-and-catalog.json'),'utf8'));
+const behavior=await runTests(asar,lab,path.join(repo,'tests/roku-visual/browser-harness.brs'));
+const artwork=await runArtworkTests({lab,auditPath:path.join(repo,'docs/roku/android-sync-20261102/audit/pending-449-audit.json'),baselineCatalogHashes:preserved.filter(x=>x.path.startsWith('catalog/')),packageFiles:files});
+console.log(JSON.stringify({behavior,artwork,zip:{bytes:bytes.length,sha256:sha256(bytes),files:Object.keys(files).length}},null,2));

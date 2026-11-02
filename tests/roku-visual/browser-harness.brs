@@ -35,9 +35,13 @@ function isFavorite(id as String) as Boolean
 end function
 sub renderFocus()
 end sub
-sub renderCategoryList()
-  m.categoryRendered = true
-end sub
+function categoryOf(c as Object) as String
+  if c.group = invalid then return "Outros"
+  return c.group
+end function
+function isRejected(id as String) as Boolean
+  return false
+end function
 sub openRedDialog()
 end sub
 sub openCheckup()
@@ -64,7 +68,7 @@ m.checkupOpen = false
 m.access = true
 m.expired = false
 m.top = {nodes:{}, findNode:TestFind, setFocus:TestFocus}
-for each id in ["channelRows", "previewDebounce", "channelPanel", "categoryPanel", "homeContent", "homeClock", "clockTimer", "emptyChannels", "channelFocus", "channelName", "channelHelp", "watchButton", "previewMessage", "previewOverlay"]
+for each id in ["categoryRows", "categoryFocus", "categoryPaging", "favoriteGridPanel", "favoriteGridRows", "favoriteGridEmpty", "channelRows", "previewDebounce", "channelPanel", "categoryPanel", "homeContent", "homeClock", "clockTimer", "emptyChannels", "channelFocus", "channelName", "channelHelp", "watchButton", "previewMessage", "previewOverlay"]
   m.top.nodes[id] = TestCreateObject("roSGNode", "Group")
 end for
 m.status = TestCreateObject("roSGNode", "Label")
@@ -75,6 +79,9 @@ for i = 0 to 39
   m.channels.push({id:"ch"+i.toStr().trim(), name:"Channel "+i.toStr().trim(), url:"https://example.invalid/"+i.toStr().trim()+".m3u8"})
 end for
 m.channelIndex = 0
+m.allChannels = m.channels
+m.categoryNames = ["Geral", "TV ao Vivo", "Esportes", "Notícias", "Infantil", "PET"]
+m.categoryIndex = 0
 initChannelBrowser()
 initHomeClock()
 Assert(len(m.top.nodes.homeClock.text) = 20, "clock uses supported Roku date methods")
@@ -149,4 +156,33 @@ for i = 0 to 999
 end for
 Assert(m.created = before, "1000 selection renders allocate no SceneGraph nodes")
 Assert(m.channelSlots.count() = 7, "row pool remains bounded across pages")
+stopPreview()
+
+m.channelIndex = 0
+m.channelRevision = m.channelRevision + 1
+m.area = 5
+renderChannelState()
+Assert(m.favoriteCards.count() = 6, "favorites use six large lazy pooled cards")
+Assert(not m.previewActive and not m.previewPending, "favorite grid starts no streams")
+handleFavoriteGalleryKey("right")
+handleFavoriteGalleryKey("down")
+Assert(m.channelIndex = 4, "favorite grid supports columns and rows")
+handleFavoriteGalleryKey("OK")
+Assert(m.area = 3 and m.channelReturnArea = 5 and m.previewPending, "favorite opens channel preview")
+handleChannelBrowserKey("back")
+Assert(m.area = 5 and not m.previewActive and not m.previewPending, "Back from favorite preview returns grid")
+handleFavoriteGalleryKey("back")
+Assert(m.area = 0, "Back from favorite grid returns Home")
+m.area = 4
+m.categoryIndex = 0
+renderCategoryList()
+Assert(m.categoryCards.count() = 6, "categories use six horizontal pooled cards")
+handleCategoryGalleryKey("right")
+Assert(m.categoryIndex = 1 and m.categoryNames[1] = "TV ao Vivo", "category navigation preserves initial order")
+before = m.created
+for i = 0 to 99
+  m.categoryIndex = i mod 6
+  renderCategoryList()
+end for
+Assert(m.created = before, "category navigation reuses nodes and cached counts")
 stopPreview()

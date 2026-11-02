@@ -99,35 +99,8 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     ' Player owns directional keys while active.
     return false
   end if
-  if m.area = 4 then
-    if key = "down" then
-      m.categoryIndex = (m.categoryIndex + 1) mod m.categoryNames.count()
-    else if key = "up" then
-      m.categoryIndex = (m.categoryIndex + m.categoryNames.count() - 1) mod m.categoryNames.count()
-    else if key = "OK" then
-      selected = m.categoryNames[m.categoryIndex]
-      m.searchMode = false
-      m.searchTerm = ""
-      openChannels(false)
-      m.top.findNode("categoryPanel").visible = false
-      m.activeCategory = selected
-      refreshVisibleChannels()
-      renderChannelState()
-      renderFocus()
-      return true
-    else if key = "back" then
-      m.area = 0
-      m.nav = 2
-      m.top.findNode("categoryPanel").visible = false
-      renderChannelState()
-      renderFocus()
-      return true
-    else
-      return false
-    end if
-    renderCategoryList()
-    return true
-  end if
+  if m.area = 4 then return handleCategoryGalleryKey(key)
+  if m.area = 5 then return handleFavoriteGalleryKey(key)
   if m.area = 3 then return handleChannelBrowserKey(key)
   if m.area = 0 and m.homeFavoriteFocus then
     if key = "right" then
@@ -233,7 +206,9 @@ sub openChannels(favoritesOnly as boolean)
   m.favoritesOnly = favoritesOnly
   m.activeCategory = ""
   refreshVisibleChannels()
+  m.channelReturnArea = 4
   m.area = 3
+  if favoritesOnly then m.area = 5
 end sub
 
 function isRejected(id as String) as Boolean
@@ -300,31 +275,6 @@ function categoryOf(c as Object) as String
   return "Outros"
 end function
 
-sub renderCategoryList()
-  m.top.findNode("categoryPanel").visible = (m.area = 4)
-  rows = m.top.findNode("categoryRows")
-  rows.removeChildrenIndex(rows.getChildCount(), 0)
-  first = int(m.categoryIndex / 8) * 8
-  for i = 0 to 7
-    idx = first + i
-    if idx < m.categoryNames.count() then
-      name = m.categoryNames[idx]
-      count = 0
-      for each c in m.allChannels
-        if categoryOf(c) = name and not isRejected(c.id) then count = count + 1
-      end for
-      item = CreateObject("roSGNode", "Label")
-      item.translation = [440, 270 + i * 88]
-      item.width = 1180
-      item.height = 72
-      item.text = name + "  (" + count.toStr().trim() + ")"
-      item.color = "0xFFFFFFFF"
-      if idx = m.categoryIndex then item.color = "0x10091FFF"
-      rows.appendChild(item)
-    end if
-  end for
-  m.top.findNode("categoryFocus").translation = [410, 262 + (m.categoryIndex mod 8) * 88]
-end sub
 
 sub initIntro()
  m.introPlaying = false
@@ -635,13 +585,20 @@ sub renderHomeFavorites()
         bg.color = "0x12172DFF"
       end if
       rows.appendChild(bg)
+      logoBg = CreateObject("roSGNode", "Rectangle")
+      logoBg.translation = [x + 16, 680]
+      logoBg.width = 248
+      logoBg.height = 140
+      logoBg.color = "0x777777FF"
+      logoBg.visible = (channelCover(entry) <> "")
+      rows.appendChild(logoBg)
       cover = CreateObject("roSGNode", "Poster")
       cover.translation = [x + 16, 680]
       cover.width = 248
-      cover.height = 155
+      cover.height = 140
       cover.loadDisplayMode = "scaleToFit"
       cover.loadWidth = 248
-      cover.loadHeight = 155
+      cover.loadHeight = 140
       cover.uri = channelCover(entry)
       rows.appendChild(cover)
       label = CreateObject("roSGNode", "Label")

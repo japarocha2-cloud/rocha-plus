@@ -1,0 +1,17 @@
+{
+  "passed": 10,
+  "failed": 0,
+  "tests": [
+    "exact stream and channel identity admit original artwork",
+    "same name with another stream is not guessed",
+    "same stream with another regional identity is not reassigned",
+    "declared original alternate stream is accepted",
+    "conflicting original logo associations remain pending",
+    "artwork association never transfers approval",
+    "already recovered records are preserved",
+    "resolution and accents normalize without changing the stored identity",
+    "all original catalog files remain byte-identical",
+    "449-row audit reconciles with 577 usable mappings and no missing packaged images"
+  ],
+  "scope": "Identity safety, unchanged catalog and packaged map integrity; no playback approval."
+}

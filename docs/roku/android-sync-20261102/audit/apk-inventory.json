@@ -1,0 +1,154 @@
+{
+  "references": [
+    {
+      "path": "C:/Users/Administrador/Downloads/rocha-plus-candidate-0.1.0-candidate.3-3.apk",
+      "size": 211462263,
+      "manifest": {
+        "versionCode": 3,
+        "versionName": "0.1.0-candidate.3",
+        "compileSdkVersion": 37,
+        "compileSdkVersionCodename": "17",
+        "package": "com.rochaplus.app.candidate",
+        "platformBuildVersionCode": 37,
+        "platformBuildVersionName": 17
+      },
+      "assets": [
+        {
+          "name": "assets/flutter_assets/AssetManifest.bin",
+          "size": 592
+        },
+        {
+          "name": "assets/flutter_assets/FontManifest.json",
+          "size": 82
+        },
+        {
+          "name": "assets/flutter_assets/NOTICES.Z",
+          "size": 100908
+        },
+        {
+          "name": "assets/flutter_assets/NativeAssetsManifest.json",
+          "size": 45
+        },
+        {
+          "name": "assets/flutter_assets/branding/cast-reference.png",
+          "size": 143939
+        },
+        {
+          "name": "assets/flutter_assets/branding/dashboard-reference.png",
+          "size": 2128052
+        },
+        {
+          "name": "assets/flutter_assets/branding/home-tv-galaxy.png",
+          "size": 2264873
+        },
+        {
+          "name": "assets/flutter_assets/branding/intro-rocha-plus.mp4",
+          "size": 4554552
+        },
+        {
+          "name": "assets/flutter_assets/branding/lab_approved.json",
+          "size": 2
+        },
+        {
+          "name": "assets/flutter_assets/branding/lab_candidates.json",
+          "size": 410636
+        },
+        {
+          "name": "assets/flutter_assets/branding/rocha-wordmark-antennas.webp",
+          "size": 540440
+        },
+        {
+          "name": "assets/flutter_assets/branding/rocha_plus_icon.webp",
+          "size": 6776
+        },
+        {
+          "name": "assets/flutter_assets/fonts/MaterialIcons-Regular.otf",
+          "size": 5700
+        },
+        {
+          "name": "assets/flutter_assets/shaders/ink_sparkle.frag",
+          "size": 21856
+        },
+        {
+          "name": "assets/flutter_assets/shaders/stretch_effect.frag",
+          "size": 17616
+        }
+      ],
+      "catalogSha256": "3d4577b3bc06d415c0c86822da433fbb7f764b67cfc5a8268c79dc9c914d7bd8",
+      "catalogCount": 479,
+      "approvedCount": 0,
+      "sha256": "e784dc4c1081529ca545b524ba1c1ebd82016959faebdd34d3f69915319b2089"
+    },
+    {
+      "path": "C:/Users/Administrador/Desktop/Rocha+/app-release.apk",
+      "size": 64217819,
+      "manifest": {
+        "versionCode": 1,
+        "versionName": "0.1.0",
+        "compileSdkVersion": 37,
+        "compileSdkVersionCodename": "17",
+        "package": "com.rochaplus.app.tvtest",
+        "platformBuildVersionCode": 37,
+        "platformBuildVersionName": 17
+      },
+      "assets": [
+        {
+          "name": "assets/flutter_assets/AssetManifest.bin",
+          "size": 454
+        },
+        {
+          "name": "assets/flutter_assets/FontManifest.json",
+          "size": 82
+        },
+        {
+          "name": "assets/flutter_assets/NOTICES.Z",
+          "size": 100557
+        },
+        {
+          "name": "assets/flutter_assets/NativeAssetsManifest.json",
+          "size": 45
+        },
+        {
+          "name": "assets/flutter_assets/branding/cast-reference.png",
+          "size": 143939
+        },
+        {
+          "name": "assets/flutter_assets/branding/dashboard-reference.png",
+          "size": 2128052
+        },
+        {
+          "name": "assets/flutter_assets/branding/home-tv-galaxy.png",
+          "size": 2264873
+        },
+        {
+          "name": "assets/flutter_assets/branding/intro-rocha-plus.mp4",
+          "size": 4554552
+        },
+        {
+          "name": "assets/flutter_assets/branding/rocha-wordmark-antennas.webp",
+          "size": 540440
+        },
+        {
+          "name": "assets/flutter_assets/branding/rocha_plus_icon.webp",
+          "size": 6776
+        },
+        {
+          "name": "assets/flutter_assets/fonts/MaterialIcons-Regular.otf",
+          "size": 4476
+        },
+        {
+          "name": "assets/flutter_assets/shaders/ink_sparkle.frag",
+          "size": 21856
+        },
+        {
+          "name": "assets/flutter_assets/shaders/stretch_effect.frag",
+          "size": 17616
+        }
+      ],
+      "sha256": "bca1755c4283f71e648efc85ad0235c4e316894f9f5019394acf15cad7dd1617"
+    }
+  ],
+  "candidate6Confirmed": false,
+  "sourceCommit": "2394b12379f84111fcaa9b0944eb31726c3bc45a",
+  "metadataMatchesRepo": true
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "tv_ao_vivo",
+    "sourcePath": "branding/categories/mobile/tv_ao_vivo.png",
+    "sourceCommit": "ebf6514d5b70c82c702cd57798d4ce07ee58e34c",
+    "sourceSha256": "97c663d3ca19942ca4ccb5c7114f07e9aaa9654c6000da435f91d4fa0e3ebb8d",
+    "outputSha256": "5a6bf2a87cf9863309b16a2101a166ffd2406df073aaa9b0206d7a67082af13f"
+  },
+  {
+    "name": "esportes",
+    "sourcePath": "branding/categories/mobile/esportes.png",
+    "sourceCommit": "ebf6514d5b70c82c702cd57798d4ce07ee58e34c",
+    "sourceSha256": "039f011c15fbfd7f88609e0e3aa5a2b949da777cf49e801dc5511b24274887ea",
+    "outputSha256": "2a747c5ba959f238125a962afdf8d7e28fbdb84ac01ce323a7cbf75acef60f10"
+  },
+  {
+    "name": "noticias",
+    "sourcePath": "branding/categories/mobile/noticias.png",
+    "sourceCommit": "ebf6514d5b70c82c702cd57798d4ce07ee58e34c",
+    "sourceSha256": "8bc838048fcf0afc993997d61652a0a86a08c58360cbe937fe6fd36ecf047abd",
+    "outputSha256": "29f279a445e4ca750658d5fd22a8c0fbee0f0c91312559e5d686bc5c89f9d3bc"
+  },
+  {
+    "name": "infantil",
+    "sourcePath": "branding/categories/mobile/infantil.png",
+    "sourceCommit": "ebf6514d5b70c82c702cd57798d4ce07ee58e34c",
+    "sourceSha256": "b50b9764134dcc0155790169d1d325d930734be6462a365c05b95573a608d3ce",
+    "outputSha256": "0a6d3ca88a230bf6003efcea8c76598f20800d7206da96360d68dbaa3cf84e08"
+  }
+]
