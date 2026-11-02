@@ -367,7 +367,7 @@ sub renderCheckup()
   if not m.checkupOpen then return
   c = m.channels[m.channelIndex]
   m.top.findNode("checkupTitle").text = "Check-up LAB: " + c.name
-  choices = ["APROVAR", "REPROVAR / OCULTAR", "PENDENTE", "RESTAURAR", "FAVORITO"]
+  choices = ["APROVAR", "REPROVAR (REGISTRAR)", "PENDENTE", "RESTAURAR", "FAVORITO"]
   output = ""
   for i = 0 to choices.count() - 1
     if i = m.checkupChoice then output = output + "> " else output = output + "   "
