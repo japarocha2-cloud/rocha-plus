@@ -1,0 +1,46 @@
+{
+  "codeCommit": "f5cce4b70d40edcb6a342312215a1b2314b79589",
+  "zip": {
+    "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/f5cce4b70d40edcb6a342312215a1b2314b79589/artifacts/roku-lab/20261102/RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip",
+    "status": 200,
+    "bytes": 4521472,
+    "sha256": "6725384fb64b5af4e8058d068c7e094560c3cd81fc1bb30cb4358a811a72f848"
+  },
+  "files": [
+    {
+      "path": "platforms/roku-lab-visual/manifest",
+      "status": 200,
+      "bytes": 385
+    },
+    {
+      "path": "docs/roku/android-sync-20261102/README.md",
+      "status": 200,
+      "bytes": 5229
+    },
+    {
+      "path": "docs/roku/android-sync-20261102/audit/pending-449-audit.json",
+      "status": 200,
+      "bytes": 529645
+    },
+    {
+      "path": "tests/roku-visual/verify.mjs",
+      "status": 200,
+      "bytes": 1316
+    },
+    {
+      "path": "artifacts/roku-lab/20261102/SHA256SUMS",
+      "status": 200,
+      "bytes": 757
+    }
+  ],
+  "originalArtworkArchive": {
+    "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/f5cce4b70d40edcb6a342312215a1b2314b79589/artifacts/roku-lab/20261102/references/LOGOS-ORIGINAIS-ANDROID-RECUPERADOS-20261102.zip",
+    "status": 200,
+    "bytes": 24203804,
+    "sha256": "d70c12b10c31613b4cd8d0c5600f5706623165769e20f9aa75a17358fdfb3ba9"
+  },
+  "masterEvidenceLinks": {
+    "validatedByRemoteTrees": true,
+    "brokenPaths": 0
+  }
+}
