@@ -1,0 +1,17 @@
+{
+  "accountReference": "owner-supplied account (kept private)",
+  "registration": "not_verified",
+  "payment": "not_verified",
+  "paidEntitlement": "not_verified",
+  "reason": "No authenticated Admin Auth/Firestore/provider access available; browser verification stopped because current URL could not be confirmed",
+  "productionWrites": 0,
+  "commercialAccessGranted": false,
+  "labAuthorization": {
+    "prepared": true,
+    "enabled": false,
+    "ownerEmailKeptOutsideRepository": true,
+    "requiresVerifiedIdentityAndExistingActiveAccount": true,
+    "maxDurationHours": 24,
+    "fixedProposalExpiry": 1793716792101
+  }
+}

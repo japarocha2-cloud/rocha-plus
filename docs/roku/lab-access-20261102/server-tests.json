@@ -1,0 +1,29 @@
+{
+  "passed": 20,
+  "failed": 0,
+  "tests": [
+    "disabled preparation never grants access",
+    "production environment rejected",
+    "grant longer than 24 hours rejected",
+    "another email rejected",
+    "unverified email rejected",
+    "disabled legitimate account cannot authorize",
+    "missing account cannot authorize",
+    "code alone cannot authorize",
+    "verified owner receives bounded LAB-only lease, never paid/trial",
+    "poll retry reuses the same TV session",
+    "third TV refused",
+    "idle TVs consume no playback slots; two active sessions across phone and TV are enforced",
+    "two active TVs block a third simultaneous mobile playback",
+    "new phone invalidates only prior phone; both TVs preserved",
+    "invented or commercial session cannot unlock LAB",
+    "logout releases its TV and stream slot only",
+    "expired pairing code rejected",
+    "fixed grant expiry is not renewed by polling or app restart",
+    "account audit uses reads and never infers payment or writes entitlement",
+    "identity project must match explicitly"
+  ],
+  "fixtureOnly": true,
+  "liveAccountVerified": false,
+  "livePaymentVerified": false
+}

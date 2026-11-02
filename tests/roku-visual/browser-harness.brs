@@ -68,7 +68,7 @@ m.checkupOpen = false
 m.access = true
 m.expired = false
 m.top = {nodes:{}, findNode:TestFind, setFocus:TestFocus}
-for each id in ["categoryRows", "categoryFocus", "categoryPaging", "favoriteGridPanel", "favoriteGridRows", "favoriteGridEmpty", "channelRows", "previewDebounce", "channelPanel", "categoryPanel", "homeContent", "homeClock", "clockTimer", "emptyChannels", "channelFocus", "channelName", "channelHelp", "watchButton", "previewMessage", "previewOverlay"]
+for each id in ["labVersion", "categoryRows", "categoryFocus", "categoryPaging", "favoriteGridPanel", "favoriteGridRows", "favoriteGridEmpty", "channelRows", "previewDebounce", "channelPanel", "categoryPanel", "homeContent", "homeClock", "clockTimer", "emptyChannels", "channelFocus", "channelName", "channelHelp", "watchButton", "previewMessage", "previewOverlay"]
   m.top.nodes[id] = TestCreateObject("roSGNode", "Group")
 end for
 m.status = TestCreateObject("roSGNode", "Label")
@@ -186,3 +186,30 @@ for i = 0 to 99
 end for
 Assert(m.created = before, "category navigation reuses nodes and cached counts")
 stopPreview()
+
+sub requestLabStatus()
+ m.slotRequests = m.slotRequests + 1
+end sub
+sub releaseLabPlaybackLease()
+ m.slotReleases = m.slotReleases + 1
+end sub
+m.labMode = true
+m.labPlaybackAllowed = false
+m.authBusy = false
+m.slotRequests = 0
+m.slotReleases = 0
+m.access = true
+m.area = 3
+m.playing = false
+m.video.state = "stopped"
+m.channelIndex = 0
+queuePreview()
+beforeContent = m.contents
+onPreviewDebounce()
+Assert(m.slotRequests = 1 and m.contents = beforeContent and not m.previewActive,"LAB preview waits for server playback slot")
+m.labPlaybackAllowed = true
+onPreviewDebounce()
+Assert(m.previewActive and m.contents = beforeContent + 1,"LAB preview starts only after playback lease")
+beforeRelease = m.slotReleases
+stopPreview()
+Assert(m.slotReleases = beforeRelease + 1 and not m.previewActive and m.video.control = "stop","leaving LAB preview releases playback lease")

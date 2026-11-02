@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Entrega atual: LAB 0.6.5 com uma capa adicional; o histórico do LAB 0.6.4 permanece abaixo. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
+Entrega atual preparada: LAB 0.6.6 para homologação por conta, DESATIVADO até confirmar/configurar a identidade. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -14,11 +14,24 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 5. Próxima prioridade: localizar catálogo final e exportação de remoções da C6; em paralelo, testar este ZIP em Roku física.
 
 
-## Entrega técnica mais recente — LAB 0.6.5
+
+## Etapa de acesso LAB — 0.6.6 preparado, não ativado
+
+[Relatório e fluxo completo](../roku/lab-access-20261102/README.md),[situação da conta](../roku/lab-access-20261102/account-verification.json),[versão observada](../roku/lab-access-20261102/version-diagnosis.json),[testes de servidor](../roku/lab-access-20261102/server-tests.json),[cliente](../roku/lab-access-20261102/client-lease-tests.json),[comportamento](../roku/lab-access-20261102/behavior-tests.json),[pacote](../roku/lab-access-20261102/package-tests.json).
+
+- Causa: firstStart+7200s no registro local de physical_test_2h; essa rotina retorna antes da consulta comercial. Endpoints comerciais vazios. Bloqueio não prova falta de pagamento. BRS local confirmado em0.6.4;0.6.5também mantém o limite antigo.
+- Conta fornecida pelo proprietário:cadastro, pagamento e direito pago NÃO VERIFICADOS por fonte autenticada. Zero cobranças, concessões pagas ou escritas em produção. E-mail/proposta privados fora do GitHub. Consulta pela interface interrompida porque URL não pôde ser confirmada; sem credencial administrativa disponível.
+- Preparado0.6.6:modo account_homologation, código8 caracteres/10min, conta existente e verificada, proposta absoluta de24h, leases60s. Um celular, duasTVs, duasreproduções no serviçoLAB; troca móvel preservaTVs. Não implantado nem homologado em produção.
+- ZIP seguro por padrão:enabled=false, endpoint vazio. Não libera testes reais até concluir configuração/identidade. Nunca substituir isso por paid ou rearmar o relógio de2h.
+-71 verificações locais aprovadas(33 comportamento+20 servidor+14 cliente+4 pacote), zero falhas finais. Testes reais de conta, pagamento, vinculação e hardware não executados.578capas/29 pendências e catálogo607/599 preservados.
+- ZIP preparado em artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip,4.536.431 bytes, SHA256 a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4.
+- Próximo passo:informar projeto correto/consulta administrativa autorizada, verificar conta e vínculo financeiro somente por leitura; integrarHTTPS e aprovação móvel noLAB e só então habilitar a autorização temporária. Sem merge, publicação ou produção.
+
+## Entrega anterior — LAB 0.6.5
 
 [Baixar ZIP 0.6.5](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/fcfc414db96dd59ade0480439daa0adf82b3247c/artifacts/roku-lab/20261102/followup/RochaPlus-Roku-LAB-0.6.5-CAPA-HABER-20261102.zip) · [Commit de código e artefatos](https://github.com/japarocha2-cloud/rocha-plus/commit/fcfc414db96dd59ade0480439daa0adf82b3247c) · [Resultados dos 13 testes](https://github.com/japarocha2-cloud/rocha-plus/blob/fcfc414db96dd59ade0480439daa0adf82b3247c/docs/roku/technical-followup-20261102/related-tests.json) · [Roteiro físico de 21 casos](https://github.com/japarocha2-cloud/rocha-plus/blob/fcfc414db96dd59ade0480439daa0adf82b3247c/docs/roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md)
 
-Download remoto confirmado HTTP200 e SHA256 integral conferido. [Verificação remota](../roku/technical-followup-20261102/remote-verification.json). Branch confirmada neste commit;zero check-runs e zero Actions,sem PR/merge/publicação. O commit deste relatório final é posterior ao código e está no histórico do arquivo.
+Download remoto confirmado HTTP200 e SHA256 integral conferido. [Verificação remota](../roku/technical-followup-20261102/remote-verification.json). Branch confirmada neste commit; zero check-runs e zero Actions, sem PR/merge/publicação. O commit deste relatório final é posterior ao código e está no histórico do arquivo.
 
 [Relatório completo](../roku/technical-followup-20261102/README.md),[auditoria das30 pendências](../roku/technical-followup-20261102/pending-30-audit.json),[29ainda pendentes](../roku/technical-followup-20261102/pending-covers.csv),[revisão de desempenho](../roku/technical-followup-20261102/performance-review.md),[roteiro físico](../roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md),[resultados físicos NÃO EXECUTADOS](../roku/technical-followup-20261102/physical-results.csv).
 
@@ -165,7 +178,7 @@ node tests/roku-visual/verify.mjs "C:\CAMINHO\BrightScript Simulator\resources\a
 |references/RochaPlus-Roku-LAB-HOME-VISUAL-EXPERIMENTAL-20261102.zip|entrada,4.847.890 bytes|3dce918642e43a07ab31a83f725dd02fd952242578b6bf541e4ad38ada21849a|
 |references/RochaPlus-Roku-LAB-REVISAO-CAPAS-NAVEGACAO-20261102.zip|entrada,4.823.625 bytes|602477cd52c0df1d47f56d5fde4b34c0372d841156a171901784a5c446aa3211|
 |RochaPlus-Roku-LAB-VISUAL-CAPAS-DESEMPENHO-20261102.zip|etapa1,7.325.578 bytes|88b48ff003423c35f3f991ded03704a5ceb75febe3e1a2285c21af7872072d63|
-|RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip|MAIS RECENTE,4.521.472 bytes|6725384fb64b5af4e8058d068c7e094560c3cd81fc1bb30cb4358a811a72f848|
+|RochaPlus-Roku-LAB-ANDROID-CAPAS-CATALOGO-20261102-v2.zip|histórico 0.6.4,4.521.472 bytes|6725384fb64b5af4e8058d068c7e094560c3cd81fc1bb30cb4358a811a72f848|
 |references/LOGOS-ORIGINAIS-RECUPERADOS-20261102.zip|142 originais da etapa1|0bda12f1a65e63ad7170af2398d1677c2dad83015369cb96d6ddb6883548c6b6|
 |references/LOGOS-ORIGINAIS-ANDROID-RECUPERADOS-20261102.zip|393 novos originais,24.203.804 bytes|d70c12b10c31613b4cd8d0c5600f5706623165769e20f9aa75a17358fdfb3ba9|
 

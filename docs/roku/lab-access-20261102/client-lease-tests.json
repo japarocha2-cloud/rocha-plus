@@ -1,0 +1,22 @@
+{
+  "passed": 14,
+  "failed": 0,
+  "tests": [
+    "valid lease discounts network elapsed time",
+    "paid state never substitutes LAB authorization",
+    "production scope rejected",
+    "another UID rejected",
+    "another device rejected",
+    "expired lease rejected",
+    "lease over sixty seconds rejected",
+    "lease beyond fixed authorization rejected",
+    "negative elapsed time rejected",
+    "untyped server clock rejected",
+    "unconfigured LAB stays locked without invoking legacy bypass",
+    "insecure LAB transport never sends a pairing request",
+    "configured LAB starts pairing without granting access",
+    "LAB expiry stops preview/fullscreen and displays account panel"
+  ],
+  "engine": "2.6.2",
+  "limitation": "Headless lease/default-lock/lifecycle checks; no actual identity, payment, network or hardware approval"
+}

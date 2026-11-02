@@ -61,6 +61,7 @@ function channelCover(entry as Object) as String
 end function
 
 sub renderChannelState()
+  m.top.findNode("labVersion").visible = not m.playing
   visible = (m.area = 3 and not m.playing)
   m.top.findNode("channelPanel").visible = visible
   m.top.findNode("categoryPanel").visible = (m.area = 4)
@@ -199,6 +200,11 @@ sub onPreviewDebounce()
     onBillingExpiry()
     return
   end if
+  if m.labMode = true and m.labPlaybackAllowed <> true
+    if not m.authBusy then requestLabStatus()
+    m.previewTimer.control = "start"
+    return
+  end if
   ' Wait for the previous Video decoder to stop before replacing its content.
   state = m.video.state
   if state = "playing" or state = "buffering" or state = "paused"
@@ -271,6 +277,7 @@ sub stopPlayback()
 end sub
 
 sub stopPreview()
+  if m.labMode = true then releaseLabPlaybackLease()
   m.previewPending = false
   m.previewActive = false
   m.previewId = ""

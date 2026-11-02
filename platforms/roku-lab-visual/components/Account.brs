@@ -1,6 +1,7 @@
 sub initAccount()
  m.authConfig = ParseJson(ReadAsciiFile("pkg:/config/auth.json"))
  m.authorized = false
+ m.labMode = false
  m.authGeneration = 1
  m.authBusy = false
  m.billingClock = CreateObject("roTimespan")
@@ -18,6 +19,7 @@ sub initAccount()
  m.accountTimer = m.top.findNode("accountTimer")
  m.accountTimer.observeField("fire","onAccountTimer")
  m.top.findNode("accountPanel").visible = true
+ if initLabAccess() then return
  if activatePhysicalLabAccess() then return
  if type(m.authConfig) <> "roAssociativeArray"
   accountMessage("Conexão à conta indisponível.")
@@ -73,6 +75,10 @@ sub onAccountResult(event as object)
  result = event.getData()
  if result.generation <> m.authGeneration then return
  m.authBusy = false
+ if left(result.operation,4) = "lab_"
+  onLabAccessResult(result)
+  return
+ end if
  data = result.data
  if result.operation = "complete"
   m.deviceCode = ""
@@ -181,6 +187,10 @@ sub refreshAccount()
  accountRequest("refresh","https://securetoken.googleapis.com/v1/token?key="+m.apiKey,body,"","application/x-www-form-urlencoded")
 end sub
 sub onAccountTimer()
+ if m.labMode = true
+  onLabAccessTimer()
+  return
+ end if
  if m.authorized and not hasBillingAccess() then onBillingExpiry()
  if m.authBusy then return
  now = CreateObject("roDateTime").AsSeconds()
@@ -230,6 +240,7 @@ sub accountFailure()
  accountMessage("Não foi possível confirmar a conta. OK: tentar novamente.")
 end sub
 function accountKey(key as string) as boolean
+ if m.labMode = true then return labAccountKey(key)
  if key = "OK" and (m.authStage = "billing_locked" or m.authStage = "billing_error")
   checkBilling()
   return true
@@ -280,6 +291,10 @@ function hasBillingAccess() as boolean
  return m.authorized and m.billingLifetime > m.billingClock.TotalMilliseconds()
 end function
 sub onBillingExpiry()
+ if m.labMode = true
+  endLabAccess("Autorização LAB expirada. Assinatura comercial não alterada.")
+  return
+ end if
  if m.authStage = "lab_physical"
   m.authorized = false
   if m.playing or m.previewActive or m.previewPending then stopPreview()

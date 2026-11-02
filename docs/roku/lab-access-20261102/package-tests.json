@@ -1,0 +1,12 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "tests": [
+    "all 578 artwork associations, textures and catalog bytes preserved",
+    "default locked, commercial config unchanged, no private account in distributable",
+    "manifest and visible version label agree on 0.6.6",
+    "package delta restricted to isolated LAB access and version UI"
+  ],
+  "files": 572,
+  "physicalExecuted": false
+}

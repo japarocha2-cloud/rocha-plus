@@ -1,0 +1,11 @@
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {runTests} from './run-tests.mjs';
+import {runLabAccessTests} from './lab-access.test.mjs';
+import {runLabClientTests,runLabPackageTests} from './lab-access-runner.mjs';
+const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..'),asar=process.argv[2];
+if(!asar)throw Error('Use node tests/roku-visual/run-lab-access.mjs "BRS/resources/app.asar"');
+const zip=path.join(repo,'artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip');
+const behavior=await runTests(asar,path.join(repo,'platforms/roku-lab-visual'),path.join(repo,'tests/roku-visual/browser-harness.brs'));
+const server=await runLabAccessTests(),client=await runLabClientTests({asar,repo}),pkg=await runLabPackageTests({repo,zip});
+console.log(JSON.stringify({behavior,server,client,package:pkg,totalPassed:behavior.passed+server.passed+client.passed+pkg.passed,physicalExecuted:false,livePaymentVerified:false},null,2));

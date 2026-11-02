@@ -1,0 +1,12 @@
+{
+  "observedLocalECPDevVersion": "0.6.4",
+  "confirmedBy": [
+    "/query/apps",
+    "/query/active-app"
+  ],
+  "priorAvailableZip": "0.6.5",
+  "bothOlderVersionsUseFirstStartPlus7200Seconds": true,
+  "newPreparedZip": "0.6.6",
+  "newVersionVisibleInUI": true,
+  "installDoesNotConfirmCommercialEntitlement": true
+}
