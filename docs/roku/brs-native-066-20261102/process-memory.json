@@ -1,0 +1,74 @@
+{
+  "source": "Windows Get-Process, five BrightScript Simulator processes; two snapshots, not a leak or physical Roku test",
+  "samples": [
+    {
+      "state": "simulator Home after Back from 0.6.6",
+      "processes": [
+        {
+          "pid": 576,
+          "workingSet": 89120768,
+          "privateBytes": 11038720
+        },
+        {
+          "pid": 5512,
+          "workingSet": 93876224,
+          "privateBytes": 15101952
+        },
+        {
+          "pid": 5732,
+          "workingSet": 983830528,
+          "privateBytes": 582152192
+        },
+        {
+          "pid": 8972,
+          "workingSet": 52903936,
+          "privateBytes": 11649024
+        },
+        {
+          "pid": 10080,
+          "workingSet": 143343616,
+          "privateBytes": 113364992
+        }
+      ],
+      "sumWorkingSet": 1363075072,
+      "sumPrivateBytes": 733306880
+    },
+    {
+      "state": "0.6.6 access overlay after relaunch",
+      "processes": [
+        {
+          "pid": 576,
+          "workingSet": 89186304,
+          "privateBytes": 10985472
+        },
+        {
+          "pid": 5512,
+          "workingSet": 93876224,
+          "privateBytes": 15089664
+        },
+        {
+          "pid": 5732,
+          "workingSet": 972935168,
+          "privateBytes": 570781696
+        },
+        {
+          "pid": 8972,
+          "workingSet": 52903936,
+          "privateBytes": 11649024
+        },
+        {
+          "pid": 10080,
+          "workingSet": 135966720,
+          "privateBytes": 103354368
+        }
+      ],
+      "sumWorkingSet": 1344868352,
+      "sumPrivateBytes": 711860224
+    }
+  ],
+  "limitations": [
+    "Sample timestamps not recorded; states differ and are not comparable app benchmarks.",
+    "Working-set sum can double count shared pages. Private bytes are committed memory, not exclusive resident RAM.",
+    "No 0.6.4 comparable memory baseline, no texture/decoder measurement, no long-session trend."
+  ]
+}

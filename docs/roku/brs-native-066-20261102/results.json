@@ -1,0 +1,152 @@
+{
+  "date": "2026-11-02",
+  "timezone": "America/Sao_Paulo",
+  "nativeExecution": true,
+  "simulatorVersion": "2.6.2",
+  "engineVersion": "2.6.1",
+  "scenegraphVersion": "0.6.1",
+  "installedDevBefore": "0.6.4",
+  "installedDevAfter": "0.6.6",
+  "activeFinal": "dev 0.6.6",
+  "otherChannelPreserved": "141576129 0.6.3",
+  "zip": {
+    "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip",
+    "status": 200,
+    "bytes": 4536431,
+    "files": 572,
+    "sha256": "a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4",
+    "sourceCommit": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d"
+  },
+  "registry": {
+    "beforeSha256": "fa5b0212fe1cf731d095f5432e1e07cdec9bec3a7aa28941f2dcdbef1a8eebfc",
+    "afterSha256": "fa5b0212fe1cf731d095f5432e1e07cdec9bec3a7aa28941f2dcdbef1a8eebfc",
+    "unchangedAfterInstallAndRelaunch": true,
+    "rawKeptPrivate": true,
+    "dataClearPerformed": false,
+    "timerResetPerformed": false,
+    "favoritesChanged": false
+  },
+  "control": {
+    "method": "Existing simulator HTTP installer, ECP and screenshot API; passive telnet logs",
+    "nativeWindowCaptureErrors": [
+      "FrameArrived timed out: timed out waiting on channel",
+      "window capture timed out: timed out waiting on channel"
+    ],
+    "recoveredViaLocalAPI": true
+  },
+  "tests": [
+    {
+      "id": 1,
+      "test": "Inicialização e splash",
+      "status": "PARCIAL",
+      "evidence": "App iniciou e chegou ao bloqueio; galáxia inicial capturada. Splash completo não observado."
+    },
+    {
+      "id": 2,
+      "test": "Logo original",
+      "status": "APROVADO_VISUAL",
+      "evidence": "Rocha+ visível ao fundo da tela bloqueada; sem alteração de arte."
+    },
+    {
+      "id": 3,
+      "test": "Galáxia e banner Home",
+      "status": "APROVADO_VISUAL",
+      "evidence": "Fundo e banner visíveis ao fundo do overlay; interação não aprovada."
+    },
+    {
+      "id": 4,
+      "test": "Menu lateral e controle",
+      "status": "BLOQUEADO",
+      "evidence": "Down aceito pela API mas overlay impede mudança do menu."
+    },
+    {
+      "id": 5,
+      "test": "Categorias horizontais",
+      "status": "BLOQUEADO",
+      "evidence": "Não foi possível entrar em Categorias."
+    },
+    {
+      "id": 6,
+      "test": "Lista vertical",
+      "status": "BLOQUEADO",
+      "evidence": "Não acessível sem autorização LAB."
+    },
+    {
+      "id": 7,
+      "test": "Capas e nomes",
+      "status": "BLOQUEADO",
+      "evidence": "Não foi possível abrir lista de canais para inspeção nativa."
+    },
+    {
+      "id": 8,
+      "test": "Prévia automática",
+      "status": "BLOQUEADO",
+      "evidence": "Nenhum stream iniciado; player close sem erro."
+    },
+    {
+      "id": 9,
+      "test": "Tela cheia e Voltar",
+      "status": "PARCIAL",
+      "evidence": "Tela cheia bloqueada; Voltar do overlay encerrou normalmente (EXIT_USER_NAV)."
+    },
+    {
+      "id": 10,
+      "test": "Favoritos e persistência",
+      "status": "BLOQUEADO",
+      "evidence": "Não acessíveis. Registro exportado ECP idêntico antes/depois; favoritos funcionais não testados."
+    },
+    {
+      "id": 11,
+      "test": "Busca",
+      "status": "BLOQUEADO",
+      "evidence": "Overlay impede abrir busca."
+    },
+    {
+      "id": 12,
+      "test": "PET",
+      "status": "BLOQUEADO",
+      "evidence": "Texto PET visível na Home ao fundo, categoria não acessível."
+    },
+    {
+      "id": 13,
+      "test": "Autenticação e bloqueio",
+      "status": "APROVADO",
+      "evidence": "Aviso 0.6.6 aguardando configuração; OK não concede acesso. Reabertura continua bloqueada."
+    },
+    {
+      "id": 14,
+      "test": "Estabilidade e FPS",
+      "status": "PARCIAL",
+      "evidence": "Sem erro de execução no console durante observação curta; FPS indisponível (endpoint zero fixo)."
+    }
+  ],
+  "summary": {
+    "approved": 3,
+    "partial": 3,
+    "blocked": 8,
+    "failed": 0
+  },
+  "fps": {
+    "ecpRaw": 0,
+    "validMeasurement": false,
+    "reason": "Installed main.js function Ie hardcodes 0.000000"
+  },
+  "relaunch": {
+    "firstScreenshotLoadedBySeconds": 11.1,
+    "measurement": "upper bound at first observation, not exact startup latency"
+  },
+  "playback": {
+    "tested": false,
+    "blocked": true,
+    "playerState": "close",
+    "audioApproved": false,
+    "physicalApproved": false
+  },
+  "codeChanges": 0,
+  "newZip": false,
+  "limitations": [
+    "No category/cover load timings; access gate prevents navigation.",
+    "Short blocked-session observations do not prove no memory leak or playback stability.",
+    "No genuine before/after FPS or memory improvement claim."
+  ]
+}

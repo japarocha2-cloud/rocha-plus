@@ -1,0 +1,16 @@
+Connected to BrightScript Simulator
+BrightScript Simulation Engine - v2.6.1
+Loading <BRS_USER_DATA>\dev.zip...
+Loaded Extension: brs-scenegraph (v0.6.1) from app://simulator/lib/brs-sg.js
+------ Running dev 'Rocha+' main ------
+11-02 19:45:30.344 [scrpt.ctx.run.enter] UI: Entering 'Rocha+', id 'dev'
+Loading <BRS_USER_DATA>\dev.zip...
+Loaded Extension: brs-scenegraph (v0.6.1) from app://simulator/lib/brs-sg.js
+------ Running dev 'Rocha+' main ------
+11-02 19:45:52.837 [scrpt.ctx.run.enter] UI: Entering 'Rocha+', id 'dev'
+11-02 19:46:24.335 [beacon.report] |AppExitComplete
+------ Finished 'Rocha+' execution [EXIT_USER_NAV] ------
+Loading <BRS_USER_DATA>\dev.zip...
+Loaded Extension: brs-scenegraph (v0.6.1) from app://simulator/lib/brs-sg.js
+------ Running dev 'Rocha+' main ------
+11-02 19:46:44.875 [scrpt.ctx.run.enter] UI: Entering 'Rocha+', id 'dev'

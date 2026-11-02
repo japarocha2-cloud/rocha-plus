@@ -16,6 +16,18 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 
 
+## Execução nativa atual — 0.6.6 instalada, acesso bloqueado
+
+[Relatório com capturas e logs](../roku/brs-native-066-20261102/README.md) · [Resultados dos 14 casos](../roku/brs-native-066-20261102/results.json) · [Captura 0.6.6](../roku/brs-native-066-20261102/after-066-block.png).
+
+Em 02/11/2026, o dev foi atualizado de 0.6.4 para 0.6.6 no BRS Desktop 2.6.2 (engine 2.6.1). ZIP original/hash confirmados; /query/apps e /query/active-app confirmam 0.6.6 instalada e ativa. Registro ECP idêntico antes/depois/reabertura; sem apagar favoritos/dados ou reiniciar temporizador. Outro canal 0.6.3 preservado.
+
+Resultado real: 3 aprovados no escopo visual/bloqueio, 3 parciais, 8 bloqueados, zero reprovações demonstradas do código. Logo, galáxia/banner e aviso observados; Down/OK mantêm bloqueio; Voltar encerra normalmente, reabrir mantém bloqueio. Lista, capas, categorias, PET, busca, favoritos e reprodução não puderam ser homologados. Splash completo não observado. Sem aprovação de áudio, playback ou hardware.
+
+FPS real indisponível (endpoint do simulador é zero fixo). Memória de cinco processos registrada em duas fotografias, sem baseline comparável ou evidência de vazamento. Nenhuma melhoria de desempenho declarada. Console sem runtime error/crash durante trecho curto. Captura da janela falhou por timeout; a API local do BRS permitiu instalação, controle e capturas reais.
+
+Nenhum código ou ZIP alterado nesta etapa; 578 capas e 607 registros preservados. Não repetir os testes automatizados já verdes. Próximo passo continua runtime HTTPS LAB + aprovação móvel segura, depois executar os casos bloqueados e medições comparáveis; não contornar o bloqueio. Evidências persistidas na mesma branch, sem merge/deploy/publicação.
+
 ## Verificação Firebase atual — conta confirmada, direito aplicado ainda não estabelecido
 
 [Relatório e mapa de projetos](../roku/firebase-verification-20261102/README.md),[evidência atual sanitizada](../roku/firebase-verification-20261102/current-account-evidence.json),[ZIP0.6.6 reconferido](../roku/firebase-verification-20261102/zip-066-reverification.json).
@@ -24,7 +36,7 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 - Consulta autenticada de02/11/2026,16:41:51UTC:conta existente,verificada,ativa,Google eSpark confirmados. Dois pagamentos consultados aprovados,pagador/recebedor correspondentes,sem reembolso informado.
 - Direito aplicado não confirmado:paidUntilSpark=null,projeção pronta para aplicar=false;duração ainda exige revisão; ledger consultado separadamente abaixo. Zero escritas,cobranças ou concessões. Leitura pelo run40354015839,attempt2,job125409233413.
 - Auditoria complementar concluída em 02/11/2026, 13:49:14 (Brasília): Spark sem direito pago atual; usuário legado/projeção ausentes; nenhum registro aplicado encontrado para as duas referências nos stores consultados. [Evidência sanitizada](../roku/firebase-verification-20261102/stored-rights-current.json). Zero escritas/concessões. [CI 41485146238](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41485146238) aprovado, seis testes de segurança aprovados no CI, commit [aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0](https://github.com/japarocha2-cloud/rocha-plus/commit/aafd6dc574ce191824ec57bcb4931cc8a6f2b0b0). Não aplicar assinatura nem somar períodos sem revisão e autorização comercial específica.
--0.6.6 preservado no commitb47ccf3,HTTP200 ehash a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4 reconfirmados.71testes anteriores preservados;nada noRoku mudou. BRS ativo ainda0.6.4.
+-0.6.6 preservado no commitb47ccf3,HTTP200 ehash a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4 reconfirmados.71testes anteriores preservados;nada noRoku mudou. Observação histórica: BRS estava em0.6.4; atualizado para0.6.6 na seção de execução nativa acima.
 - Acesso temporário continua PREPARADO/DESATIVADO. Não falta maisID nem leitura para o diagnóstico concluído;faltamruntimeHTTPSLAB,verificador seguro nesse runtime eaprovação móvel real. Proposta privada vinculada arocha-plus,sem habilitar nem ampliar prazo.
 
 ## Etapa de acesso LAB — 0.6.6 preparado, não ativado

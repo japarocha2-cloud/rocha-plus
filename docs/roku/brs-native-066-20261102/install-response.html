@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="HandheldFriendly" content="True">
+    <title>BrightScript Simulator</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/styles.min.css">
+    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
+    <style>
+        /* Same rule as .sr-only in remote.css, which this page does not load. */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root" style="background: #fff">
+        <div id="Shell-2" class="Roku-Nav">
+            <div class="nav hero-nav-main-enabled standalone-mode">
+                <header class="nav-header">
+                    <div class="nav-header-content">
+                        <div class="nav-header-logo-text"><span>BrightScript Simulator</span></div>
+                        <div class="nav-header-bar">
+                            <nav class="nav-header-feature">
+                                <a class="nav-header-feature-link" href="/plugin_install" title="Installer">Installer</a>
+                                <a class="nav-header-feature-link" href="/plugin_inspect" title="Utilities">Utilities</a>
+                            </nav>
+                        </div>
+                    </div>
+                </header>
+                <main class="nav-main">
+                    <div id="Shell-3" class="Roku-Nav-Page-Standard">
+                        <div class="nav-page-headline">
+                            <h1 class="nav-page-headline-h1">Development Application Installer</h1>
+                        </div>
+                        <div class="roku-page-content">
+                            <div class="Roku-Form">
+                                <form method="POST" enctype="multipart/form-data">
+                                    <label for="filefield" class="sr-only">App package (.zip or .bpk)</label>
+                                    <input type="file" id="filefield" name="filefield" accept=".zip,.bpk"/><br />
+                                    <input type="submit" class="roku-button" value="Install" style="max-width: 200px;"/>
+                                </form>
+                            
+                                <div style="margin-top: 20px;">
+                                    <div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 8px; margin-bottom: 12px; font-weight: 500;">
+                                        Application Received: 4536431 bytes stored.
+                                    </div>
+                                    <div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 8px; font-weight: 500;">
+                                        Install Success
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="nav-footer">
+                    <div class="nav-footer-content">Copyright (C) 2019-2026 Marcelo Lv Cabral</div>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

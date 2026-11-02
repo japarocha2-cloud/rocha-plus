@@ -1,0 +1,26 @@
+[
+  {
+    "at": "2026-11-02T19:46:12.224Z",
+    "key": "Down",
+    "status": 200,
+    "responseMs": 23
+  },
+  {
+    "at": "2026-11-02T19:46:17.956Z",
+    "key": "Select",
+    "status": 200,
+    "responseMs": 3
+  },
+  {
+    "at": "2026-11-02T19:46:23.619Z",
+    "key": "Back",
+    "status": 200,
+    "responseMs": 3
+  },
+  {
+    "at": "2026-11-02T19:46:42.870Z",
+    "action": "relaunch dev 0.6.6",
+    "status": 200,
+    "responseMs": 43
+  }
+]

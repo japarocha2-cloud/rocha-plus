@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<player state="close" error="false">
+  <plugin id="dev" name="Rocha+" bandwidth="5000000 bps"/>
+</player>
