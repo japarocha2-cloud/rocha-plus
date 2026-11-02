@@ -1,0 +1,46 @@
+{
+  "codeCommit": "fcfc414db96dd59ade0480439daa0adf82b3247c",
+  "zip": {
+    "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/fcfc414db96dd59ade0480439daa0adf82b3247c/artifacts/roku-lab/20261102/followup/RochaPlus-Roku-LAB-0.6.5-CAPA-HABER-20261102.zip",
+    "status": 200,
+    "bytes": 4533575,
+    "sha256": "3e9f11df58b01374b09eafe786a47888466906e06f9c8e42693560cdd14089a9"
+  },
+  "files": [
+    {
+      "path": "docs/plantao/PLANTAO-MESTRE-ROCHA-ROKU.md",
+      "status": 200,
+      "bytes": 25437,
+      "sha256": "6ab4fa63ed6f689469504aee48f97f3a9aa01c9d8c06781e9843ea2d8a932fb3"
+    },
+    {
+      "path": "docs/roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md",
+      "status": 200,
+      "bytes": 4945,
+      "sha256": "e08a1ea3ba871be7d453db3bc233a7f4887bf2cda2fbac93d7a25c51ed5a2fad"
+    },
+    {
+      "path": "docs/roku/technical-followup-20261102/pending-covers.csv",
+      "status": 200,
+      "bytes": 2490,
+      "sha256": "56ae3ef1c0222a41a6fed9cd4d5beae407254ec2d857b9375a4defef729d51e5"
+    },
+    {
+      "path": "docs/roku/technical-followup-20261102/related-tests.json",
+      "status": 200,
+      "bytes": 1426,
+      "sha256": "73200b035904e278a6cf4dc91ccbe8be424de4f89c517279b8a5a8649a34c84c"
+    },
+    {
+      "path": "artifacts/roku-lab/20261102/followup/ORIGINAL-beIN-Sports-Haber.jpg",
+      "status": 200,
+      "bytes": 11964,
+      "sha256": "92be42be0896b958baacf92d2da30b0bb78e84478ab9387c49aa1f6018dfc35b"
+    }
+  ],
+  "github": {
+    "checkRuns": 0,
+    "workflowRuns": 0,
+    "branchHead": "fcfc414db96dd59ade0480439daa0adf82b3247c"
+  }
+}

@@ -16,6 +16,10 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 ## Entrega técnica mais recente — LAB 0.6.5
 
+[Baixar ZIP 0.6.5](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/fcfc414db96dd59ade0480439daa0adf82b3247c/artifacts/roku-lab/20261102/followup/RochaPlus-Roku-LAB-0.6.5-CAPA-HABER-20261102.zip) · [Commit de código e artefatos](https://github.com/japarocha2-cloud/rocha-plus/commit/fcfc414db96dd59ade0480439daa0adf82b3247c) · [Resultados dos 13 testes](https://github.com/japarocha2-cloud/rocha-plus/blob/fcfc414db96dd59ade0480439daa0adf82b3247c/docs/roku/technical-followup-20261102/related-tests.json) · [Roteiro físico de 21 casos](https://github.com/japarocha2-cloud/rocha-plus/blob/fcfc414db96dd59ade0480439daa0adf82b3247c/docs/roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md)
+
+Download remoto confirmado HTTP200 e SHA256 integral conferido. [Verificação remota](../roku/technical-followup-20261102/remote-verification.json). Branch confirmada neste commit;zero check-runs e zero Actions,sem PR/merge/publicação. O commit deste relatório final é posterior ao código e está no histórico do arquivo.
+
 [Relatório completo](../roku/technical-followup-20261102/README.md),[auditoria das30 pendências](../roku/technical-followup-20261102/pending-30-audit.json),[29ainda pendentes](../roku/technical-followup-20261102/pending-covers.csv),[revisão de desempenho](../roku/technical-followup-20261102/performance-review.md),[roteiro físico](../roku/technical-followup-20261102/ROTEIRO-TESTE-FISICO.md),[resultados físicos NÃO EXECUTADOS](../roku/technical-followup-20261102/physical-results.csv).
 
 - Checkpoint de pesquisa persistido:79df0398de07968058e585a967587fa183ee0f90. Todos os1.442 artefatos listados inventariados; apenas o conteúdo do catálogo histórico selecionado foi inspecionado, não todos os1.442. FonteC6/remoções01/11 continuam não encontradas.
@@ -30,7 +34,7 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 - Base remota preservada: [ebf6514d5b70c82c702cd57798d4ce07ee58e34c](https://github.com/japarocha2-cloud/rocha-plus/commit/ebf6514d5b70c82c702cd57798d4ce07ee58e34c).
 - Primeira etapa persistida: [85bec547c1a39ecbccd0de914993638fb73fad97](https://github.com/japarocha2-cloud/rocha-plus/commit/85bec547c1a39ecbccd0de914993638fb73fad97) — importação dos ZIPs de referência, interface/lista/prévia, 158 capas, 21 testes iniciais e auditoria.
-- Código e entrega atual: [f5cce4b70d40edcb6a342312215a1b2314b79589](https://github.com/japarocha2-cloud/rocha-plus/commit/f5cce4b70d40edcb6a342312215a1b2314b79589) — 419 capas adicionais, categorias horizontais, favoritos grandes, cache otimizado, 40 verificações e ZIP 0.6.4.
+- Código e entrega da etapa 0.6.4: [f5cce4b70d40edcb6a342312215a1b2314b79589](https://github.com/japarocha2-cloud/rocha-plus/commit/f5cce4b70d40edcb6a342312215a1b2314b79589) — 419 capas adicionais, categorias horizontais, favoritos grandes, cache otimizado, 40 verificações e ZIP 0.6.4.
 - O commit que contém este relatório é posterior ao commit de código acima. Consulte o histórico deste arquivo para obter seu SHA; os links de artefatos apontam ao commit imutável de código.
 - Nenhum PR desta branch encontrado; nenhum merge ou publicação realizado.
 - CI do commit atual: zero check-runs e zero execuções de Actions, verificados via API. Commits de persistência usam [skip ci]. **40 testes locais aprovados não são CI.** [Download remoto e hashes conferidos](../roku/android-sync-20261102/remote-verification.json). Veja [estado GitHub](../roku/android-sync-20261102/github-status.json) e [Actions do repositório](https://github.com/japarocha2-cloud/rocha-plus/actions).
