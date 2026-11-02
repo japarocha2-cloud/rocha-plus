@@ -80,3 +80,9 @@ ZIP: artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGA
 Os578 mapeamentos,534 texturas e607 registros de catálogo (599runtime) permanecem preservados;29capas pendentes. Arte, categorias, ordem e homologações não alteradas.
 
 Pendentes:projeto/consulta autenticada da conta, pagamento/vínculo legítimo, HTTPSLAB, aprovação móvel, configuração/ativação real e testes em aparelho. Sem merge, deploy, publicação, cobrança ou alteração de produção.
+
+## Links permanentes e última conferência
+
+[ZIP 0.6.6 PREPARADO](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip) · [Commit](https://github.com/japarocha2-cloud/rocha-plus/commit/b47ccf380152acf3d2ee996fbea1d01c6d5a099d) · [Protocolo LAB](https://github.com/japarocha2-cloud/rocha-plus/blob/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/tools/roku-lab-access/service.mjs) · [Adaptador somente leitura](https://github.com/japarocha2-cloud/rocha-plus/blob/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/tools/roku-lab-access/firebase-adapter.mjs).
+
+Download remoto HTTP200,4.536.431bytes e SHA256 conferidos. Zero check-runs/Actions desta etapa;71verificações são locais. remote-verification.json registra a conferência e o estado prepared_disabled.

@@ -1,0 +1,49 @@
+{
+  "codeCommit": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d",
+  "zip": {
+    "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/b47ccf380152acf3d2ee996fbea1d01c6d5a099d/artifacts/roku-lab/20261102/access/RochaPlus-Roku-LAB-0.6.6-ACESSO-HOMOLOGACAO-PREPARADO-20261102.zip",
+    "status": 200,
+    "bytes": 4536431,
+    "sha256": "a8d7ba17fc1dd703d5cf81bea012ffc8942268ed68dc60765c9ef42b25212dd4"
+  },
+  "files": [
+    {
+      "path": "docs/plantao/PLANTAO-MESTRE-ROCHA-ROKU.md",
+      "status": 200,
+      "bytes": 28844
+    },
+    {
+      "path": "docs/roku/lab-access-20261102/README.md",
+      "status": 200,
+      "bytes": 9956
+    },
+    {
+      "path": "docs/roku/lab-access-20261102/account-verification.json",
+      "status": 200,
+      "bytes": 628
+    },
+    {
+      "path": "tools/roku-lab-access/service.mjs",
+      "status": 200,
+      "bytes": 6034
+    },
+    {
+      "path": "platforms/roku-lab-visual/config/lab-access.json",
+      "status": 200,
+      "bytes": 180
+    },
+    {
+      "path": "tests/roku-visual/run-lab-access.mjs",
+      "status": 200,
+      "bytes": 1026
+    }
+  ],
+  "activationStatus": "prepared_disabled",
+  "liveAccountVerified": false,
+  "livePaymentVerified": false,
+  "github": {
+    "checkRuns": 0,
+    "workflowRuns": 0,
+    "branchHead": "b47ccf380152acf3d2ee996fbea1d01c6d5a099d"
+  }
+}
