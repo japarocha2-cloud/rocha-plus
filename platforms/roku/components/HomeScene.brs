@@ -14,6 +14,7 @@ sub init()
   m.checkupOpen = false
   m.checkupChoice = 0
   m.showRejected = false
+  m.reportOpen = false
   m.checkupRecords = ParseJson(m.registry.Read("roku_checkup_v1"))
   if type(m.checkupRecords) <> "roAssociativeArray" then m.checkupRecords = {}
   m.video = m.top.findNode("channelVideo")
@@ -47,6 +48,13 @@ end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
   if not press then return false
+  if m.reportOpen then
+    if key = "back" or key = "OK" then
+      m.reportOpen = false
+      m.top.findNode("reportPanel").visible = false
+    end if
+    return true
+  end if
   if m.introPlaying
     if key = "OK" or key = "back" then stopIntro()
     return true
@@ -100,7 +108,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     if m.nav = 0 then
       m.status.text = "Escolha TV ao Vivo ou uma categoria no menu."
     else if m.nav = 6 then
-      m.status.text = "Conta e assinatura Rocha+ • Assine no celular com a mesma conta."
+      showCheckupReport()
     else
       openChannels(m.nav = 5)
       if m.nav >= 2 and m.nav <= 4 then filterCategory(m.nav)
@@ -431,3 +439,31 @@ function handleCheckupKey(key as String) as Boolean
   renderCheckup()
   return true
 end function
+
+
+' Local report: display totals on TV and emit structured JSON to the Roku
+' developer debug console. No upload endpoint or external transmission.
+sub showCheckupReport()
+  approved = 0
+  rejected = 0
+  pending = 0
+  restored = 0
+  records = []
+  for each id in m.checkupRecords
+    item = m.checkupRecords[id]
+    if type(item) = "roAssociativeArray" then
+      records.push(item)
+      if item.decision = "approved" then approved = approved + 1
+      if item.decision = "rejected" then rejected = rejected + 1
+      if item.decision = "pending" then pending = pending + 1
+      if item.decision = "restored" then restored = restored + 1
+    end if
+  end for
+  report = {schema: "rochaplus.roku.checkup.v1", source: "roku-lab", records: records}
+  print "ROCHAPLUS_CHECKUP_JSON_BEGIN"
+  print FormatJson(report)
+  print "ROCHAPLUS_CHECKUP_JSON_END"
+  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Total avaliados: " + records.count().toStr()
+  m.reportOpen = true
+  m.top.findNode("reportPanel").visible = true
+end sub
