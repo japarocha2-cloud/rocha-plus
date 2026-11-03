@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(new URL('../../billing/package.json', import.meta.url));
 const SERVICE='https://firestore.googleapis.com/v1/projects/rocha-plus-homologacao/databases/(default)';
 const PERMISSION_API='https://serviceusage.googleapis.com/v1/projects/rocha-plus-homologacao/services/firestore.googleapis.com';
-const safe=(x,n=320)=>typeof x==='string'?x.slice(0,n).replace(/(?:Bearer|token|private[_-]?key|authorization)\\s*[:=]?\\s*[^\\s,;}]+/gi,'[redacted]').replace(/https?:\\/\\/\\S+/g,'[url]').replace(/\\b[A-Za-z0-9_-]{60,}\\b/g,'[redacted]'):null;
+const safe=(x,n=320)=>typeof x==='string'?x.slice(0,n).replace(/(?:Bearer|token|private[_-]?key|authorization)\s*[:=]?\s*[^\s,;}]+/gi,'[redacted]').replace(/https?:\/\/\S+/g,'[url]').replace(/\b[A-Za-z0-9_-]{60,}\b/g,'[redacted]'):null;
 async function probe(label,url,access){
  const response=await fetch(url,{method:'GET',redirect:'error',signal:AbortSignal.timeout(15000),headers:{Authorization:'Bearer '+access}});
  let body={};try{body=await response.json()}catch{}
@@ -14,7 +14,7 @@ async function probe(label,url,access){
 try {
  const {initializeApp,cert}=require('firebase-admin/app');
  const json=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'null');
- if(json?.type!=='service_account'||json.project_id!=='rocha-plus'||!/^[-a-z0-9._]+@[-a-z0-9.]+\\.gserviceaccount\\.com$/.test(json.client_email||''))throw Error('invalid-ci-identity');
+ if(json?.type!=='service_account'||json.project_id!=='rocha-plus'||!/^[-a-z0-9._]+@[-a-z0-9.]+\.gserviceaccount\.com$/.test(json.client_email||''))throw Error('invalid-ci-identity');
  const app=initializeApp({credential:cert(json),projectId:'rocha-plus'});
  const access=(await app.options.credential.getAccessToken()).access_token;
  const checks=[await probe('firestore-metadata',SERVICE,access),await probe('firestore-api-state',PERMISSION_API,access)];
