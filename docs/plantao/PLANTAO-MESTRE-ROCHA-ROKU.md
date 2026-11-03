@@ -350,3 +350,14 @@ A cópia de trabalho foi criada em `artifacts/roku-lab/20261103/`. O workflow [R
 5. Depois testar navegação, categorias, capas, favoritos, busca, playback de streams autorizados, imagem/áudio e controle remoto no simulador e Roku físico.
 
 Sem QR, API/endpoints ativos, vínculo real ou reprodução aprovada. Sem merge, deploy, publicação, alteração comercial, Roku oficial, Android, Candidata 6, LAB 714 ou app dos avós.
+
+
+## Registro final do plantão 0.6.10 — 03/11/2026
+
+Branch exclusiva: `lab/roku-0.6.10-google-activation-admin-20261103`. Última alteração de código/CI verificada nesta revisão: [2fef125](https://github.com/japarocha2-cloud/rocha-plus/commit/2fef125307d9c2e35e9c2d82d1860dbdafb5f3e0). Relatório e matriz: [etapa 0.6.10](../roku/0610-google-activation-admin/README.md) e [validação do pacote](../roku/0610-google-activation-admin/package-validation.json). Workflow: [roku-0610-package.yml](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/.github/workflows/roku-0610-package.yml).
+
+ZIP REV2 local: `artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip`; 4,538,938 bytes; SHA-256 `d789c6607b0f32bb2629adf9b1082518715c3a624f1e16445972fbf6817ddaa1`. A validação local confirmou 574 arquivos, 607 canais, 578 associações de capa, pacote íntegro pelo leitor Roku do repositório, autenticação/central/LAB desativadas e nenhum padrão de segredo/fixture. Hash também consta em `artifacts/roku-lab/20261103/SHA256SUMS`. O workflow reconstrói o ZIP e publica artefato de CI com retenção de 30 dias. A ferramenta GitHub disponível não lista execuções disparadas por push; portanto o run e a URL do artefato **não foram confirmados** e não devem ser anunciados como download permanente. O ZIP segue disponível nesta estação Codex pelo caminho acima, sem link persistente ao binário até a execução Actions ser conferida.
+
+Execução de ativação: 12/12 testes Node de fixtures aprovados nesta etapa. Os 9 checks BrightScript são resultados fixture/headless anteriores e não foram repetidos. BRS Desktop reportou versão 0.6.10 e 0 erros/0 avisos pela árvore de acessibilidade; captura gráfica expirou e o ZIP REV2 não foi instalado ali. Google OAuth, conta ADM, sessão persistente real, navegação real com controle, áudio/vídeo e playback ficam **NÃO EXECUTADOS**. Leitura histórica CI indicava claim `rochaAdmin=false`; sem consulta atual e sem alteração de permissões. A UI de fixture não prova autenticação real; uma captura de teste mostra texto de rodapé sobreposto, a revisar antes da homologação visual.
+
+Nenhum merge, deploy ou publicação. Oficial Roku, Android, Candidata 6, LAB 714, aplicativo dos avós, catálogo, artes, direitos e pagamentos não foram alterados.
