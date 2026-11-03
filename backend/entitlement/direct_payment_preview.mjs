@@ -34,8 +34,11 @@ export function previewDirectPayments({ user, merchantId, payments, assignments,
     seen.add(id); return { id, months: plan.months, approved };
   }).sort((a, b) => a.approved - b.approved || a.id.localeCompare(b.id));
   let until = existingPaidUntil ?? 0;
-  for (const p of checked) until = addMonths(Math.max(until, p.approved), p.months);
+  // Purchases do not imply an agreement to stack periods. Each illustrative
+  // period starts at its own approval; contractual dates still require review.
+  for (const p of checked) until = Math.max(until, addMonths(p.approved, p.months));
   return { previewOnly: true, writes: 0, accessGranted: false, paymentCount: checked.length,
-    proposedPaidUntil: new Date(until).toISOString(), durationPolicy: 'calendar-months-UTC-proposal',
+    proposedPaidUntil: new Date(until).toISOString(), durationPolicy: 'independent-calendar-periods-UTC-proposal',
     requiresDurationPolicyReview: true, existingPaymentLedgerChecked: false, readyToApply: false };
 }
+

@@ -11,9 +11,9 @@ function fixture() {
     plans: { monthly: { amountCents: 450, months: 1 }, annual: { amountCents: 4950, months: 12 } },
     payments: [payment('11', 4.5, '2026-10-20T22:30:41Z'), payment('22', 49.5, '2026-10-21T09:39:29Z')] };
 }
-test('monthly plus annual proposal preserves unused credit, is repeatable and never grants access', () => {
+test('monthly and annual proposals never silently stack, are repeatable and never grant access', () => {
   const f = fixture(), before = structuredClone(f), r = preview(f);
-  assert.equal(r.proposedPaidUntil, '2027-11-20T22:30:41.000Z');
+  assert.equal(r.proposedPaidUntil, '2027-10-21T09:39:29.000Z');
   assert.equal(r.readyToApply, false); assert.equal(r.accessGranted, false);
   assert.equal(r.existingPaymentLedgerChecked, false); assert.equal(r.writes, 0);
   assert.deepEqual(f, before); assert.deepEqual(preview(f), r);
@@ -58,5 +58,6 @@ test('calendar-month proposal handles month ends and leap years', () => {
 });
 test('future existing credit is preserved but ledger still blocks application', () => {
   const f = fixture(); f.existingPaidUntil = Date.UTC(2026, 11, 1);
-  const r = preview(f); assert.equal(r.proposedPaidUntil, '2028-01-01T00:00:00.000Z'); assert.equal(r.readyToApply, false);
+  const r = preview(f); assert.equal(r.proposedPaidUntil, '2027-10-21T09:39:29.000Z'); assert.equal(r.readyToApply, false);
 });
+
