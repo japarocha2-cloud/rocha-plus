@@ -1,0 +1,24 @@
+name: Incident diagnostic fixtures only
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths: [.github/workflows/incident-diagnostics-tests.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  new-fixture-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 03cdd335b136dd72f732035f2d847eae01b6baea
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: New identity and preview fixture tests only
+        run: node --test backend/entitlement/session_identity_diagnostic.test.mjs backend/entitlement/recovery_changeset_preview.test.mjs
+      - name: Device metadata parser fixtures only
+        run: python3 -m unittest discover -s tools/incident -p 'test_*.py'
