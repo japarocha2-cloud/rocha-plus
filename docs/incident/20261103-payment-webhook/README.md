@@ -64,7 +64,7 @@ Notificações sem claim recebem 200 com `review_required`, para evitar retries 
 
 ## Testes e plataformas
 
-A suíte nova contém 12 cenários, incluindo assinatura válida/inválida, IDs inconsistentes, ignorar status do cliente, repetição, associação ausente, divergência, retry, métodos/eventos inválidos e serialização concorrente. O CI anterior 45/45 foi concluído antes da revisão de lease; aguardar CI da revisão antes de validá-la. As execuções iniciais falharam em ajustes do mock e do filtro do workflow; ambos foram corrigidos e os motivos registrados nos commits intermediários.  A nova execução para os 12 cenários de webhook/serialização será registrada após o commit. Execuções anteriores (CI 41738187870 e 41738449387) passaram com 45 testes e 0 falhas antes desta ampliação. São fixtures sem secrets e não validam Mercado Pago/Firebase reais. Fixtures não são homologação de integração.
+A suíte nova contém 12 cenários, incluindo assinatura válida/inválida, IDs inconsistentes, ignorar status do cliente, repetição, associação ausente, divergência, retry, métodos/eventos inválidos e lease ocupado. [CI 41741751485](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41741751485), SHA `80ddc0c0fdb1fa37a53f9a63f84650fe0a45bc9a`: verde, 47/47 testes, zero falhas e syntax checks aprovados. O teste de serialização usa fixture de lock em memória; Firestore Emulator e concorrência em infraestrutura real não foram executados. As execuções iniciais falharam em ajustes do mock e do filtro do workflow; ambos foram corrigidos e os motivos registrados nos commits intermediários.  A nova execução para os 12 cenários de webhook/serialização será registrada após o commit. Execuções anteriores (CI 41738187870 e 41738449387) passaram com 45 testes e 0 falhas antes desta ampliação. São fixtures sem secrets e não validam Mercado Pago/Firebase reais. Fixtures não são homologação de integração.
 
 - Android celular: **NÃO COMPROVADO**; build default não habilita runtime central e nenhuma sessão real foi consultada.
 - Android TV: **NÃO COMPROVADO**; compartilha Flutter/código de direitos com celular, mas não foi exercitada sessão real.
@@ -75,11 +75,11 @@ Não declarar correção aprovada para as três plataformas. A convergência req
 
 ## Revisão de idempotência e pendências do webhook
 
-Com o código anterior, repetição sequencial era ignorada, mas concorrentes poderiam reconciliar simultaneamente. A revisão no commit seguinte usa lease por payment ID e fixtures de concorrência/retry. Eventos `review_required` são reconhecidos com 200 e ainda não têm worker automático; após claim revisado, executor privado precisa reprocessá-los. Renovação/refund são cobertos parcialmente pelos fixtures do reconciliador, porém sequência real MP/Firebase e Firestore emulator/sandbox permanecem pendentes.
+A revisão usa lease por payment ID, retorna 503 para concorrente e permite nova tentativa após liberação/expiração. CI 41741751485 passou 47 testes; as corridas foram simuladas com fixture em memória, não no Firestore Emulator. Eventos `review_required` recebem 200 e ainda não têm worker automático; após claim revisado, executor privado precisa reprocessá-los. Renovação/refund são cobertos pelos fixtures do reconciliador. Sequência real MP/Firebase, webhook sandbox, Firestore Emulator e ordenação de entrega do provedor continuam pendentes.
 
 ## Próximo procedimento
 
-1. Verificar o novo CI e manter o workflow fixture-only; não usar secrets do Actions para consultas privadas.
+1. CI fixture-only aprovado: [run 41741751485](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41741751485), 47/47. Não usar secrets do Actions para consultas privadas.
 2. Em projeto Firebase **de homologação confirmado**, configurar os secrets existentes por cofre aprovado, registrar URL de notificação no painel de integração Mercado Pago e validar assinatura/eventos via sandbox.
 3. Criar claim de pagamento somente depois de revisão independente de proprietário/UID/plano/merchant/valor, sem mapear por e-mail isoladamente.
 4. Executar casos sandbox de aprovado, duplicado, renovação, reembolso/chargeback, divergência e concorrência; verificar ledger + entitlement com transações idempotentes.
@@ -95,5 +95,11 @@ Com o código anterior, repetição sequencial era ignorada, mas concorrentes po
 - [Reconciliador com claim revisado](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/functions/reconcile_and_grant.js)
 - [Regras de períodos](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/functions/entitlement_periods.js)
 - [Direitos centrais Android](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/docs/central-rights/README.md)
+
+## Estado operacional e encerramento
+
+Incidente **ABERTO**. A causa específica do bloqueio da cliente ainda não está provada porque instalação/sessão, endpoint de produção, receipt confirmado e logs de webhook/Functions não foram lidos. Android celular, Android TV e Roku estão sem validação de direito real; nenhuma sincronização foi aplicada. Este incidente não deve ser fechado até que a cliente recupere o acesso mensal validado na plataforma efetivamente usada e a mesma fonte de direito seja demonstrada em celular, Android TV e Roku.
+
+Último commit deste relatório: `80ddc0c0fdb1fa37a53f9a63f84650fe0a45bc9a`. O próximo commit registrará apenas esta atualização documental; código funcional validado está nesse commit.
 
 Este relatório é registro técnico experimental. Não contém credenciais nem dados pessoais de clientes.
