@@ -31,6 +31,10 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 Falhas intermediárias do certificado de teste e análise Dart foram corrigidas e preservadas nos relatórios. Sem merge, deploy, publicação, alteração de planos/preços, cobrança ou escrita comercial. Não declarar missão tecnicamente concluída: os testes reais e evidências comerciais ainda faltam.
 
+## Correção autorizada 03/11 — reservas experimentais
+
+Backend corrigido e12regressões novas/28integrações relacionadas verdes localmente. Cliente Android TV com consulta neutra corrigida em overlay exclusivo da branch Roku, testado sobre base Android fixa por CI; sem modificar branch Android ou APK. [Estado e evidências](../central-rights/20261103-diagnosis/README.md). CI será registrado após execução. Bloqueios e ZIP0.6.7 preservados; nenhum acesso ativado.
+
 ## Diagnóstico 03/11 — investigação somente
 
 [Diagnóstico e plano aguardando autorização](../central-rights/20261103-diagnosis/README.md). Bloqueio comprovado pela configuração desativada: central retorna para LAB alternativo, também desativado, antes de consultar direitos. Reserva indevidamente removida reproduzida em memória: terceira reprodução passa de409para200 após consulta celular/TV. Falha independente do bloqueio atual; nenhuma correção implementada. Pré-requisitos HTTPS e sequência de aprovação documentados; sem concessões, Firebase, temporizador, novo ZIP ou ativação.

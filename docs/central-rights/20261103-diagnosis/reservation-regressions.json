@@ -1,0 +1,59 @@
+{
+  "beforeFailure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '{\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\":{\"until\":1800000060000}}'\n- '{\"mobile\":{\"until\":1800000060000},\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\":{\"until\":1800000060000}}'\n",
+  "after": {
+    "passed": 12,
+    "failed": 0,
+    "tests": [
+      "1 two playback reservations allowed and repeat start occupies one slot",
+      "2 third playback rejected with HTTP409",
+      "3 mobile entitlement preserves reservations and third remains409",
+      "4 Android TV neutral navigation preserves both reservations",
+      "5 repeated status reads neither release nor extend leases",
+      "6 explicit TV stop releases only corresponding slot",
+      "7 logout removes only its TV session and stream, preserving phone/other TV",
+      "8 revocation denies renewal for mobile and TV",
+      "9 lease expiry frees capacity only at actual deadline",
+      "10 network failure does not release a valid reservation",
+      "11 concurrent contenders for last slot: one200 and one409 atomically",
+      "12 legitimate mobile stop permits retry without altering TV lease"
+    ],
+    "fixtureOnly": true,
+    "cloudWrites": 0
+  },
+  "integration": {
+    "passed": 28,
+    "failed": 0,
+    "tests": [
+      "shared cross-platform contract vectors",
+      "paid current and matching UID",
+      "seven-day trial uses original start; no new trial",
+      "independent paid periods never stack",
+      "paid expiry, revocation and wrong UID deny",
+      "unknown/network response never authorizes",
+      "lease binds UID/device/scope and server clock",
+      "approved payment without approved contract queues alert, no entitlement",
+      "reprocess same pending revision after contract verification",
+      "duplicate and concurrent webhook never extend period",
+      "temporary provider failure returns 503 and safe retry",
+      "pending/rejected/cancelled never authorize",
+      "refund revokes only corresponding period and leaves trial untouched",
+      "out-of-order approval cannot resurrect refunded payment",
+      "global payment UID conflict rejects",
+      "wrong merchant/resource and fake signature rejected",
+      "signature seconds/milliseconds, tamper and timestamp tolerance",
+      "expired identity token and nonexistent account denied",
+      "register one fresh phone",
+      "malformed pairing keys cannot access object prototypes",
+      "two TVs securely linked; idle TVs consume no streams",
+      "third TV rejected",
+      "two concurrent TV plays allowed; third stream denied",
+      "stop releases slot for TV plus phone",
+      "new phone disconnects old phone but preserves both TVs",
+      "network failure denies renewal and existing lease expires",
+      "expiry/revocation during playback denies and frees slot",
+      "production and candidate Firestore writers refused"
+    ],
+    "fixtureOnly": true,
+    "commercialWrites": 0
+  }
+}

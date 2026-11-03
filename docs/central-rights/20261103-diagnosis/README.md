@@ -48,3 +48,10 @@ Certificado efêmero localhost dos testes não serve para clientes reais; 127.0.
 ## Preservação
 
 Nenhum arquivo executável modificado, Android oficial/C6/LAB714/Roku oficial intactos; sem merge/deploy/publicação/novo ZIP. CI anterior permanece referência, não foi repetido. Resultado novo é diagnóstico isolado em memória. Próximo passo depende de autorização para implementar a proposta de correção; concessão e ativação exigem autorização própria com escopo definido.
+
+
+## Execução autorizada posterior — 03/11/2026
+
+A ordem de execução posterior autorizou corrigir backend e cliente experimental. O diagnóstico acima é histórico. Correção aplicada em devices.mjs: consultas neutras não apagam nem prolongam reservas; apenas mobile_stop ou status(false) explícito libera. Atomicidade continua no callback transacional do store. Foram criados12cenários em reservations.test.mjs;12/12verdes localmente e28/28integração relacionada. Resultado inicial de fixture/comparação entre contextos corrigido; execução da versão antiga falha em preservação de entitlement, nova passa. Não houve alteração de política comercial.
+
+Cliente Android TV corrigido mantido como overlay em experiments/central-rights/android-tv, aplicado em CI ao commit Android fixado d3c56ab. Dois testes novos verificam corpos de consulta/reprodução/stop/logout e semântica mobile. Branch Android não foi modificada, respeitando a branch exclusiva desta ordem. Nenhum APK. CI em andamento após envio; resultados definitivos serão anexados.

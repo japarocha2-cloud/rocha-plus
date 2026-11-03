@@ -77,7 +77,8 @@ export function createDeviceService({store,verifyIdentity,getAccount,loadRights,
     }
     const device=session?.device??'mobile',playing=body.action==='mobile_playback'||(body.action==='status'&&body.playback_active===true);
     if(playing){if(!a.streams[device]&&Object.keys(a.streams).length>=2)return done(409,{error:'two_streams_limit'});a.streams[device]={until:Math.min(t+60000,rights.expiresAt)};}
-    else if(body.action!=='poll')delete a.streams[device];
+    // Neutral reads must not release or extend an existing playback reservation.
+    else if(body.action==='mobile_stop'||(body.action==='status'&&body.playback_active===false))delete a.streams[device];
     return done(200,{...rightsPacket(rights,uid,device,t,scope,playing),...(session?.token?{session_token:session.token,status:'approved'}:{})});
    });
   }catch{return reply(503,{error:'central_rights_unavailable'});}

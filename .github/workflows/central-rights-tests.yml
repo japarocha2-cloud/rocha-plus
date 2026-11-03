@@ -20,6 +20,8 @@ jobs:
           node-version: '22'
       - name: Payment, rights and device integration (fixtures only)
         run: node --input-type=module -e "import {runIntegrationTests} from './experiments/central-rights/integration.test.mjs'; console.log(await runIntegrationTests())"
+      - name: Playback reservations, neutral reads and concurrency
+        run: node --input-type=module -e "import {runReservationTests} from './experiments/central-rights/reservations.test.mjs'; console.log(await runReservationTests())"
       - name: Real loopback HTTPS boundary (ephemeral TLS only)
         run: node --input-type=module -e "import {runHttpsTests} from './experiments/central-rights/https.test.mjs'; console.log(await runHttpsTests())"
       - name: Server checkout intent and reviewed contract boundary
@@ -28,3 +30,33 @@ jobs:
         run: node --input-type=module -e "import {runEndToEndTests} from './experiments/central-rights/e2e.test.mjs'; console.log(await runEndToEndTests())"
       - name: Firebase project and account boundary (fixtures)
         run: node --input-type=module -e "import {runFirebaseBoundaryTests} from './experiments/central-rights/firebase-runtime.test.mjs'; console.log(await runFirebaseBoundaryTests())"
+
+  android-tv-reservations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          path: lab
+      - uses: actions/checkout@v4
+        with:
+          ref: d3c56ab6551c844fcb27501ba326d0c9a5cff641
+          persist-credentials: false
+          path: android-fixture
+      - name: Apply experimental client overlay only
+        run: |
+          cp lab/experiments/central-rights/android-tv/central_rights_client.dart android-fixture/lib/src/auth/central_rights_client.dart
+          cp lab/experiments/central-rights/android-tv/central_rights_client_test.dart android-fixture/test/central_rights_client_test.dart
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - run: flutter pub get
+        working-directory: android-fixture
+      - name: Client transport, access and player lifecycle regressions
+        run: flutter test test/central_rights_client_test.dart test/subscription_access_result_test.dart test/subscription_gate_test.dart test/vlc_tv_lifecycle_test.dart
+        working-directory: android-fixture
+      - name: Analyze experimental client and targeted tests
+        run: flutter analyze lib/src/auth lib/src/screens/adaptive_player_screen.dart test/central_rights_client_test.dart
+        working-directory: android-fixture
