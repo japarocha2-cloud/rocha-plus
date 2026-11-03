@@ -33,7 +33,7 @@ Falhas intermediárias do certificado de teste e análise Dart foram corrigidas 
 
 ## Preparação integrada 03/11 — em andamento
 
-[Etapa de preparação](../central-rights/20261103-readiness/README.md): preflight desativado e8testes novos locais aprovados; consultas novas de FirebaseAuth/domínios/provedor/IAM somente leitura preparadas para CI. Nenhum serviço/direito ativado;64backend/36Android preservados, sem repetição. Revisão visual e checklist cruzado seguem nesta missão.
+[Etapa de preparação](../central-rights/20261103-readiness/README.md): preflight desativado e8testes novos locais aprovados; consultas novas de FirebaseAuth/domínios/provedor/IAM somente leitura preparadas para CI. Nenhum serviço/direito ativado;64backend/36Android preservados, sem repetição. [AuditoriaFirebase](../central-rights/20261103-readiness/firebase-readonly-results.json): Auth/Google200, habilitado e domínios consultados; LABFirestore403/IAMsem permissõeslistadas. [Carrossel](../central-rights/20261103-readiness/visual-player-review.md) ajustado no fonte para carta parcial/foco integral:8novoschecks+33regressões relacionadas verdes em engineheadless; sem novoZIP/instalação. Checklist cruzado em preparação.
 
 ## Correção autorizada 03/11 — reservas experimentais
 

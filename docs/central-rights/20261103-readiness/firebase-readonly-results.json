@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-11-03T10:29:26.159Z",
+  "source": "GitHub Actions 41619638681 job125861783179; visible sanitized fields transcribed without recovering masked values",
+  "readOnly": true,
+  "writes": 0,
+  "accountReads": 0,
+  "paymentReads": 0,
+  "identity": {
+    "project": "rocha-plus",
+    "configStatus": 200,
+    "authorizedDomains": [
+      "localhost",
+      "rocha-plus.firebaseapp.com",
+      "rocha-plus.web.app",
+      "rocha-mais-download.sappyrose17.chatgpt.site"
+    ],
+    "googleStatus": 200,
+    "googleEnabled": true
+  },
+  "projects": [
+    {
+      "project": "rocha-plus",
+      "databaseStatus": 200,
+      "type": "FIRESTORE_NATIVE",
+      "iamStatus": 200,
+      "effectivePermissions": [
+        "datastore.entities.create",
+        "datastore.entities.delete",
+        "datastore.entities.get",
+        "datastore.entities.update",
+        "firebaseauth.configs.get",
+        "firebaseauth.users.get"
+      ]
+    },
+    {
+      "project": "rocha-plus-homologacao",
+      "databaseStatus": 403,
+      "type": null,
+      "iamStatus": 200,
+      "effectivePermissions": null
+    }
+  ],
+  "limitations": [
+    "Effective permissions concern the existing CI identity, not a prepared host service account.",
+    "No listed LAB permissions or Firestore access confirmed. 403 does not establish nonexistence.",
+    "Authorized domain is not proof of TLS, hosting control, DNS or Google popup completion."
+  ]
+}

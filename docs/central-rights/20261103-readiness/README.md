@@ -5,3 +5,10 @@ Base26dd84cd475d4f64949d115d7ca2fd3e0d92d3ab. Oito testes novos de preflight/san
 CI preparado para consultas novas de configuração Auth, provedorGoogle e testIamPermissions. GETs de metadados Firestore apenas em rocha-plus/rocha-plus-homologacao, último candidato histórico, sem escolhê-lo como destino. POST testIamPermissions é consulta sem mutação de política. Nenhum usuário/pagamento é lido por este script, nenhum token, OAuthsecret, serviceaccountemail ou chave é emitido. Resultados serão anexados após execução. Skill aplicada: firebase-auth-basics; nenhuma instrução de deploy da skill é aplicável porque usuário proibiu ativação.
 
 Não repetir64backend/36Android já verdes sem mudanças relacionadas. Revisão visual/player e checklist cruzado continuam nesta missão; resultados serão registrados por etapa.
+
+
+## Etapa visual e auditoria concluídas
+
+[CI41619638681](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41619638681) success:8testesnovos; consultaAuth/Google200, provedor habilitado, domínios no JSON. FirestoreLAB403 e IAM sem permissões listadas: não confirmado. CredencialCI possui permissões de escrita comercial, apenas observadas, nunca usadas; não transferir para hostLAB nem afirmar menorprivilégio. [Auditoria](firebase-readonly-results.json).
+
+[Revisão visual/player](visual-player-review.md): GalleryBrowser.brs corrigido para recorte e janela deslizante, oito checksnovos e33regressões relacionadas aprovados no engine headless. [Resultados](roku-headless-tests.json). ZIP0.6.7 preservado; novo fonte não instalado. Sem alterações em catálogo/capas/favoritos/configuração/temporizador. Preparação cruzada e checklist seguem abaixo/em arquivos anexos nesta missão.

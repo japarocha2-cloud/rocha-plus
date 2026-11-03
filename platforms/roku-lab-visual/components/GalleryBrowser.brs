@@ -3,6 +3,8 @@ sub ensureCategoryCards()
   if m.categoryCards <> invalid then return
   m.categoryCards = []
   rows = m.top.findNode("categoryRows")
+  ' Preserve card geometry; expose the next card partially at the right edge.
+  rows.clippingRect = [350, 0, 1380, 1080]
   for i = 0 to 5
     card = CreateObject("roSGNode", "Group")
     card.translation = [350 + i * 245, 345]
@@ -47,7 +49,9 @@ sub renderCategoryList()
     end for
     m.categoryCountRevision = m.channelRevision
   end if
-  first = int(m.categoryIndex / 6) * 6
+  ' Five complete cards plus a preview of the next; focused card is always complete.
+  first = m.categoryIndex - 4
+  if first < 0 then first = 0
   for i = 0 to 5
     card = m.categoryCards[i]
     index = first + i
