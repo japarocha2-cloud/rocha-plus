@@ -24,6 +24,6 @@ jobs:
           flutter-version: '3.47.6'
       - run: flutter pub get
       - name: New central client and related response regressions
-        run: flutter test test/central_rights_client_test.dart test/subscription_access_result_test.dart
+        run: flutter test test/central_rights_client_test.dart test/subscription_access_result_test.dart test/subscription_gate_test.dart test/vlc_tv_lifecycle_test.dart
       - name: Analyze affected client, gate and player files
         run: flutter analyze lib/src/auth lib/src/screens/adaptive_player_screen.dart test/central_rights_client_test.dart

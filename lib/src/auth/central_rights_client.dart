@@ -50,7 +50,7 @@ class CentralRightsClient {
       throw StateError('Serviço central indisponível.');
     }
     final clock = Stopwatch()..start();
-    final token = tv ? sessionToken : await getIdToken();
+    final token = tv ? sessionToken : await getIdToken().timeout(const Duration(seconds: 12));
     if (currentUid() != uid || (!tv && (token == null || token.isEmpty))) {
       throw StateError('Entre novamente para confirmar o acesso.');
     }
