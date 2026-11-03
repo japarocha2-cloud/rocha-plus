@@ -1,0 +1,23 @@
+{
+  "version": "0.6.10",
+  "package": "RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip",
+  "bytes": 4538938,
+  "sha256": "d789c6607b0f32bb2629adf9b1082518715c3a624f1e16445972fbf6817ddaa1",
+  "files": 574,
+  "catalogRecords": 607,
+  "coverAssociations": 578,
+  "flags": {
+    "authEnabled": false,
+    "centralEnabled": false,
+    "labEnabled": false
+  },
+  "fixtureUrlDetected": false,
+  "secretPatternMatches": 0,
+  "backendFixtureTests": "12/12 passed",
+  "brsHeadlessChecks": "9/9 previously recorded; not rerun",
+  "brsDesktop": "AX reported 0 errors/0 warnings and 0.6.10; screenshot capture timed out; REV2 not installed",
+  "realGoogleLogin": "NOT RUN",
+  "adminRecognition": "NOT RUN",
+  "playback": "NOT RUN",
+  "githubActionsArtifact": "pending verification"
+}
