@@ -8,7 +8,7 @@ on:
       - functions/mercadopago_webhook.test.js
       - functions/reconcile_and_grant.js
       - functions/mercadopago_reconciliation.js
-      - .github/workflows/incident-payment-webhook-fixtures.yml
+      - .github/workflows/incident-payment-webhook-fixtures.yml\n      - docs/incident/20261103-payment-webhook/README.md
 permissions:
   contents: read
 jobs:

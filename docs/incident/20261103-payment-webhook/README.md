@@ -18,7 +18,7 @@ Data: 03/11/2026. Branch: `incident/payment-recognition-20261103`. Base revisada
 
 ## Testes e plataformas
 
-A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. A execução CI 41737482057 falhou porque 7 testes do endpoint tinham mock incompleto após os imports; os cenários do webhook passaram. A segunda execução 41737668996 detectou erro de sintaxe no mock por newline escapada. O mock foi corrigido neste commit; nova execução pendente. Fixtures não são homologação de integração.
+A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. A execução CI 41737482057 falhou porque 7 testes do endpoint tinham mock incompleto após os imports; os cenários do webhook passaram. A segunda execução 41737668996 detectou erro de sintaxe no mock por newline escapada. O mock e o acionamento do CI para atualização do relatório foram corrigidos; execução sobre este estado pendente. Fixtures não são homologação de integração.
 
 - Android celular: **NÃO COMPROVADO**; build default não habilita runtime central e nenhuma sessão real foi consultada.
 - Android TV: **NÃO COMPROVADO**; compartilha Flutter/código de direitos com celular, mas não foi exercitada sessão real.
