@@ -22,3 +22,5 @@ jobs:
         run: node --input-type=module -e "import {runIntegrationTests} from './experiments/central-rights/integration.test.mjs'; console.log(await runIntegrationTests())"
       - name: Real loopback HTTPS boundary (ephemeral TLS only)
         run: node --input-type=module -e "import {runHttpsTests} from './experiments/central-rights/https.test.mjs'; console.log(await runHttpsTests())"
+      - name: Server checkout intent and reviewed contract boundary
+        run: node --input-type=module -e "import {runContractTests} from './experiments/central-rights/contracts.test.mjs'; console.log(await runContractTests())"

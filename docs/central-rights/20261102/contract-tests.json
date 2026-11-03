@@ -1,0 +1,13 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "unapproved policy refused",
+    "intent does not create checkout/charge or expose email",
+    "server reservation binds UID and calendar period",
+    "unreserved reference rejected",
+    "different payer rejected",
+    "historical payment without reviewed contract stays pending"
+  ],
+  "commercialWrites": 0
+}

@@ -21,8 +21,8 @@ export function createDeviceService({store,verifyIdentity,getAccount,loadRights,
    const t=now();if(!Number.isSafeInteger(t)||t<=0)throw Error('clock');
    return await store.transact('devices',async old=>{
     const s=old??{pairs:{},sessions:{},accounts:{},rates:{}};
-    for(const [k,p]of Object.entries(s.pairs))if(p.until<=t)delete s.pairs[k];
-    for(const [k,v]of Object.entries(s.sessions))if(v.until<=t){delete s.sessions[k];const a=s.accounts[v.uid];if(a){a.tvs=a.tvs.filter(d=>d!==v.device);delete a.streams[v.device];}}
+    for(const [k,p]of Object.entries(s.pairs))if(p.until<=t){if(p.uid&&!Object.values(s.sessions).some(v=>v.device===p.device)){const a=s.accounts[hash(p.uid)];if(a)a.tvs=a.tvs.filter(d=>d!==p.device);}delete s.pairs[k];}
+    for(const [k,v]of Object.entries(s.sessions))if(v.until<=t){delete s.sessions[k];const a=s.accounts[hash(v.uid)];if(a){a.tvs=a.tvs.filter(d=>d!==v.device);delete a.streams[v.device];}}
     for(const [k,r]of Object.entries(s.rates))if(r.until<=t)delete s.rates[k];
     for(const a of Object.values(s.accounts))for(const [k,stream]of Object.entries(a.streams))if(stream.until<=t)delete a.streams[k];
     const done=(status,payload)=>({value:s,result:reply(status,payload)});
@@ -46,7 +46,7 @@ export function createDeviceService({store,verifyIdentity,getAccount,loadRights,
      }else{const token=/^Bearer (\S+)$/.exec(authorization)?.[1];if(!id(token))return done(401,{error:'session'});const raw=s.sessions[hash(token)];if(!raw)return done(401,{error:'session'});session={...raw,key:hash(token)};uid=session.uid;}
     }
     if(!uid)return done(400,{error:'action'});
-    const a=s.accounts[uid]??{phone:null,tvs:[],streams:{}};s.accounts[uid]=a;
+    const a=s.accounts[hash(uid)]??{phone:null,tvs:[],streams:{}};s.accounts[hash(uid)]=a;
     if(body.action==='logout'){delete s.sessions[session.key];a.tvs=a.tvs.filter(d=>d!==session.device);delete a.streams[session.device];for(const [c,p]of Object.entries(s.pairs))if(p.device===session.device)delete s.pairs[c];return done(200,{status:'logged_out'});}
     // Account disable and global revocation invalidate leases at each refresh.
     const account=await getAccount(uid);
@@ -69,6 +69,7 @@ export function createDeviceService({store,verifyIdentity,getAccount,loadRights,
      if(!id(body.mobile_id)||a.phone?.id!==hash(body.mobile_id))return done(403,{error:'mobile_replaced'});
     }
     if(body.action==='approve'){
+     if(typeof body.user_code!=='string'||!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(body.user_code))return done(400,{error:'code'});
      const p=s.pairs[body.user_code];if(!p)return done(410,{error:'code_expired'});
      if(p.uid&&p.uid!==uid)return done(409,{error:'bound'});
      if(!a.tvs.includes(p.device)){if(a.tvs.length>=2)return done(409,{error:'two_tvs_limit'});a.tvs.push(p.device);}

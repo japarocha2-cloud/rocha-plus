@@ -1,0 +1,12 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "read-only bound order and preference",
+    "403 is unknown, not mismatch",
+    "missing order does not invent period",
+    "wrong payment/order rejected",
+    "provider failure sanitized",
+    "no payment/order/preference identifiers in report"
+  ]
+}

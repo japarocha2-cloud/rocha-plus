@@ -1,5 +1,5 @@
 {
-  "passed": 27,
+  "passed": 28,
   "failed": 0,
   "tests": [
     "shared cross-platform contract vectors",
@@ -21,6 +21,7 @@
     "signature seconds/milliseconds, tamper and timestamp tolerance",
     "expired identity token and nonexistent account denied",
     "register one fresh phone",
+    "malformed pairing keys cannot access object prototypes",
     "two TVs securely linked; idle TVs consume no streams",
     "third TV rejected",
     "two concurrent TV plays allowed; third stream denied",
