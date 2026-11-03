@@ -1,0 +1,40 @@
+{
+  "environment": "central-rights-lab",
+  "enabled": false,
+  "identityProjectId": "rocha-plus",
+  "labProjectId": "",
+  "databaseId": "",
+  "host": {
+    "origin": "",
+    "approvalPath": "/approve",
+    "accessPath": "/v1/access",
+    "tlsRequired": true,
+    "configured": false
+  },
+  "authorization": {
+    "enabled": false,
+    "scope": "homologation",
+    "accountReference": "",
+    "allowedDeviceReferences": [],
+    "notBefore": null,
+    "expiresAt": null,
+    "maxDurationHours": 24,
+    "maxLinkedTvs": 2,
+    "maxSimultaneousStreams": 2
+  },
+  "channels": {
+    "enforceServerSide": true,
+    "approvedForPhysicalTest": [],
+    "evidenceRequired": [
+      "origin",
+      "permission_reference",
+      "permitted_platform",
+      "valid_until",
+      "reviewed_by"
+    ]
+  },
+  "commercialAccess": false,
+  "commercialWrites": false,
+  "createPrivateKey": false,
+  "readyForEnabledZip": false
+}
