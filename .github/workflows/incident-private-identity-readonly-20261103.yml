@@ -1,0 +1,49 @@
+name: Incident private identity evidence (read-only)
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths: [.github/workflows/incident-private-identity-readonly-20261103.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity-audit:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/incident/payment-recognition-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check private target inputs without disclosing them
+        id: target
+        env:
+          INCIDENT_TARGET_EMAIL: ${{ secrets.INCIDENT_TARGET_EMAIL }}
+          INCIDENT_PAYMENT_IDS_JSON: ${{ secrets.INCIDENT_PAYMENT_IDS_JSON }}
+        shell: bash
+        run: |
+          if [[ -n "$INCIDENT_TARGET_EMAIL" && -n "$INCIDENT_PAYMENT_IDS_JSON" ]]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo 'BLOCKED: private target inputs unavailable; identity and ledger audit NOT performed.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        if: steps.target.outputs.available == 'true'
+        with:
+          ref: 25afacb9b524ec5e52f13db2c0b0a3213f038438
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        if: steps.target.outputs.available == 'true'
+        with:
+          node-version: '22'
+      - name: Install locked SDK without lifecycle scripts
+        if: steps.target.outputs.available == 'true'
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Read identity bindings and exact ledger documents
+        if: steps.target.outputs.available == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          INCIDENT_TARGET_EMAIL: ${{ secrets.INCIDENT_TARGET_EMAIL }}
+          INCIDENT_PAYMENT_IDS_JSON: ${{ secrets.INCIDENT_PAYMENT_IDS_JSON }}
+        run: |
+          node --check backend/entitlement/diagnostics/incident_identity_readonly_20261103.mjs
+          node backend/entitlement/diagnostics/incident_identity_readonly_20261103.mjs
