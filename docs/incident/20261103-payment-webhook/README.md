@@ -100,6 +100,6 @@ A revisão usa lease por payment ID, retorna 503 para concorrente e permite nova
 
 Incidente **ABERTO**. A causa específica do bloqueio da cliente ainda não está provada porque instalação/sessão, endpoint de produção, receipt confirmado e logs de webhook/Functions não foram lidos. Android celular, Android TV e Roku estão sem validação de direito real; nenhuma sincronização foi aplicada. Este incidente não deve ser fechado até que a cliente recupere o acesso mensal validado na plataforma efetivamente usada e a mesma fonte de direito seja demonstrada em celular, Android TV e Roku.
 
-Último commit deste relatório: `80ddc0c0fdb1fa37a53f9a63f84650fe0a45bc9a`. O próximo commit registrará apenas esta atualização documental; código funcional validado está nesse commit.
+Código do webhook e testes validados no commit `80ddc0c0fdb1fa37a53f9a63f84650fe0a45bc9a`. Relatório mestre atualizado no commit `54f73ff43d916832482779646dca7fa8b32eca95`.
 
 Este relatório é registro técnico experimental. Não contém credenciais nem dados pessoais de clientes.
