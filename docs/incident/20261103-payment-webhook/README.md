@@ -8,6 +8,12 @@ Data: 03/11/2026. Branch: `incident/payment-recognition-20261103`. Base revisada
 
 **Causa específica em produção não confirmada:** esta sessão não tem conexão autorizada a Mercado Pago, Firebase, logs de Functions ou console de implantação. Não consultamos dados reais nem verificamos implantação/configuração/delivery do webhook. A relação pagamento↔UID por e-mail também não é prova suficiente: o grant existente exige claim revisado independentemente. A hipótese de falha do webhook em produção permanece pendente até leitura autorizada de configuração e logs.
 
+## Bloqueio de convergência entre backends
+
+O repositório também contém a recuperação Spark em `backend/entitlement/regular_payment_recovery.mjs`, que projeta `rochaSparkAccounts/{Google subject}`; a Functions `reconcile_and_grant.js` atualiza `entitlements/{Firebase UID}`. São coleções/identificadores diferentes. O webhook experimental desta branch chama apenas `reconcileAndGrant`, portanto **não restaura um cliente que efetivamente usa a projeção Spark**. A documentação histórica associa um build Android 538 ao Spark, mas não prova qual APK/sessão está instalada agora. Roku 0.6.10 REV2 permanece com acesso desativado.
+
+Antes de homologar este webhook ou desenhar a projeção Spark, é obrigatório confirmar versão instalada, token/sessão da própria instalação via procedimento privado autorizado e endpoint/projeto efetivamente consultado. Não gravar nas duas coleções para “desbloquear”; escolher uma fonte de verdade após prova. Também não está demonstrado que o mensal do caso afetado tenha claim revisado em `payment_claims`.
+
 ## Correção isolada preparada
 
 - Novo `functions/mercadopago_webhook.js`: verifica HMAC SHA-256 (`x-signature` + `x-request-id` + `data.id`), exige evento payment, valida consistência query/body e trata o callback apenas como sinal; o pagamento é buscado de novo na API canônica.
@@ -33,7 +39,7 @@ Não declarar correção aprovada para as três plataformas. A convergência req
 2. Em projeto Firebase **de homologação confirmado**, configurar os secrets existentes por cofre aprovado, registrar URL de notificação no painel de integração Mercado Pago e validar assinatura/eventos via sandbox.
 3. Criar claim de pagamento somente depois de revisão independente de proprietário/UID/plano/merchant/valor, sem mapear por e-mail isoladamente.
 4. Executar casos sandbox de aprovado, duplicado, renovação, reembolso/chargeback, divergência e concorrência; verificar ledger + entitlement com transações idempotentes.
-5. Validar as builds experimentais das três plataformas contra a MESMA API/coleção, com limites de dispositivos e duas reproduções. Nenhum ajuste de produção neste commit.
+5. Primeiro resolver a divergência de backend acima. Depois validar as builds experimentais das três plataformas contra a MESMA API/coleção, com limites de dispositivos e duas reproduções. Nenhum ajuste de produção neste commit.
 6. Antes de qualquer produção: consultar implantação e logs reais com conexão autorizada, mapear sessão afetada e apresentar plano de mudança; solicitar autorização explícita.
 
 ## Evidências e arquivos
