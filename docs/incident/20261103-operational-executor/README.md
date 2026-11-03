@@ -1,3 +1,5 @@
+> ATUALIZAÇÃO VIGENTE: proprietário confirmou visualmente o ANUAL CANCELADO e MENSAL EM DIA. Não executar novo cancelamento nem reembolso. Restaurar somente mensal após validação/autorização. [Procedimento atual](../20261103-monthly-restoration-current.md). Os trechos de cancelamento abaixo são históricos e estão superados para esta cliente.
+
 # P0 — bloqueio operacional e execução privada
 
 Base2e6b906acb7d2521bd09faa1d9da606425fdb71c, branchincident/payment-recognition-20261103. **ACESSO OPERACIONAL PRIVADO: NÃO DISPONÍVEL.** Não há conexãoFirebase/MercadoPago nesta sessão. Os5bindings abaixo foram testados somente porpresença e todosausentes; listaCodexCloud retorna environments[]/nextCursornull. Nenhum executorprivado utilizável foi identificado. Não confundir a existência deSecretsActions com acesso desteprocesso aosdados.

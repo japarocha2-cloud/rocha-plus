@@ -1,3 +1,5 @@
+> ATUALIZAÇÃO VIGENTE: proprietário confirmou visualmente o ANUAL CANCELADO e MENSAL EM DIA. Não executar novo cancelamento nem reembolso. Restaurar somente mensal após validação/autorização. [Procedimento atual](../20261103-monthly-restoration-current.md). Os trechos de cancelamento abaixo são históricos e estão superados para esta cliente.
+
 # P0 — decisão mensal exclusiva, preparação sem aplicação
 
 Proprietário informou devolução externa porPix do valoranual. Relato aceito como decisão, comprovante ainda não conciliado. Não é estornoMercadoPago; nenhum segundo reembolso proposto. Manter exclusivamente mensal conforme ordem, sem alterar contratos nesta etapa.
