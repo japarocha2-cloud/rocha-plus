@@ -13,3 +13,7 @@ Execute `flutter test test/central_rights_client_test.dart test/subscription_acc
 Pendências: login Firebase real, restauração de sessão no aparelho, Android TV/controle real, expiração durante decoder/Cast e desconexão remota. Parada de Cast é solicitada; receiver offline não é comprovadamente parado pelo app. Contagem independente de receiver Chromecast permanece sem homologação; não ativar o caminho comercial até validar a atribuição do receiver a slot de TV. Testes de transporte não aprovam áudio, vídeo, desempenho físico ou autenticação positiva. Políticas dos pagamentos históricos e concessão comercial dependem de aprovação separada.
 
 O backend/código Roku e o plantão mestre estão na branch `lab/roku-visual-covers-performance-20261102`, em `experiments/central-rights` e `docs/central-rights/20261102`. Não há novo sistema de assinatura Android: ambos os tipos de aparelho usam o mesmo estado central, ainda sem implantação.
+
+## Resultado confirmado
+
+[CI41559164920](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41559164920), código86a700209166ad36d4deb90c47ff82d29915e86e:34testes direcionados aprovados (cliente central, resposta de assinatura, gate e superfícieTV), análise dos arquivos afetados sem problemas. Nenhum APK. Histórico:41553166585 passou testes mas análise encontrou Future sem await; corrigido.41558132141 aprovou17testes e análise; a última rodada ampliou apenas regressões relacionadas ao gate/player alterados.
