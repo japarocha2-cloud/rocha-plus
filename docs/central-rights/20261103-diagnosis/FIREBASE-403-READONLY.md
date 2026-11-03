@@ -76,3 +76,14 @@ O runtime experimental em `experiments/central-rights/firebase-runtime.mjs` usa 
 **Próxima ação necessária do proprietário:** autorizar especificamente uma **coleta somente leitura de diagnóstico sanitizado** da identidade da conta de serviço usada pelo CI e do corpo do 403 do LAB (ou fornecer exportação sanitizada dessas informações), junto da confirmação do projectId/databaseId no console. Isso não autoriza ajuste de IAM/API nem ativação do host. Depois apresentar proposta exata de menor privilégio para aprovação separada.
 
 **Estado:** incidente comercial identificado nas APIs administrativas; incidente LAB localizado em run/job/requisição, mas causa raiz exata ainda não fechada. **AMARELO.** Nenhum teste reaplicado, nenhuma alteração fora desta documentação.
+
+
+## Missão mestre 03/11 — coleta limitada autorizada
+
+A nova ordem autorizou uma única consulta diagnóstica restrita a **metadados do Firestore LAB**, sem documentos pessoais, assinaturas, pagamentos ou trials e sem mudanças IAM/API/Secrets. O script `experiments/roku-readiness/firebase-403-closeout.mjs` foi adicionado na branch LAB: obtém em memória token da credencial CI existente; registra o e-mail de serviço e projectId da identidade (nunca chave/token); consulta somente `rocha-plus-homologacao/databases/(default)` e estado da API Firestore via GET; limita/sanitiza o corpo de eventual erro Google. Workflow novo `.github/workflows/roku-lab-403-closeout.yml` com `contents:read`, branch LAB, sem direito GitHub de escrita.
+
+**Ainda não existe resultado de novo job recuperado/verificado nesta sessão.** Não afirmar identidade exata nem corpo do Google com base apenas no script. Evidências históricas verificadas: [run LAB 41619638681](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41619638681) e [run comercial 41551744667](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41551744667).
+
+Próxima etapa: caso o workflow novo produza `LAB403_CLOSEOUT`, ler e registrar uma única vez o resultado sanitizado e parar se inconclusivo, sem repetir testes aprovados. `errorStatus`/mensagem poderá distinguir falta de permissão, API desativada, projeto/banco incorreto ou restrição. **Nenhuma permissão aplicada.**
+
+Plano de HTTPS, identidade de host independente e alternativas de QR/código numérico (apenas preparação, sem ativação) documentado em `docs/central-rights/20261103-readiness/ROKU-LAB-HTTPS-PAIRING-PREP.md`.
