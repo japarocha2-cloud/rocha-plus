@@ -38,7 +38,7 @@ jobs:
           assert.equal(count(JSON.parse(files['catalog/commercial-lab-merged.json'])),607);
           assert.equal(count(JSON.parse(files['config/cover-map.json'])),578);
           for(const p of ['config/auth.json','config/central-access.json','config/lab-access.json']) assert.equal(JSON.parse(files[p]).enabled,false,p);
-          const text=Object.entries(files).filter(([n])=>/\\.(json|brs|xml|html|txt)$/i.test(n)).map(([,b])=>b.toString()).join('\\n');
+          const text=Object.entries(files).filter(([n])=>/\.(json|brs|xml|html|txt)$/i.test(n)).map(([,b])=>b.toString()).join('\n');
           assert(!text.includes('example.invalid'));
           assert(!text.includes('fixture-scenario.json'));
           assert(!/AIza[0-9A-Za-z_-]{35}|-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}/.test(text));
