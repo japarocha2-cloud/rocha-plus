@@ -12,3 +12,8 @@ Não repetir64backend/36Android já verdes sem mudanças relacionadas. Revisão 
 [CI41619638681](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41619638681) success:8testesnovos; consultaAuth/Google200, provedor habilitado, domínios no JSON. FirestoreLAB403 e IAM sem permissões listadas: não confirmado. CredencialCI possui permissões de escrita comercial, apenas observadas, nunca usadas; não transferir para hostLAB nem afirmar menorprivilégio. [Auditoria](firebase-readonly-results.json).
 
 [Revisão visual/player](visual-player-review.md): GalleryBrowser.brs corrigido para recorte e janela deslizante, oito checksnovos e33regressões relacionadas aprovados no engine headless. [Resultados](roku-headless-tests.json). ZIP0.6.7 preservado; novo fonte não instalado. Sem alterações em catálogo/capas/favoritos/configuração/temporizador. Preparação cruzada e checklist seguem abaixo/em arquivos anexos nesta missão.
+
+
+## Preparação cruzada concluída
+
+[Seis testes novos](cross-platform-tests.json) de código/aprovação manual, poll perdido, outra conta, recuperação de transporte, revogação global e expiração aprovados localmente. Fluxo manual é8caracteres alfanuméricos, QR e numérico não implementados; não mudar contrato por suposição. [PlanoAndroid com hashes](android-integration-plan.json) pronto sem aplicar à branchAndroid. [Roteiro24casos](CROSS-PLATFORM-HOMOLOGATION.md) e template todosNOT_EXECUTED, CSVvazio para futuras decisões de canais com evidências. Não houve testes físicos, acesso concedido ou pacotes. CI dos seis novos cenários será anexado.

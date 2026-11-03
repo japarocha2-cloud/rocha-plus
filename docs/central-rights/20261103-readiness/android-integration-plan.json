@@ -1,0 +1,21 @@
+{
+  "baseAndroid": "d3c56ab6551c844fcb27501ba326d0c9a5cff641",
+  "branchNotModified": "lab/central-rights-android-20261102",
+  "applied": false,
+  "dryRun": true,
+  "requiresFutureAuthorization": true,
+  "files": [
+    {
+      "target": "lib/src/auth/central_rights_client.dart",
+      "overlay": "experiments/central-rights/android-tv/central_rights_client.dart",
+      "expectedBeforeSha256": "4a3fc3d5587bf679d1791b69d2823240ad16a902388226fd4b2ca1d74bde26d0",
+      "expectedAfterSha256": "978b15f5f6a44cd0184287466b299c917e3104458ced5d1bd9a1487fe1c75ac6"
+    },
+    {
+      "target": "test/central_rights_client_test.dart",
+      "overlay": "experiments/central-rights/android-tv/central_rights_client_test.dart",
+      "expectedBeforeSha256": "5a895bb360aa5a88b5c8b00f157f2c729953b25556cd96a0b68154dfbb96f7be",
+      "expectedAfterSha256": "a0b76561ffa020ba5e6c0bae098a969bb81a9147840adda93d46a92cacf2be7d"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "manual TV code pending until explicit authenticated mobile approval",
+    "lost poll response safely retries same session without duplicate TV",
+    "another authenticated account cannot claim already approved TV code",
+    "restored TV session survives transport failure without new pairing",
+    "identity global revocation rejects restored TV session at refresh",
+    "unapproved pairing expires at ten minutes and cannot be replayed"
+  ],
+  "fixtureOnly": true,
+  "realGoogleLogin": false,
+  "qrImplemented": false,
+  "commercialWrites": 0
+}

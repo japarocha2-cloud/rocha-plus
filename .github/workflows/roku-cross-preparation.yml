@@ -1,0 +1,21 @@
+name: Roku LAB cross-platform preparation fixtures
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - tests/roku-readiness/**
+      - .github/workflows/roku-cross-preparation.yml
+permissions:
+  contents: read
+jobs:
+  fixture-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --input-type=module -e "import {runCrossPlatformPreparationTests} from './tests/roku-readiness/cross-platform.test.mjs'; console.log(await runCrossPlatformPreparationTests())"
