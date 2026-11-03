@@ -1,0 +1,23 @@
+{
+  "environment": "central-rights-lab",
+  "inspectionOnly": true,
+  "activationAllowed": false,
+  "readyToRequestActivation": false,
+  "missing": [
+    "separate_lab_project",
+    "trusted_https_origin",
+    "isolated_host_not_confirmed",
+    "device_network_not_confirmed",
+    "projects_not_confirmed",
+    "iam_boundary_not_confirmed",
+    "auth_domain_not_confirmed",
+    "certificate_name_or_validity",
+    "device_tls_trust_not_confirmed",
+    "exact_authorization_not_ready"
+  ],
+  "routes": [
+    "GET /approve",
+    "POST /v1/access"
+  ],
+  "paymentsEnabled": false
+}

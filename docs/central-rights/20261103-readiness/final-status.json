@@ -1,0 +1,39 @@
+{
+  "base": "26dd84cd475d4f64949d115d7ca2fd3e0d92d3ab",
+  "commits": {
+    "preparation": "61add4fdc28a882011e2dea6437686ef5344ae37",
+    "visual": "7b9d4d0c12ef09ab4b6ea62801dfc09616a8233c",
+    "cross": "2559f75e795dfcf8283cc6e97de141fab20c241f"
+  },
+  "ci": [
+    {
+      "id": 41619638681,
+      "head": "61add4fdc28a882011e2dea6437686ef5344ae37",
+      "conclusion": "success",
+      "newTests": 8,
+      "metadataReadOnly": true
+    },
+    {
+      "id": 41620227501,
+      "head": "2559f75e795dfcf8283cc6e97de141fab20c241f",
+      "conclusion": "success",
+      "newTests": 6
+    }
+  ],
+  "localRoku": {
+    "passed": 41,
+    "newChecks": 8,
+    "relatedRegressions": 33,
+    "engine": "BRS Desktop 2.6.2 headless"
+  },
+  "preservedPrevious": {
+    "backend": 64,
+    "android": 36,
+    "flutterAnalyze": "No issues found",
+    "ci": 41590689968,
+    "repeated": false
+  },
+  "actualActivation": false,
+  "physicalTests": false,
+  "newPackages": 0
+}

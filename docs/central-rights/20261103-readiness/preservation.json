@@ -1,0 +1,21 @@
+{
+  "base": "26dd84cd475d4f64949d115d7ca2fd3e0d92d3ab",
+  "throughCommit": "2559f75e795dfcf8283cc6e97de141fab20c241f",
+  "protectedDelta": [
+    "platforms/roku-lab-visual/components/GalleryBrowser.brs"
+  ],
+  "expectedSourceChangeOnly": "platforms/roku-lab-visual/components/GalleryBrowser.brs",
+  "catalog": 607,
+  "coverAssociations": 578,
+  "countBasis": "prior verified inventory, blobs unchanged",
+  "zip067": {
+    "sha256": "6ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07",
+    "generated": false,
+    "installed": false
+  },
+  "androidBranchModified": false,
+  "ecpTouched": false,
+  "authConfigChanged": false,
+  "cloudWrites": 0,
+  "physicalTests": false
+}
