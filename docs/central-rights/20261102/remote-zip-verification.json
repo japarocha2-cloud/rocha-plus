@@ -1,0 +1,12 @@
+{
+  "url": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/572733db6f9d99f4b64f59d40f28d3602b4f89ac/artifacts/roku-lab/20261102/central-rights/RochaPlus-Roku-LAB-0.6.7-CENTRAL-PREPARADO-20261102.zip",
+  "codeCommit": "572733db6f9d99f4b64f59d40f28d3602b4f89ac",
+  "httpStatus": 200,
+  "bytes": 4538188,
+  "sha256": "6ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07",
+  "verifiedByFullDownload": true,
+  "sharedContractFixturesSha256": "2048c7de89cc9f6f3476e72e1dad563dfc72bd0ea5e8f4c3ab1cd4b93ec087e8",
+  "androidSharedFixturesIdentical": true,
+  "enabled": false,
+  "installed": false
+}

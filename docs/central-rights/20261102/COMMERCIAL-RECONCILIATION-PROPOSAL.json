@@ -1,0 +1,42 @@
+{
+  "mode": "read-only proposal",
+  "readyToApply": false,
+  "writes": 0,
+  "commercialPatch": null,
+  "accountReference": "owner-selected account, kept private",
+  "payments": [
+    {
+      "reference": "monthly",
+      "providerApprovedAtLastStatusRead": true,
+      "documentedOfferMonths": 1,
+      "transactionCheckoutBinding": "not_established",
+      "coverageStart": null,
+      "coverageEnd": null
+    },
+    {
+      "reference": "annual",
+      "providerApprovedAtLastStatusRead": true,
+      "documentedOfferMonths": 12,
+      "transactionCheckoutBinding": "not_established",
+      "coverageStart": null,
+      "coverageEnd": null
+    }
+  ],
+  "periodCombination": "No final applicable accumulation/replacement rule found",
+  "scope": "No new charge, no automatic paid grant, no trial reset",
+  "intendedAtomicInvariants": [
+    "Re-read authoritative provider status/refund and exact identity",
+    "Reserve globally unique payment key; reject cross-account or already reversed payment",
+    "Use only explicit verified and owner-authorized periods",
+    "Commit payment ledger, canonical period and audit atomically",
+    "Project only legitimate canonical validity into legacy Spark through separately reviewed migration",
+    "Preserve original trial, favorites, TVs and any legitimate existing entitlement"
+  ],
+  "blockedBy": [
+    "No payment.order reference, external_reference or period metadata in inspected resources",
+    "Historical site terms are draft and leave migration unresolved",
+    "No permission to inspect deployed function inventory/webhook deliveries",
+    "No explicit authorization for a concrete commercial patch"
+  ],
+  "authorizationRequested": false
+}

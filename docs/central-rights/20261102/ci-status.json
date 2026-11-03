@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-03T01:28:29.658Z",
+  "backend": {
+    "run": 41559660532,
+    "sourceCommit": "4e949050f007209464bc147b7772c6b2435283ee",
+    "status": "success",
+    "tests": {
+      "integration": 28,
+      "httpsBoundary": 8,
+      "checkoutContracts": 6,
+      "httpsEndToEnd": 6,
+      "firebaseBoundary": 4
+    },
+    "total": 52
+  },
+  "android": {
+    "run": 41559164920,
+    "sourceCommit": "86a700209166ad36d4deb90c47ff82d29915e86e",
+    "docsCommit": "d3c56ab6551c844fcb27501ba326d0c9a5cff641",
+    "status": "success",
+    "tests": 34,
+    "analysis": "No issues found",
+    "apkGenerated": false
+  },
+  "roku": {
+    "localEngine": "2.6.2",
+    "passed": 35,
+    "previousRelated": 14,
+    "new": 21,
+    "sharedVectors": 9,
+    "native067Executed": false
+  },
+  "audits": {
+    "account": {
+      "run": 41551744667,
+      "status": "success",
+      "readOnly": true
+    },
+    "checkout": {
+      "run": 41558913252,
+      "status": "success",
+      "readOnly": true
+    }
+  },
+  "historicalFailures": [
+    {
+      "run": 41552648744,
+      "area": "ephemeral TLS test certificate ASN.1 serial padding",
+      "fixed": true
+    },
+    {
+      "run": 41553166585,
+      "area": "Dart await inside try; tests passed but analysis warned",
+      "fixed": true
+    }
+  ],
+  "commercialWrites": 0
+}

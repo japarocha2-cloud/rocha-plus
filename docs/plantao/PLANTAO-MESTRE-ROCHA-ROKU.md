@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Entrega atual preparada: LAB 0.6.7 (cliente central, ainda não instalado; BRS mantém0.6.6). LAB0.6.6 para homologação por conta, DESATIVADO até configurar runtime HTTPS e aprovação móvel autenticada. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
+Estado atual: LAB0.6.7 preparado e DESATIVADO, não instalado no BRS; última execução nativa confirmada0.6.6. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -11,22 +11,27 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 2. Faça checkout dessa branch; não trabalhe em main, Oficial, Android, LAB 714 ou Candidata 6.
 3. Use o [código Roku isolado](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/platforms/roku-lab-visual), os [relatórios da etapa atual](https://github.com/japarocha2-cloud/rocha-plus/tree/f5cce4b70d40edcb6a342312215a1b2314b79589/docs/roku/android-sync-20261102) e o ZIP abaixo. Não reconstruir o catálogo com base em contagens.
 4. Preserve os resultados aprovados. Ao concluir cada etapa técnica, atualize este arquivo, faça commit/push apenas na branch LAB e confira links/SHAs remotos.
-5. Próxima prioridade: localizar catálogo final e exportação de remoções da C6; em paralelo, testar este ZIP em Roku física.
+5. Prioridade atual: concluir evidências de contrato/webhook e runtime seguro; depois testar os grupos bloqueados. Preservar catálogo/C6 e pendências de capas sem reconstrução.
 
 
 
 
-## Missão central de pagamentos — em andamento (02/11/2026)
+## Missão central de pagamentos — entrega técnica preparada, operação real pendente
 
-Atualização técnica: backend HTTPS completo com6 cenários ponta a ponta de fixtures aprovados; Android CI41559164920 aprovou34 testes relacionados e análise sem problemas;35 verificações Roku locais. Oferta histórica e origem dos pagamentos auditadas em leitura: modalidade mensal/anual12meses documentada, mas cobertura individual e troca/acumulação não comprovadas; order.id ausente em ambos, sem consulta de preferência por adivinhação.4 testes adicionais do runtime Firebase confirmam conta exata e isolamento de escrita; CI correspondente em preparação. Nenhum desbloqueio real ou concessão comercial.
+[Relatório completo](../central-rights/20261102/README.md) · [Matriz24cenários](../central-rights/20261102/TEST-MATRIX.md) · [CI](../central-rights/20261102/ci-status.json) · [Proposta comercial bloqueada](../central-rights/20261102/COMMERCIAL-RECONCILIATION-PROPOSAL.json).
 
-[Diagnóstico inicial e contratos divergentes](../central-rights/20261102/diagnostic-checkpoint.json). Nova missão autoriza desenvolver componentes experimentais e integração Android em branch própria; preserva PR #42 draft (head 61780147654b42709070702a677eec24b33a2ac5), C6, LAB714 e versões oficiais. Nenhuma concessão comercial ou deploy autorizado.
+- Diagnóstico autenticado: dois pagamentos avulsos aprovados no último status consultado; Spark sem direito aplicado e nenhum registro nos ledgers conhecidos inspecionados. Oferta histórica do site localizada: mensal e anual12meses com links distintos dos recorrentes. Sem prova de datas de cobertura, acumulação ou substituição. Origem retornou order.id ausente; não consultar preferência por adivinhação. Nenhuma assinatura concedida.
+- Cloud Functions/logs: leitura403; endpoints convencionais404. Falta de acesso não prova ausência de webhook. As fontes encontradas, rascunhos e limites estão na [auditoria histórica](../central-rights/20261102/historical-offer-audit.md). Busca de recibos das duas transações não encontrou mensagens; não é prova de inexistência de contrato.
+- Backend experimental em experiments/central-rights: contrato único por UID, períodos explícitos, consulta sem novo trial, intenções de checkout sem cobrança, conciliação idempotente/alertas,1celular/2TVs/2streams e HTTPS isolado. Verificador/configuração reais não ativados; escrituras experimentais recusam projetos comercial e Candidata. Código final4e949050f007209464bc147b7772c6b2435283ee.
+- [CI backend41559660532](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41559660532):52testes de fixtures/HTTPS aprovados. [CI Android41559164920](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41559164920):34testes relacionados, análise sem problemas, sem APK.35checks BrightScript locais, incluindo9vetores comuns;14regressões relacionadas preservadas dentro dessa rodada. Sem aprovação de Firebase positivo, playback ou hardware.
+- Android em branch lab/central-rights-android-20261102, código86a700209166ad36d4deb90c47ff82d29915e86e, documentaçãod3c56ab6551c844fcb27501ba326d0c9a5cff641. Cliente compartilhado celular/TV opt-in desativado. PR42 continua draft/head61780147654b42709070702a677eec24b33a2ac5; C6/LAB714 intactos. [Preservação e caminhos](../central-rights/20261102/preservation.json).
+- [ZIP0.6.7 permanente](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/572733db6f9d99f4b64f59d40f28d3602b4f89ac/artifacts/roku-lab/20261102/central-rights/RochaPlus-Roku-LAB-0.6.7-CENTRAL-PREPARADO-20261102.zip), código572733db6f9d99f4b64f59d40f28d3602b4f89ac;4.538.188bytes/574arquivos; SHA2566ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07. HTTP200 e hash integral conferidos. Cliente central, números JSON corrigidos e logout no servidor antes de apagar sessão local. Configuração continua desativada, sem rearmar temporizador.
+-578capas/534texturas,29pendências e607registros/599runtime preservados byte a byte, assim como artes e configurações anteriores.0.6.7 não instalado. Última evidência BRS0.6.6 no commit89c71a8; consulta ECP final falhou, não afirmar app ativo agora. Oito grupos continuam sem nova execução autorizada por falta de runtime/identidade reais.
+- Pendências: contrato exato e período verificável dos pagamentos; leitura de configuração/entrega do webhook; runtime HTTPS com credenciais próprias e banco LAB separado; aprovação móvel real; homologação de dispositivos, mídia e Cast. commercialPatch=null/readyToApply=false. Nenhuma autorização solicitada para alteração indefinida. Antes de conceder direito, apresentar transação exata e obter aprovação expressa. [Roteiro](../central-rights/20261102/ACTIVATION-AND-PHYSICAL-TESTS.md).
 
-Fonte demonstra que checkout Spark abre links estáticos sem conciliação e webhook recorrente não cobre automaticamente pagamentos avulsos sem vínculo. Há diferenças de UID/esquema e política temporal entre branches; não adotar um prazo por suposição. PR #42 identifica ainda rocha-plus-homologacao separado de rocha-plus. [Auditoria complementar concluída](../central-rights/20261102/README.md): CI41551744667 aprovado; dois pagamentos avulsos continuam aprovados sem vínculo/período explícitos ou direito nos stores adicionais. Firestore STANDARD confirmado. Inventário de funções/logs bloqueado por403; endpoints convencionais testados retornam404. Seis testes de segurança aprovados. Não confundir hipótese de entrega de webhook com causa já comprovada.
+Falhas intermediárias do certificado de teste e análise Dart foram corrigidas e preservadas nos relatórios. Sem merge, deploy, publicação, alteração de planos/preços, cobrança ou escrita comercial. Não declarar missão tecnicamente concluída: os testes reais e evidências comerciais ainda faltam.
 
-Fase B preparada em experiments/central-rights: contrato central, conciliação/alerta idempotentes, direitos sem reset de trial, limites de dispositivos/streams e HTTPS em loopback. 28 testes integrados,8 HTTPS e6 contratos locais aprovados com fixtures; sem ativação pública ou direito comercial. Integrações preparadas e desativadas: Android em lab/central-rights-android-20261102 (base PR42 preservada), cliente Roku central e ZIP0.6.7.35 testes Roku relacionados aprovados; BRS continua0.6.6 bloqueado. CI backend anterior falhou somente na fixture de certificado (ASN.1), corrigida; nova CI e CI Android serão conferidas. Não declarar missão concluída. [Pesquisa histórica ampliada](../central-rights/20261102/historical-offer-audit.md) identificou oferta do site mensal/anual12meses e links distintos dos recorrentes; troca/acumulação continua sem regra contratual final comprovada. Auditoria de origem no provedor preparada; nenhuma concessão por suposição.
-
-## Execução nativa atual — 0.6.6 instalada, acesso bloqueado
+## Execução nativa anterior confirmada — 0.6.6 instalada, acesso bloqueado
 
 [Relatório com capturas e logs](../roku/brs-native-066-20261102/README.md) · [Resultados dos 14 casos](../roku/brs-native-066-20261102/results.json) · [Captura 0.6.6](../roku/brs-native-066-20261102/after-066-block.png).
 
@@ -38,7 +43,7 @@ FPS real indisponível (endpoint do simulador é zero fixo). Memória de cinco p
 
 Nenhum código ou ZIP alterado nesta etapa; 578 capas e 607 registros preservados. Não repetir os testes automatizados já verdes. Próximo passo continua runtime HTTPS LAB + aprovação móvel segura, depois executar os casos bloqueados e medições comparáveis; não contornar o bloqueio. Evidências persistidas na mesma branch, sem merge/deploy/publicação.
 
-## Verificação Firebase atual — conta confirmada, direito aplicado ainda não estabelecido
+## Verificação Firebase anterior — evidências preservadas
 
 [Relatório e mapa de projetos](../roku/firebase-verification-20261102/README.md),[evidência atual sanitizada](../roku/firebase-verification-20261102/current-account-evidence.json),[ZIP0.6.6 reconferido](../roku/firebase-verification-20261102/zip-066-reverification.json).
 
@@ -88,7 +93,7 @@ Download remoto confirmado HTTP200 e SHA256 integral conferido. [Verificação r
 - Código e entrega da etapa 0.6.4: [f5cce4b70d40edcb6a342312215a1b2314b79589](https://github.com/japarocha2-cloud/rocha-plus/commit/f5cce4b70d40edcb6a342312215a1b2314b79589) — 419 capas adicionais, categorias horizontais, favoritos grandes, cache otimizado, 40 verificações e ZIP 0.6.4.
 - O commit que contém este relatório é posterior ao commit de código acima. Consulte o histórico deste arquivo para obter seu SHA; os links de artefatos apontam ao commit imutável de código.
 - Nenhum PR desta branch encontrado; nenhum merge ou publicação realizado.
-- CI do commit atual: zero check-runs e zero execuções de Actions, verificados via API. Commits de persistência usam [skip ci]. **40 testes locais aprovados não são CI.** [Download remoto e hashes conferidos](../roku/android-sync-20261102/remote-verification.json). Veja [estado GitHub](../roku/android-sync-20261102/github-status.json) e [Actions do repositório](https://github.com/japarocha2-cloud/rocha-plus/actions).
+- CI do código0.6.4 naquele checkpoint: zero check-runs e zero execuções de Actions, verificados via API. Commits de persistência usam [skip ci]. **40 testes locais aprovados não são CI.** [Download remoto e hashes conferidos](../roku/android-sync-20261102/remote-verification.json). Veja [estado GitHub](../roku/android-sync-20261102/github-status.json) e [Actions do repositório](https://github.com/japarocha2-cloud/rocha-plus/actions).
 - O histórico local anterior (86796a8, db3fd25, d13ea8d) pertence ao trabalho preparatório; os SHAs canônicos para continuidade são os links remotos acima.
 
 ## ZIP anterior — LAB 0.6.4 (histórico)
