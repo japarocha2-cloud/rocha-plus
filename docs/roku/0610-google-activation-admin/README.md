@@ -33,3 +33,20 @@ A cópia de trabalho foi criada em `artifacts/roku-lab/20261103/`. O workflow [R
 5. Depois testar navegação, categorias, capas, favoritos, busca, playback de streams autorizados, imagem/áudio e controle remoto no simulador e Roku físico.
 
 Sem QR, API/endpoints ativos, vínculo real ou reprodução aprovada. Sem merge, deploy, publicação, alteração comercial, Roku oficial, Android, Candidata 6, LAB 714 ou app dos avós.
+
+
+## Teste manual real no BRS Desktop — REV2 (03/11/2026)
+
+O arquivo selecionado pelo proprietário foi conferido antes da instalação e novamente após os testes: RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip, 4.538.938 bytes, SHA-256 d789c6607b0f32bb2629adf9b1082518715c3a624f1e16445972fbf6817ddaa1. O BRS Desktop carregou o ZIP em C:/Users/Administrador/Downloads/; a árvore de acessibilidade confirmou versão 0.6.10 e 0 erros / 0 avisos. Não houve tela branca.
+
+### Evidência e resultados
+
+- Capturas reais salvas pelo BRS Desktop: brs-rev2-home.png, brs-rev2-after-right.png, brs-rev2-reopened.png e brs-rev2-after-back.png, no diretório local docs/roku/0610-google-activation-admin/. Mostram marca Rocha+, fundo/banner galáxia, menu lateral, categorias escurecidas pelo overlay e a mensagem “Acesso LAB aguardando configuração e confirmação da conta. Assinatura comercial não consultada.” A tela também mostra “Conecte sua conta Rocha+” e “OK: tentar novamente • Voltar: sair”.
+- Foram enviados ao BRS comandos Right, Left, Up, Down, Return (OK) e Backspace (Voltar). Não houve mudança visível; a tela permaneceu no overlay. A navegação pelo controle fica NÃO VALIDADA; os comandos de teclado não comprovam resposta de um controle Roku físico.
+- Fechamento do app no BRS (Ctrl+W) e reabertura do mesmo ZIP (Ctrl+O com o caminho verificado) concluídos. Após reabrir, versão 0.6.10, caminho REV2 e contadores 0/0 confirmados. Nenhuma limpeza de dados foi feita.
+- Achado visual: rodapé de versão aparece truncado (“Roku LAB 0.6…”), embora a versão completa conste na barra de status do BRS.
+- O teste real cobriu carregamento, ausência de tela branca, branding/aviso, estado do pacote e reabertura. Login Google, reconhecimento ADM, persistência de sessão, catálogo navegável, favoritos, busca, áudio, vídeo e reprodução continuam NÃO EXECUTADOS, pois o acesso LAB está desativado. Sem medição de FPS/RAM.
+
+O artefato GitHub Actions confirmado é o run 41729054117 (https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41729054117), artefato 13275907155 (https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41729054117/artifacts/13275907155), commit de pacote 2fef125307d9c2e35e9c2d82d1860dbdafb5f3e0. O download e o hash do ZIP local coincidiram. As capturas foram gravadas no workspace local e ainda não têm URL permanente no GitHub. Nenhuma correção de código foi necessária nesta etapa; nenhum ZIP novo foi gerado.
+
+**Status: AMARELO.** A inicialização/visual do aviso e reabertura foram observados; navegação sem resposta visível, autenticação, playback e hardware permanecem pendentes. Integrações comerciais continuam desativadas; nenhum direito ADM concedido.
