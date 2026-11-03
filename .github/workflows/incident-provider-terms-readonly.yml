@@ -1,0 +1,31 @@
+name: Incident provider terms and deployment (read-only)
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths: [.github/workflows/incident-provider-terms-readonly.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/incident/payment-recognition-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: bedca439a4fb842bd77aa84f06335cb05887a1a5
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: backend/entitlement
+      - name: Read provider terms and deployment evidence
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+          EXPECTED_RECEIVING_MERCHANT_ID: '320683687'
+          INCIDENT_TARGET_EMAIL: ${{ secrets.INCIDENT_TARGET_EMAIL }}
+          INCIDENT_PAYMENT_IDS_JSON: ${{ secrets.INCIDENT_PAYMENT_IDS_JSON }}
+        run: node backend/entitlement/diagnostics/incident_provider_terms_readonly.mjs
