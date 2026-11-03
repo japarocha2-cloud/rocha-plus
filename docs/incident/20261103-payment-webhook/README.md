@@ -18,7 +18,7 @@ Data: 03/11/2026. Branch: `incident/payment-recognition-20261103`. Base revisada
 
 ## Testes e plataformas
 
-A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. A execução CI 41737482057 falhou porque 7 testes do endpoint tinham mock incompleto após os imports; os cenários do webhook passaram. A segunda execução 41737668996 detectou erro de sintaxe no mock por newline escapada. O mock foi corrigido, mas o filtro de paths do workflow ficou com quebra escapada e o GitHub não iniciou nova execução. O filtro foi corrigido neste commit; verificar a próxima execução. Fixtures não são homologação de integração.
+A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. As execuções iniciais falharam em ajustes do mock e do filtro do workflow; ambos foram corrigidos e os motivos registrados nos commits intermediários. [CI 41738187870](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41738187870), SHA `a2856a82abf905b868fb3248187f717ba206bfed`: sucesso, sintaxe válida, 45 testes aprovados e 0 falhas (10 testes novos do webhook incluídos). São fixtures sem secrets e não validam Mercado Pago/Firebase reais. Fixtures não são homologação de integração.
 
 - Android celular: **NÃO COMPROVADO**; build default não habilita runtime central e nenhuma sessão real foi consultada.
 - Android TV: **NÃO COMPROVADO**; compartilha Flutter/código de direitos com celular, mas não foi exercitada sessão real.
