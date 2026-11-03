@@ -166,8 +166,7 @@ test('payment mismatch is parked for review instead of provider retry loop', asy
 
 test('simultaneous notices for one payment are serialized and retry becomes idempotent', async () => {
   const rows = new Map(), locks = new Map(), calls = [];
-  let release, entered;
-  const started = new Promise(resolve => { entered = resolve; });
+  let release;
   const inbox = {
     async begin({notificationId, paymentId, action}) {
       const prior = rows.get(notificationId);
@@ -182,10 +181,11 @@ test('simultaneous notices for one payment are serialized and retry becomes idem
     },
   };
   const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async({paymentId})=>{
-    calls.push(paymentId); entered(); await new Promise(resolve=>{release=resolve;});
+    calls.push(paymentId); await new Promise(resolve=>{release=resolve;});
   }});
-  const first=request();
-  const p1res=response(); const p1=handler(first,p1res); await started;
+  const p1res=response(); const p1=handler(request(),p1res);
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,1);
   const second=request({body:{id:'99887767',type:'payment',action:'payment.updated',data:{id:paymentId}}});
   const p2res=response(); await handler(second,p2res);
   assert.equal(p2res.statusCode,503); assert.equal(calls.length,1);
