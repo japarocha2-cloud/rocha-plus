@@ -1,11 +1,13 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 03/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Estado atual: ZIPLAB0.6.8 gerado para sideload manual, não instalado; última execuçãoBRS0.6.7. Integrações central/LAB/comercial DESATIVADAS e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
+Estado atual: ZIPLAB0.6.9 gerado e instalado/executado noBRSDesktop; não instalado emTVfísica. Integrações central/LAB/comercial DESATIVADAS e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
 
 ## Verificação ADM e emulador0.6.9 — execução confirmada, login bloqueado
 
 [Relatório](../roku/admin-manual-20261103/README.md). NovoZIP0.6.9 gerado e instalado noBRS, comacessodesativado; controle/Back/reabertura executados, registro preservado. Loginreal eADM bloqueados antes deautenticar; [CI41723718265](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41723718265) confirmou conta solicitada existente/habilitada/emailverificado/Googlevinculado, claimrochaAdminfalse. Loginreal eADM NÃOEXECUTADOS, sempainelADMnoRoku. Nenhumprivilégioconcedido. ZIP0.6.9 validado e executadoBRS; relatório/capturas/logs anexos.0.6.8/0.6.7preservados.
+
+[Download0.6.9](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/7784870b90f6ed15417715c9846b875add9cbe24/artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.9-VERIFICACAO-ADM-ACESSO-DESATIVADO.zip) · código/artefato7784870b90f6ed15417715c9846b875add9cbe24;4.538.311bytes; SHA2568722ac2a2563235dcd4876cd690347ef18e64f12c7134196b8a9db500ae21795. Loginreal/ADM nãoexecutados; contaAuthconsultada semgrant, claimfalse; sempainelADMnoRoku.
 
 ## Pacote físico0.6.8 — entrega03/11
 

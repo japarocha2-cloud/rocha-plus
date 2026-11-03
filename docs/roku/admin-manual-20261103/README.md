@@ -43,3 +43,8 @@ Checklistfísico:instalação/versão0.6.9,abertura/legibilidade/logo/galáxia/b
 ## Preservação e continuidade
 
 NenhumFirebase/pagamento/assinatura/IAMalterado. AndroidOficial/C6/LAB714/avós/RokuOficial/siteintactos,semmerge/deploy/ChannelStore. ApenasbranchLAB,artefatoetesteautorizado. Todosresultadosverificáveis nacaptura/ECP/CI, semfingirtestecompleto porautomação. Paraoutrochat:lerAGENTS,mestre eeste relatório, conferirheadremoto eartefatos; não repetir403/readinessanteriores semcausanova. ContarealnãoécontaADMcomprovada.
+
+
+## Artefato e links permanentes
+
+[Baixar ZIP0.6.9](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/7784870b90f6ed15417715c9846b875add9cbe24/artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.9-VERIFICACAO-ADM-ACESSO-DESATIVADO.zip) · [Código/artefato7784870](https://github.com/japarocha2-cloud/rocha-plus/commit/7784870b90f6ed15417715c9846b875add9cbe24) · [Captura real](069-access.png) · [Reabertura](069-reopened.png) · [ContaAuth](account-verification.json) · [Resultadosmanuais](manual-results.json) · [ValidaçãoZIP](package-tests.json) · [Verificaçãoremota](remote-verification.json). DownloadHTTP200/hashintegral conferidos; nãoTVfísica.

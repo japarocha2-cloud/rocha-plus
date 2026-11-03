@@ -1,0 +1,34 @@
+{
+  "packageCommit": "7784870b90f6ed15417715c9846b875add9cbe24",
+  "download": "https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/7784870b90f6ed15417715c9846b875add9cbe24/artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.9-VERIFICACAO-ADM-ACESSO-DESATIVADO.zip",
+  "httpStatus": 200,
+  "bytes": 4538311,
+  "sha256": "8722ac2a2563235dcd4876cd690347ef18e64f12c7134196b8a9db500ae21795",
+  "files": 574,
+  "accountCI": {
+    "run": 41723718265,
+    "conclusion": "success"
+  },
+  "checked": [
+    {
+      "path": "docs/roku/admin-manual-20261103/README.md",
+      "status": 200,
+      "bytes": 7022
+    },
+    {
+      "path": "docs/roku/admin-manual-20261103/account-verification.json",
+      "status": 200,
+      "bytes": 442
+    },
+    {
+      "path": "docs/roku/admin-manual-20261103/069-access.png",
+      "status": 200,
+      "bytes": 927681
+    },
+    {
+      "path": "docs/roku/admin-manual-20261103/069-reopened.png",
+      "status": 200,
+      "bytes": 927681
+    }
+  ]
+}
