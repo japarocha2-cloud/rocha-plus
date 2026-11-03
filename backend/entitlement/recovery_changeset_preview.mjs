@@ -24,7 +24,7 @@ function masked(value,key='') {
   return value;
 }
 export async function previewRecoveryChangeset({db,auth,plan,privateBaselineSink}) {
-  if (plan?.dryRun!==true || plan.entries?.length!==2 || !plan.uid || !plan.googleSubject) throw Error('two-payment-dry-run-required');
+  if (plan?.dryRun!==true || !Array.isArray(plan.entries) || plan.entries.length<1 || plan.entries.length>5 || !plan.uid || !plan.googleSubject) throw Error('bounded-payment-dry-run-required');
   const snapshots=new Map(),operations=[];
   async function read(path) {
     if (!snapshots.has(path)) snapshots.set(path,await db.doc(path).get());
@@ -59,7 +59,7 @@ export async function previewRecoveryChangeset({db,auth,plan,privateBaselineSink
   if (privateBaselineSink) await privateBaselineSink({schemaVersion:1,financialPlanDigest:plan.digest,
     consistentSnapshot:false,documents:privateBeforeImages,
     note:'Refresh and check versions in the eventual authorized transaction; this baseline alone does not authorize rollback.'});
-  return {readOnly:true,simulationOnly:true,writes:0,expectedDocumentCount:5,
+  return {readOnly:true,simulationOnly:true,writes:0,expectedDocumentCount:plan.entries.filter(p=>!p.alreadyProcessed).length+3,
     proposedDocumentCount:documents.length,documents,
     auditExistsBefore:documents.find(d=>d.path.startsWith('rochaDirectPaymentAudit/'))?.beforeExists??null,
     financialPlanDigest:plan.digest,changesetTemplateDigest:digest(operations),

@@ -1,3 +1,5 @@
+> SUPERADO NA PROPOSTA DE ACESSO: manter somente mensal. Anual devolvido porPix conforme relato do proprietário, sem conciliação de comprovante e sem estornoMP. Não usar a proposta anual abaixo. Veja [decisão vigente](../20261103-monthly-only/README.md).
+
 # P0 — continuidade e proposta controlada (03/11/2026)
 
 Status final da cliente: **VERMELHO** — acesso não restaurado, backend/sessão instalada não comprovados e prévia atual não aplicável. Código de recuperação isolado/testado existe; nenhuma produção modificada. Base desta etapa d3b6278bd2b9d4d4b252d42bc11d98001ea2fa18, branch incident/payment-recognition-20261103. Nenhum AGENTS.md presente na árvore dessa revisão; relatórios de plantão do incidente foram lidos integralmente. Não reutilizar instruções do projetoRoku para alterar este escopo.
