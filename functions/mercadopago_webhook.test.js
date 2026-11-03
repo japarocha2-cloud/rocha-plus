@@ -34,18 +34,25 @@ function request(overrides = {}) {
 function fixture() {
   const rows = new Map();
   const calls = [];
+  const locks = new Map();
+  let sequence = 0;
   const inbox = {
     async begin({notificationId, paymentId: id, action}) {
       const prior = rows.get(notificationId);
       if (prior && prior.paymentId !== id) throw new Error('notification-conflict');
-      if (prior) return prior;
-      const row = {paymentId: id, action, status: 'received'};
+      if (prior?.status === 'processed') return prior;
+      if (locks.has(id)) return {status: 'busy'};
+      const token = 'lock-' + (++sequence);
+      locks.set(id, token);
+      const row = {paymentId: id, action, status: 'processing', token};
       rows.set(notificationId, row);
       return row;
     },
-    async finish({notificationId, status, reason}) {
+    async finish({notificationId, paymentId: id, status, reason, token}) {
+      if (locks.get(id) !== token) throw new Error('webhook-lease-lost');
       const row = rows.get(notificationId);
       rows.set(notificationId, {...row, status, reason});
+      locks.delete(id);
     },
   };
   const handler = createMercadoPagoWebhookHandler({
@@ -101,7 +108,7 @@ test('missing reviewed association is durably parked without granting access', a
   const rows = new Map();
   const inbox = {
     async begin({notificationId, paymentId}) {
-      const row = {paymentId, status: 'received'};
+      const row = {paymentId, status: 'processing', token: 'review-token'};
       rows.set(notificationId, row);
       return row;
     },
@@ -122,7 +129,7 @@ test('provider/storage failure returns 503 and remains retryable', async () => {
   const f = fixture();
   f.handler = createMercadoPagoWebhookHandler({secret, inbox: {
     begin: async ({notificationId, paymentId}) => {
-      f.rows.set(notificationId, {paymentId, status:'received'}); return f.rows.get(notificationId);
+      f.rows.set(notificationId, {paymentId, status:'processing', token:'retry-token'}); return f.rows.get(notificationId);
     },
     finish: async ({notificationId,status,reason}) => f.rows.set(notificationId, {status,reason}),
   }, reconcilePayment: async () => { throw new Error('provider timeout'); }});
@@ -154,4 +161,46 @@ test('payment mismatch is parked for review instead of provider retry loop', asy
   const res=response(); await handler(request(),res);
   assert.equal(res.statusCode,200); assert.equal(res.body.reviewRequired,true);
   assert.equal(rows.get('99887766').status,'review_required');
+});
+
+
+test('simultaneous notices for one payment are serialized and retry becomes idempotent', async () => {
+  const rows = new Map(), locks = new Map(), calls = [];
+  let release, entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  const inbox = {
+    async begin({notificationId, paymentId, action}) {
+      const prior = rows.get(notificationId);
+      if (prior?.status === 'processed') return prior;
+      if (locks.has(paymentId)) return {status: 'busy'};
+      const token = notificationId + '-lock'; locks.set(paymentId, token);
+      const row = {paymentId, action, status: 'processing', token}; rows.set(notificationId, row); return row;
+    },
+    async finish({notificationId, paymentId, status, reason, token}) {
+      if (locks.get(paymentId) !== token) throw new Error('webhook-lease-lost');
+      rows.set(notificationId,{...rows.get(notificationId),status,reason}); locks.delete(paymentId);
+    },
+  };
+  const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async({paymentId})=>{
+    calls.push(paymentId); entered(); await new Promise(resolve=>{release=resolve;});
+  }});
+  const first=request();
+  const p1res=response(); const p1=handler(first,p1res); await started;
+  const second=request({body:{id:'99887767',type:'payment',action:'payment.updated',data:{id:paymentId}}});
+  const p2res=response(); await handler(second,p2res);
+  assert.equal(p2res.statusCode,503); assert.equal(calls.length,1);
+  release(); await p1; assert.equal(p1res.statusCode,200);
+  const retryRes=response(); await handler(second,retryRes);
+  assert.equal(retryRes.statusCode,200); assert.equal(calls.length,2);
+});
+
+test('retryable provider failure releases its lease for a later delivery', async () => {
+  const rows=new Map(),locks=new Map(); let attempts=0;
+  const inbox={
+    async begin({notificationId,paymentId}) { if(rows.get(notificationId)?.status==='processed') return rows.get(notificationId); if(locks.has(paymentId)) return {status:'busy'}; const token='t-'+(++attempts); locks.set(paymentId,token); const row={paymentId,status:'processing',token}; rows.set(notificationId,row); return row; },
+    async finish({notificationId,paymentId,status,reason,token}) { if(locks.get(paymentId)!==token) throw Error('webhook-lease-lost'); rows.set(notificationId,{...rows.get(notificationId),status,reason}); locks.delete(paymentId); },
+  };
+  const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async()=>{if(attempts===1)throw Error('provider timeout');}});
+  const first=response(); await handler(request(),first); assert.equal(first.statusCode,503); assert.equal(rows.get('99887766').status,'retryable_failure');
+  const second=response(); await handler(request(),second); assert.equal(second.statusCode,200); assert.equal(rows.get('99887766').status,'processed');
 });

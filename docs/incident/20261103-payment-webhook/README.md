@@ -14,17 +14,57 @@ O repositório também contém a recuperação Spark em `backend/entitlement/reg
 
 Antes de homologar este webhook ou desenhar a projeção Spark, é obrigatório confirmar versão instalada, token/sessão da própria instalação via procedimento privado autorizado e endpoint/projeto efetivamente consultado. Não gravar nas duas coleções para “desbloquear”; escolher uma fonte de verdade após prova. Também não está demonstrado que o mensal do caso afetado tenha claim revisado em `payment_claims`.
 
+## Rastreio por plataforma e backend efetivamente selecionado pelo código
+
+| Plataforma | Roteamento no código | O que falta para identificar a build ativa |
+|---|---|---|
+| Android celular | `lib/src/auth/subscription_access.dart`: com `ROCHA_CENTRAL_RIGHTS=true`, chama `CentralRightsRuntime`; caso contrário faz GET HTTPS em `ROCHA_ENTITLEMENT_URL` com Firebase ID token e UID atual. `central_rights_runtime.dart` usa `ROCHA_CENTRAL_RIGHTS_URL` e Firebase ID token. Padrão do runtime central é false. | Os valores `--dart-define`, hash/versionCode do APK instalado e resposta da sessão não estão disponíveis. Portanto o backend usado pelo APK da cliente não está provado. |
+| Android TV | Mesmo Flutter e mesma classe `SubscriptionAccess`; sem flag central usa o mesmo endpoint por build e UID Firebase; com flag, role tv e endpoint central. | Não há build/runtime Android TV identificado nesta sessão. O código compartilhado não prova que as configurações de celular/TV sejam iguais. |
+| Roku TV | Na branch LAB 0.6.10, `config/auth.json`, `config/lab-access.json` e `config/central-access.json` estão desativados e com endpoint vazio. Logo essa REV2 não consulta nenhum desses backends para liberar direitos. | Login/integração central da Roku não foi ativado. Sessão no BRS confirmou pacote/versão, não leitura de entitlement. |
+
+A endpoint de entitlement em `functions/index.js` verifica Firebase ID token e usa `entitlements/{Firebase UID}`; a consulta inicializa trial se o documento não existir. A recuperação Spark em `backend/entitlement/regular_payment_recovery.mjs` lê/projeta `rochaSparkAccounts/{Google subject}`, não a coleção anterior. São caminhos distintos, e nenhuma configuração presente permite afirmar qual é o sistema operacional usado pela cliente. Nenhuma gravação deve ser feita até identificar o build, projeto, endpoint e identidade da sessão.
+
+Fontes: [SubscriptionAccess Android](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/lib/src/auth/subscription_access.dart), [runtime central Android](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/lib/src/auth/central_rights_runtime.dart), [recovery Spark](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/backend/entitlement/regular_payment_recovery.mjs), [config de acesso Roku LAB 0.6.10](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/platforms/roku-lab-visual/config/central-access.json), [conta Roku](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/platforms/roku-lab-visual/config/auth.json).
+
+## Acesso privado e procedimento operacional
+
+Não há nesta sessão conexão privada autorizada com Mercado Pago, Firebase Auth/Firestore nem logs de Functions. Não foi feita consulta real. A [instrução do executor privado](https://github.com/japarocha2-cloud/rocha-plus/blob/incident/payment-recognition-20261103/docs/incident/20261103-operational-executor/README.md) registra que bindings existentes necessários são `FIREBASE_SERVICE_ACCOUNT_JSON`, `MP_RECEIVING_ACCESS_TOKEN`, `INCIDENT_TARGET_EMAIL`, `INCIDENT_PAYMENT_IDS_JSON` e `EXPECTED_RECEIVING_MERCHANT_ID`; devem ser injetados pelo cofre em host já autorizado, sem compartilhar os valores, exportar secrets do GitHub Actions ou criar chaves/IAM.
+
+No host privado autorizado, com Node 22, checkout completo e bindings montados pelo cofre, executar somente a leitura já preparada:
+
+```sh
+cd /CAMINHO_PRIVADO/rocha-plus
+git fetch origin incident/payment-recognition-20261103
+git checkout --detach 6f1720c11df0d6cf19b89ffc7ec72b87edf58590
+(cd backend/entitlement && npm ci --ignore-scripts --no-audit --no-fund)
+umask 077
+export ROCHA_PRIVATE_REPORT_DIR="$(mktemp -d /tmp/rocha-monthly-readiness.XXXXXX)"
+node backend/entitlement/diagnostics/incident_session_readiness.mjs
+```
+
+O script gera relatórios privados de readiness/before-images; não aplica mudanças. Deve ser executado pelo operador com acesso já autorizado. As variáveis não devem ser impressas, enviadas ao chat, nem anexadas a artifacts. Logs de Functions precisam ser consultados separadamente por observabilidade com permissão já existente; não repetir consultas 403.
+
+## Vinculação e recuperação sem concessão por e-mail
+
+O reconciliador aceita apenas `payment_claims/{paymentId}` com UID/plano e revisão independente. A prova adequada deve combinar GET canônico do recibo, conta recebedora/merchant, estado aprovado/accredited, moeda/valor/reembolso e referência de compra confiável quando existente com autenticação da conta Rocha+ pelo UID/subject da própria sessão. E-mail coincidente, captura isolada ou payload webhook não bastam. Para pagamento histórico sem vínculo confiável, operador autorizado revisa evidência original e registra claim em processo privado auditado; se a associação não puder ser provada, permanece em revisão sem direito.
+
+## Revisão de idempotência e pendências do webhook
+
+A implementação nesta branch usa HMAC e a consulta canônica já existente. A repetição sequencial é deduplicada. A revisão corrente acrescenta lock/lease por payment ID para serializar notificações simultâneas; falhas transitórias liberam/reprocessam via 503, e leases abandonados podem ser retomados após expiração. Renovação usa um payment ID por ciclo; reconciliador recalcula o ledger em vez de somar períodos. Reembolso/estorno do provedor atualiza o evento e recálculo pode remover o período correspondente. Fixtures existentes de reconciliador cobrem replay/refund; novos fixtures cobrem corrida/retry do webhook. Revisão de projeto e comportamento real em Firestore emulator/sandbox ainda pendente.
+
+Notificações sem claim recebem 200 com `review_required`, para evitar retries inúteis do provedor; não há worker automático implementado. Depois de revisão do vínculo, reprocessar por executor privado autorizado ou implementar job de reconciliação controlado. Não marcar esse fluxo como plenamente automático até haver retomada durável monitorada.
+
 ## Correção isolada preparada
 
 - Novo `functions/mercadopago_webhook.js`: verifica HMAC SHA-256 (`x-signature` + `x-request-id` + `data.id`), exige evento payment, valida consistência query/body e trata o callback apenas como sinal; o pagamento é buscado de novo na API canônica.
-- Registro idempotente em `mercadoPagoWebhookInbox`, com estados processado, revisão necessária e falha transitória. Resposta não contém e-mail, UID, valor ou segredo.
+- Inbox idempotente em `mercadoPagoWebhookInbox`, com lock/lease por ID de pagamento em `mercadoPagoWebhookLocks`: serializa avisos simultâneos para o mesmo pagamento, rejeita temporariamente concorrentes para permitir retry e permite recuperar lease expirado. Estados: processado, revisão necessária e falha transitória. Resposta não contém e-mail, UID, valor ou segredo.
 - Somente chama o reconciliador privilegiado já existente, que exige claim previamente revisado, merchant/valor/moeda compatíveis e reavalia o ledger. Ausência de claim e divergências determinísticas vão para revisão; não concedem acesso. Payload do callback não controla status/valor.
 - Export experimental `mercadoPagoWebhook` em Functions, com secrets nomeados `MP_RECEIVING_ACCESS_TOKEN` e `MP_WEBHOOK_SECRET`. Nenhum secret foi criado/configurado e nenhum endpoint implantado.
 - Workflow `.github/workflows/incident-payment-webhook-fixtures.yml`: testes com fixtures somente, sem credenciais e sem etapa de deploy.
 
 ## Testes e plataformas
 
-A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. As execuções iniciais falharam em ajustes do mock e do filtro do workflow; ambos foram corrigidos e os motivos registrados nos commits intermediários. [CI 41738187870](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41738187870), SHA `a2856a82abf905b868fb3248187f717ba206bfed`: sucesso, sintaxe válida, 45 testes aprovados e 0 falhas (10 testes novos do webhook incluídos). São fixtures sem secrets e não validam Mercado Pago/Firebase reais. Fixtures não são homologação de integração.
+A suíte nova contém 12 cenários, incluindo assinatura válida/inválida, IDs inconsistentes, ignorar status do cliente, repetição, associação ausente, divergência, retry, métodos/eventos inválidos e serialização concorrente. O CI anterior 45/45 foi concluído antes da revisão de lease; aguardar CI da revisão antes de validá-la. As execuções iniciais falharam em ajustes do mock e do filtro do workflow; ambos foram corrigidos e os motivos registrados nos commits intermediários.  A nova execução para os 12 cenários de webhook/serialização será registrada após o commit. Execuções anteriores (CI 41738187870 e 41738449387) passaram com 45 testes e 0 falhas antes desta ampliação. São fixtures sem secrets e não validam Mercado Pago/Firebase reais. Fixtures não são homologação de integração.
 
 - Android celular: **NÃO COMPROVADO**; build default não habilita runtime central e nenhuma sessão real foi consultada.
 - Android TV: **NÃO COMPROVADO**; compartilha Flutter/código de direitos com celular, mas não foi exercitada sessão real.
@@ -33,9 +73,13 @@ A suíte nova contém 10 cenários: assinatura válida/inválida, integridade do
 
 Não declarar correção aprovada para as três plataformas. A convergência requer validar o backend e projeto usados por cada app, instalar/configurar a rota em homologação isolada, associar uma conta de teste por fluxo aprovado e confirmar a mesma leitura de entitlement em cada cliente. Nada disso aconteceu aqui.
 
+## Revisão de idempotência e pendências do webhook
+
+Com o código anterior, repetição sequencial era ignorada, mas concorrentes poderiam reconciliar simultaneamente. A revisão no commit seguinte usa lease por payment ID e fixtures de concorrência/retry. Eventos `review_required` são reconhecidos com 200 e ainda não têm worker automático; após claim revisado, executor privado precisa reprocessá-los. Renovação/refund são cobertos parcialmente pelos fixtures do reconciliador, porém sequência real MP/Firebase e Firestore emulator/sandbox permanecem pendentes.
+
 ## Próximo procedimento
 
-1. Verificar workflow/commit verdes, sem usar secrets do Actions para consultas privadas.
+1. Verificar o novo CI e manter o workflow fixture-only; não usar secrets do Actions para consultas privadas.
 2. Em projeto Firebase **de homologação confirmado**, configurar os secrets existentes por cofre aprovado, registrar URL de notificação no painel de integração Mercado Pago e validar assinatura/eventos via sandbox.
 3. Criar claim de pagamento somente depois de revisão independente de proprietário/UID/plano/merchant/valor, sem mapear por e-mail isoladamente.
 4. Executar casos sandbox de aprovado, duplicado, renovação, reembolso/chargeback, divergência e concorrência; verificar ledger + entitlement com transações idempotentes.

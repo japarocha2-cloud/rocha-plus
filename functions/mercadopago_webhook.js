@@ -1,6 +1,6 @@
 'use strict';
 
-const {createHmac, timingSafeEqual} = require('node:crypto');
+const {createHmac, timingSafeEqual, randomUUID} = require('node:crypto');
 
 const PAYMENT_ID = /^[0-9]{1,30}$/;
 const NOTIFICATION_ID = /^[0-9]{1,30}$/;
@@ -98,16 +98,19 @@ function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox}) {
     if (receipt?.status === 'processed') {
       return reply(res, 200, {received: true, duplicate: true});
     }
+    if (receipt?.status === 'busy') {
+      return reply(res, 503, {received: false, retry: true});
+    }
 
     try {
       await reconcilePayment({paymentId: dataId});
-      await inbox.finish({notificationId, status: 'processed', reason: null});
+      await inbox.finish({notificationId, paymentId: dataId, status: 'processed', reason: null, token: receipt?.token});
       return reply(res, 200, {received: true, processed: true});
     } catch (error) {
       if (associationPending(error)) {
         try {
-          await inbox.finish({notificationId, status: 'review_required',
-            reason: 'payment_account_association_required'});
+          await inbox.finish({notificationId, paymentId: dataId, status: 'review_required',
+            reason: 'payment_account_association_required', token: receipt?.token});
         } catch (_) {
           return reply(res, 503, {received: false});
         }
@@ -115,12 +118,55 @@ function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox}) {
         return reply(res, 200, {received: true, reviewRequired: true});
       }
       try {
-        await inbox.finish({notificationId, status: 'retryable_failure',
-          reason: 'provider_or_storage_failure'});
+        await inbox.finish({notificationId, paymentId: dataId, status: 'retryable_failure',
+          reason: 'provider_or_storage_failure', token: receipt?.token});
       } catch (_) { /* provider retry remains the recovery mechanism */ }
       return reply(res, 503, {received: false});
     }
   };
 }
 
-module.exports = {createMercadoPagoWebhookHandler, verifyWebhookSignature};
+
+
+/** Firestore inbox with a per-payment lease to serialize simultaneous notices.
+ * Expired leases can be recovered after a function crash; all data stays server-side.
+ */
+function createFirestoreWebhookInbox({db, admin, leaseMs = 120000}) {
+  const collection = db.collection('mercadoPagoWebhookInbox');
+  const locks = db.collection('mercadoPagoWebhookLocks');
+  return {
+    begin: ({notificationId, paymentId, action}) => db.runTransaction(async tx => {
+      const eventRef = collection.doc(notificationId);
+      const lockRef = locks.doc(paymentId);
+      const [eventSnap, lockSnap] = await Promise.all([tx.get(eventRef), tx.get(lockRef)]);
+      if (eventSnap.exists && eventSnap.data().paymentId !== paymentId) {
+        throw new Error('notification-conflict');
+      }
+      const event = eventSnap.exists ? eventSnap.data() : null;
+      if (event?.status === 'processed') return event;
+      const now = admin.firestore.Timestamp.now();
+      if (lockSnap.exists && lockSnap.data().leaseUntil?.toMillis?.() > now.toMillis()) {
+        return {status: 'busy'};
+      }
+      const token = randomUUID();
+      const leaseUntil = admin.firestore.Timestamp.fromMillis(now.toMillis() + leaseMs);
+      tx.set(eventRef, {provider: 'mercadopago', paymentId, action, status: 'processing',
+        token, startedAt: now, leaseUntil}, {merge: true});
+      tx.set(lockRef, {paymentId, notificationId, token, leaseUntil});
+      return {status: 'processing', token};
+    }),
+    finish: ({notificationId, paymentId, status, reason, token}) => db.runTransaction(async tx => {
+      const eventRef = collection.doc(notificationId);
+      const lockRef = locks.doc(paymentId);
+      const [eventSnap, lockSnap] = await Promise.all([tx.get(eventRef), tx.get(lockRef)]);
+      if (!eventSnap.exists || !lockSnap.exists || lockSnap.data().token !== token ||
+          lockSnap.data().notificationId !== notificationId) throw new Error('webhook-lease-lost');
+      const now = admin.firestore.Timestamp.now();
+      tx.set(eventRef, {status, reason: reason || null, updatedAt: now,
+        token: admin.firestore.FieldValue.delete(), leaseUntil: admin.firestore.FieldValue.delete()}, {merge: true});
+      tx.delete(lockRef);
+    }),
+  };
+}
+
+module.exports = {createMercadoPagoWebhookHandler, createFirestoreWebhookInbox, verifyWebhookSignature};

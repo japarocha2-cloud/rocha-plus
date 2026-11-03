@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 const {defineSecret} = require('firebase-functions/params');
-const {createMercadoPagoWebhookHandler} = require('./mercadopago_webhook');
+const {createMercadoPagoWebhookHandler, createFirestoreWebhookInbox} = require('./mercadopago_webhook');
 const {reconcileAndGrant} = require('./reconcile_and_grant');
 const mpReceivingToken = defineSecret('MP_RECEIVING_ACCESS_TOKEN');
 const mpWebhookSecret = defineSecret('MP_WEBHOOK_SECRET');
@@ -59,23 +59,7 @@ exports.mercadoPagoWebhook = onRequest({
   region: 'southamerica-east1', cors: false, maxInstances: 10, invoker: 'public',
   secrets: [mpReceivingToken, mpWebhookSecret],
 }, async (req, res) => {
-  const inbox = {
-    begin: ({notificationId, paymentId, action}) => db.runTransaction(async tx => {
-      const ref = db.collection('mercadoPagoWebhookInbox').doc(notificationId);
-      const snap = await tx.get(ref);
-      if (snap.exists) {
-        if (snap.data().paymentId !== paymentId) throw new Error('notification-conflict');
-        return snap.data();
-      }
-      const row = {provider: 'mercadopago', paymentId, action, status: 'received',
-        createdAt: admin.firestore.Timestamp.now()};
-      tx.create(ref, row);
-      return row;
-    }),
-    finish: ({notificationId, status, reason}) => db
-      .collection('mercadoPagoWebhookInbox').doc(notificationId)
-      .set({status, reason, updatedAt: admin.firestore.Timestamp.now()}, {merge: true}),
-  };
+  const inbox = createFirestoreWebhookInbox({db, admin});
   const handler = createMercadoPagoWebhookHandler({
     secret: () => mpWebhookSecret.value(), inbox,
     reconcilePayment: ({paymentId}) => reconcileAndGrant({
