@@ -18,7 +18,7 @@ Data: 03/11/2026. Branch: `incident/payment-recognition-20261103`. Base revisada
 
 ## Testes e plataformas
 
-A suíte nova contém 9 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. Aguardando execução do CI na branch; não tratar estes fixtures como homologação de integração.
+A suíte nova contém 10 cenários: assinatura válida/inválida, integridade dos IDs, ignorar status vindo do cliente, duplicidade, associação ausente, divergência para revisão, falha transitória e método/evento inválidos. A primeira execução CI (run 41737482057) falhou: 7 testes existentes do endpoint de direitos tinham um mock de dependências incompleto após os novos imports no index; os novos cenários do webhook passaram. O mock foi ajustado para manter a suíte hermética. Nova execução CI pendente; não tratar fixtures como homologação de integração.
 
 - Android celular: **NÃO COMPROVADO**; build default não habilita runtime central e nenhuma sessão real foi consultada.
 - Android TV: **NÃO COMPROVADO**; compartilha Flutter/código de direitos com celular, mas não foi exercitada sessão real.

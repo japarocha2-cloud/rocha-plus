@@ -46,7 +46,7 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
     exports: exported,
     require: name => {
       if (name === 'firebase-admin') return admin;
-      if (name === 'firebase-functions/v2/https') {
+      if (name === 'firebase-functions/params') {\n        return {defineSecret: secretName => ({value: () => 'fixture-' + secretName})};\n      }\n      if (name === './mercadopago_webhook') {\n        return {createMercadoPagoWebhookHandler: () => async () => {}};\n      }\n      if (name === './reconcile_and_grant') {\n        return {reconcileAndGrant: async () => ({})};\n      }\n      if (name === 'firebase-functions/v2/https') {
         return {onRequest: (options, handler) => handler};
       }
       throw new Error('Unexpected dependency');

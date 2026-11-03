@@ -4,7 +4,7 @@ on:
     branches: [incident/payment-recognition-20261103]
     paths:
       - functions/index.js
-      - functions/mercadopago_webhook.js
+      - functions/entitlement_endpoint.test.js\n      - functions/mercadopago_webhook.js
       - functions/mercadopago_webhook.test.js
       - functions/reconcile_and_grant.js
       - functions/mercadopago_reconciliation.js
