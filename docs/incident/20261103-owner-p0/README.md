@@ -57,7 +57,7 @@ Candidatos exatos de período provêm do contrato consultado e simulação hist�
 
 -8novos testescomparação deAPK passaram: ausência de versão, sóversão, universal/ARM64exatos, versionCodeincompatível, split/AAB não confundircomAPK, metadadosinválidos e não ecoaridentificadores/tokens.
 -26fixturesfinanceiras dirigidas passaramlocalmente (targeted-financial-tests.json), cobrindo duplicidade, períodos independentes, renovação comciclo incorreto recusada, estorno/chargeback/refundparcial, pagador/recebedor errados, termos ausentes, concorrência, autorizaçãoausente, manualrevocation e rollback.
--Runnerlocalnode:test padrão falhou por spawnEPERM; isolationnone expirou. Para executar callbacks, localmente adaptou-se somente registro doframework; uma fixtureJSON passou a clonar no mesmo contexto para evitar comparação deprotótipos doNodeREPL. Asserções/lógica deaplicação preservadas; cópiasadaptadas não serão commitadas. Testes canônicos sem adaptação serão executados emCI semSecrets e resultados anexados.
+-Runnerlocalnode:test padrão falhou por spawnEPERM; isolationnone expirou. Para executar callbacks, localmente adaptou-se somente registro doframework; uma fixtureJSON passou a clonar no mesmo contexto para evitar comparação deprotótipos doNodeREPL. Asserções/lógica deaplicação preservadas; cópiasadaptadas não serão commitadas. Testes canônicos sem adaptação executados emCI semSecrets:26/26financeiros e8/8comparação aprovados, zerofalhas.
 -69testes completos e emulador anteriores permanecem evidênciashistóricas; nenhum cliente real, pagamento novo, aplicaçãoSpark ou desbloqueio foi testado.
 
 ## Próximo procedimento executável
@@ -71,3 +71,10 @@ Riscos tratados: cobrança duplicada evitada por nenhumGET virarcheckout/cancela
 ## Preservação
 
 Somente branchincident. Roku, LAB714, aplicativo dosavós, C6, versãooficialcongelada e site não modificados. Nenhuma cobrança, assinatura, produção, IAM, recurso, regra, deploy, merge ou APK. Arquivos novos de código: installed_release_comparison.mjs e teste; workflowincident-installed-release-fixtures.yml (semSecrets); documentosdestapasta. Correçãofinanceira existente não alterada. StatusVERMELHO permanece até confirmar restauração no aplicativo real após futura autorização.
+
+
+## Fechamento verificado
+
+Código171bc2316d9fa792fe3fea15720582a8a589777d. [CI41719572181](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41719572181) completed/success,8novostestes+26financeiroscanônicos, semSecrets/produção. [Resultados](ci-results.json) e [excertos](ci-excerpt.log). ComparaçãoGitcontra d3b6278 confirma somente8arquivos previstos, nenhum fontefinanceiro/clienteoficial/Roku alterado. Refcongelada473abcaa preservada.
+
+O proprietário confirmou que ainda não dispõe de versão/versionCode/hash da instalação; procedimento sem logout/reinstalação preparado. Não solicitar credenciais pelochat. Préviaatualexata permanece bloqueada por executorprivado/bindings e evidências da sessão; préviahistóricaprivada não é aplicação. StatusVERMELHO, sem alegação de incidente resolvido.

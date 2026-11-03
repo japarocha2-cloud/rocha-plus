@@ -1,0 +1,12 @@
+{
+  "run": 41719572181,
+  "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41719572181",
+  "head": "171bc2316d9fa792fe3fea15720582a8a589777d",
+  "status": "completed",
+  "conclusion": "success",
+  "newComparisonTests": 8,
+  "canonicalFinancialTests": 26,
+  "failed": 0,
+  "credentials": false,
+  "productionWrites": 0
+}
