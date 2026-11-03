@@ -1,0 +1,30 @@
+{
+  "score": 2,
+  "summary": "Auditoria estática dos fontes locais e do mecanismo Admin. Regras implantadas, IAM efetivo e sessão do aparelho não foram lidos nesta etapa. A nota não avalia a produção.",
+  "findings": [
+    {
+      "check": "Business Logic vs. Rules",
+      "severity": "major",
+      "issue": "O firestore.rules da raiz e o backend/entitlement/firestore.rules não autorizam get em rochaSparkAccounts. Substituir o ruleset implantado por esses arquivos pode bloquear um cliente Spark válido.",
+      "recommendation": "Não implantar nem substituir regras nesta missão. Ler o release cloud.firestore privadamente e comparar o fonte completo com as regras Spark revisadas."
+    },
+    {
+      "check": "Authority Source",
+      "severity": "major",
+      "issue": "O Admin SDK ignora regras de cliente. O operador e a autorização de aplicação ainda não foram selecionados nem autenticados; um callback que sempre devolve true não é autorização de produção.",
+      "recommendation": "Exigir operador individual verificado, escopo regular-payment-recovery, consentimento específico e digest do envelope completo antes de fornecer o adaptador de escrita."
+    },
+    {
+      "check": "Field-Level vs. Identity-Level Security",
+      "severity": "major",
+      "issue": "As regras Spark históricas têm ownership pelo Google subject e impedem alteração cliente de paidUntil, mas isso não comprova que sejam o ruleset atualmente implantado, nem que não exista um allow sobreposto.",
+      "recommendation": "Aceitar conclusão automática apenas por igualdade exata do fonte completo; caso contrário, revisar todos os matches e operações de criação/atualização, inclusive permissões sobrepostas."
+    },
+    {
+      "check": "Admin Bootstrapping & Privileges",
+      "severity": "major",
+      "issue": "A aplicação de recuperação precisa de permissões IAM de leitura/escrita que não devem ser concedidas à cliente. Não há prova atual do IAM efetivo do operador.",
+      "recommendation": "Separar leitor diagnóstico e operador da futura aplicação; não conceder rochaAdmin por e-mail, não dar delete para a recuperação inicial e não solicitar permissões de cobrança/deploy."
+    }
+  ]
+}
