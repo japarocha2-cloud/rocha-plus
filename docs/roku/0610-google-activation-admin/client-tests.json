@@ -1,0 +1,16 @@
+{
+  "passed": 9,
+  "failed": 0,
+  "tests": [
+    "authenticated admin identity may be valid without playback",
+    "admin identity never grants playback",
+    "email-derived admin rejected",
+    "unauthenticated role rejected",
+    "expired device session rejected",
+    "wrong account session rejected",
+    "wrong device rejected",
+    "unknown role fails closed",
+    "server role and rights validated independently"
+  ],
+  "fixtureOnly": true
+}

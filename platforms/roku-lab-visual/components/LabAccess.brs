@@ -86,12 +86,17 @@ end sub
 
 sub onLabAccessResult(result as Object)
  data = result.data
+ if result.operation = "lab_cancel"
+  endLabAccess("Ativação cancelada. OK: gerar novo código.")
+  return
+ end if
  if result.operation = "lab_logout"
   if result.ok or result.code = 401
    m.labRegistry.Delete("session")
    m.labRegistry.Delete("uid")
    m.labRegistry.Delete("device")
    m.labRegistry.Flush()
+   if m.centralMode = true then m.top.findNode("accountRole").text = ""
    beginLabPairing()
   else
    accountMessage("Não foi possível confirmar a saída desta TV. Tente novamente.")
@@ -99,6 +104,10 @@ sub onLabAccessResult(result as Object)
   return
  end if
  if not result.ok
+  if result.code = 410
+   endLabAccess("Código expirado ou cancelado. OK: gerar novo código.")
+   return
+  end if
   endLabAccess("Não foi possível confirmar a autorização LAB. OK: verificar novamente. Assinatura comercial não alterada.")
   return
  end if
@@ -143,6 +152,31 @@ sub onLabAccessResult(result as Object)
   return
  end if
  if result.operation = "lab_poll" and data.status = "pending" then return
+ if m.centralMode = true
+  if not centralIdentityValid(data)
+   endLabAccess("Identidade ou sessão central inválida. Confirme o vínculo no celular.")
+   return
+  end if
+  if result.operation = "lab_poll"
+   if not labString(data.session_token) or len(data.session_token) <> 64
+    endLabAccess("Sessão de dispositivo inválida.")
+    return
+   end if
+   m.labSession = data.session_token
+  end if
+  consumeCentralIdentity(data)
+  if data.active <> true or data.allowed <> true
+   m.authUid = data.uid
+   m.labDeviceId = data.device_id
+   m.labRegistry.Write("session",m.labSession)
+   m.labRegistry.Write("uid",m.authUid)
+   m.labRegistry.Write("device",m.labDeviceId)
+   m.labRegistry.Flush()
+   endLabAccess("Conta autenticada, sem direito de reprodução confirmado. OK: consultar; *: sair desta TV.")
+   consumeCentralIdentity(data)
+   return
+  end if
+ end if
  remaining = labLeaseMillis(data,result.elapsedMs,m.authUid,m.labDeviceId)
  if remaining <= 0
   endLabAccess("Autorização LAB ausente, expirada ou de outra conta/dispositivo.")
@@ -189,6 +223,7 @@ sub onLabAccessResult(result as Object)
  m.billingExpiry.control = "start"
  m.labPlaybackAllowed = (data.playbackAllowed = true)
  m.authorized = true
+ if m.centralMode = true then m.top.findNode("accountRole").text = ""
  m.authStage = "lab_authorized"
  m.top.findNode("accountPanel").visible = false
  m.accountTimer.control = "start"
@@ -203,11 +238,16 @@ sub onLabAccessResult(result as Object)
  else
   m.status.text = "Homologação LAB temporária • assinatura comercial não alterada"
  end if
+ if m.centralMode = true and m.centralRole = "admin" then m.status.text = m.status.text + " • ADM confirmado pelo servidor"
  if m.previewPending then m.previewTimer.control = "start"
  m.top.setFocus(true)
 end sub
 
 sub endLabAccess(message as String)
+ if m.centralMode = true
+  m.centralRole = "user"
+  m.top.findNode("accountRole").text = ""
+ end if
  m.authorized = false
  m.labPlaybackAllowed = false
  m.billingLifetime = 0
@@ -241,6 +281,10 @@ end sub
 
 function labAccountKey(key as String) as Boolean
  if key = "back" then return false
+ if key = "options" and m.centralMode = true and m.authStage = "lab_waiting"
+  accountRequest("lab_cancel",m.labConfig.endpoint,FormatJson({action:"cancel",device_code:m.deviceCode}),"","application/json")
+  return true
+ end if
  if key = "options" and m.authStage = "lab_locked"
   if m.labSession <> ""
    accountRequest("lab_logout",m.labConfig.endpoint,FormatJson({action:"logout"}),m.labSession,"application/json")

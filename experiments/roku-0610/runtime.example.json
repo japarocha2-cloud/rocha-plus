@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "publicServiceEnabled": false,
+  "environment": "central-rights-lab",
+  "scope": "homologation",
+  "adminPolicyApproved": false,
+  "endpoint": "",
+  "approvalUrl": "",
+  "labProjectId": ""
+}

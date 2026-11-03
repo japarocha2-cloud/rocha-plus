@@ -12,6 +12,7 @@ function initCentralAccess() as Boolean
  m.labDeviceId = ""
  m.labGrantUntil = 0
  m.labFavoritesLoaded = false
+ m.centralRole = "user"
  m.authStage = "lab_unconfigured"
  if cfg.environment <> "central-rights-lab" or (cfg.scope <> "commercial" and cfg.scope <> "homologation")
   accountMessage("Serviço central experimental não configurado.")
@@ -33,7 +34,7 @@ function initCentralAccess() as Boolean
   accountMessage("Configuração de vinculação HTTPS inválida.")
   return true
  end if
- m.labRegistry = CreateObject("roRegistrySection","RochaPlusCentralRightsLab")
+ m.labRegistry = CreateObject("roRegistrySection","RochaPlusCentralRightsLab0610")
  m.labSession = m.labRegistry.Read("session")
  m.authUid = m.labRegistry.Read("uid")
  m.labDeviceId = m.labRegistry.Read("device")
@@ -73,3 +74,23 @@ function accessEnvironment() as String
  if m.centralMode = true then return "central-rights-lab"
  return "roku-lab"
 end function
+
+' Authentication never implies playback or administrative access.
+function centralIdentityValid(data as Dynamic) as Boolean
+ if type(data) <> "roAssociativeArray" then return false
+ if data.contractVersion <> 1 or data.environment <> "central-rights-lab" or data.scope <> m.labConfig.scope then return false
+ if data.authenticated <> true or not labString(data.uid) or not labString(data.device_id) then return false
+ if data.uid = "" or data.device_id = "" then return false
+ if m.authUid <> "" and data.uid <> m.authUid then return false
+ if m.labDeviceId <> "" and data.device_id <> m.labDeviceId then return false
+ if not labNumber(data.serverTime) or not labNumber(data.sessionUntil) then return false
+ if data.sessionUntil <= data.serverTime or data.sessionUntil - data.serverTime > 86400000 then return false
+ if data.roleSource <> "server-custom-claims" or (data.role <> "user" and data.role <> "admin") then return false
+ return true
+end function
+
+sub consumeCentralIdentity(data as Object)
+ m.centralRole = data.role
+ m.top.findNode("accountRole").text = "Conta autenticada • Usuário"
+ if m.centralRole = "admin" then m.top.findNode("accountRole").text = "Conta autenticada • ADM confirmado pelo servidor • reprodução depende de direito"
+end sub

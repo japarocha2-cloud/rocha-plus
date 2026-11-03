@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import {createDeviceService} from './devices.mjs';
+import {memoryStore} from '../central-rights/memory-store.mjs';
+export async function runActivationTests(){
+ const passed=[];async function fixture({admin=false,policy=false,grant=true}={}){
+ let time=1800000000000,revoked=false,offline=false;const uid='fixture-user',mobile='a'.repeat(64),store=memoryStore();
+ const handle=createDeviceService({store,enabled:true,scope:'homologation',adminPolicyApproved:policy,now:()=>time,
+ verifyIdentity:async token=>{if(token==='invalid')throw Error('auth');return {uid,email_verified:true,auth_time:Math.floor(time/1000),firebase:{sign_in_provider:'google.com'}};},
+ getAccount:async()=>({uid,emailVerified:true,disabled:revoked,customClaims:{rochaAdmin:admin}}),
+ loadRights:async()=>{if(offline)throw Error('offline');return {uid,...(grant?{labGrant:{uid,scope:'homologation',start:1800000000000-1,end:1800000000000+3600000}}:{})};}});
+ const call=(action,extra={},token='valid')=>handle({body:{action,...extra},authorization:'Bearer '+token});
+ await call('register_mobile',{mobile_id:mobile});
+ async function pair(){const p=await call('start');assert.equal(p.status,200);assert.equal((await call('approve',{mobile_id:mobile,user_code:p.body.user_code})).status,200);return {start:p.body,poll:await call('poll',{device_code:p.body.device_code})};}
+ return {call,pair,mobile,store,advance:n=>time+=n,revoke:()=>revoked=true,offline:v=>offline=v};
+ }
+ async function test(n,fn){await fn();passed.push(n);}
+ await test('authenticated account without playback rights links but stays denied',async()=>{const f=await fixture({grant:false});const p=await f.pair();assert.equal(p.poll.body.authenticated,true);assert.equal(p.poll.body.active,false);assert.equal(p.poll.body.playbackAllowed,false);assert(p.poll.body.session_token);});
+ await test('admin claim requires approved policy and never grants playback',async()=>{for(const policy of [false,true]){const f=await fixture({admin:true,policy,grant:false}),p=await f.pair();assert.equal(p.poll.body.role,policy?'admin':'user');assert.equal(p.poll.body.active,false);}});
+ await test('email does not create admin role; absent claim stays user',async()=>{const f=await fixture({policy:true});assert.equal((await f.pair()).poll.body.role,'user');});
+ await test('single approval cannot be replayed; lost poll response recovers same session',async()=>{const f=await fixture(),p=await f.pair();assert.equal((await f.call('approve',{mobile_id:f.mobile,user_code:p.start.user_code})).status,409);assert.equal((await f.call('poll',{device_code:p.start.device_code})).body.session_token,p.poll.body.session_token);});
+ await test('cancelled and expired pending codes cannot be polled',async()=>{for(const cancel of [true,false]){const f=await fixture(),p=await f.call('start');if(cancel)assert.equal((await f.call('cancel',{device_code:p.body.device_code})).body.status,'cancelled');else f.advance(600000);assert.equal((await f.call('poll',{device_code:p.body.device_code})).status,410);}});
+ await test('invalid code attempts rate limited per authenticated account',async()=>{const f=await fixture();for(let i=0;i<10;i++)assert.equal((await f.call('approve',{mobile_id:f.mobile,user_code:'ZZZZZZZZ'})).status,410);assert.equal((await f.call('approve',{mobile_id:f.mobile,user_code:'ZZZZZZZZ'})).status,429);});
+ await test('invalid identity denied and network never manufactures access',async()=>{const f=await fixture();assert.equal((await f.call('entitlement',{mobile_id:f.mobile},'invalid')).status,401);const p=await f.pair();f.offline(true);assert.equal((await f.call('status',{},p.poll.body.session_token)).status,503);});
+ await test('two TVs and two streams; third stream and third TV denied',async()=>{const f=await fixture(),a=await f.pair(),b=await f.pair();for(const p of [a,b])assert.equal((await f.call('status',{playback_active:true},p.poll.body.session_token)).status,200);assert.equal((await f.call('mobile_playback',{mobile_id:f.mobile})).status,409);const c=await f.call('start');assert.equal((await f.call('approve',{mobile_id:f.mobile,user_code:c.body.user_code})).status,409);});
+ await test('neutral reads preserve stream slot; stop and logout release only own device',async()=>{const f=await fixture(),a=await f.pair(),b=await f.pair();for(const p of [a,b])await f.call('status',{playback_active:true},p.poll.body.session_token);await f.call('status',{},a.poll.body.session_token);assert.equal((await f.call('mobile_playback',{mobile_id:f.mobile})).status,409);await f.call('status',{playback_active:false},a.poll.body.session_token);assert.equal((await f.call('mobile_playback',{mobile_id:f.mobile})).status,200);await f.call('logout',{},b.poll.body.session_token);assert.equal((await f.call('status',{},b.poll.body.session_token)).status,401);});
+ await test('new phone replaces only old phone preserving TV sessions',async()=>{const f=await fixture(),p=await f.pair();f.advance(1000);await f.call('register_mobile',{mobile_id:'b'.repeat(64)});assert.equal((await f.call('entitlement',{mobile_id:f.mobile})).status,403);assert.equal((await f.call('status',{},p.poll.body.session_token)).status,200);});
+ await test('revocation and session expiry deny restoration',async()=>{for(const revoke of [true,false]){const f=await fixture(),p=await f.pair();if(revoke)f.revoke();else f.advance(86400000);assert.equal((await f.call('status',{},p.poll.body.session_token)).status,401);}});
+ await test('concurrent contenders never exceed two streams',async()=>{const f=await fixture(),a=await f.pair(),b=await f.pair();await f.call('mobile_playback',{mobile_id:f.mobile});const r=await Promise.all([f.call('status',{playback_active:true},a.poll.body.session_token),f.call('status',{playback_active:true},b.poll.body.session_token)]);assert.equal(r.filter(x=>x.status===200).length,1);assert.equal(r.filter(x=>x.status===409).length,1);});
+ return {passed:passed.length,failed:0,tests:passed,fixtureOnly:true,realGoogle:false,productionWrites:0};
+}

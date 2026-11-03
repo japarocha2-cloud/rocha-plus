@@ -1,3 +1,5 @@
+> Continuidade0.6.10 nesta branch isolada: lab/roku-0.6.10-google-activation-admin-20261103. [Etapaatual](../roku/0610-google-activation-admin/README.md). Referência0.6.9preservada; endpointsreaisdesativados, nenhumclaimconcedido.
+
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 03/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.

@@ -1,0 +1,19 @@
+name: Roku 0.6.10 isolated activation tests
+on:
+  push:
+    branches: [lab/roku-0.6.10-google-activation-admin-20261103]
+    paths: [experiments/roku-0610/**, .github/workflows/roku-0610.yml]
+permissions:
+  contents: read
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --input-type=module -e "import {runActivationTests} from './experiments/roku-0610/activation.test.mjs'; console.log(await runActivationTests())"

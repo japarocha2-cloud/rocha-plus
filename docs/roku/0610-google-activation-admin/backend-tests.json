@@ -1,0 +1,21 @@
+{
+  "passed": 12,
+  "failed": 0,
+  "tests": [
+    "authenticated account without playback rights links but stays denied",
+    "admin claim requires approved policy and never grants playback",
+    "email does not create admin role; absent claim stays user",
+    "single approval cannot be replayed; lost poll response recovers same session",
+    "cancelled and expired pending codes cannot be polled",
+    "invalid code attempts rate limited per authenticated account",
+    "invalid identity denied and network never manufactures access",
+    "two TVs and two streams; third stream and third TV denied",
+    "neutral reads preserve stream slot; stop and logout release only own device",
+    "new phone replaces only old phone preserving TV sessions",
+    "revocation and session expiry deny restoration",
+    "concurrent contenders never exceed two streams"
+  ],
+  "fixtureOnly": true,
+  "realGoogle": false,
+  "productionWrites": 0
+}
