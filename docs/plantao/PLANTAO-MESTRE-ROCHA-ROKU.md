@@ -7,6 +7,8 @@ Estado atual: ZIPLAB0.6.8 gerado para sideload manual, não instalado; última e
 
 [Artefato, instruções e limitações](../roku/physical-package-068-20261103/README.md) · [13validaçõesaprovadas](../roku/physical-package-068-20261103/validation.json). ZIP: artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.8-TV-REAL-ACESSO-DESATIVADO-20261103.zip;4.538.311bytes/574arquivos; SHA25600c3a2c6c8cea91958e11a4cf82fdecc1ff177bd4566431dc2a08f8636de1305. Inclui carrossel corrigido jávalidado, versão/rodapé0.6.8 e auth.enabledfalse explícito. Catálogo607/578capas e dados/temporizador preservados, ZIP0.6.7 intacto. Não instalado naTV/BRS; instalação só mediante autorização posterior. Navegação/canais/reprodução seguemBLOQUEADOS por falta de ativação segura; somente instalação/início/branding/aviso/Back podem ser testados agora.
 
+[Downloadpermanente0.6.8](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/9d34121cb651726ee8f60dcd2ac8ba0d204423f9/artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.8-TV-REAL-ACESSO-DESATIVADO-20261103.zip) · [Commitcódigo/artefato9d34121](https://github.com/japarocha2-cloud/rocha-plus/commit/9d34121cb651726ee8f60dcd2ac8ba0d204423f9) · [Verificaçãoremota](../roku/physical-package-068-20261103/remote-verification.json). ZIPbaixadointegralmente após envio, HTTP200/hashconferido;0.6.7remoto também preservado.
+
 ## Recuperar o trabalho sem depender deste chat
 
 Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/rocha-plus). Branch exclusiva: `lab/roku-visual-covers-performance-20261102`.

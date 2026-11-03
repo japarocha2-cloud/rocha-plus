@@ -52,3 +52,10 @@ O pacote é ZIPRoku estruturalmente apropriado para sideload, não pacote comerc
 ComNode e fonte desta branch, chamar build de tools/roku_visual_lab.mjs com source platforms/roku-lab-visual e flags {excludeProvisionalCovers:true,onlyMappedLogoFiles:true}. Rodar validatePhysicalPackage com zipPath, previousZip0.6.7 e asar local doBRS. O engine não é incluído noZIP. Fonte local conferida com árvoreGit67e6e8 antes da alteração de versão/config; nenhum arquivo não verificado agregado.
 
 ZIP0.6.7 original permanece no commit572733db6f9d99f4b64f59d40f28d3602b4f89ac, SHA2566ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07. Sem merge, deploy/publicação comercial, alteraçãoAndroid/Oficial/C6/LAB714/site/direitos ou pagamentos. O novo artefato só é persistido na branchLAB conforme ordem.
+
+
+## Links permanentes e verificação remota
+
+[BaixarZIP0.6.8](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/9d34121cb651726ee8f60dcd2ac8ba0d204423f9/artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.8-TV-REAL-ACESSO-DESATIVADO-20261103.zip) · [Commit de código/artefato9d34121](https://github.com/japarocha2-cloud/rocha-plus/commit/9d34121cb651726ee8f60dcd2ac8ba0d204423f9) · [SHA256SUMS](https://github.com/japarocha2-cloud/rocha-plus/blob/9d34121cb651726ee8f60dcd2ac8ba0d204423f9/artifacts/roku-lab/20261103/SHA256SUMS).
+
+DownloadHTTP200,4.538.311bytes e hash integral conferidos após envio. Arquivos de código/teste/relatórios conferidos com cópia local, branch confirmada no commit. ZIP0.6.7 remotoHTTP200/hashoriginal reconferido. Evidência em remote-verification.json. Nenhum check de hardware realizado.
