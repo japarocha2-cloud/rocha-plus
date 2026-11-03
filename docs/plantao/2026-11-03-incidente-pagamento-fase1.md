@@ -1,5 +1,7 @@
 # Incidente P0 — reconhecimento de pagamento — 03/11/2026
 
+> Atualização posterior: a tentativa #2 executou a leitura privada com sucesso. A investigação também confirmou contratos recorrentes referenciados nos recibos, sem payer_email. Consulte o [relatório de correção e simulação](2026-11-03-incidente-pagamento-correcao.md). As seções abaixo preservam o estado da primeira entrega; a pendência de configurar os seletores privados foi resolvida.
+
 Status: FASE 1 PARCIAL. Pagamento confirmado novamente no provedor; restauração de acesso NÃO executada. Fases seguintes aguardam fechamento do diagnóstico.
 
 ## Investigação e evidência atual
