@@ -1,0 +1,45 @@
+{
+  "enabled": false,
+  "environment": "central-rights-lab",
+  "contractVersion": "draft-1",
+  "legacy": {
+    "mode": "alphanumeric8",
+    "length": 8,
+    "ttlSeconds": 600,
+    "enabled": true
+  },
+  "experimental": {
+    "qrHttps": {
+      "enabled": false,
+      "baseUrl": "",
+      "route": "/approve",
+      "opaqueOneUsePairingRefRequired": true,
+      "excludeTokenFields": [
+        "id_token",
+        "session_token",
+        "access_token",
+        "uid",
+        "email"
+      ],
+      "recentGoogleLoginRequired": true,
+      "explicitDeviceConfirmation": true
+    },
+    "numeric": {
+      "enabled": false,
+      "digits": 6,
+      "serverCSPRNGRequired": true,
+      "ttlSeconds": 600,
+      "maxAttemptsPerCode": 5,
+      "rateLimitBy": [
+        "account",
+        "device",
+        "ip"
+      ],
+      "oneTimeUse": true,
+      "recentGoogleLoginRequired": true,
+      "explicitDeviceConfirmation": true
+    }
+  },
+  "scope": "homologation",
+  "enableCommercialAccess": false
+}
