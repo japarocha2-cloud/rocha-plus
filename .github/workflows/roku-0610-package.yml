@@ -6,6 +6,7 @@ on:
     paths:
       - 'platforms/roku-lab-visual/**'
       - 'experiments/roku-0610/**'
+      - 'tools/roku_visual_lab.mjs'
       - '.github/workflows/roku-0610-package.yml'
 permissions:
   contents: read
@@ -22,41 +23,30 @@ jobs:
           node-version: '22'
       - name: Backend fixtures
         run: node --input-type=module -e "import {runActivationTests} from './experiments/roku-0610/activation.test.mjs'; const r=await runActivationTests(); console.log(JSON.stringify(r)); if(r.failed||r.passed!==12) process.exit(1)"
-      - name: Validate and package
-        shell: bash
+      - name: Build and validate sideload ZIP
         run: |
-          set -euo pipefail
-          app=platforms/roku-lab-visual
-          grep -qx 'build_version=10' "$app/manifest"
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const root='platforms/roku-lab-visual';
-          const read=(p)=>fs.readFileSync(root+'/'+p,'utf8');
-          const auth=JSON.parse(read('config/auth.json'));
-          const central=JSON.parse(read('config/central-access.json'));
-          const lab=JSON.parse(read('config/lab-access.json'));
-          const catalog=JSON.parse(read('catalog/commercial-lab-merged.json'));
-          const covers=JSON.parse(read('config/cover-map.json'));
+          import fs from 'node:fs/promises';
+          import assert from 'node:assert/strict';
+          import {build,readZip} from './tools/roku_visual_lab.mjs';
+          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip';
+          const built=await build('platforms/roku-lab-visual',target,{excludeProvisionalCovers:true,onlyMappedLogoFiles:true});
+          const files=readZip(await fs.readFile(target));
           const count=x=>Array.isArray(x)?x.length:Object.keys(x).length;
-          if(auth.enabled!==false||central.enabled!==false||lab.enabled!==false) throw Error('access must remain disabled');
-          if(count(catalog)!==607) throw Error('catalog count changed');
-          if(count(covers)!==578) throw Error('cover associations changed');
-          const scan=(dir)=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?scan(dir+'/'+e.name):[dir+'/'+e.name]);
-          const files=scan(root);
-          const text=files.filter(p=>/\\.(json|brs|xml|html|txt)$/i.test(p)).map(p=>fs.readFileSync(p,'utf8')).join('\\n');
-          if(text.includes('example.invalid')||text.includes('fixture-scenario.json')) throw Error('fixture leaked into package');
-          if(/AIza[0-9A-Za-z_-]{35}|-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}/.test(text)) throw Error('secret pattern in package');
-          console.log(JSON.stringify({files:files.length,catalog:count(catalog),coverAssociations:count(covers),accessEnabled:false}));
+          assert.equal(Object.keys(files).length,574);
+          assert.match(files.manifest.toString(),/build_version=10/);
+          assert.equal(count(JSON.parse(files['catalog/commercial-lab-merged.json'])),607);
+          assert.equal(count(JSON.parse(files['config/cover-map.json'])),578);
+          for(const p of ['config/auth.json','config/central-access.json','config/lab-access.json']) assert.equal(JSON.parse(files[p]).enabled,false,p);
+          const text=Object.entries(files).filter(([n])=>/\\.(json|brs|xml|html|txt)$/i.test(n)).map(([,b])=>b.toString()).join('\\n');
+          assert(!text.includes('example.invalid'));
+          assert(!text.includes('fixture-scenario.json'));
+          assert(!/AIza[0-9A-Za-z_-]{35}|-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}/.test(text));
+          console.log(JSON.stringify({...built,catalog:607,coverAssociations:578,integrationsEnabled:false,secretsDetected:0}));
           NODE
-          package="$RUNNER_TEMP/RochaPlus-Roku-LAB-0.6.10-LOGIN-GOOGLE-ATIVACAO-ADM-ACESSO-DESATIVADO.zip"
-          (cd "$app" && zip -X -qr "$package" .)
-          unzip -tq "$package"
-          sha256sum "$package"
-          stat -c 'bytes=%s' "$package"
-          echo "PACKAGE_PATH=$package" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO
-          path: ${{ env.PACKAGE_PATH }}
+          name: RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2
+          path: /tmp/RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip
           if-no-files-found: error
           retention-days: 30
