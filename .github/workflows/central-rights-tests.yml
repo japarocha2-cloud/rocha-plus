@@ -26,3 +26,5 @@ jobs:
         run: node --input-type=module -e "import {runContractTests} from './experiments/central-rights/contracts.test.mjs'; console.log(await runContractTests())"
       - name: End-to-end HTTPS reconciliation and mobile-TV authorization (fixtures)
         run: node --input-type=module -e "import {runEndToEndTests} from './experiments/central-rights/e2e.test.mjs'; console.log(await runEndToEndTests())"
+      - name: Firebase project and account boundary (fixtures)
+        run: node --input-type=module -e "import {runFirebaseBoundaryTests} from './experiments/central-rights/firebase-runtime.test.mjs'; console.log(await runFirebaseBoundaryTests())"

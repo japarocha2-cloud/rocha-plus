@@ -12,7 +12,8 @@ export function createFirebaseRuntime({identityAuth,commercialReadDb,labDb,confi
   verifyIdentity:(token,revoked)=>identityAuth.verifyIdToken(token,revoked),getAccount:uid=>identityAuth.getUser(uid),
   loadRights:async uid=>{
    const u=await identityAuth.getUser(uid),snapshot=await existing(uid),g=config.authorization;
-   if(!snapshot||!g?.allowedEmail||u.email?.toLowerCase()!==g.allowedEmail.toLowerCase()||!g.enabled||!Number.isSafeInteger(g.notBefore)||!Number.isSafeInteger(g.expiresAt)||g.expiresAt-g.notBefore>86400000)return snapshot;
-   return {...snapshot,labGrant:{uid,scope:'homologation',start:g.notBefore,end:g.expiresAt}};
+   const base=snapshot?{...snapshot,labGrant:undefined}:null;
+   if(!base||!g?.allowedEmail||u.email?.toLowerCase()!==g.allowedEmail.toLowerCase()||!g.enabled||!Number.isSafeInteger(g.notBefore)||!Number.isSafeInteger(g.expiresAt)||g.expiresAt-g.notBefore>86400000)return base;
+   return {...base,labGrant:{uid,scope:'homologation',start:g.notBefore,end:g.expiresAt}};
   }});
 }

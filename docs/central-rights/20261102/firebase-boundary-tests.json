@@ -1,0 +1,12 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "tests": [
+    "exact configured account allowed in fixture LAB only",
+    "other existing LAB grant cannot bypass runtime allowlist",
+    "disabled runtime remains closed",
+    "commercial writer project refused"
+  ],
+  "fixtureOnly": true,
+  "commercialWrites": 0
+}
