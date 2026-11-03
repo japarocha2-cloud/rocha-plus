@@ -361,3 +361,14 @@ ZIP REV2 local: `artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.10-ACESSO-DE
 Execução de ativação: 12/12 testes Node de fixtures aprovados nesta etapa. Os 9 checks BrightScript são resultados fixture/headless anteriores e não foram repetidos. BRS Desktop reportou versão 0.6.10 e 0 erros/0 avisos pela árvore de acessibilidade; captura gráfica expirou e o ZIP REV2 não foi instalado ali. Google OAuth, conta ADM, sessão persistente real, navegação real com controle, áudio/vídeo e playback ficam **NÃO EXECUTADOS**. Leitura histórica CI indicava claim `rochaAdmin=false`; sem consulta atual e sem alteração de permissões. A UI de fixture não prova autenticação real; uma captura de teste mostra texto de rodapé sobreposto, a revisar antes da homologação visual.
 
 Nenhum merge, deploy ou publicação. Oficial Roku, Android, Candidata 6, LAB 714, aplicativo dos avós, catálogo, artes, direitos e pagamentos não foram alterados.
+
+
+## BRS Desktop — teste manual do REV2 (03/11/2026)
+
+[Relatório da etapa 0.6.10](../roku/0610-google-activation-admin/README.md) · [commit do registro](https://github.com/japarocha2-cloud/rocha-plus/commit/269bd7a2b93236060b62592f65018a6e1f611e78) · [run de pacote 41729054117](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41729054117) · [artefato 13275907155](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41729054117/artifacts/13275907155).
+
+REV2 foi carregado no BRS Desktop a partir do ZIP selecionado pelo proprietário; tamanho 4.538.938 bytes e SHA-256 d789c6607b0f32bb2629adf9b1082518715c3a624f1e16445972fbf6817ddaa1 conferidos. BRS indicou versão 0.6.10, 0 erros/0 avisos; tela inicial sem branco, marca/fundo/banner/menu e aviso LAB visíveis. Fechar e reabrir o mesmo ZIP manteve a versão e os contadores. Nenhum dado foi limpo.
+
+Setas Right/Left/Up/Down, Return (OK) e Backspace (Voltar) foram enviados; o overlay permaneceu sem mudança observável, então navegação não validada. Rodapé visual de versão está truncado como “Roku LAB 0.6…”. Acesso LAB continua desativado; login Google/ADM, persistência real, navegação pelo catálogo, favoritos, busca, mídia, áudio, reprodução, FPS/RAM e TV física NÃO EXECUTADOS. Status AMARELO; sem correção de código ou novo ZIP.
+
+Capturas reais geradas pelo BRS Desktop: brs-rev2-home.png, brs-rev2-after-right.png, brs-rev2-reopened.png e brs-rev2-after-back.png. Permanecem no workspace local em docs/roku/0610-google-activation-admin/; não foram enviados ao GitHub nesta etapa, portanto não têm URL remota permanente.
