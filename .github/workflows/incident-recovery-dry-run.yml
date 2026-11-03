@@ -1,0 +1,47 @@
+name: Incident recovery tests and production-read simulation
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths: [.github/workflows/incident-recovery-dry-run.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 8a1595f7713d117e439614bd986a847bf00712e2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: backend/entitlement
+      - name: All entitlement regression and recovery tests
+        run: node --test backend/entitlement/*.test.mjs
+  dry-run:
+    needs: tests
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/incident/payment-recognition-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 8a1595f7713d117e439614bd986a847bf00712e2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: backend/entitlement
+      - name: Simulate only; executable has no apply entrypoint
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+          EXPECTED_RECEIVING_MERCHANT_ID: '320683687'
+          INCIDENT_TARGET_EMAIL: ${{ secrets.INCIDENT_TARGET_EMAIL }}
+          INCIDENT_PAYMENT_IDS_JSON: ${{ secrets.INCIDENT_PAYMENT_IDS_JSON }}
+        run: node backend/entitlement/diagnostics/incident_recovery_dry_run.mjs
