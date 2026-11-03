@@ -1,0 +1,23 @@
+{
+  "fixtureOnly": true,
+  "persistentWrites": false,
+  "sourceBase": "d350ed3786164a2bc533938f74d4d251e6e062f6",
+  "outcomes": [
+    {
+      "case": "mobile-entitlement",
+      "first": 200,
+      "second": 200,
+      "thirdBefore": 409,
+      "query": 200,
+      "thirdAfter": 200
+    },
+    {
+      "case": "tv-navigation",
+      "first": 200,
+      "second": 200,
+      "thirdBefore": 409,
+      "query": 200,
+      "thirdAfter": 200
+    }
+  ]
+}
