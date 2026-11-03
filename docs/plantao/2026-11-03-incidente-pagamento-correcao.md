@@ -1,4 +1,6 @@
 # Incidente P0 — correção experimental e proposta de recuperação
+> Continuidade: [sessão instalada, prévia integral, execução privada e rollback](2026-11-03-sessao-previa-restauracao.md). Nenhuma autorização comercial foi concedida nessa etapa.
+
 Data: 03/11/2026. Branch: incident/payment-recognition-20261103.
 Estado: código e simulação preparados; NENHUMA restauração em produção executada.
 
