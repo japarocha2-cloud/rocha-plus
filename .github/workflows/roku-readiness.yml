@@ -1,0 +1,29 @@
+name: Roku LAB readiness and Firebase metadata (read-only)
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - experiments/roku-readiness/**
+      - .github/workflows/roku-readiness.yml
+permissions:
+  contents: read
+jobs:
+  preparation:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/lab/roku-visual-covers-performance-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Disabled preparation and sanitized diagnostics fixtures
+        run: node --input-type=module -e "import {runReadinessTests} from './experiments/roku-readiness/preflight.test.mjs'; console.log(await runReadinessTests())"
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Read Firebase config, Google provider and effective IAM only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node experiments/roku-readiness/firebase-readonly.mjs

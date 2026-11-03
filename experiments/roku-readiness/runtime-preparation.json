@@ -1,0 +1,22 @@
+{
+  "enabled": false,
+  "publicServiceEnabled": false,
+  "environment": "central-rights-lab",
+  "scope": "homologation",
+  "identityProjectId": "rocha-plus",
+  "labProjectId": "",
+  "origin": "",
+  "listenHost": "127.0.0.1",
+  "routes": {
+    "approval": "/approve",
+    "access": "/v1/access"
+  },
+  "paymentsEnabled": false,
+  "authorization": {
+    "enabled": false,
+    "ownerApproved": false,
+    "accountReference": "",
+    "notBefore": null,
+    "expiresAt": null
+  }
+}

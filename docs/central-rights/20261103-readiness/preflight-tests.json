@@ -1,0 +1,17 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "tests": [
+    "complete synthetic evidence never authorizes activation",
+    "missing infrastructure reports failures without network calls",
+    "commercial/candidate writer projects rejected",
+    "enabled runtime or grant cannot pass preparation",
+    "wrong name, untrusted devices and missing Google domain deny readiness",
+    "expired, unapproved or excessive authorization remains blocked",
+    "diagnostic allowlist drops credentials and identifiers",
+    "persisted runtime and grant remain disabled with empty origin/project"
+  ],
+  "fixtureOnly": true,
+  "activation": false,
+  "externalWrites": 0
+}

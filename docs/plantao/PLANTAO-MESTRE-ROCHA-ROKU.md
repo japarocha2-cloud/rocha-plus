@@ -31,6 +31,10 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 Falhas intermediárias do certificado de teste e análise Dart foram corrigidas e preservadas nos relatórios. Sem merge, deploy, publicação, alteração de planos/preços, cobrança ou escrita comercial. Não declarar missão tecnicamente concluída: os testes reais e evidências comerciais ainda faltam.
 
+## Preparação integrada 03/11 — em andamento
+
+[Etapa de preparação](../central-rights/20261103-readiness/README.md): preflight desativado e8testes novos locais aprovados; consultas novas de FirebaseAuth/domínios/provedor/IAM somente leitura preparadas para CI. Nenhum serviço/direito ativado;64backend/36Android preservados, sem repetição. Revisão visual e checklist cruzado seguem nesta missão.
+
 ## Correção autorizada 03/11 — reservas experimentais
 
 Backend corrigido:12novasregressões,64testesbackend/HTTPS e36Android aprovados; análiseFlutter sem problemas. Código bfedc1540c79d09ab812432163c7793679ad08f4, [CI41590689968](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968) success. Antes terceira200após consulta; depois409. Concorrência pela última vaga200/409. Cliente Android TV corrigido como overlay exclusivo da branchRoku, validado sobre baseAndroid fixa d3c56ab em checkoutCI; branchAndroid e APK intactos. [Estado e evidências](../central-rights/20261103-diagnosis/README.md), [auditoriaHTTPS classificada](../central-rights/20261103-diagnosis/https-mobile-audit.md). Bloqueiosfalse/endpoints vazios, todo códigoRoku/ZIP0.6.7/catálogo/capas preservados. Host/certificado/IAM/domínioAuth e autorização temporária ativa não comprovados ou pendentes; nenhum acesso ativado. Sem execução física/Google real. AplicaçãoAndroid persistente e ativação são etapas futuras.
