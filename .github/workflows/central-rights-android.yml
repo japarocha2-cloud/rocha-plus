@@ -6,6 +6,7 @@ on:
       - lib/src/auth/**
       - lib/src/screens/adaptive_player_screen.dart
       - test/central_rights_client_test.dart
+      - test/fixtures/central-rights-v1.json
       - .github/workflows/central-rights-android.yml
 permissions:
   contents: read

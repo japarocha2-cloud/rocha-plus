@@ -1,0 +1,178 @@
+[
+  {
+    "name": "paid-commercial",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "paid",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": true,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "trial-commercial",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "trial",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": true,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "lab-explicit-scope",
+    "scope": "homologation",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "homologation",
+      "state": "lab",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": true,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "lab-is-not-paid",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "lab",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "different-uid",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "paid",
+      "active": true,
+      "allowed": true,
+      "uid": "other",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "different-device",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "paid",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "other",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "expired-lease",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 1,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "paid",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 1000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "unknown-version",
+    "scope": "commercial",
+    "packet": {
+      "contractVersion": 2,
+      "environment": "central-rights-lab",
+      "scope": "commercial",
+      "state": "paid",
+      "active": true,
+      "allowed": true,
+      "uid": "fixture-owner",
+      "device_id": "fixture-tv",
+      "serverTime": 1000,
+      "accessUntil": 61000,
+      "grantUntil": 121000,
+      "playbackAllowed": true
+    },
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  },
+  {
+    "name": "unavailable",
+    "scope": "commercial",
+    "packet": null,
+    "allowed": false,
+    "uid": "fixture-owner",
+    "device": "fixture-tv"
+  }
+]

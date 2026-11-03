@@ -1,10 +1,19 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:rocha_plus/src/auth/central_rights_client.dart';
 
 void main() {
+  test('shared cross-platform contract vectors', () {
+    final cases = jsonDecode(File('test/fixtures/central-rights-v1.json').readAsStringSync()) as List;
+    for (final c in cases) {
+      expect(CentralLease.parse(c['packet'], uid: c['uid'] as String,
+          device: c['device'] as String, scope: c['scope'] as String, elapsedMs: 0) != null,
+          c['allowed'], reason: c['name'] as String);
+    }
+  });
   Map<String, dynamic> packet() => {'contractVersion': 1,
     'environment': 'central-rights-lab', 'scope': 'homologation', 'uid': 'fixture',
     'device_id': 'mobile', 'state': 'lab', 'allowed': true, 'active': true,
