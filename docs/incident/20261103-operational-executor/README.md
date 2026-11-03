@@ -21,7 +21,7 @@ Pré-condições: checkout completo do repositório, Node22+, npm, autenticaçã
 ```sh
 cd /CAMINHO_PRIVADO_DO_CHECKOUT/rocha-plus
 git fetch origin incident/payment-recognition-20261103
-git checkout --detach OPERATIONAL_CODE_COMMIT
+git checkout --detach c0eb9bf0313e7826991bdd64b2e365354c7b018e
 (cd backend/entitlement && npm ci --ignore-scripts --no-audit --no-fund)
 node --input-type=module -e 'const names=["FIREBASE_SERVICE_ACCOUNT_JSON","MP_RECEIVING_ACCESS_TOKEN","INCIDENT_TARGET_EMAIL","INCIDENT_PAYMENT_IDS_JSON","EXPECTED_RECEIVING_MERCHANT_ID"]; console.log(names.map(name=>({name,present:!!process.env[name]}))); if(names.some(name=>!process.env[name]))process.exit(1)'
 umask 077
@@ -29,7 +29,7 @@ export ROCHA_PRIVATE_REPORT_DIR="$(mktemp -d /tmp/rocha-monthly-readiness.XXXXXX
 node backend/entitlement/diagnostics/incident_session_readiness.mjs
 ```
 
-Substituir somente caminho local pelo checkout efetivo; oSHAde código será fixado no fechamento. Não definir GITHUB_ACTIONS=false para contornar guarda. Não pedir à cliente token/senha. Comando permiteleitura real e gravação dos arquivos locaisprivados, não aplicaFirestore/provedor. O diretório deve ser novo, vazio, fora do checkout; arquivos não devem ser anexados aGit/log/artifact. EmWindowschmod não substitui revisão deACLNTFS; escolher hostprivado compatível ou revisar custódia antes deexecutar.
+Substituir somente caminho local pelo checkout efetivo; oSHAde código acima já está fixado. Não definir GITHUB_ACTIONS=false para contornar guarda. Não pedir à cliente token/senha. Comando permiteleitura real e gravação dos arquivos locaisprivados, não aplicaFirestore/provedor. O diretório deve ser novo, vazio, fora do checkout; arquivos não devem ser anexados aGit/log/artifact. EmWindowschmod não substitui revisão deACLNTFS; escolher hostprivado compatível ou revisar custódia antes deexecutar.
 
 Resultados esperados: readiness.private.json com IDs reaismensal/anual, vínculo validado, calendário e prévia mensal; before-images.private.json com4caminhos reais, existência, valoresanteriores, updateTime/digests e afterTemplate integral. Operador/autorização ainda não escolhidos e horário de execução simbólico, portanto não é mudançasetfinal aplicável. O comando NÃO valida sozinho a sessão doAPK: essa prova precisa vir da MESMAsessão e de backend efetivo, conforme verificador preparado. A prévia continua marcada não autorizada.
 
@@ -59,3 +59,11 @@ Cancelamento anual permanece separado: descobrirIDreal pela referência do recib
 Responsáveloperacional: proprietário/administrador do ambiente privado precisa indicar o host autorizado e ligar os5bindings existentes ao processo, sem exportarSecretGitHub. Depois ooperador executa ocomando acima e guarda saídasprivadas; suporte confirma APK/sessão real semlogout/reinstalação. Só com esse material será possível apresentar antes/depois atual verificável e duas autorizações posteriores separadas (acesso mensal e recorrênciaanual).
 
 Não é falta de autorização para estasleituras: a ordem já autoriza. É ausência deconexão/bindings/executor nesta sessão, somada àidentidade da instalação ainda desconhecida. Não fabricar valores, reexecutar403 ou conceder direito para testar. StatusVERMELHO operacional; nenhuma aplicação, cobrança, deploy ou mudança depermissão/produção.
+
+
+Código de execução privado fixado: c0eb9bf0313e7826991bdd64b2e365354c7b018e. O comparador/testes usamfixtures, não validam disponibilidade de dadosprivados. Se ocomando terminar comexitnãozero ou readiness.private.json contiverblocked:true, tratar como leitura incompleta; não gerar autorização nem executar aplicação.
+
+
+## Validação final
+
+[CI41721966928](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41721966928) success:7fixturesmensal/cancelamentoprévio +4regressões deantes/depois privado aprovadas, zerofalhas. node --check do diagnóstico também passou. CIsemSecrets; não executou diagnóstico real nem guardaprivadafoiremovida. Apenas fonte/testes/documentação na branchincident; nenhuma outra branchalterada. Estadooperacional continua SEMCONEXÃOPRIVADA, sem préviarealatual.
