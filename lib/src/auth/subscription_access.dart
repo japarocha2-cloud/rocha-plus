@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'central_rights_runtime.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -49,6 +50,7 @@ class SubscriptionAccessResult {
   }
 
   String get label => switch (reason) {
+    'lab' => 'Homologação temporária confirmada pelo servidor',
     'trial' => 'Teste gratuito confirmado pelo servidor',
     'paid' => 'Acesso pago confirmado pelo servidor',
     'expired' => 'Acesso expirado segundo o servidor',
@@ -69,6 +71,11 @@ class SubscriptionAccess {
     Future<String?> Function()? getToken,
     String? Function()? currentUid,
   }) async {
+    if (CentralRightsRuntime.enabled) {
+      final lease = await CentralRightsRuntime.check(uid);
+      return lease == null ? null : SubscriptionAccessResult(
+          uid: uid, allowed: true, reason: lease.state, expiresAt: lease.grantUntil);
+    }
     final uri = endpointUri ?? Uri.tryParse(endpoint);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
         uri.userInfo.isNotEmpty || uri.hasFragment) {

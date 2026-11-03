@@ -1,3 +1,5 @@
+import 'central_rights_runtime.dart';
+import 'central_tv_link_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -157,6 +159,9 @@ class _SubscriptionGateState extends State<SubscriptionGate>
 
   @override
   Widget build(BuildContext context) {
+    if (CentralRightsRuntime.enabled && CentralRightsRuntime.isTv && !CentralRightsRuntime.tvPaired) {
+      return CentralTvLinkScreen(uid: widget.uid, onLinked: () => _refresh(clearAccess: true));
+    }
     if (_allowed) {
       // Removing this whole subtree bypasses route-specific back restrictions
       // and runs dispose on local Exo/VLC player widgets, even in fullscreen.

@@ -1,3 +1,4 @@
+import '../auth/central_playback_boundary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 
@@ -83,7 +84,7 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => ChannelNavigation(
+  Widget build(BuildContext context) => CentralPlaybackBoundary(child: ChannelNavigation(
     session: session,
     child: loading
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
@@ -100,7 +101,8 @@ class _AdaptivePlayerScreenState extends State<AdaptivePlayerScreen> {
             initiallyFullscreen: widget.initiallyFullscreen,
             onTryOtherPlayer: () => setState(() => engine = LabEngine.libVlc),
           ),
-  );
+  ));
+
 }
 
 class _VlcPlaybackScreen extends StatefulWidget {

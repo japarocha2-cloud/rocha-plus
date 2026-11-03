@@ -1,0 +1,28 @@
+name: Android Central Rights LAB targeted tests
+on:
+  push:
+    branches: [lab/central-rights-android-20261102]
+    paths:
+      - lib/src/auth/**
+      - lib/src/screens/adaptive_player_screen.dart
+      - test/central_rights_client_test.dart
+      - .github/workflows/central-rights-android.yml
+permissions:
+  contents: read
+jobs:
+  contract-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - run: flutter pub get
+      - name: New central client and related response regressions
+        run: flutter test test/central_rights_client_test.dart test/subscription_access_result_test.dart
+      - name: Analyze affected client, gate and player files
+        run: flutter analyze lib/src/auth lib/src/screens/adaptive_player_screen.dart test/central_rights_client_test.dart

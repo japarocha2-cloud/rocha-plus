@@ -1,3 +1,4 @@
+import 'central_rights_runtime.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -66,6 +67,8 @@ class FirebaseAuthRepository implements AuthRepository {
         }
         await _auth!.signInWithCredential(GoogleAuthProvider.credential(idToken: idToken));
       }
+      final uid = _auth!.currentUser?.uid;
+      if (uid != null) await CentralRightsRuntime.freshLogin(uid);
     } on GoogleSignInException catch (failure) {
       if (failure.code == GoogleSignInExceptionCode.canceled) {
         throw const LoginFailure('', cancelled: true);
@@ -85,6 +88,7 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     // Revoke local Firebase access first, even if Google cleanup fails.
+    await CentralRightsRuntime.clear();
     await _auth!.signOut();
     if (_googleReady) {
       try { await GoogleSignIn.instance.signOut(); } catch (_) { /* Firebase session is closed. */ }
