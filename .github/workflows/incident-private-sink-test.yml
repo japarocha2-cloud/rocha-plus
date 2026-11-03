@@ -1,0 +1,23 @@
+name: Incident private baseline fixture
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths: [.github/workflows/incident-private-sink-test.yml]
+permissions:
+  contents: read
+jobs:
+  new-private-sink-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 62ffc28a241418def8f28140344e837d2d04974d
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Only the new private-sink fixture assertion
+        run: node --test --test-name-pattern='raw before-images' backend/entitlement/recovery_changeset_preview.test.mjs
+      - name: Syntax check private executable without executing it
+        run: node --check backend/entitlement/diagnostics/incident_session_readiness.mjs
