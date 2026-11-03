@@ -1,0 +1,33 @@
+name: Central Rights LAB diagnostic (read-only)
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - .github/workflows/central-rights-lab.yml
+      - experiments/central-rights/audit.mjs
+      - experiments/central-rights/audit.test.mjs
+      - experiments/central-rights/run-audit.mjs
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/lab/roku-visual-covers-performance-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Audit safety fixtures
+        run: node --input-type=module -e "import {runAuditTests} from './experiments/central-rights/audit.test.mjs'; console.log(await runAuditTests())"
+      - name: Read exact account, two payments, metadata and webhook logs
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+        run: node experiments/central-rights/run-audit.mjs

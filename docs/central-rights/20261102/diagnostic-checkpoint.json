@@ -1,0 +1,34 @@
+{
+  "phase": "A diagnostic checkpoint",
+  "experimentalOnly": true,
+  "commercialWrites": 0,
+  "priorReadOnlyEvidence": {
+    "providerRun": 40354015839,
+    "providerAttempt": 2,
+    "storedRightsRun": 41485146238
+  },
+  "verifiedFindings": [
+    "Two regular_payment transactions approved at last read, not proof of recurring subscription invoices.",
+    "Spark Android checkout opens static links; it does not reconcile paidUntil.",
+    "Current recurring webhook searches invoice ownership and skips unbound subscriptions.",
+    "No known applied right found in previously inspected Spark/legacy stores."
+  ],
+  "sourceDivergences": [
+    "PR42 service uses Firebase UID; Spark documents use Google subject.",
+    "rochaEntitlements, entitlements, rochaSparkAccounts and rochaBillingUsers are distinct schemas.",
+    "Temporal policies differ: fixed days after confirmation, stacked calendar months, independent calendar periods.",
+    "Price tables differ between historical direct-payment preview and current recurring policy; no price change authorized."
+  ],
+  "rootCauseStatus": "Missing direct-payment to canonical entitlement path is demonstrated in source; delivery/configuration failure for these particular transactions not yet proven.",
+  "pr42": {
+    "head": "61780147654b42709070702a677eec24b33a2ac5",
+    "branch": "fix/subscription-access-20261026",
+    "draft": true,
+    "preserved": true
+  },
+  "additionalProject": {
+    "id": "rocha-plus-homologacao",
+    "evidence": "PR42 reports existing isolated HTTPS entitlement endpoint; not the commercial identity project and not permission to deploy."
+  },
+  "next": "Run additional authenticated read-only CI for wider known ledgers, provider metadata, database edition and existing webhook function/log visibility."
+}

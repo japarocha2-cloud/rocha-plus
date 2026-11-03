@@ -1,0 +1,12 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "read-only exact account and two payments",
+    "no personal or financial identifiers in output",
+    "duplicate scope rejected",
+    "disabled account rejected",
+    "wrong receiving merchant rejected",
+    "provider resource mismatch rejected"
+  ]
+}
