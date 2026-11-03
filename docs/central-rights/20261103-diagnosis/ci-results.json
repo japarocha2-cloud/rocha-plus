@@ -1,0 +1,35 @@
+{
+  "codeCommit": "bfedc1540c79d09ab812432163c7793679ad08f4",
+  "run": 41590689968,
+  "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968",
+  "status": "completed",
+  "conclusion": "success",
+  "backend": {
+    "passed": 64,
+    "failed": 0,
+    "newReservations": 12
+  },
+  "android": {
+    "passed": 36,
+    "failed": 0,
+    "newTransportTests": 2,
+    "analysis": "No issues found",
+    "base": "d3c56ab6551c844fcb27501ba326d0c9a5cff641",
+    "overlay": true
+  },
+  "jobs": [
+    {
+      "id": 125766476874,
+      "name": "fixtures-and-https",
+      "conclusion": "success",
+      "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968/job/125766476874"
+    },
+    {
+      "id": 125766477215,
+      "name": "android-tv-reservations",
+      "conclusion": "success",
+      "url": "https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968/job/125766477215"
+    }
+  ],
+  "scope": "fixtures, mock HTTP and ephemeral loopback HTTPS only; no hardware/live Firebase"
+}

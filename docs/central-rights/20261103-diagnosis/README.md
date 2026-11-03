@@ -54,4 +54,17 @@ Nenhum arquivo executável modificado, Android oficial/C6/LAB714/Roku oficial in
 
 A ordem de execução posterior autorizou corrigir backend e cliente experimental. O diagnóstico acima é histórico. Correção aplicada em devices.mjs: consultas neutras não apagam nem prolongam reservas; apenas mobile_stop ou status(false) explícito libera. Atomicidade continua no callback transacional do store. Foram criados12cenários em reservations.test.mjs;12/12verdes localmente e28/28integração relacionada. Resultado inicial de fixture/comparação entre contextos corrigido; execução da versão antiga falha em preservação de entitlement, nova passa. Não houve alteração de política comercial.
 
-Cliente Android TV corrigido mantido como overlay em experiments/central-rights/android-tv, aplicado em CI ao commit Android fixado d3c56ab. Dois testes novos verificam corpos de consulta/reprodução/stop/logout e semântica mobile. Branch Android não foi modificada, respeitando a branch exclusiva desta ordem. Nenhum APK. CI em andamento após envio; resultados definitivos serão anexados.
+Cliente Android TV corrigido mantido como overlay em experiments/central-rights/android-tv, aplicado em CI ao commit Android fixado d3c56ab. Dois testes novos verificam corpos de consulta/reprodução/stop/logout e semântica mobile. Branch Android não foi modificada, respeitando a branch exclusiva desta ordem. Nenhum APK. CI41590689968 concluído com sucesso:64backend/HTTPS e36Android, análise sem problemas.
+
+
+## Fechamento da etapa autorizada
+
+Código e testes: [bfedc1540c79d09ab812432163c7793679ad08f4](https://github.com/japarocha2-cloud/rocha-plus/commit/bfedc1540c79d09ab812432163c7793679ad08f4). [CI41590689968](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968) completed/success nos doisjobs.64backend/HTTPS (12novasregressões) e36Android (2novostestes), zero falhas finais; Flutter analyze sem problemas. [Resultados](ci-results.json), [excertos](ci-test-excerpts.log), [matriz individual](regression-checklist.md), [antes/depois](http-before-after.json), [auditoriaHTTPS](https-mobile-audit.md), [preservação](preservation.json), [estado inicial](initial-state.json).
+
+Antes: consulta celular/TV seguida de terceira reprodução200; depois:409nos dois casos. Stop legítimo libera só o slot correspondente; concorrência pela última vaga200/409. Memória serializada/HTTPSloopback e MockClient não comprovam concorrência Firestore real ou reprodução em aparelhos.
+
+Arquivos executáveis alterados: devices.mjs; novo reservations.test.mjs; workflow central-rights-tests.yml; dois arquivos de overlay Android e README. Overlay validado no app experimental completo em checkout CI; aplicação na branch Android persistente não realizada porque a ordem exige branch exclusiva Roku. Cliente base Android conserva arquivo anterior, não instalar nem afirmar corrigido fora do overlay testado. Nenhum teste real de loginGoogle/Firebase ou playback nesta etapa.
+
+Configurações central e LAB permanecem false/endpoints vazios, comprovadas por bytes; modo account_homologation preservado. Todo platforms/roku-lab-visual, catálogo607/578associações, artes, oficial e artefatos inalterados no diffGit. ZIP0.6.7 não regenerado,4.538.188bytes, SHA2566ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07 reconferido. Nenhuma interação ECP/nova instalação, dados/favoritos/registros/temporizador não tocados.
+
+Conclusão desta etapa: critérios de correção e regressão cumpridos no ambiente experimental testado; bloqueio LAB mantido conforme ordem. AtivaçãoHTTPS, aplicação futura na branchAndroid e homologação física permanecem pendentes, sem concessões ou implantação autorizadas. Não declarar missão operacional completa.

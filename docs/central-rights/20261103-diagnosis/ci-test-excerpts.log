@@ -1,0 +1,64 @@
+2026-11-03T06:34:16.7467815Z   passed: 28,
+2026-11-03T06:34:16.7468878Z   failed: 0,
+2026-11-03T06:34:16.7478205Z     'duplicate and concurrent webhook never extend period',
+2026-11-03T06:34:16.7488073Z     'two concurrent TV plays allowed; third stream denied',
+2026-11-03T06:34:16.7983017Z   passed: 12,
+2026-11-03T06:34:16.7983543Z   failed: 0,
+2026-11-03T06:34:16.7984863Z     '1 two playback reservations allowed and repeat start occupies one slot',
+2026-11-03T06:34:16.7985991Z     '2 third playback rejected with HTTP409',
+2026-11-03T06:34:16.7987303Z     '3 mobile entitlement preserves reservations and third remains409',
+2026-11-03T06:34:16.7988711Z     '4 Android TV neutral navigation preserves both reservations',
+2026-11-03T06:34:16.7989933Z     '5 repeated status reads neither release nor extend leases',
+2026-11-03T06:34:16.7991084Z     '6 explicit TV stop releases only corresponding slot',
+2026-11-03T06:34:16.7992088Z     '7 logout removes only its TV session and stream, preserving phone/other TV',
+2026-11-03T06:34:16.7993012Z     '8 revocation denies renewal for mobile and TV',
+2026-11-03T06:34:16.7993795Z     '9 lease expiry frees capacity only at actual deadline',
+2026-11-03T06:34:16.7994614Z     '10 network failure does not release a valid reservation',
+2026-11-03T06:34:16.7995438Z     '11 concurrent contenders for last slot: one200 and one409 atomically',
+2026-11-03T06:34:16.7996315Z     '12 legitimate mobile stop permits retry without altering TV lease'
+2026-11-03T06:34:17.0442717Z   passed: 8,
+2026-11-03T06:34:17.0443063Z   failed: 0,
+2026-11-03T06:34:17.0919533Z   passed: 6,
+2026-11-03T06:34:17.0920111Z   failed: 0,
+2026-11-03T06:34:17.3100019Z   passed: 6,
+2026-11-03T06:34:17.3100499Z   failed: 0,
+2026-11-03T06:34:17.3600902Z   passed: 4,
+2026-11-03T06:34:17.3601378Z   failed: 0,
+2026-11-03T06:35:39.3002650Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: known reasons are displayed only when consistent with server authorization
+2026-11-03T06:35:39.3005337Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: shared cross-platform contract vectors
+2026-11-03T06:35:39.3039532Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: unknown or contradictory metadata never claims paid access or a trial
+2026-11-03T06:35:39.3048793Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: LAB separate from paid and clock discounts network
+2026-11-03T06:35:39.3072210Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: dates are optional and never authorize using the local clock
+2026-11-03T06:35:39.3082999Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: UID, device and scope mismatch deny
+2026-11-03T06:35:39.3116245Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: expired, oversized and untyped lease deny
+2026-11-03T06:35:39.3146316Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: server paid and trial accepted only in commercial scope
+2026-11-03T06:35:39.3278442Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: 401, malformed payload and offline responses cannot confirm access
+2026-11-03T06:35:39.3321464Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: account switch while token or response is pending discards the old account
+2026-11-03T06:35:39.3356565Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: missing or invalid token never sends an HTTP request
+2026-11-03T06:35:39.3371894Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: authenticated request, no client-supplied UID or duration
+2026-11-03T06:35:39.3394484Z ✅ <ANDROID_FIXTURE>/test/subscription_access_result_test.dart: invalid timezone offsets cannot fabricate a displayed expiration
+2026-11-03T06:35:39.3471236Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: network, unauthorized and missing token fail closed
+2026-11-03T06:35:39.3499187Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: account switched while token loads rejects response
+2026-11-03T06:35:39.3526564Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: HTTP endpoint rejected before sending identity
+2026-11-03T06:35:39.3681860Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: TV code, pending, authenticated mobile approval and session binding
+2026-11-03T06:35:39.3779882Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: neutral TV navigation never sends stop; playback and stop are explicit
+2026-11-03T06:35:39.3870435Z ✅ <ANDROID_FIXTURE>/test/central_rights_client_test.dart: mobile entitlement is neutral, playback and stop are separate actions
+2026-11-03T06:35:41.1807520Z ##[group]✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: platform lifecycle baseline disposes without any Navigator
+2026-11-03T06:35:41.6699919Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: initial denial never creates protected content
+2026-11-03T06:35:42.0714700Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: expiration removes fullscreen route and disposes its actual controller
+2026-11-03T06:35:42.1022872Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: VLC initializes one native surface and remote Enter reaches playback
+2026-11-03T06:35:42.2389817Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: network error revokes existing playback instead of retaining stale success
+2026-11-03T06:35:42.2618519Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: VLC channel change binds the new controller to a new native surface
+2026-11-03T06:35:42.3678079Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: VLC Back exits fullscreen before disposing the player
+2026-11-03T06:35:42.4327398Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: verification timeout revokes player and ignores a late positive result
+2026-11-03T06:35:42.5854439Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: successful periodic recheck keeps the same live controller
+2026-11-03T06:35:42.5917279Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: VLC fullscreen toggles retain the existing native surface
+2026-11-03T06:35:42.7227496Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: VLC decoder error leaves an actionable fallback focused for the remote
+2026-11-03T06:35:42.7677423Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: system back pops protected player without bypassing its gate
+2026-11-03T06:35:42.9564695Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: revocation invalidates pending Cast permits and waits for remote shutdown before regrant
+2026-11-03T06:35:43.0024900Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: remote shutdown failure cannot grant access or claim a stopped TV
+2026-11-03T06:35:43.0051334Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: repeated VLC channel changes release every replaced native player
+2026-11-03T06:35:43.0894021Z ✅ <ANDROID_FIXTURE>/test/vlc_tv_lifecycle_test.dart: initialized VLC removes its hidden loading animation
+2026-11-03T06:35:43.1801075Z ✅ <ANDROID_FIXTURE>/test/subscription_gate_test.dart: UID change disposes old route and cannot inherit prior or delayed grant
+2026-11-03T06:35:43.2030676Z 🎉 36 tests passed.
+2026-11-03T06:35:53.0633809Z No issues found! (ran in 9.2s)

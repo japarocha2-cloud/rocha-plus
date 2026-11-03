@@ -1,0 +1,49 @@
+{
+  "base": "84ecf7a596f9c1223494661d2e0f84d048e5340b",
+  "codeCommit": "bfedc1540c79d09ab812432163c7793679ad08f4",
+  "changedPaths": [
+    ".github/workflows/central-rights-tests.yml",
+    "docs/central-rights/20261103-diagnosis/README.md",
+    "docs/central-rights/20261103-diagnosis/initial-state.json",
+    "docs/central-rights/20261103-diagnosis/reservation-regressions.json",
+    "docs/plantao/PLANTAO-MESTRE-ROCHA-ROKU.md",
+    "experiments/central-rights/android-tv/README.md",
+    "experiments/central-rights/android-tv/central_rights_client.dart",
+    "experiments/central-rights/android-tv/central_rights_client_test.dart",
+    "experiments/central-rights/devices.mjs",
+    "experiments/central-rights/reservations.test.mjs"
+  ],
+  "protectedConfigChecks": [
+    {
+      "path": "platforms/roku-lab-visual/config/central-access.json",
+      "unchanged": true,
+      "sha256": "0ef5d5eb0ea13c904752beac7665f54e8e1466a0a67dc5c2ff0c843f33739397"
+    },
+    {
+      "path": "platforms/roku-lab-visual/config/lab-access.json",
+      "unchanged": true,
+      "sha256": "1fb99d9c4ca80ce68cfd00e72151b1cbe4339d01029c78bfbc9de663211e702d"
+    },
+    {
+      "path": "platforms/roku-lab-visual/config/physical-lab-access.json",
+      "unchanged": true,
+      "sha256": "e1d22d7be6ae82e075ec891b5141a760c1896cdf51c26c873bb40b8a787e7974"
+    },
+    {
+      "path": "platforms/roku-lab-visual/manifest",
+      "unchanged": true,
+      "sha256": "bcd4e1d0475c092303a9109fe21670d4a3adb94bcba90bb4ea149745d98a6edf"
+    }
+  ],
+  "zip": {
+    "bytes": 4538188,
+    "sha256": "6ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07",
+    "regenerated": false
+  },
+  "catalogRecords": 607,
+  "coverAssociations": 578,
+  "countsBasis": "Inherited verified counts; entire Roku source/art/catalog tree unchanged by Git blob comparison, not new channel homologation",
+  "ecpTouched": false,
+  "commercialWrites": 0,
+  "activation": false
+}

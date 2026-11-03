@@ -4,6 +4,8 @@
   "hashes": {
     "experiments/central-rights/devices.mjs": "29e66fdbfdf5e7d78557ca33ebeb3e44ebbb2e039c5ef55b75c4ae54cf28b231",
     "docs/plantao/PLANTAO-MESTRE-ROCHA-ROKU.md": "2f0d6baac261fa8c41a8ffeb419dfb757730f070ed928c25a611bfbe726ac931",
-    "docs/central-rights/20261103-diagnosis/README.md": "9e9871e88f4234acf97a90f3bd125963240def14e7d84297ef3b0790717ada06"
+    "docs/central-rights/20261103-diagnosis/README.md": "9e9871e88f4234acf97a90f3bd125963240def14e7d84297ef3b0790717ada06",
+    "android-base/lib/src/auth/central_rights_client.dart": "4a3fc3d5587bf679d1791b69d2823240ad16a902388226fd4b2ca1d74bde26d0",
+    "android-base/test/central_rights_client_test.dart": "5a895bb360aa5a88b5c8b00f157f2c729953b25556cd96a0b68154dfbb96f7be"
   }
 }

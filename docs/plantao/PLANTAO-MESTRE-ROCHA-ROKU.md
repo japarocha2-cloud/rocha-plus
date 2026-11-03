@@ -33,7 +33,7 @@ Falhas intermediárias do certificado de teste e análise Dart foram corrigidas 
 
 ## Correção autorizada 03/11 — reservas experimentais
 
-Backend corrigido e12regressões novas/28integrações relacionadas verdes localmente. Cliente Android TV com consulta neutra corrigida em overlay exclusivo da branch Roku, testado sobre base Android fixa por CI; sem modificar branch Android ou APK. [Estado e evidências](../central-rights/20261103-diagnosis/README.md). CI será registrado após execução. Bloqueios e ZIP0.6.7 preservados; nenhum acesso ativado.
+Backend corrigido:12novasregressões,64testesbackend/HTTPS e36Android aprovados; análiseFlutter sem problemas. Código bfedc1540c79d09ab812432163c7793679ad08f4, [CI41590689968](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41590689968) success. Antes terceira200após consulta; depois409. Concorrência pela última vaga200/409. Cliente Android TV corrigido como overlay exclusivo da branchRoku, validado sobre baseAndroid fixa d3c56ab em checkoutCI; branchAndroid e APK intactos. [Estado e evidências](../central-rights/20261103-diagnosis/README.md), [auditoriaHTTPS classificada](../central-rights/20261103-diagnosis/https-mobile-audit.md). Bloqueiosfalse/endpoints vazios, todo códigoRoku/ZIP0.6.7/catálogo/capas preservados. Host/certificado/IAM/domínioAuth e autorização temporária ativa não comprovados ou pendentes; nenhum acesso ativado. Sem execução física/Google real. AplicaçãoAndroid persistente e ativação são etapas futuras.
 
 ## Diagnóstico 03/11 — investigação somente
 

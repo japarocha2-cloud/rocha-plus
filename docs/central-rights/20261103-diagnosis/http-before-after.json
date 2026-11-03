@@ -1,0 +1,29 @@
+{
+  "fixtureOnly": true,
+  "cases": [
+    {
+      "version": "before",
+      "case": "mobile-entitlement",
+      "thirdBefore": 409,
+      "thirdAfter": 200
+    },
+    {
+      "version": "before",
+      "case": "tv-navigation",
+      "thirdBefore": 409,
+      "thirdAfter": 200
+    },
+    {
+      "version": "after",
+      "case": "mobile-entitlement",
+      "thirdBefore": 409,
+      "thirdAfter": 409
+    },
+    {
+      "version": "after",
+      "case": "tv-navigation",
+      "thirdBefore": 409,
+      "thirdAfter": 409
+    }
+  ]
+}
