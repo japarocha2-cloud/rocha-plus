@@ -15,7 +15,7 @@ export async function prepareMonthlyOnly({monthlyPayment,annualPayment,provider,
  String(monthlyPayment.payer?.id)!==String(annualPayment.payer?.id)||
  monthlyPayment.status!=='approved'||monthlyPayment.transaction_amount_refunded!==0)throw Error('monthly-only-evidence-required');
  return {dryRun:true,writes:0,readyToApply:false,externalRefund:{reportedByOwner:true,amountCents:4950,reconciledWithReceipt:false,mercadoPagoRefundConfirmed:false},
- annual:{paymentStatusUnchanged:annualPayment.status,cancellationPreview:rawAnnual.status==='cancelled'?{operation:'NO_OP',reason:'already_cancelled'}:{method:'PUT',path:'/preapproval/'+annual.subscriptionId,body:{status:'cancelled'},purpose:'stop future annual recurrence only',requiresProviderSchemaReview:true,requiresFreshReadAndSpecificAuthorization:true},refundRequest:null},
+ annual:{subscriptionId:annual.subscriptionId,paymentStatusUnchanged:annualPayment.status,cancellationPreview:rawAnnual.status==='cancelled'?{operation:'NO_OP',reason:'already_cancelled'}:{method:'PUT',path:'/preapproval/'+annual.subscriptionId,body:{status:'cancelled'},purpose:'stop future annual recurrence only',requiresProviderSchemaReview:true,requiresFreshReadAndSpecificAuthorization:true},refundRequest:null},
  monthly:{subscriptionId:monthly.subscriptionId,providerMutation:null,paymentId:String(monthlyPayment.id),periodCandidate:{start:monthly.periodStart,end:monthly.periodEnd,independentlyReviewed:false}},
  access:{eligiblePaymentIds:[String(monthlyPayment.id)],excludedPaymentIds:[String(annualPayment.id)],writePreview:null,blockedBy:['installed-backend-and-session','fresh-private-baseline','reviewed-monthly-coverage','specific-write-authorization']}};
 }

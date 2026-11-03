@@ -4,7 +4,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {createRegularPaymentRecovery} from '../regular_payment_recovery.mjs';
 import {regularPaymentFirestoreStore} from '../regular_payment_firestore.mjs';
-import {inspectRegularPaymentContract} from '../regular_payment_contract.mjs';
+import {prepareMonthlyOnly} from '../monthly_only_preparation.mjs';
 import {previewRecoveryChangeset} from '../recovery_changeset_preview.mjs';
 import {createHash} from 'node:crypto';
 import {mkdirSync,realpathSync,writeFileSync,chmodSync,readdirSync} from 'node:fs';
@@ -27,7 +27,7 @@ try {
   const merchantId=process.env.EXPECTED_RECEIVING_MERCHANT_ID;
   const token=process.env.MP_RECEIVING_ACCESS_TOKEN;
   const key=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
-  if (!Array.isArray(ids) || ids.length<1 || ids.length>5 || !ids.every(id=>typeof id==='string' && /^\d{1,30}$/.test(id)) ||
+  if (!Array.isArray(ids) || ids.length!==2 || !ids.every(id=>typeof id==='string' && /^\d{1,30}$/.test(id)) ||
       new Set(ids).size!==ids.length || !email || !token || !/^\d+$/.test(merchantId||'') || key.project_id!=='rocha-plus') throw Error('inputs');
   initializeApp({credential:cert(key),projectId:'rocha-plus'});
   const auth=getAuth(), user=await auth.getUserByEmail(email);
@@ -37,20 +37,22 @@ try {
     if(!r.ok)throw Error('provider');return r.json();
   }
   const provider={merchant:()=>get('/users/me'),payment:id=>get('/v1/payments/'+id),subscription:id=>get('/preapproval/'+id)};
-  const terms=[];
-  for(const id of ids) {
-    const payment=await provider.payment(id);
-    if(String(payment.id)!==id)throw Error('payment-identity');
-    const candidate=await inspectRegularPaymentContract({payment,provider,merchantId});
-    terms.push({id,plan:candidate.plan,amountCents:Math.round(payment.transaction_amount*100),
-      periodStart:candidate.periodStart,periodEnd:candidate.periodEnd});
-  }
+  const receipts=[];
+  for(const id of ids){const payment=await provider.payment(id);if(String(payment.id)!==id)throw Error('payment-identity');receipts.push(payment);}
+  const monthlyReceipts=receipts.filter(p=>p.transaction_amount===4.5),annualReceipts=receipts.filter(p=>p.transaction_amount===49.5);
+  if(monthlyReceipts.length!==1||annualReceipts.length!==1)throw Error('one-monthly-and-one-annual-required');
+  const selection=await prepareMonthlyOnly({monthlyPayment:monthlyReceipts[0],annualPayment:annualReceipts[0],provider,merchantId});
+  const monthlyTerms=[{id:selection.monthly.paymentId,plan:'monthly',amountCents:450,periodStart:selection.monthly.periodCandidate.start,periodEnd:selection.monthly.periodCandidate.end}];
+  // This complete selection stays ONLY in the protected private output, never console/Actions.
+  report.recurringPreparation=selection;
+  report.contractIds={monthly:selection.monthly.subscriptionId,annual:selection.annual.subscriptionId};
+  report.externalRefund={reportedByOwner:true,reconciledWithReceipt:false,mercadoPagoRefundConfirmed:false};
   const store=regularPaymentFirestoreStore({db:getFirestore(),auth,timestamp:()=>{throw Error('writes-disabled');}});
   // Expose ONLY read, never the adapter's transaction entrypoint, to this executable.
   const recover=createRegularPaymentRecovery({provider,store:{read:store.read}});
   const plan=await recover({uid:user.uid,mode:'dry-run',contract:{uid:user.uid,reviewed:false,
     merchantId,currency:'BRL',evidenceReference:'provider-linked-contracts-pending-independent-review',
-    periodPolicy:'explicit-independent-periods',payments:terms}});
+    periodPolicy:'explicit-independent-periods',payments:monthlyTerms}});
   report.identity={firebaseUidFingerprint:fingerprint(user.uid),googleSubjectFingerprint:fingerprint(plan.googleSubject),
     firebaseUidEqualsGoogleSubject:user.uid===plan.googleSubject,
     targetProject:'rocha-plus',clientSessionVerified:false,installedPackageVerified:false,backendVerified:false};

@@ -1,0 +1,15 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "tests": [
+    "annual cancellation targets receipt contract, not payment ID; monthly untouched",
+    "external Pix report never becomes Mercado Pago refund",
+    "only monthly eligible; annual excluded; candidate not a grant",
+    "preparation is idempotent without writes or mutator calls",
+    "refunded or mismatched monthly payer denied",
+    "single monthly preview produces four documents without real transaction",
+    "already cancelled annual contract yields no-op, never cancellation replay"
+  ],
+  "fixtureOnly": true,
+  "productionWrites": 0
+}

@@ -35,6 +35,8 @@ test('raw before-images reach only the explicitly private sink and never the mas
   const f=fixture();let baseline;
   const r=await previewRecoveryChangeset({...f,privateBaselineSink:async value=>{baseline=value;}});
   assert.equal(baseline.documents.length,5);
+  assert(baseline.documents.every(d=>d.proposedOperation&&d.afterTemplate));
+  assert.equal(baseline.documents.find(d=>d.path==='rochaDirectPaymentLedger/11').afterTemplate.uid,'fixture-user');
   assert.equal(baseline.documents.find(d=>d.path==='rochaSparkAccounts/9001').exists,true);
   assert.equal(JSON.stringify(r).includes('rochaSparkAccounts/9001'),false);
   assert.equal(r.finalAuthorizationBoundDigest,null);

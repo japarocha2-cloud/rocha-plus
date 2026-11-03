@@ -49,6 +49,7 @@ export async function previewRecoveryChangeset({db,auth,plan,privateBaselineSink
     const after=op.operation==='update'?{...before,...canonical(op.data)}:canonical(op.data);
     const [collection,key]=op.path.split('/');
     privateBeforeImages.push({path:op.path,exists:snap.exists,data:before,
+      proposedOperation:op.operation,afterTemplate:after,
       updateTime:snap.updateTime?.toDate?.().toISOString()??null,beforeDigest:digest(before)});
     documents.push({path:collection+'/'+identityFingerprint(key),operation:op.operation,
       beforeExists:snap.exists,before:masked(before),after:masked(after),
