@@ -23,7 +23,7 @@ function masked(value,key='') {
   }
   return value;
 }
-export async function previewRecoveryChangeset({db,auth,plan}) {
+export async function previewRecoveryChangeset({db,auth,plan,privateBaselineSink}) {
   if (plan?.dryRun!==true || plan.entries?.length!==2 || !plan.uid || !plan.googleSubject) throw Error('two-payment-dry-run-required');
   const snapshots=new Map(),operations=[];
   async function read(path) {
@@ -42,17 +42,23 @@ export async function previewRecoveryChangeset({db,auth,plan}) {
     if (snapshot.paidUntil!==plan.previousPaidUntil || snapshot.googleSubject!==plan.googleSubject) throw Error('stale-plan');
     await commit({plan,authorization:{actorUid:null,reference:null},checkedAt:null});
   });
-  const documents=[];
+  const documents=[],privateBeforeImages=[];
   for (const op of operations) {
     const snap=await read(op.path),before=snap.exists?canonical(snap.data()):null;
     if ((op.operation==='create' && snap.exists) || (op.operation==='update' && !snap.exists)) throw Error('document-precondition');
     const after=op.operation==='update'?{...before,...canonical(op.data)}:canonical(op.data);
     const [collection,key]=op.path.split('/');
+    privateBeforeImages.push({path:op.path,exists:snap.exists,data:before,
+      updateTime:snap.updateTime?.toDate?.().toISOString()??null,beforeDigest:digest(before)});
     documents.push({path:collection+'/'+identityFingerprint(key),operation:op.operation,
       beforeExists:snap.exists,before:masked(before),after:masked(after),
       beforeDigest:digest(before),afterTemplateDigest:digest(after),
       updateTime:snap.updateTime?.toDate?.().toISOString()??null});
   }
+  // Raw paths and before-images never appear in the public return value.
+  if (privateBaselineSink) await privateBaselineSink({schemaVersion:1,financialPlanDigest:plan.digest,
+    consistentSnapshot:false,documents:privateBeforeImages,
+    note:'Refresh and check versions in the eventual authorized transaction; this baseline alone does not authorize rollback.'});
   return {readOnly:true,simulationOnly:true,writes:0,expectedDocumentCount:5,
     proposedDocumentCount:documents.length,documents,
     auditExistsBefore:documents.find(d=>d.path.startsWith('rochaDirectPaymentAudit/'))?.beforeExists??null,

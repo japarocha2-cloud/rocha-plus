@@ -31,3 +31,11 @@ test('changed source state blocks the template before capturing a proposal',asyn
   const f=fixture();f.state.set('rochaSparkAccounts/9001',{paidUntil:{toMillis:()=>5000}});
   await assert.rejects(previewRecoveryChangeset(f),/stale-plan/);
 });
+test('raw before-images reach only the explicitly private sink and never the masked return value',async()=>{
+  const f=fixture();let baseline;
+  const r=await previewRecoveryChangeset({...f,privateBaselineSink:async value=>{baseline=value;}});
+  assert.equal(baseline.documents.length,5);
+  assert.equal(baseline.documents.find(d=>d.path==='rochaSparkAccounts/9001').exists,true);
+  assert.equal(JSON.stringify(r).includes('rochaSparkAccounts/9001'),false);
+  assert.equal(r.finalAuthorizationBoundDigest,null);
+});

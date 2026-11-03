@@ -7,6 +7,18 @@ import {regularPaymentFirestoreStore} from '../regular_payment_firestore.mjs';
 import {inspectRegularPaymentContract} from '../regular_payment_contract.mjs';
 import {previewRecoveryChangeset} from '../recovery_changeset_preview.mjs';
 import {createHash} from 'node:crypto';
+import {mkdirSync,realpathSync,writeFileSync,chmodSync,readdirSync} from 'node:fs';
+import {isAbsolute,resolve,sep,join,parse} from 'node:path';
+// The owner selected private Work execution. Never collect real state in Actions.
+if (process.env.GITHUB_ACTIONS==='true') throw Error('private-work-execution-only');
+const requestedDirectory=process.env.ROCHA_PRIVATE_REPORT_DIR;
+if (!requestedDirectory || !isAbsolute(requestedDirectory)) throw Error('absolute-private-report-directory-required');
+mkdirSync(requestedDirectory,{recursive:true,mode:0o700});
+const privateDirectory=realpathSync(requestedDirectory),checkout=realpathSync(resolve('.'));
+if (privateDirectory===parse(privateDirectory).root || privateDirectory===checkout ||
+    privateDirectory.startsWith(checkout+sep) || checkout.startsWith(privateDirectory+sep) ||
+    readdirSync(privateDirectory).length!==0) throw Error('new-private-report-directory-outside-checkout-required');
+chmodSync(privateDirectory,0o700);
 const report={readOnly:true,dryRun:true,writes:0,accessGranted:false,readyForProduction:false};
 const fingerprint=value=>createHash('sha256').update(value).digest('hex').slice(0,12);
 try {
@@ -42,7 +54,9 @@ try {
   report.identity={firebaseUidFingerprint:fingerprint(user.uid),googleSubjectFingerprint:fingerprint(plan.googleSubject),
     firebaseUidEqualsGoogleSubject:user.uid===plan.googleSubject,
     targetProject:'rocha-plus',clientSessionVerified:false,installedPackageVerified:false,backendVerified:false};
-  report.changeset=await previewRecoveryChangeset({db:getFirestore(),auth,plan});
+  report.changeset=await previewRecoveryChangeset({db:getFirestore(),auth,plan,
+    privateBaselineSink:async baseline=>writeFileSync(join(privateDirectory,'before-images.private.json'),
+      JSON.stringify(baseline,null,2),{flag:'wx',mode:0o600})});
   report.plan={digest:plan.digest,targetCollection:plan.targetCollection,
     previousPaidUntil:plan.previousPaidUntil?new Date(plan.previousPaidUntil).toISOString():null,
     proposedPaidUntil:new Date(plan.paidUntil).toISOString(),currentlyValid:plan.currentlyValid,
@@ -94,5 +108,6 @@ try {
   }
 
 } catch(error) { report.blocked=true;report.reason=error.code||'provider-contract-identity-or-ledger-not-confirmed';process.exitCode=1; }
-console.log(JSON.stringify(report,null,2));
+writeFileSync(join(privateDirectory,'readiness.private.json'),JSON.stringify(report,null,2),{flag:'wx',mode:0o600});
+console.log(JSON.stringify({readOnly:true,writes:0,resultStoredPrivately:true,readyForProduction:false}));
 
