@@ -1,0 +1,25 @@
+name: Incident installed release evidence and targeted fixtures
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths:
+      - backend/entitlement/installed_release_comparison.mjs
+      - backend/entitlement/installed_release_comparison.test.mjs
+      - .github/workflows/incident-installed-release-fixtures.yml
+permissions:
+  contents: read
+jobs:
+  fixture-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Eight new installed binary comparison fixtures
+        run: node --input-type=module -e "import {runInstalledReleaseComparisonTests} from './backend/entitlement/installed_release_comparison.test.mjs'; console.log(runInstalledReleaseComparisonTests())"
+      - name: Original financial fixture files with the standard Node test runner
+        run: node --test backend/entitlement/regular_payment_contract.test.mjs backend/entitlement/regular_payment_recovery.test.mjs backend/entitlement/direct_payment_preview.test.mjs backend/entitlement/direct_payment_atomicity.test.mjs

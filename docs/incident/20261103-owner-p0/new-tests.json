@@ -1,0 +1,17 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "tests": [
+    "unknown installed version cannot identify backend",
+    "version alone cannot identify APK/backend",
+    "exact universal APK comparison identifies only compiled candidate, never customer session/access",
+    "ARM64 output matched independently",
+    "mismatched version blocks even matching reported hash",
+    "split package or AAB hash does not falsely identify installed APK",
+    "unknown release or malformed hash rejected",
+    "private identifiers and tokens never echoed in result"
+  ],
+  "fixtureOnly": true,
+  "cloudCalls": 0,
+  "deviceCalls": 0
+}

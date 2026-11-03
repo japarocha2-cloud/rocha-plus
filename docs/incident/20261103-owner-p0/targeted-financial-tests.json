@@ -1,0 +1,114 @@
+{
+  "passed": 26,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "regular payment resolves its contract even when payer_email search cannot match",
+      "result": "pass"
+    },
+    {
+      "name": "annual provider schedule preserves exact next payment date rather than adding a month",
+      "result": "pass"
+    },
+    {
+      "name": "receipt reference alone cannot bind wrong merchant, payer, amount, status or cycle",
+      "result": "pass"
+    },
+    {
+      "name": "reproduces expired Spark without ledger; dry run proposes explicit annual end without stacking or writes",
+      "result": "pass"
+    },
+    {
+      "name": "atomic recovery uses Google document and preserves trial/welcome/favorites; replay never adds time",
+      "result": "pass"
+    },
+    {
+      "name": "concurrent repeats create one global record per payment and one audit",
+      "result": "pass"
+    },
+    {
+      "name": "transaction failure rolls back ledger, access and audit together",
+      "result": "pass"
+    },
+    {
+      "name": "pending/rejected/refunded/chargeback/sandbox/partial refund never grant",
+      "result": "pass"
+    },
+    {
+      "name": "fresh provider read prevents applying a preview after refund",
+      "result": "pass"
+    },
+    {
+      "name": "wrong payer/merchant/amount, duplicate IDs and missing contractual terms fail closed",
+      "result": "pass"
+    },
+    {
+      "name": "unreviewed provider contract can be simulated but never applied",
+      "result": "pass"
+    },
+    {
+      "name": "contract start just before payment approval is preserved",
+      "result": "pass"
+    },
+    {
+      "name": "legacy or cross-account records require explicit review, never duplicate adoption",
+      "result": "pass"
+    },
+    {
+      "name": "stale preview, unauthorized actor and absent authorization cannot apply",
+      "result": "pass"
+    },
+    {
+      "name": "manual revocation after recovery cannot be undone by approval replay",
+      "result": "pass"
+    },
+    {
+      "name": "expired explicit periods and future starts do not create current access",
+      "result": "pass"
+    },
+    {
+      "name": "failed atomic commit cannot leave account, payment or audit half-written",
+      "result": "pass"
+    },
+    {
+      "name": "refund racing with a retry never reinstates the reversed payment",
+      "result": "pass"
+    },
+    {
+      "name": "two independent payments survive one refund with no double credit",
+      "result": "pass"
+    },
+    {
+      "name": "monthly and annual proposals never silently stack, are repeatable and never grant access",
+      "result": "pass"
+    },
+    {
+      "name": "card validation, pending, refund and sandbox cannot create paid preview",
+      "result": "pass"
+    },
+    {
+      "name": "different payer, merchant, disabled or unverified identity are rejected",
+      "result": "pass"
+    },
+    {
+      "name": "duplicate, unassigned, wrong price, imprecise amount and absent refund evidence fail closed",
+      "result": "pass"
+    },
+    {
+      "name": "invalid clocks, future approval and malformed existing credit cannot produce preview",
+      "result": "pass"
+    },
+    {
+      "name": "calendar-month proposal handles month ends and leap years",
+      "result": "pass"
+    },
+    {
+      "name": "future existing credit is preserved but ledger still blocks application",
+      "result": "pass"
+    }
+  ],
+  "sourceCommit": "d3b6278bd2b9d4d4b252d42bc11d98001ea2fa18",
+  "fixtureOnly": true,
+  "productionWrites": 0,
+  "executionNote": "Local callbacks run sequentially with test-registration adapter; JSON-only snapshot clone adapted to same realm. Initial node:test spawn EPERM and isolation:none timeout. Original tests will run unchanged in CI."
+}

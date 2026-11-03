@@ -1,0 +1,38 @@
+{
+  "commit": "473abcaa25f7618a84ad8ea96bc0a40be8551091",
+  "build_number": "3538",
+  "workflow_run_number": "538",
+  "permissions": [
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+    "android.permission.INTERNET",
+    "android.permission.USE_BIOMETRIC",
+    "android.permission.USE_FINGERPRINT",
+    "android.permission.WAKE_LOCK",
+    "com.google.android.providers.gsf.permission.READ_GSERVICES",
+    "com.rochaplus.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "cleartext_allowed": false,
+  "debuggable": false,
+  "signing": "production signing configured",
+  "firebase_auth_configured": true,
+  "physical_validation": "pending",
+  "billing_mode": "spark_trial",
+  "automatic_payments": false,
+  "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
+  "outputs": {
+    "app-release.apk": {
+      "size_bytes": 65990860,
+      "sha256": "9b3b178774e6fa31ad520eed7a71497b9750774486d5313adb080485601e7616"
+    },
+    "app-arm64-v8a-release.apk": {
+      "size_bytes": 30837495,
+      "sha256": "71bc32cb5ee7d92360d839014d1b2c3073e9cad0c5e7699c0e0635cd6a348c6d"
+    },
+    "app-release.aab": {
+      "size_bytes": 66948295,
+      "sha256": "484eaf8e51336f74061b6346362d1a0c1ffda61ea298fac4fe2aca8f8b1603c2"
+    }
+  }
+}
