@@ -1,0 +1,19 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rocha+ — Vinculação experimental</title>
+<style>body{font:18px system-ui;background:#10091f;color:#fff;max-width:38rem;margin:3rem auto;padding:1rem}button,input{font:inherit;padding:.7rem;margin:.4rem}label{display:block}#status{white-space:pre-wrap}</style>
+<h1>Rocha+ — Vincular TV</h1><p>Ambiente experimental. Esta vinculação não cria assinatura nem cobrança.</p>
+<button id="login">Entrar com Google</button><label>Código exibido na TV <input id="code" maxlength="8" autocomplete="off" spellcheck="false"></label><button id="approve" disabled>Confirmar esta TV</button><p id="status" role="status">Aguardando configuração segura.</p>
+<script type="module" nonce="NONCE_VALUE">
+const config=PUBLIC_CONFIG_VALUE;
+const status=document.querySelector('#status'),approve=document.querySelector('#approve');let auth,user,mobile;
+function id(){const b=new Uint8Array(32);crypto.getRandomValues(b);return [...b].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function request(action,extra={}){const token=await user.getIdToken();const r=await fetch('/v1/access',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,mobile_id:mobile,...extra})});if(!r.ok)throw Error('Não foi possível confirmar o acesso ('+r.status+').');return r.json();}
+document.querySelector('#login').onclick=async()=>{try{
+ if(!config?.projectId||!config?.authDomain||!config?.apiKey)throw Error('Firebase do ambiente experimental não configurado.');
+ const {initializeApp}=await import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js');
+ const {getAuth,inMemoryPersistence,setPersistence,GoogleAuthProvider,signInWithPopup}=await import('https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js');
+ auth??=getAuth(initializeApp(config));await setPersistence(auth,inMemoryPersistence);user=(await signInWithPopup(auth,new GoogleAuthProvider())).user;
+ mobile=localStorage.getItem('rocha-central-lab-mobile');if(!/^[a-f0-9]{64}$/.test(mobile??'')){mobile=id();localStorage.setItem('rocha-central-lab-mobile',mobile);}
+ await request('register_mobile');approve.disabled=false;status.textContent='Confira o código na sua TV antes de confirmar. Outro celular será desconectado; as TVs serão preservadas.';
+ }catch{status.textContent='Login ou acesso indisponível. Nenhuma assinatura foi alterada.';approve.disabled=true;}};
+approve.onclick=async()=>{const code=document.querySelector('#code').value.trim().toUpperCase();if(!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(code)){status.textContent='Digite os oito caracteres exibidos na TV.';return;}approve.disabled=true;try{await request('approve',{user_code:code});status.textContent='TV vinculada. Volte à televisão.';}catch{status.textContent='Não foi possível vincular. Confira o acesso, o código e o limite de TVs.';}finally{approve.disabled=false;}};
+</script></html>

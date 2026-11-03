@@ -1,0 +1,24 @@
+name: Central Rights LAB local integration
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - experiments/central-rights/**
+      - .github/workflows/central-rights-tests.yml
+permissions:
+  contents: read
+jobs:
+  fixtures-and-https:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Payment, rights and device integration (fixtures only)
+        run: node --input-type=module -e "import {runIntegrationTests} from './experiments/central-rights/integration.test.mjs'; console.log(await runIntegrationTests())"
+      - name: Real loopback HTTPS boundary (ephemeral TLS only)
+        run: node --input-type=module -e "import {runHttpsTests} from './experiments/central-rights/https.test.mjs'; console.log(await runHttpsTests())"

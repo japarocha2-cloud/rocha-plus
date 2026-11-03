@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://southamerica-east1-rocha-plus.cloudfunctions.net/mercadoWebhook",
+    "method": "GET",
+    "status": 404,
+    "authenticated": false,
+    "note": "Conventional URI derived from source region/project/name; not a complete deployment inventory."
+  },
+  {
+    "url": "https://southamerica-east1-rocha-plus.cloudfunctions.net/mercadoBilling",
+    "method": "GET",
+    "status": 404,
+    "authenticated": false,
+    "note": "Conventional URI derived from source region/project/name; not a complete deployment inventory."
+  }
+]

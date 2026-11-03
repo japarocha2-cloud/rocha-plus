@@ -1,0 +1,16 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "tests": [
+    "HTTPS approval page, CSP and no-store",
+    "untrusted TLS certificate rejected; security not disabled",
+    "wrong method denied",
+    "content type enforced",
+    "non-object JSON denied",
+    "cross-origin request denied",
+    "oversize denied",
+    "only valid HTTPS API request reaches service"
+  ],
+  "fixtureOnly": true,
+  "publicServiceActivated": false
+}

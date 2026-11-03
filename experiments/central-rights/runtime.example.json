@@ -1,0 +1,14 @@
+{
+  "environment": "central-rights-lab",
+  "enabled": false,
+  "publicServiceEnabled": false,
+  "identityProjectId": "rocha-plus",
+  "labProjectId": "",
+  "origin": "",
+  "authorization": {
+    "enabled": false,
+    "allowedEmail": "",
+    "notBefore": null,
+    "expiresAt": null
+  }
+}

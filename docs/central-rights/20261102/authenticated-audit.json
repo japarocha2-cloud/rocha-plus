@@ -1,0 +1,78 @@
+{
+  "readOnly": true,
+  "writes": 0,
+  "commercialAccessGranted": false,
+  "checkedAt": "2026-11-03T00:17:22.660Z",
+  "localDateTime": "02/11/2026 21:17:22 America/Sao_Paulo",
+  "project": "rocha-plus",
+  "sourceCommit": "c94c29ed49e9f1a5251e425b6818573e8ece67b4",
+  "run": 41551744667,
+  "job": 125640755110,
+  "conclusion": "success",
+  "database": {
+    "edition": "STANDARD",
+    "type": "FIRESTORE_NATIVE"
+  },
+  "accountStores": {
+    "sparkExists": true,
+    "sparkPaidUntilPresent": false,
+    "legacyExists": false,
+    "rochaEntitlementsExists": false,
+    "entitlementsExists": false,
+    "projectionExists": false
+  },
+  "specifiedPayments": [
+    {
+      "authoritativeGet": true,
+      "status": "approved",
+      "operation": "regular_payment",
+      "liveMode": true,
+      "payerMatches": true,
+      "merchantMatches": true,
+      "refunded": false,
+      "disputeStatus": false,
+      "approvalDateValid": true,
+      "externalReferencePresent": false,
+      "notificationUrlPresent": false,
+      "metadataPlanPresent": false,
+      "explicitPeriodPresent": false,
+      "legacyRecord": false,
+      "manualConfirmation": false,
+      "experimentalRecord": false
+    },
+    {
+      "authoritativeGet": true,
+      "status": "approved",
+      "operation": "regular_payment",
+      "liveMode": true,
+      "payerMatches": true,
+      "merchantMatches": true,
+      "refunded": false,
+      "disputeStatus": false,
+      "approvalDateValid": true,
+      "externalReferencePresent": false,
+      "notificationUrlPresent": false,
+      "metadataPlanPresent": false,
+      "explicitPeriodPresent": false,
+      "legacyRecord": false,
+      "manualConfirmation": false,
+      "experimentalRecord": false
+    }
+  ],
+  "unavailable": {
+    "functionInventory": {
+      "httpStatus": 403,
+      "requiredPermission": "cloudfunctions.functions.list"
+    },
+    "webhookLogCoverage": {
+      "httpStatus": 403,
+      "requiredPermission": "logging.logEntries.list",
+      "individualDeliveryConfirmed": false
+    }
+  },
+  "limitations": [
+    "Missing payment-level notification URL does not disprove an application-level webhook.",
+    "No plan/duration inferred from price or title.",
+    "No raw user identifiers or provider financial identifiers copied."
+  ]
+}
