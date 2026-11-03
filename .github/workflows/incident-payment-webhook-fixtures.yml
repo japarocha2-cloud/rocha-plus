@@ -1,0 +1,35 @@
+name: Incident Mercado Pago webhook fixtures
+on:
+  push:
+    branches: [incident/payment-recognition-20261103]
+    paths:
+      - functions/index.js
+      - functions/mercadopago_webhook.js
+      - functions/mercadopago_webhook.test.js
+      - functions/reconcile_and_grant.js
+      - functions/mercadopago_reconciliation.js
+      - .github/workflows/incident-payment-webhook-fixtures.yml
+permissions:
+  contents: read
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax checks
+        run: |
+          node --check index.js
+          node --check mercadopago_webhook.js
+      - name: Unit tests with fixtures only
+        run: npm test
