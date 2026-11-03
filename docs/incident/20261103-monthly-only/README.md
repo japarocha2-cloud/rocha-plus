@@ -26,7 +26,7 @@ Doiscontratos não são causa-raiz isolada comprovada. Há falhas históricas de
 
 ## Testes e procedimento posterior
 
-7novostestesfixtures aprovados localmente: destinoanualobtido decontrato/nãopagamento, mensalintacto, Pixnãoviraestorno, exclusãoanual, preparaçãoidempotente, mensalestornado/pagadorerradonegados, prévia4documentos semtransação real e anualjá canceladoNO_OP. Testes anteriores de pagamento/estorno/concorrência preservados, 26financeiros e8comparação noCI41719572181. CI novo executará7novos+4regressões da prévia alterada, semSecrets.
+7novostestesfixtures aprovados localmente: destinoanualobtido decontrato/nãopagamento, mensalintacto, Pixnãoviraestorno, exclusãoanual, preparaçãoidempotente, mensalestornado/pagadorerradonegados, prévia4documentos semtransação real e anualjá canceladoNO_OP. Testes anteriores de pagamento/estorno/concorrência preservados, 26financeiros e8comparação noCI41719572181. [CI41721373830](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41721373830) concluído success:7novos+4regressões canônicas da prévia, zerofalhas, semSecrets. Código02608f4187d1d9db1ae265456bd38bc866a3724c.
 
 1. Operador privado autorizado captura IDs dos dois contratos a partir dos recibos, estadosatuais e vínculoexato; compara comrecibos/recebedor/payer_id e preserva comprovantes.
 2. Conciliar comprovantePix externo como documento separado, sem converter statusMP e sem fazer outroreembolso.
@@ -37,3 +37,6 @@ Doiscontratos não são causa-raiz isolada comprovada. Há falhas históricas de
 Status **VERMELHO operacional**: acesso não restaurado; preparação pronta para completar dados privados, IDs e baseline. Sem cobrança/cancelamento/estorno/assinaturas/Firebase/IAM/produção/Oficial/Roku/LAB714/avós/merge/deploy/APK. Documentos anteriores de recuperaçãoanual são históricos, superados nesta decisão. A prévia privada preview-historical-NOT-APPLICABLE.json também não deve ser usada como plano mensal.
 
 Referência API consultada: https://www.mercadopago.com.br/developers/pt/reference/online-payments/subscriptions/update-preapproval/put . Documentação de gestão menciona cancelamento porPUT; a enum deve ser revisada na integração operacional, sem assumir tradução do texto como esquema validado. Nenhuma requisição de mutação enviada.
+
+
+Precondição adicional da préviafinal: se já houver créditoconcedido peloanual ou paidUntilfuturo, não reduzi-lo nem preservá-lo silenciosamente como se fosse mensal. Capturar antes real e preparar decisão específica deajuste/rollback para revisão, sem mudar nestaetapa.
