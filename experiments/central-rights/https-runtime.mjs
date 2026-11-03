@@ -1,7 +1,7 @@
 import {createServer} from 'node:https';
 import {randomBytes} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
-export async function createHttpsRuntime({key,cert,handle,publicFirebaseConfig=null,origin}) {
+export async function createHttpsRuntime({key,cert,handle,paymentWebhook,publicFirebaseConfig=null,origin}) {
  const uri=new URL(origin);
  if(uri.protocol!=='https:'||uri.username||uri.password||uri.pathname!=='/'||uri.search||uri.hash)throw Error('https-origin');
  const page=await readFile(new URL('./mobile-approval.html',import.meta.url),'utf8');
@@ -16,7 +16,9 @@ export async function createHttpsRuntime({key,cert,handle,publicFirebaseConfig=n
    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});
    return res.end(page.replaceAll('NONCE_VALUE',nonce).replace('PUBLIC_CONFIG_VALUE',JSON.stringify(publicFirebaseConfig).replaceAll('<','\\u003c')));
   }
-  if(req.url!=='/v1/access')return json(404,{error:'path'});
+  const route=new URL(req.url,uri.origin);
+  const webhook=route.pathname==='/v1/payment-notifications'&&typeof paymentWebhook==='function';
+  if(req.url!=='/v1/access'&&!webhook)return json(404,{error:'path'});
   if(req.method!=='POST')return json(405,{error:'method'});
   if(!/^application\/json(?:\s*;.*)?$/i.test(req.headers['content-type']??''))return json(415,{error:'content_type'});
   let chunks=[],size=0;
@@ -24,7 +26,8 @@ export async function createHttpsRuntime({key,cert,handle,publicFirebaseConfig=n
    for await(const chunk of req){size+=chunk.length;if(size>8192){chunks=[];return json(413,{error:'size'});}chunks.push(chunk);}
    let body;try{body=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{return json(400,{error:'json'});}
    if(!body||typeof body!=='object'||Array.isArray(body))return json(400,{error:'json'});
-   const r=await handle({method:req.method,body,authorization:req.headers.authorization??'',address:req.socket.remoteAddress});json(r.status,r.body);
+   if(webhook&&route.searchParams.getAll('data.id').length!==1)return json(400,{error:'resource'});
+   const r=webhook?await paymentWebhook({method:req.method,body,dataId:route.searchParams.get('data.id'),signature:req.headers['x-signature'],requestId:req.headers['x-request-id']}):await handle({method:req.method,body,authorization:req.headers.authorization??'',address:req.socket.remoteAddress});json(r.status,r.body);
   }catch{if(!res.headersSent)json(503,{error:'unavailable'});}
  });
 }

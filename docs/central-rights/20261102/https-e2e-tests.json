@@ -1,0 +1,18 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "tests": [
+    "verified checkout intent binds UID without creating charge",
+    "no paid right before reconciliation; expired trial not reset",
+    "signed webhook GET verification and duplicate through HTTPS record one period",
+    "mobile approval and TV session bound to same canonical UID over HTTPS",
+    "phone and TV receive same period; stream lease distinct from navigation",
+    "refund through HTTPS removes period and denies TV renewal without touching trial"
+  ],
+  "fixtureOnly": true,
+  "realTlsLoopback": true,
+  "realFirebaseLogin": false,
+  "realPaymentCalls": false,
+  "commercialWrites": 0,
+  "physicalPlayback": false
+}

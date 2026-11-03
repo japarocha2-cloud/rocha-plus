@@ -22,3 +22,7 @@ HEAD dos dois links corretos do site retornou403; a navegação web também não
 Datas de aprovação e dados financeiros individuais ficam na custódia privada local central-rights/historical-payments.json; não são copiados para GitHub. O último GET autenticado confirma aprovação sem direito aplicado; isso não estabelece sozinho início/fim contratual. Não há plano de escrita executável/autorizado com datas inventadas.
 
 A proposta de conciliação deve fixar: vínculo de cada pagamento ao plano/UID, datas exatas comprovadas, tratamento do período mensal frente ao anual, chave idempotente global e preservação de trial/favoritos. Reconsultar o provedor e ledger imediatamente antes de eventual transação aprovada pelo proprietário. Sem essa comprovação, manter revisão pendente e zero concessões.
+
+## Resultado autenticado da origem
+
+[CI41558913252](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41558913252) concluído com sucesso: os dois recursos de pagamento retornaram sem order.id. Sem esse vínculo não se consultou preference por adivinhação e não foi demonstrada correspondência com os links curtos. [Flags sanitizadas](checkout-origins.json). Zero escritas ou concessões. As durações1mês/12meses permanecem comprovadas na oferta histórica, não como datas de cobertura específicas nas transações. Não foi encontrada regra expressa de acumulação/substituição.

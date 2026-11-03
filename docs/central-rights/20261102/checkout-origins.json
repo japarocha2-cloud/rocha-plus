@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-11-03T01:19:07Z",
+  "localDateTime": "02/11/2026 22:19 America/Sao_Paulo",
+  "run": 41558913252,
+  "job": 125664485452,
+  "sourceCommit": "3d225eb7c76598ed0b70bef5d8140fc58b99b9b1",
+  "readOnly": true,
+  "writes": 0,
+  "commercialAccessGranted": false,
+  "results": [
+    {
+      "reference": "monthly",
+      "orderPresent": false,
+      "orderVerified": false,
+      "preferenceRead": false,
+      "officialLinkMatched": null,
+      "explicitPeriod": false,
+      "accountReference": false
+    },
+    {
+      "reference": "annual",
+      "orderPresent": false,
+      "orderVerified": false,
+      "preferenceRead": false,
+      "officialLinkMatched": null,
+      "explicitPeriod": false,
+      "accountReference": false
+    }
+  ],
+  "conclusion": "No merchant order reference was returned for either payment, so preference/short-link association and contractual period could not be established. Null is unknown, not mismatch."
+}

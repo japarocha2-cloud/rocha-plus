@@ -40,3 +40,9 @@ node --input-type=module -e "import {runHttpsTests} from './experiments/central-
 Os testes não cobram nem alteram assinaturas. Resultados e restrições estão em `docs/central-rights/20261102`. Para implementação real ainda são necessários: política temporal aprovada, reserva/vínculo confiável de checkout, acesso à configuração e entregas do webhook, credenciais de mínimo privilégio no runtime isolado, testes Firebase Auth positivos e Firestore concorrente real, integrações de player e testes físicos. Não habilitar produção por ter testes verdes.
 
 Referências oficiais: [webhooks Mercado Pago](https://raw.githubusercontent.com/mercadopago/sdk-nodejs/master/docs/webhooks.md), [ID tokens Firebase](https://firebase.google.com/docs/auth/admin/verify-id-tokens), [revogação de sessões](https://firebase.google.com/docs/auth/admin/manage-sessions).
+
+## Integração completa em loopback
+
+`contracts.mjs` prepara referência opaca vinculada a identidade Firebase verificada, sem chamar o provedor ou criar cobrança. Somente política temporal aprovada pelo servidor pode gerar intenção. O resolvedor usa reserva verificável ou contrato histórico revisado/autorizado; ausência de referência continua em conciliação. Não se atribui automaticamente a regra experimental aos pagamentos reais.
+
+`e2e.test.mjs` testa, com fixtures, intenção→webhook HMAC por HTTPS→GET autorizado simulado→ledger único→mesma validade no celular/TV→estorno→bloqueio da renovação. TLS é real em loopback; Auth, pagamento, banco e player são fixtures. `/v1/payment-notifications` só existe quando handler é explicitamente injetado. Não foi ativado endpoint público ou comercial.

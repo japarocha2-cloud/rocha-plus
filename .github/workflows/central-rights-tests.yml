@@ -24,3 +24,5 @@ jobs:
         run: node --input-type=module -e "import {runHttpsTests} from './experiments/central-rights/https.test.mjs'; console.log(await runHttpsTests())"
       - name: Server checkout intent and reviewed contract boundary
         run: node --input-type=module -e "import {runContractTests} from './experiments/central-rights/contracts.test.mjs'; console.log(await runContractTests())"
+      - name: End-to-end HTTPS reconciliation and mobile-TV authorization (fixtures)
+        run: node --input-type=module -e "import {runEndToEndTests} from './experiments/central-rights/e2e.test.mjs'; console.log(await runEndToEndTests())"
