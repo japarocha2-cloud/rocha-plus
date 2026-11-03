@@ -50,7 +50,7 @@ class CentralRightsRuntime {
   }
   static Future<CentralLease?> check(String uid, {bool playback = false}) async {
     if (!enabled) return null;
-    try { return (await client(uid)).status(tv: isTv, playback: playback); }
+    try { return await (await client(uid)).status(tv: isTv, playback: playback); }
     catch (_) { return null; }
   }
   static Future<bool> restoreTv(String uid) async {
