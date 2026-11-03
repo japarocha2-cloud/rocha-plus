@@ -3,9 +3,9 @@
 Atualização: 03/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
 Estado atual: ZIPLAB0.6.8 gerado para sideload manual, não instalado; última execuçãoBRS0.6.7. Integrações central/LAB/comercial DESATIVADAS e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
 
-## Verificação ADM e emulador0.6.9 — andamento
+## Verificação ADM e emulador0.6.9 — execução confirmada, login bloqueado
 
-[Relatório](../roku/admin-manual-20261103/README.md). NovoZIP0.6.9 gerado e instalado noBRS, comacessodesativado; controle/Back/reabertura executados, registro preservado. Loginreal eADM bloqueados antes deautenticar; consultaAuthreadonly preparada.0.6.8/0.6.7preservados.
+[Relatório](../roku/admin-manual-20261103/README.md). NovoZIP0.6.9 gerado e instalado noBRS, comacessodesativado; controle/Back/reabertura executados, registro preservado. Loginreal eADM bloqueados antes deautenticar; [CI41723718265](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41723718265) confirmou conta solicitada existente/habilitada/emailverificado/Googlevinculado, claimrochaAdminfalse. Loginreal eADM NÃOEXECUTADOS, sempainelADMnoRoku. Nenhumprivilégioconcedido. ZIP0.6.9 validado e executadoBRS; relatório/capturas/logs anexos.0.6.8/0.6.7preservados.
 
 ## Pacote físico0.6.8 — entrega03/11
 

@@ -1,0 +1,23 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "tests": [
+    "574 ZIP entries and CRC validated",
+    "only manifest and footer differ from 0.6.8",
+    "607 records and 578 cover associations preserved",
+    "all activation flags false and endpoints empty",
+    "8 BrightScript files parse and XML valid",
+    "version 0.6.9 in manifest and visible footer",
+    "no new secrets or configuration: byte-identical payload except version"
+  ],
+  "zip": {
+    "file": "artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.9-VERIFICACAO-ADM-ACESSO-DESATIVADO.zip",
+    "bytes": 4538311,
+    "files": 574,
+    "sha256": "8722ac2a2563235dcd4876cd690347ef18e64f12c7134196b8a9db500ae21795"
+  },
+  "engine": "2.6.2",
+  "secretScanBasis": "0.6.8 verified payload unchanged except two version labels; existing video-delivery URL tokens unchanged",
+  "sideloadStructure": true,
+  "physicalDeviceTest": false
+}

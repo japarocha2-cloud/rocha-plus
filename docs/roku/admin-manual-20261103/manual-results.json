@@ -1,0 +1,83 @@
+{
+  "simulator": "BrightScript Simulator 2.6.2",
+  "engine": "2.6.1",
+  "scenegraph": "0.6.1",
+  "nativeExecution": true,
+  "version": "0.6.9",
+  "cases": [
+    {
+      "test": "Instalação dev0.6.9 e versãoECP",
+      "result": "APROVADO",
+      "evidence": "HTTP200InstallSuccess, apps/active-app0.6.9"
+    },
+    {
+      "test": "Inicialização/splash",
+      "result": "PARCIAL",
+      "evidence": "Primeiroframegaláxia; interfaceestabilizada capturada, animaçãocompleta nãoatestada"
+    },
+    {
+      "test": "Logo/galáxia/banner/Home",
+      "result": "PARCIAL",
+      "evidence": "Visíveisatrás dopaineldeacesso"
+    },
+    {
+      "test": "Down/Right/OK e bloqueio",
+      "result": "APROVADO",
+      "evidence": "ChamadasECP200, captura byteigual; bloqueionãocontornado"
+    },
+    {
+      "test": "Back e reabertura",
+      "result": "APROVADO",
+      "evidence": "SaídaparaHome, retornoaomesmoavisodeacesso"
+    },
+    {
+      "test": "Google/QR/código login real",
+      "result": "NÃO EXECUTADO",
+      "evidence": "Configuraçãodesativada, endpoints/approvalUrlvazios, código nãoemitido"
+    },
+    {
+      "test": "Reconhecimento ADM",
+      "result": "NÃO EXECUTADO",
+      "evidence": "ClaimrochaAdminfalse, semfunçãoADMnoRoku, semsessãoautenticada"
+    },
+    {
+      "test": "Persistência login/logout",
+      "result": "NÃO EXECUTADO",
+      "evidence": "Nãofoicriadasessão, semlogoutdeoutraconta"
+    },
+    {
+      "test": "Menu/carrossel/foco/listavertical",
+      "result": "BLOQUEADO",
+      "evidence": "Paineldeacessointercepta navegação"
+    },
+    {
+      "test": "Catálogo/capas",
+      "result": "PARCIAL",
+      "evidence": "607/578 preservadosnoZIP; nãoinspecionadosmanualmente pelalista"
+    },
+    {
+      "test": "Busca/PET/favoritos/remoçãocomconfirmação",
+      "result": "BLOQUEADO",
+      "evidence": "Acessoimpedenavegação; nenhumfavoritorealalterado/canalremovido"
+    },
+    {
+      "test": "Prévia/fullscreen/Backplayer",
+      "result": "BLOQUEADO",
+      "evidence": "Semautorização,playerstateclose"
+    },
+    {
+      "test": "Imagem/áudiocanais",
+      "result": "NÃO EXECUTADO",
+      "evidence": "Nenhumstreaminiciado"
+    },
+    {
+      "test": "FPS/RAM/sessãolonga/TVfísica",
+      "result": "NÃO EXECUTADO",
+      "evidence": "Semmedição física;FPSzeroECPnãoémétrica"
+    }
+  ],
+  "loginResult": "NÃO EXECUTADO",
+  "adminResult": "NÃO EXECUTADO",
+  "authBypass": false,
+  "hardwareTest": false
+}

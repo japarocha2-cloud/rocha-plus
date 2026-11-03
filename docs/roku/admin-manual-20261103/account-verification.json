@@ -1,0 +1,17 @@
+{
+  "sourceRun": 41723718265,
+  "job": 126222880684,
+  "checkedAt": "2026-11-03T21:40:05.860Z",
+  "readOnly": true,
+  "writes": 0,
+  "project": "rocha-plus",
+  "exists": true,
+  "disabled": false,
+  "emailVerified": true,
+  "googleLinked": true,
+  "passwordLinked": false,
+  "rochaAdminClaim": false,
+  "loginTested": false,
+  "rokuAdminRecognitionTested": false,
+  "scope": "single requested Auth record; no financial/store/rights queries"
+}
