@@ -17,7 +17,7 @@ A evidência histórica de servidor confirmou uma conta habilitada/verificada, c
 |---|---|---|---|
 | Cliente Spark histórico | Firebase UID autentica; Google subject escolhe documento | rochaSparkAccounts/<Google subject> | Candidato, desde que projeto, identidade, regras e demais campos do cliente sejam válidos |
 | SubscriptionAccess com endpoint Cloud Function | UID extraído do token Firebase | entitlements/<Firebase UID> | Não |
-| SubscriptionAccess com servidor Node experimental | UID extraído do token Firebase | rochaEntitlements/<sha256 UID)> e rochaPayments | Não |
+| SubscriptionAccess com servidor Node experimental | UID extraído do token Firebase | rochaEntitlements/<sha256 UID> e rochaPayments | Não |
 | CentralRightsRuntime habilitado | UID Firebase, dispositivo e scope | Contrato/lease do backend central configurado | Não demonstrado; validar implementação/ambiente/scope |
 | Beta com enforcement desligado | Login | Gate comercial não é aplicado | Não atribuir bloqueio a Spark sem outra evidência |
 
@@ -140,6 +140,6 @@ Os dois contratos permanecem intactos. As agendas mensal e anual informadas no i
 - b4f2d4f7707f0c1bd151ab78df3c57194b323bc6: auditoria estática de segurança.
 - 18afcac61508bf2abee77d3e57cc0a678d8829b8: teste adicional somente do sink privado.
 
-[Primeiros dez testes novos no GitHub](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41697983452): sete verificações Node e três Python, aprovadas. O teste adicional do sink foi aprovado localmente e tem workflow separado. Os 69 testes financeiros anteriores e o emulador anteriormente aprovado NÃO foram repetidos.
+[Primeiros dez testes novos no GitHub](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41697983452): sete verificações Node e três Python, aprovadas. O [teste adicional do sink privado](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41698731529) também passou no GitHub. Total desta etapa: 11 verificações novas aprovadas. Os 69 testes financeiros anteriores e o emulador anteriormente aprovado NÃO foram repetidos.
 
 Nenhuma alteração de produção, direito comercial, cobrança, regra implantada, build congelada, design ou Roku. A solicitação de workflow com dados reais foi recusada pela revisão automática pelo risco de publicar estado privado em logs públicos. Ela não foi criada; o proprietário escolheu a alternativa privada.
