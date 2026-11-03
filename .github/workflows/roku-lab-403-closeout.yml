@@ -1,0 +1,28 @@
+name: Roku LAB Firebase 403 closeout read-only
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths:
+      - .github/workflows/roku-lab-403-closeout.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata-only:
+    if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/lab/roku-visual-covers-performance-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependency (no scripts)
+        working-directory: billing
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check LAB metadata and error (no user documents, no writes)
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node experiments/roku-readiness/firebase-403-closeout.mjs
