@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<active-app>
+  <app id="home" type="home" version="1.0.0" ui-location="home">Home</app>
+</active-app>

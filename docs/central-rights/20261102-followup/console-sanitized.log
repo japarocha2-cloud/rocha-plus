@@ -1,0 +1,6 @@
+Connected to BrightScript Simulator
+BrightScript Simulation Engine - v2.6.1
+Loading <BRS_USER_DATA>\dev.zip...
+Loaded Extension: brs-scenegraph (v0.6.1) from app://simulator/lib/brs-sg.js
+------ Running dev 'Rocha+' main ------
+11-03 06:24:02.357 [scrpt.ctx.run.enter] UI: Entering 'Rocha+', id 'dev'

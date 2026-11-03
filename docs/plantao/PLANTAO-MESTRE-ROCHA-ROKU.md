@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
-Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Estado atual: LAB0.6.7 preparado e DESATIVADO, não instalado no BRS; última execução nativa confirmada0.6.6. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
+Atualização: 03/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
+Estado atual: LAB0.6.7 instalado e executado no BRS; integração central DESATIVADA e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -26,10 +26,14 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 - [CI backend41559660532](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41559660532):52testes de fixtures/HTTPS aprovados. [CI Android41559164920](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41559164920):34testes relacionados, análise sem problemas, sem APK.35checks BrightScript locais, incluindo9vetores comuns;14regressões relacionadas preservadas dentro dessa rodada. Sem aprovação de Firebase positivo, playback ou hardware.
 - Android em branch lab/central-rights-android-20261102, código86a700209166ad36d4deb90c47ff82d29915e86e, documentaçãod3c56ab6551c844fcb27501ba326d0c9a5cff641. Cliente compartilhado celular/TV opt-in desativado. PR42 continua draft/head61780147654b42709070702a677eec24b33a2ac5; C6/LAB714 intactos. [Preservação e caminhos](../central-rights/20261102/preservation.json).
 - [ZIP0.6.7 permanente](https://raw.githubusercontent.com/japarocha2-cloud/rocha-plus/572733db6f9d99f4b64f59d40f28d3602b4f89ac/artifacts/roku-lab/20261102/central-rights/RochaPlus-Roku-LAB-0.6.7-CENTRAL-PREPARADO-20261102.zip), código572733db6f9d99f4b64f59d40f28d3602b4f89ac;4.538.188bytes/574arquivos; SHA2566ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07. HTTP200 e hash integral conferidos. Cliente central, números JSON corrigidos e logout no servidor antes de apagar sessão local. Configuração continua desativada, sem rearmar temporizador.
--578capas/534texturas,29pendências e607registros/599runtime preservados byte a byte, assim como artes e configurações anteriores.0.6.7 não instalado. Última evidência BRS0.6.6 no commit89c71a8; consulta ECP final falhou, não afirmar app ativo agora. Oito grupos continuam sem nova execução autorizada por falta de runtime/identidade reais.
+-578capas/534texturas,29pendências e607registros/599runtime preservados byte a byte, assim como artes e configurações anteriores.0.6.7 instalado e executado; [evidências nativas atuais](../central-rights/20261102-followup/README.md). Voltar encerrou para Home; não afirmar ativo após saída. Oito grupos continuam sem nova execução autorizada por falta de runtime/identidade reais.
 - Pendências: contrato exato e período verificável dos pagamentos; leitura de configuração/entrega do webhook; runtime HTTPS com credenciais próprias e banco LAB separado; aprovação móvel real; homologação de dispositivos, mídia e Cast. commercialPatch=null/readyToApply=false. Nenhuma autorização solicitada para alteração indefinida. Antes de conceder direito, apresentar transação exata e obter aprovação expressa. [Roteiro](../central-rights/20261102/ACTIVATION-AND-PHYSICAL-TESTS.md).
 
 Falhas intermediárias do certificado de teste e análise Dart foram corrigidas e preservadas nos relatórios. Sem merge, deploy, publicação, alteração de planos/preços, cobrança ou escrita comercial. Não declarar missão tecnicamente concluída: os testes reais e evidências comerciais ainda faltam.
+
+## Etapa 03/11 — execução nativa 0.6.7
+
+[Relatório, capturas, XMLs e logs](../central-rights/20261102-followup/README.md). ZIP original/hash conferidos, dev atualizado para 0.6.7, registro preservado por hash. Versão, bloqueio e Voltar/reabertura aprovados; visual parcial; navegação e mídia bloqueadas. FPS/RAM não medidos. Nenhuma correção de código ou novo ZIP. Demais pendências e resultados anteriores preservados.
 
 ## Execução nativa anterior confirmada — 0.6.6 instalada, acesso bloqueado
 
