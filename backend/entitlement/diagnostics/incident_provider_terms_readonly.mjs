@@ -20,7 +20,7 @@ try {
     if (String(p.id) !== id || String(p.collector_id) !== String(merchant.id) || p.payer?.email?.trim().toLowerCase() !== email) throw Error('ownership');
     const text = [p.description, ...(p.additional_info?.items || []).map(i=>i.title)].filter(x=>typeof x==='string').join(' ').toLowerCase();
     const monthly = /\bmensal\b|\bmonthly\b/.test(text), annual = /\banual\b|\bannual\b/.test(text);
-    report.payments.push({index,approved:p.status==='approved' && p.status_detail==='accredited',
+    const entry={index,approved:p.status==='approved' && p.status_detail==='accredited',
       live:p.live_mode===true,regularPayment:p.operation_type==='regular_payment',refunded:p.transaction_amount_refunded!==0,
       createdAt:iso(p.date_created),approvedAt:iso(p.date_approved),updatedAt:iso(p.date_last_updated),
       providerProductLabel:monthly!==annual?(monthly?'monthly':'annual'):'not-unambiguous',
@@ -29,7 +29,24 @@ try {
       notificationUrlPresent:typeof p.notification_url==='string' && p.notification_url.length>0,
       preapprovalReferencePresent:!!(p.metadata?.preapproval_id || p.point_of_interaction?.transaction_data?.subscription_id),
       // Payment expiry is not subscription expiry. Never derive entitlement from it.
-      contractualPeriodVerified:false,automaticRenewalVerified:false});
+      contractualPeriodVerified:false,automaticRenewalVerified:false};
+    const ref=p.metadata?.preapproval_id || p.point_of_interaction?.transaction_data?.subscription_id;
+    if (typeof ref==='string' && /^[a-zA-Z0-9_-]{8,100}$/.test(ref)) {
+      try {
+        const subscription=await get('/preapproval/'+ref);
+        const recurring=subscription.auto_recurring||{};
+        entry.subscription={lookupConfirmed:subscription.id===ref,
+          merchantMatches:String(subscription.collector_id)===String(merchant.id),
+          payerMatches:subscription.payer_email?.trim().toLowerCase()===email,
+          status:['authorized','pending','paused','cancelled'].includes(subscription.status)?subscription.status:'other',
+          startDate:iso(recurring.start_date),endDate:iso(recurring.end_date),nextPaymentDate:iso(subscription.next_payment_date),
+          frequency:Number.isSafeInteger(recurring.frequency)?recurring.frequency:null,
+          frequencyType:['months','years','days'].includes(recurring.frequency_type)?recurring.frequency_type:null,
+          currencyBRL:recurring.currency_id==='BRL',
+          reasonPlanLabel:/\bmensal\b/i.test(subscription.reason||'')?'monthly':/\banual\b/i.test(subscription.reason||'')?'annual':'not-unambiguous'};
+      } catch (_) {entry.subscription={error:'linked-subscription-read-not-confirmed'};}
+    }
+    report.payments.push(entry);
   }
   // Read deployed function configuration and bounded delivery logs. Never print env values or raw logs.
   const key = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '{}');
