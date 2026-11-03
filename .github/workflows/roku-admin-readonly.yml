@@ -1,0 +1,24 @@
+name: Roku requested admin account read-only check
+on:
+  push:
+    branches: [lab/roku-visual-covers-performance-20261102]
+    paths: [experiments/roku-admin-verification/account-readonly.mjs, .github/workflows/roku-admin-readonly.yml]
+permissions:
+  contents: read
+jobs:
+  account-read-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: billing
+      - name: Exact requested Auth record, no financial or rights writes
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node experiments/roku-admin-verification/account-readonly.mjs
