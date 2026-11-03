@@ -1,0 +1,20 @@
+{
+  "rokuBranch": "lab/roku-visual-covers-performance-20261102",
+  "androidBranch": "lab/central-rights-android-20261102",
+  "androidCodeCommit": "0735da35ebbad7a26edd82494bd1440c8dd81910",
+  "androidBase": "61780147654b42709070702a677eec24b33a2ac5",
+  "pr42Preserved": true,
+  "androidCiRun": 41553166585,
+  "androidCiState": "in_progress",
+  "previousBackendCi": {
+    "run": 41552648744,
+    "integration26": "passed",
+    "https": "failed",
+    "cause": "random certificate serial had redundant ASN.1 zero padding",
+    "fix": "positive serial without unnecessary padding",
+    "fixVerifiedLocalOpenSslCertificates": 5
+  },
+  "roku067Installed": false,
+  "brsLastVerifiedVersion": "0.6.6",
+  "commercialWrites": 0
+}

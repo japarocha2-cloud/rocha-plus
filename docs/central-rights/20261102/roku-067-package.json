@@ -1,0 +1,30 @@
+{
+  "file": "artifacts/roku-lab/20261102/central-rights/RochaPlus-Roku-LAB-0.6.7-CENTRAL-PREPARADO-20261102.zip",
+  "bytes": 4538188,
+  "files": 574,
+  "sha256": "6ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07",
+  "changed": [
+    "components/Account.brs",
+    "components/HomeScene.xml",
+    "components/LabAccess.brs",
+    "manifest"
+  ],
+  "added": [
+    "components/CentralAccess.brs",
+    "config/central-access.json"
+  ],
+  "preserved": {
+    "catalogRecords": 607,
+    "coverAssociations": 578,
+    "allImagesAndCatalogBytes": true,
+    "commercialConfig": true,
+    "labTimerAndAuthorization": true
+  },
+  "defaultLocked": true,
+  "installedInBRS": false,
+  "tests": "CRC round-trip; exact delta; all assets/catalog/config identity; central config disabled",
+  "relatedFixes": [
+    "JSON primitive numeric types accepted without coercing strings",
+    "server logout requested before local session deletion"
+  ]
+}

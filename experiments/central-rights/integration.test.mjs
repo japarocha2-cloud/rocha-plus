@@ -7,11 +7,13 @@ import {createPaymentPipeline} from './payments.mjs';
 import {createDeviceService} from './devices.mjs';
 import {verifySignature} from './webhook-signature.mjs';
 import {assertExperimentalStore} from './firestore-adapters.mjs';
+import {readFile} from 'node:fs/promises';
 export async function runIntegrationTests(){
  const passed=[];async function test(name,fn){await fn();passed.push(name);}
  let time=1793640000000;const uid='fixture-user';
  const period={uid,verified:true,plan:'fixture-plan',start:time-DAY,end:time+DAY,status:'approved',refundedCents:0};
  const rights={uid,trialStartedAt:time-10*DAY,periods:[period]};
+ await test('shared cross-platform contract vectors',async()=>{const cases=JSON.parse(await readFile(new URL('./contract-fixtures.json',import.meta.url),'utf8'));for(const c of cases)assert.equal(validatePacket(c.packet,{uid:c.uid,device:c.device,scope:c.scope})>0,c.allowed,c.name);});
  await test('paid current and matching UID',()=>assert.equal(resolveRights(rights,uid,time).state,'paid'));
  await test('seven-day trial uses original start; no new trial',()=>{assert.equal(resolveRights({uid,trialStartedAt:time-DAY},uid,time).state,'trial');assert.equal(resolveRights({uid,trialStartedAt:time-8*DAY},uid,time).state,'trial_expired');assert.equal(resolveRights(null,uid,time).state,'unknown');});
  await test('independent paid periods never stack',()=>assert.equal(resolveRights({...rights,periods:[period,{...period,end:time+2*DAY}]},uid,time).expiresAt,time+2*DAY));
@@ -37,14 +39,15 @@ export async function runIntegrationTests(){
  await test('wrong merchant/resource and fake signature rejected',async()=>{payment={...payment,collector_id:'wrong'};assert.equal((await event()).status,503);const bad=createPaymentPipeline({store:payStore,provider,verifySignature:()=>false});assert.equal((await bad.webhook({method:'POST',dataId:'1001',body:{type:'payment',data:{id:'1001'}}})).status,401);});
  await test('signature seconds/milliseconds, tamper and timestamp tolerance',()=>{for(const ts of [String(Math.floor(time/1000)),String(time)]){const sig=createHmac('sha256','fixture-secret').update('id:abc;request-id:req;ts:'+ts+';').digest('hex');const args={secret:'fixture-secret',dataId:'ABC',requestId:'req',signature:'ts='+ts+',v1='+sig,now:time};assert(verifySignature(args));assert(!verifySignature({...args,dataId:'other'}));assert(!verifySignature({...args,now:time+300001}));}});
  const store=memoryStore();let network=false,revoked=false,accountDisabled=false;
- const getAccount=async id=>({uid:id,emailVerified:true,disabled:accountDisabled});
+ let missingAccount=false;
+ const getAccount=async id=>missingAccount?null:({uid:id,emailVerified:true,disabled:accountDisabled});
  let currentAuthTime=Math.floor(time/1000);
  const handle=createDeviceService({enabled:true,store,now:()=>time,getAccount,
   verifyIdentity:async token=>{if(token==='expired')throw Error('expired');return {uid:token==='other'?'other':uid,email_verified:true,auth_time:currentAuthTime,firebase:{sign_in_provider:'google.com'}};},
   loadRights:async id=>{if(network)throw Error('offline');return {...rights,uid:id,periods:[{...period,uid:id}],...(revoked?{revokedAt:time}:{})};}});
  const phone='a'.repeat(64),phone2='b'.repeat(64);
  const call=(action,body={},token='valid')=>handle({body:{action,...body},authorization:'Bearer '+token,address:'fixture'});
- await test('expired identity token and nonexistent account denied',async()=>{assert.equal((await call('register_mobile',{mobile_id:phone},'expired')).status,401);accountDisabled=true;assert.equal((await call('register_mobile',{mobile_id:phone})).status,401);accountDisabled=false;});
+ await test('expired identity token and nonexistent account denied',async()=>{assert.equal((await call('register_mobile',{mobile_id:phone},'expired')).status,401);accountDisabled=true;assert.equal((await call('register_mobile',{mobile_id:phone})).status,401);accountDisabled=false;missingAccount=true;assert.equal((await call('register_mobile',{mobile_id:phone})).status,401);missingAccount=false;});
  await test('register one fresh phone',async()=>assert.equal((await call('register_mobile',{mobile_id:phone})).status,200));
  async function bind(){const start=await call('start');assert.equal(start.status,200);const a=await call('approve',{mobile_id:phone,user_code:start.body.user_code});return{start,a,poll:()=>call('poll',{device_code:start.body.device_code})};}
  const tv1=await bind(),tv2=await bind();const poll1=await tv1.poll(),poll2=await tv2.poll();const token1=poll1.body.session_token,token2=poll2.body.session_token;

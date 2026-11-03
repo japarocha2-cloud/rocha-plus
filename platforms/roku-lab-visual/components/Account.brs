@@ -19,6 +19,7 @@ sub initAccount()
  m.accountTimer = m.top.findNode("accountTimer")
  m.accountTimer.observeField("fire","onAccountTimer")
  m.top.findNode("accountPanel").visible = true
+ if initCentralAccess() then return
  if initLabAccess() then return
  if activatePhysicalLabAccess() then return
  if type(m.authConfig) <> "roAssociativeArray"
@@ -291,6 +292,10 @@ function hasBillingAccess() as boolean
  return m.authorized and m.billingLifetime > m.billingClock.TotalMilliseconds()
 end function
 sub onBillingExpiry()
+ if m.centralMode = true
+  endLabAccess("Acesso central não renovado ou expirado. Confirme a situação da conta no celular.")
+  return
+ end if
  if m.labMode = true
   endLabAccess("Autorização LAB expirada. Assinatura comercial não alterada.")
   return

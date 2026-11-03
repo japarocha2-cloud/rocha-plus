@@ -45,10 +45,11 @@ function labString(v as Dynamic) as Boolean
 end function
 
 function labNumber(v as Dynamic) as Boolean
- return type(v) = "roInteger" or type(v) = "roLongInteger" or type(v) = "roDouble" or type(v) = "roFloat"
+ return type(v) = "roInteger" or type(v) = "roLongInteger" or type(v) = "roDouble" or type(v) = "roFloat" or type(v) = "Integer" or type(v) = "LongInteger" or type(v) = "Double" or type(v) = "Float"
 end function
 
 function labLeaseMillis(data as Dynamic, elapsed as Integer, uid as String, device as String) as Double
+ if m.centralMode = true then return centralLeaseMillis(data,elapsed,uid,device)
  if type(data) <> "roAssociativeArray" then return 0
  if data.environment <> "roku-lab" or data.scope <> "homologation" or data.state <> "lab" or data.active <> true then return 0
  if not labString(data.uid) or not labString(data.device_id) then return 0
@@ -70,7 +71,11 @@ sub beginLabPairing()
  m.labSession = ""
  m.authStage = "lab_starting"
  m.top.findNode("accountCode").text = ""
- accountMessage("Gerando código temporário de homologação LAB…")
+ if m.centralMode = true
+  accountMessage("Gerando código de vinculação ao serviço central experimental…")
+ else
+  accountMessage("Gerando código temporário de homologação LAB…")
+ end if
  accountRequest("lab_start",m.labConfig.endpoint,FormatJson({action:"start"}),"","application/json")
 end sub
 
@@ -81,6 +86,18 @@ end sub
 
 sub onLabAccessResult(result as Object)
  data = result.data
+ if result.operation = "lab_logout"
+  if result.ok or result.code = 401
+   m.labRegistry.Delete("session")
+   m.labRegistry.Delete("uid")
+   m.labRegistry.Delete("device")
+   m.labRegistry.Flush()
+   beginLabPairing()
+  else
+   accountMessage("Não foi possível confirmar a saída desta TV. Tente novamente.")
+  end if
+  return
+ end if
  if not result.ok
   endLabAccess("Não foi possível confirmar a autorização LAB. OK: verificar novamente. Assinatura comercial não alterada.")
   return
@@ -90,7 +107,7 @@ sub onLabAccessResult(result as Object)
   return
  end if
  if result.operation = "lab_start"
-  if data.environment <> "roku-lab" or not labString(data.device_code) or not labString(data.user_code)
+  if data.environment <> accessEnvironment() or not labString(data.device_code) or not labString(data.user_code)
    endLabAccess("Código LAB inválido.")
    return
   end if
@@ -103,10 +120,25 @@ sub onLabAccessResult(result as Object)
    return
   end if
   m.deviceCode = data.device_code
+  if m.centralMode = true
+   if not labString(data.device_id)
+    endLabAccess("Identificação do dispositivo ausente.")
+    return
+   end if
+   if len(data.device_id) <> 64
+    endLabAccess("Identificação do dispositivo inválida.")
+    return
+   end if
+   m.labDeviceId = data.device_id
+  end if
   m.pairDeadline = CreateObject("roDateTime").AsSeconds() + data.expires_in
   m.top.findNode("accountCode").text = data.user_code
   m.authStage = "lab_waiting"
-  accountMessage("No fluxo de homologação do celular, entre na conta autorizada e confirme estes oito caracteres. Código válido por até 10 minutos.")
+  if m.centralMode = true
+   accountMessage("No celular, acesse "+m.labConfig.approvalUrl+" e confirme este código na sua conta. Válido por até 10 minutos.")
+  else
+   accountMessage("No fluxo de homologação do celular, entre na conta autorizada e confirme estes oito caracteres. Código válido por até 10 minutos.")
+  end if
   m.accountTimer.control = "start"
   return
  end if
@@ -116,7 +148,7 @@ sub onLabAccessResult(result as Object)
   endLabAccess("Autorização LAB ausente, expirada ou de outra conta/dispositivo.")
   return
  end if
- if m.labGrantUntil > 0 and data.grantUntil <> m.labGrantUntil
+ if m.centralMode <> true and m.labGrantUntil > 0 and data.grantUntil <> m.labGrantUntil
   endLabAccess("A autorização LAB mudou. Gere novo vínculo para confirmar.")
   return
  end if
@@ -160,7 +192,17 @@ sub onLabAccessResult(result as Object)
  m.authStage = "lab_authorized"
  m.top.findNode("accountPanel").visible = false
  m.accountTimer.control = "start"
- m.status.text = "Homologação LAB temporária • assinatura comercial não alterada"
+ if m.centralMode = true
+  if data.state = "lab"
+   m.status.text = "Homologação temporária • nenhuma assinatura comercial concedida"
+  else if data.state = "paid"
+   m.status.text = "Direito pago confirmado pelo serviço central experimental"
+  else
+   m.status.text = "Trial confirmado pelo serviço central experimental"
+  end if
+ else
+  m.status.text = "Homologação LAB temporária • assinatura comercial não alterada"
+ end if
  if m.previewPending then m.previewTimer.control = "start"
  m.top.setFocus(true)
 end sub
@@ -200,11 +242,11 @@ end sub
 function labAccountKey(key as String) as Boolean
  if key = "back" then return false
  if key = "options" and m.authStage = "lab_locked"
-  m.labRegistry.Delete("session")
-  m.labRegistry.Delete("uid")
-  m.labRegistry.Delete("device")
-  m.labRegistry.Flush()
-  beginLabPairing()
+  if m.labSession <> ""
+   accountRequest("lab_logout",m.labConfig.endpoint,FormatJson({action:"logout"}),m.labSession,"application/json")
+  else
+   beginLabPairing()
+  end if
   return true
  end if
  if key = "OK" and m.authStage = "lab_locked"

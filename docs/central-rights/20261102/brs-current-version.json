@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-03T01:13:19.188Z",
+  "currentQuery": "unavailable",
+  "error": "fetch failed connecting to existing ECP localhost:8060",
+  "lastVerifiedNativeVersion": "0.6.6",
+  "lastEvidenceCommit": "89c71a8679cb5fad5f24d8b3d33651f5b31ae5c8",
+  "new067Installed": false,
+  "noNewPlaybackTest": true
+}

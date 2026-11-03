@@ -1,7 +1,8 @@
 {
-  "passed": 26,
+  "passed": 27,
   "failed": 0,
   "tests": [
+    "shared cross-platform contract vectors",
     "paid current and matching UID",
     "seven-day trial uses original start; no new trial",
     "independent paid periods never stack",

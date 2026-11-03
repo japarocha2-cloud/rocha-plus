@@ -20,7 +20,11 @@ A edição Firestore comercial foi confirmada STANDARD/FIRESTORE_NATIVE. PR #42 
 
 [26 cenários integrados](integration-tests.json) e [8 testes HTTPS](https-tests.json) aprovados localmente, com fixtures. TLS não foi desativado; certificado/chave efêmeros somente em memória e cliente de teste. Não é login Firebase real, Firestore real ou reprodução. A CI de código novo será conferida antes da entrega.
 
-As fases de integração Android/Roku estão em andamento. O BRS permanece na 0.6.6 bloqueada; não atribuir a esta etapa nova execução de reprodução. Os testes verdes anteriores permanecem históricos e não foram repetidos.
+Integração preparada em branch Android própria [lab/central-rights-android-20261102](https://github.com/japarocha2-cloud/rocha-plus/tree/0735da35ebbad7a26edd82494bd1440c8dd81910), sem tocar PR #42. Cliente compartilhado, renovação/parada e vinculação TV opt-in, padrão desativado. CI41553166585 em andamento neste checkpoint.
+
+Cliente Roku central preparado e configuração desativada:26 verificações relacionadas aprovadas (14 regressões anteriores +12 novas). Correção demonstrada de saída: o cliente solicita logout ao servidor antes de apagar a sessão local, evitando perder a possibilidade de liberar vínculo/slot. ZIP0.6.7 preparado, [integridade e preservação](roku-067-package.json); não instalado no BRS, que continua0.6.6.
+
+CI41552648744 aprovou os26 cenários de integração, mas reprovou a fixture HTTPS por serial ASN.1 aleatório com padding redundante. Gerador corrigido; cinco certificados novos aceitos pelo OpenSSL local. Nova execução CI pendente; não ocultar essa falha histórica. O BRS permanece na 0.6.6 bloqueada; não atribuir a esta etapa nova execução de reprodução. Os testes verdes anteriores permanecem históricos e não foram repetidos.
 
 ## Bloqueios para aplicação real
 
@@ -31,3 +35,11 @@ As fases de integração Android/Roku estão em andamento. O BRS permanece na 0.
 5. Executar login positivo, dispositivos/renovação e playback em cada plataforma, depois hardware e Cast.
 
 Nenhum dado pessoal, ID financeiro, comprovante, token ou chave privada foi copiado para este relatório.
+
+## Atualização do cliente e pacote preparados
+
+Os vetores comuns de contrato revelaram rejeição de números primitivos vindos de ParseJson no Roku; labNumber agora aceita os tipos numéricos boxed e primitivos, preservando rejeição de strings. 35 verificações Roku relacionadas aprovadas (14 anteriores +21 novas, incluindo9 vetores compartilhados). Backend atualizado:27 cenários; HTTPS:8.
+
+ZIP0.6.7 regenerado após a correção:4.538.188bytes/574arquivos, SHA2566ff88bbf99786163a6de80eeb18c985557ea2a68441c102d114e26ab34f3cd07. Capas, catálogo, artes e configurações comerciais/LAB anteriores conferidos byte a byte. Continua desativado.0.6.7 não foi instalado; a última execução nativa permanece0.6.6 documentada no commit89c71a8. A consulta ECP nesta etapa final falhou (fetch failed); não se afirma que esteja ativo agora.
+
+Android: testes iniciais passaram; análise apontou retorno Future sem await dentro de try, corrigido para que erros assíncronos sejam capturados. Vetores compartilhados adicionados em nova revisão. PR42 permanece intacta. Resultados finais de CI serão anexados após confirmação.

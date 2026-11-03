@@ -1,7 +1,7 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 02/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Entrega atual preparada: LAB 0.6.6 para homologação por conta, DESATIVADO até configurar runtime HTTPS e aprovação móvel autenticada. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
+Entrega atual preparada: LAB 0.6.7 (cliente central, ainda não instalado; BRS mantém0.6.6). LAB0.6.6 para homologação por conta, DESATIVADO até configurar runtime HTTPS e aprovação móvel autenticada. O LAB 0.6.5 e os resultados anteriores permanecem históricos. **A paridade de catálogo com a Candidata 6 não está comprovada.** Não tratar o pacote experimental como nova homologação.
 
 ## Recuperar o trabalho sem depender deste chat
 
@@ -22,7 +22,7 @@ Repositório: [japarocha2-cloud/rocha-plus](https://github.com/japarocha2-cloud/
 
 Fonte demonstra que checkout Spark abre links estáticos sem conciliação e webhook recorrente não cobre automaticamente pagamentos avulsos sem vínculo. Há diferenças de UID/esquema e política temporal entre branches; não adotar um prazo por suposição. PR #42 identifica ainda rocha-plus-homologacao separado de rocha-plus. [Auditoria complementar concluída](../central-rights/20261102/README.md): CI41551744667 aprovado; dois pagamentos avulsos continuam aprovados sem vínculo/período explícitos ou direito nos stores adicionais. Firestore STANDARD confirmado. Inventário de funções/logs bloqueado por403; endpoints convencionais testados retornam404. Seis testes de segurança aprovados. Não confundir hipótese de entrega de webhook com causa já comprovada.
 
-Fase B preparada em experiments/central-rights: contrato central, conciliação/alerta idempotentes, direitos sem reset de trial, limites de dispositivos/streams e HTTPS em loopback. 26 testes integrados e8 HTTPS locais aprovados com fixtures; sem ativação pública ou direito comercial. Integrações Android/Roku em andamento; não declarar missão concluída.
+Fase B preparada em experiments/central-rights: contrato central, conciliação/alerta idempotentes, direitos sem reset de trial, limites de dispositivos/streams e HTTPS em loopback. 27 testes integrados e8 HTTPS locais aprovados com fixtures; sem ativação pública ou direito comercial. Integrações preparadas e desativadas: Android em lab/central-rights-android-20261102 (base PR42 preservada), cliente Roku central e ZIP0.6.7.35 testes Roku relacionados aprovados; BRS continua0.6.6 bloqueado. CI backend anterior falhou somente na fixture de certificado (ASN.1), corrigida; nova CI e CI Android serão conferidas. Não declarar missão concluída.
 
 ## Execução nativa atual — 0.6.6 instalada, acesso bloqueado
 
