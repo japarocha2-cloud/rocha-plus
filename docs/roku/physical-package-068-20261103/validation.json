@@ -1,0 +1,29 @@
+{
+  "passed": 13,
+  "failed": 0,
+  "tests": [
+    "root manifest/source and no wrapper folder",
+    "original 0.6.7 SHA256 preserved",
+    "version 0.6.8 and visible footer agree",
+    "all previous files retained; only justified four-file delta",
+    "607 catalog records byte-identical",
+    "578 cover associations and 534 textures all present unchanged",
+    "original artwork and all images byte-identical; no provisional cards",
+    "all JSON valid; central/LAB/commercial flags false and endpoints empty",
+    "timer/session/favorite logic unchanged",
+    "no private credentials, keys, env, registry or host-side tools packaged",
+    "literal pkg resource references and manifest icons/splash exist",
+    "pre-existing video-delivery JWTs confined to unchanged HTTPS catalog URLs",
+    "all 8 BrightScript files parse; HomeScene XML valid with unique IDs"
+  ],
+  "bytes": 4538311,
+  "files": 574,
+  "sha256": "00c3a2c6c8cea91958e11a4cf82fdecc1ff177bd4566431dc2a08f8636de1305",
+  "scripts": 8,
+  "xmlIds": 57,
+  "engine": "2.6.2",
+  "engineSha256": "6bb88becc5cb429b6f9a01110509b11aa7597a9dc5d51a18ce5cdea6253f2fbb",
+  "installability": "structural sideload validation only; not installed on hardware",
+  "secretScan": "allowlisted runtime paths, known private-secret patterns and populated token fields; no claim of exhaustive secret detection",
+  "physicalPlayback": false
+}

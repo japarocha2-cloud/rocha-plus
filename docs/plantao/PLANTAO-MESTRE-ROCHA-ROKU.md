@@ -1,7 +1,11 @@
 # PLANTÃO MESTRE — ROCHA+ ROKU LAB
 
 Atualização: 03/11/2026. Responsável técnico: Codex. Destinatários: Rupi e futuras sessões.
-Estado atual: LAB0.6.7 instalado e executado no BRS; integração central DESATIVADA e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
+Estado atual: ZIPLAB0.6.8 gerado para sideload manual, não instalado; última execuçãoBRS0.6.7. Integrações central/LAB/comercial DESATIVADAS e navegação bloqueada. Integração central e Android experimental preparados, sem concessão comercial ou serviço público. **Missão operacional ainda parcial/bloqueada; paridade C6 não comprovada.**
+
+## Pacote físico0.6.8 — entrega03/11
+
+[Artefato, instruções e limitações](../roku/physical-package-068-20261103/README.md) · [13validaçõesaprovadas](../roku/physical-package-068-20261103/validation.json). ZIP: artifacts/roku-lab/20261103/RochaPlus-Roku-LAB-0.6.8-TV-REAL-ACESSO-DESATIVADO-20261103.zip;4.538.311bytes/574arquivos; SHA25600c3a2c6c8cea91958e11a4cf82fdecc1ff177bd4566431dc2a08f8636de1305. Inclui carrossel corrigido jávalidado, versão/rodapé0.6.8 e auth.enabledfalse explícito. Catálogo607/578capas e dados/temporizador preservados, ZIP0.6.7 intacto. Não instalado naTV/BRS; instalação só mediante autorização posterior. Navegação/canais/reprodução seguemBLOQUEADOS por falta de ativação segura; somente instalação/início/branding/aviso/Back podem ser testados agora.
 
 ## Recuperar o trabalho sem depender deste chat
 
