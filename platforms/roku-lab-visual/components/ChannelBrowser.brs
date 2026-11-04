@@ -179,6 +179,13 @@ end function
 
 sub queuePreview()
   if m.channels.count() = 0 or m.area <> 3 then return
+  if m.visualLabOnly = true
+    stopPreview()
+    m.top.findNode("previewMessage").text = "Reprodução/prévia bloqueada no LAB visual: canal sem autorização física cadastrada."
+    m.top.findNode("previewOverlay").visible = true
+    m.status.text = "Reprodução desativada no LAB visual."
+    return
+  end if
   stopPreview()
   if m.introPlaying then stopIntro()
   m.previewId = m.channels[m.channelIndex].id
@@ -191,6 +198,13 @@ end sub
 
 sub onPreviewDebounce()
   if not m.previewPending then return
+  if m.visualLabOnly = true
+    stopPreview()
+    m.top.findNode("previewMessage").text = "Reprodução/prévia bloqueada no LAB visual: canal sem autorização física cadastrada."
+    m.top.findNode("previewOverlay").visible = true
+    m.status.text = "Reprodução desativada no LAB visual."
+    return
+  end if
   if m.area <> 3 or m.channels.count() = 0
     stopPreview()
     return
@@ -245,6 +259,13 @@ sub setVideoBounds()
 end sub
 
 sub startPlayback()
+  if m.visualLabOnly = true
+    stopPreview()
+    m.top.findNode("previewMessage").text = "Reprodução/prévia bloqueada no LAB visual: canal sem autorização física cadastrada."
+    m.top.findNode("previewOverlay").visible = true
+    m.status.text = "Reprodução desativada no LAB visual."
+    return
+  end if
   if not hasBillingAccess()
     stopPreview()
     onBillingExpiry()

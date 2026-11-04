@@ -1,4 +1,6 @@
 {
-  "mode": "account_homologation",
-  "purpose": "Owner-bound temporary LAB authorization; never a commercial entitlement"
+  "mode": "visual_only",
+  "purpose": "LAB-only visual navigation; no commercial entitlement or playback",
+  "playbackEnabled": false,
+  "channelAllowlist": []
 }

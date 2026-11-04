@@ -278,6 +278,7 @@ end function
 
 sub initIntro()
  m.introPlaying = false
+ if m.visualLabOnly = true then return
  if type(m.authConfig) <> "roAssociativeArray" then return
  if type(m.authConfig.introUrl) <> "roString" then return
  if left(m.authConfig.introUrl,8) <> "https://" then return

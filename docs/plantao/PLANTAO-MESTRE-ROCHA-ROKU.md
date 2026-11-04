@@ -404,3 +404,13 @@ Um REV3 com playback aberto ou o timer físico daria acesso a itens cuja autoriz
 O proprietário informou que dispõe de uma lista de canais autorizados, mas não forneceu nesta resposta os IDs/nomes, referências de permissão, validade ou responsável pela revisão. Nenhuma allowlist pôde ser comparada ao catálogo/build. Também não indicou endpoint HTTPS de homologação existente; as configurações consultadas continuam sem origem/endpoints.
 
 Não usar o modo local `physical_test_2h` neste ZIP público: ele habilitaria reprodução sem vínculo/verificação do servidor e não oferece limite por identidade. A lista por si só não basta enquanto o runtime não puder autorizar somente IDs aprovados e emitir/revogar sessão LAB. REV3 continua sem build/artefato.
+
+
+## Atualização de plantão — REV3 visual-only preparada
+
+Branch LAB: lab/roku-0.6.10-google-activation-admin-20261103. A revisão documental da allowlist não encontrou autorização física verificável para canais específicos. Atendendo à instrução mais recente, não bloqueamos o desenvolvimento visual: modo LAB visual_only abre a UI sem assinatura comercial, mas mantém a allowlist vazia e bloqueia preview/fullscreen playback em três pontos do código. Navegação, catálogo, capas, busca e favoritos ficam disponíveis para teste visual; nenhum stream pode iniciar nesse pacote.
+
+Build/CI pendente de confirmação. O workflow REV3 verificará pacote de 574 arquivos, catálogo 607, mapa 578, flags comerciais off, allowlist vazia e os guards de preview/Assistir. Não há endpoint de homologação necessário para esse escopo somente visual. Não usar physical_test_2h. Reprodução/imagem/áudio de canais: BLOQUEADOS até permissão documentada e allowlist implementada. Instalação física e BRS Desktop ainda não executados nesta revisão. Nenhuma mudança Android/produção/comercial.
+
+Relatório detalhado: [REV3](../roku/physical-package-rev3-20261103/README.md). Código alterado: Account.brs, ChannelBrowser.brs, config/physical-lab-access.json; workflow roku-0610-package.yml. ZIP e SHA serão registrados somente após run/artifact confirmado.
+

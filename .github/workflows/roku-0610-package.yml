@@ -1,4 +1,4 @@
-name: Roku LAB 0.6.10 package
+name: Roku LAB 0.6.10 REV3 visual-only package
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
           import fs from 'node:fs/promises';
           import assert from 'node:assert/strict';
           import {build,readZip} from './tools/roku_visual_lab.mjs';
-          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip';
+          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip';
           const built=await build('platforms/roku-lab-visual',target,{excludeProvisionalCovers:true,onlyMappedLogoFiles:true});
           const files=readZip(await fs.readFile(target));
           const count=x=>Array.isArray(x)?x.length:Object.keys(x).length;
@@ -38,6 +38,20 @@ jobs:
           assert.equal(count(JSON.parse(files['catalog/commercial-lab-merged.json'])),607);
           assert.equal(count(JSON.parse(files['config/cover-map.json'])),578);
           for(const p of ['config/auth.json','config/central-access.json','config/lab-access.json']) assert.equal(JSON.parse(files[p]).enabled,false,p);
+          const visual=JSON.parse(files['config/physical-lab-access.json']);
+          assert.equal(visual.mode,'visual_only');
+          assert.equal(visual.playbackEnabled,false);
+          assert.deepEqual(visual.channelAllowlist,[]);
+          const account=files['components/Account.brs'].toString();
+          const player=files['components/ChannelBrowser.brs'].toString();
+          const home=files['components/HomeScene.brs'].toString();
+          assert(account.includes('function activateVisualOnlyLabAccess()'));
+          assert(account.includes('if m.visualLabOnly = true then return true'));
+          assert(home.includes('if m.visualLabOnly = true then return'));
+          for(const marker of ['sub queuePreview()','sub onPreviewDebounce()','sub startPlayback()']) {
+            const i=player.indexOf(marker); assert(i>=0,marker);
+            assert(player.slice(i,i+800).includes('if m.visualLabOnly = true'),'missing playback deny: '+marker);
+          }
           const text=Object.entries(files).filter(([n])=>/\.(json|brs|xml|html|txt)$/i.test(n)).map(([,b])=>b.toString()).join('\n');
           assert(!text.includes('example.invalid'));
           assert(!text.includes('fixture-scenario.json'));
@@ -46,7 +60,7 @@ jobs:
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2
-          path: /tmp/RochaPlus-Roku-LAB-0.6.10-ACESSO-DESATIVADO-REV2.zip
+          name: RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED
+          path: /tmp/RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip
           if-no-files-found: error
           retention-days: 30

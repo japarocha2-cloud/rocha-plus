@@ -2,6 +2,7 @@ sub initAccount()
  m.authConfig = ParseJson(ReadAsciiFile("pkg:/config/auth.json"))
  m.authorized = false
  m.labMode = false
+ m.visualLabOnly = false
  m.authGeneration = 1
  m.authBusy = false
  m.billingClock = CreateObject("roTimespan")
@@ -21,6 +22,7 @@ sub initAccount()
  m.top.findNode("accountPanel").visible = true
  if initCentralAccess() then return
  if initLabAccess() then return
+ if activateVisualOnlyLabAccess() then return
  if activatePhysicalLabAccess() then return
  if type(m.authConfig) <> "roAssociativeArray"
   accountMessage("Conexão à conta indisponível.")
@@ -289,6 +291,7 @@ sub checkBilling()
  accountRequest("billing",m.authConfig.billingEndpoint,FormatJson({action:"status"}),m.idToken,"application/json")
 end sub
 function hasBillingAccess() as boolean
+ if m.visualLabOnly = true then return true
  return m.authorized and m.billingLifetime > m.billingClock.TotalMilliseconds()
 end function
 sub onBillingExpiry()
@@ -352,6 +355,24 @@ end sub
 
 ' Development sideload only: 2-hour, per-device physical playback test.
 ' Does not create a user account, trial, or paid entitlement.
+function activateVisualOnlyLabAccess() as Boolean
+ cfg = ParseJson(ReadAsciiFile("pkg:/config/physical-lab-access.json"))
+ if type(cfg) <> "roAssociativeArray" then return false
+ if cfg.mode <> "visual_only" or cfg.playbackEnabled <> false then return false
+ if type(cfg.channelAllowlist) <> "roArray" then return false
+ if cfg.channelAllowlist.count() <> 0 then return false
+ m.visualLabOnly = true
+ m.labPlaybackAllowed = false
+ m.authorized = true
+ m.authStage = "lab_visual_only"
+ m.top.findNode("accountPanel").visible = false
+ m.top.findNode("accountCode").text = ""
+ accountMessage("LAB visual ativo. Reprodução desativada; nenhum canal tem permissão física cadastrada.")
+ m.status.text = "LAB VISUAL • catálogo e navegação • reprodução desativada"
+ m.top.setFocus(true)
+ return true
+end function
+
 function activatePhysicalLabAccess() as Boolean
  cfg = ParseJson(ReadAsciiFile("pkg:/config/physical-lab-access.json"))
  if type(cfg) <> "roAssociativeArray" then return false
