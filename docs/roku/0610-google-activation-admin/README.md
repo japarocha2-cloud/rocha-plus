@@ -75,3 +75,10 @@ Um REV3 com playback aberto ou o timer físico daria acesso a itens cuja autoriz
 ### Estado desta etapa
 
 **Sem REV3 para baixar.** Bloqueio concreto: allowlist jurídica/física vazia e endpoint de homologação ausente. Testes automáticos novos: não executados; os checks aprovados do REV2 foram preservados. Instalação e reprodução física da REV3: não executadas. Incidente/solicitação continua aberto. Próximo passo: anexar allowlist e confirmar endpoint LAB existente; então retomar implementação na mesma branch experimental.
+
+
+### Atualização após resposta do proprietário (03/11/2026)
+
+O proprietário informou que dispõe de uma lista de canais autorizados, mas não forneceu nesta resposta os IDs/nomes, referências de permissão, validade ou responsável pela revisão. Nenhuma allowlist pôde ser comparada ao catálogo/build. Também não indicou endpoint HTTPS de homologação existente; as configurações consultadas continuam sem origem/endpoints.
+
+Não usar o modo local `physical_test_2h` neste ZIP público: ele habilitaria reprodução sem vínculo/verificação do servidor e não oferece limite por identidade. A lista por si só não basta enquanto o runtime não puder autorizar somente IDs aprovados e emitir/revogar sessão LAB. REV3 continua sem build/artefato.
