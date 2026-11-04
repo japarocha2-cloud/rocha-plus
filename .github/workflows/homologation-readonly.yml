@@ -1,0 +1,113 @@
+name: Homologation read-only compatibility
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/homologation-readonly.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install read-only authentication client
+        run: pip install --disable-pip-version-check google-auth==2.40.3 requests==2.32.4
+      - name: Inspect only homologation metadata and source provenance
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+          EXPECTED_RECEIVING_MERCHANT_ID: ${{ secrets.EXPECTED_RECEIVING_MERCHANT_ID }}
+          ROCHA_CHECKOUT_HOMOLOGATION_JSON: ${{ secrets.ROCHA_CHECKOUT_HOMOLOGATION_JSON }}
+        shell: python
+        run: |
+          import os, json, io, zipfile, hashlib
+          from pathlib import Path
+          from urllib.parse import quote
+          import requests
+          from google.oauth2 import service_account
+          from google.auth.transport.requests import AuthorizedSession
+
+          project = 'rocha-plus-homologacao'
+          result = {'project': project, 'operation': 'read_only', 'deployed_by_this_run': [],
+                    'runtime_google_auth': 'not_tested_no_authenticated_support_session',
+                    'uid_integration': 'not_tested', 'financial_integration': 'not_tested',
+                    'bundle_present': bool(os.environ.get('ROCHA_CHECKOUT_HOMOLOGATION_JSON'))}
+          raw = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', '')
+          if not raw:
+              result['blocker'] = 'FIREBASE_SERVICE_ACCOUNT_JSON_missing'
+          else:
+              try:
+                  info = json.loads(raw)
+                  creds = service_account.Credentials.from_service_account_info(
+                      info, scopes=['https://www.googleapis.com/auth/cloud-platform'])
+                  session = AuthorizedSession(creds)
+                  base = 'https://cloudfunctions.googleapis.com/v2/projects/' + project + '/locations/southamerica-east1/functions/'
+                  functions = {}
+                  for name in ['entitlement', 'checkout', 'mercadoPagoWebhook']:
+                      response = session.get(base + name, timeout=30)
+                      entry = {'http_status': response.status_code}
+                      if response.ok:
+                          data = response.json()
+                          entry['state'] = data.get('state')
+                          entry['entry_point'] = data.get('buildConfig', {}).get('entryPoint')
+                          env = data.get('serviceConfig', {}).get('environmentVariables', {})
+                          entry['checkout_disabled_explicitly'] = env.get('ROCHA_CHECKOUT_ENABLED') == 'false'
+                          entry['secret_bindings'] = sorted(
+                              x.get('key', '') for x in data.get('serviceConfig', {}).get('secretEnvironmentVariables', []))
+                          if name == 'entitlement':
+                              src = data.get('buildConfig', {}).get('sourceProvenance', {}).get('resolvedStorageSource') or data.get('buildConfig', {}).get('source', {}).get('storageSource')
+                              if src:
+                                  url = 'https://storage.googleapis.com/storage/v1/b/' + quote(src['bucket'], safe='') + '/o/' + quote(src['object'], safe='') + '?alt=media'
+                                  if src.get('generation'): url += '&generation=' + str(src['generation'])
+                                  source = session.get(url, timeout=30)
+                                  entry['source_http_status'] = source.status_code
+                                  if source.ok:
+                                      entry['source_sha256'] = hashlib.sha256(source.content).hexdigest()
+                                      with zipfile.ZipFile(io.BytesIO(source.content)) as archive:
+                                          texts = [archive.read(p).decode('utf-8', errors='replace')
+                                              for p in archive.namelist()
+                                              if p.endswith(('.js', '.ts')) and 'node_modules/' not in p]
+                                      text = '\n'.join(texts)
+                                      entry['source_indicators'] = {key: key in text for key in [
+                                          'checkout_orders', 'payment_claims', 'entitlements',
+                                          'verifyIdToken', 'paidUntil', 'trialUntil']}
+                                      entry['compatibility'] = 'requires_source_review_not_proven_by_string_matches'
+                          # Read IAM policy only; never set IAM or invoke a financial function.
+                          policy = session.get(base + name + ':getIamPolicy', timeout=30)
+                          entry['iam_read_http_status'] = policy.status_code
+                          if policy.ok:
+                              entry['iam_roles'] = sorted(set(x.get('role', '') for x in policy.json().get('bindings', [])))
+                      functions[name] = entry
+                      if response.status_code in (401, 403): break
+                  result['functions'] = functions
+              except Exception:
+                  result['blocker'] = 'authorized_metadata_or_source_inspection_failed_values_omitted'
+          token = os.environ.get('MP_RECEIVING_ACCESS_TOKEN')
+          merchant = os.environ.get('EXPECTED_RECEIVING_MERCHANT_ID')
+          if token and merchant:
+              try:
+                  r = requests.get('https://api.mercadopago.com/users/me',
+                      headers={'Authorization': 'Bearer ' + token}, timeout=20, allow_redirects=False)
+                  result['receiver'] = {'http_status': r.status_code,
+                      'matches_expected': r.ok and str(r.json().get('id')) == merchant}
+              except Exception:
+                  result['receiver'] = {'state': 'read_failed'}
+          else:
+              result['receiver'] = {'state': 'required_bindings_missing',
+                  'missing': [key for key in ['MP_RECEIVING_ACCESS_TOKEN', 'EXPECTED_RECEIVING_MERCHANT_ID'] if not os.environ.get(key)]}
+          result['deployment_gate'] = 'blocked_pending_complete_review'
+          Path('homologation-readonly-result.json').write_text(json.dumps(result, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('Read-only inspection; no deploy, writes or payment creation.\n\n')
+              out.write('```json\n' + json.dumps(result, indent=2) + '\n```\n')
+          print(json.dumps(result, indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: homologation-readonly-result
+          path: homologation-readonly-result.json
+          if-no-files-found: error
