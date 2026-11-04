@@ -9,6 +9,8 @@ const db = admin.firestore();
 const {defineSecret} = require('firebase-functions/params');
 const {createMercadoPagoWebhookHandler, createFirestoreWebhookInbox} = require('./mercadopago_webhook');
 const {reconcileAndGrant} = require('./reconcile_and_grant');
+const {createCheckoutHandler} = require('./checkout');
+const {bindCheckoutClaim} = require('./checkout_claim');
 const mpReceivingToken = defineSecret('MP_RECEIVING_ACCESS_TOKEN');
 const mpWebhookSecret = defineSecret('MP_WEBHOOK_SECRET');
 
@@ -62,9 +64,30 @@ exports.mercadoPagoWebhook = onRequest({
   const inbox = createFirestoreWebhookInbox({db, admin});
   const handler = createMercadoPagoWebhookHandler({
     secret: () => mpWebhookSecret.value(), inbox,
-    reconcilePayment: ({paymentId}) => reconcileAndGrant({
-      db, admin, paymentId, accessToken: mpReceivingToken.value(),
-    }),
+    reconcilePayment: async ({paymentId}) => {
+      const accessToken = mpReceivingToken.value();
+      if (process.env.ROCHA_CHECKOUT_ENABLED === 'true') {
+        await bindCheckoutClaim({db, paymentId, accessToken});
+      }
+      return reconcileAndGrant({db, admin, paymentId, accessToken});
+    },
   });
   await handler(req, res);
 });
+
+exports.checkout = onRequest({
+  region: 'southamerica-east1', cors: false, maxInstances: 10, invoker: 'public',
+  secrets: [mpReceivingToken],
+}, async (req, res) => createCheckoutHandler({
+  verifyToken: token => admin.auth().verifyIdToken(token, true),
+  token: () => mpReceivingToken.value(),
+  config: () => ({
+    enabled: process.env.ROCHA_CHECKOUT_ENABLED === 'true',
+    merchantId: process.env.ROCHA_CHECKOUT_MERCHANT_ID,
+    mode: process.env.ROCHA_CHECKOUT_MODE,
+    notificationUrl: process.env.ROCHA_CHECKOUT_WEBHOOK_URL,
+  }),
+  createOrder: (id, data) => db.collection('checkout_orders').doc(id).create(data),
+  savePreference: (id, preferenceId) => db.collection('checkout_orders').doc(id).update({preferenceId}),
+})(req, res));
+

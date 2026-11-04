@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_release_policy.dart';
+import '../auth/subscription_checkout.dart';
 import '../auth/subscription_access.dart';
 import '../theme/rocha_theme.dart';
 
@@ -18,6 +19,8 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen>
     with WidgetsBindingObserver {
   bool checking = false;
+  bool purchasing = false;
+  bool trialAlertShown = false;
   SubscriptionAccessResult? result;
   bool attempted = false;
   int generation = 0;
@@ -26,6 +29,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _checkAccess(); });
   }
 
   void _clear() {
@@ -41,12 +45,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     if (oldWidget.accountUid != widget.accountUid ||
         oldWidget.verifyAccess != widget.verifyAccess) {
       _clear();
+      trialAlertShown = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _checkAccess(); });
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && mounted) setState(_clear);
+    if (state == AppLifecycleState.resumed && mounted) {
+      setState(_clear);
+      _checkAccess();
+    }
   }
 
   @override
@@ -91,6 +100,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
       result = response?.uid == uid ? response : null;
       checking = false;
     });
+    if (result?.reason == 'trial' && !trialAlertShown) {
+      trialAlertShown = true;
+      await showDialog<void>(context: context, builder: (context) => AlertDialog(
+        title: const Text('Teste gratuito'),
+        content: const Text('Seu teste gratuito de sete dias está ativo. O prazo começa na criação do teste da conta, conforme o servidor.'),
+        actions: [TextButton(onPressed: () => Navigator.pop(context),
+            child: const Text('Continuar'))],
+      ));
+    }
+  }
+
+  Future<void> _purchase(String plan) async {
+    final uid = widget.accountUid;
+    if (purchasing || uid == null) return;
+    setState(() => purchasing = true);
+    try {
+      await SubscriptionCheckout.open(uid, plan);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Não foi possível abrir o checkout. Tente novamente mais tarde.')));
+    } finally {
+      if (mounted) setState(() => purchasing = false);
+    }
   }
 
   @override
@@ -161,17 +193,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       Text('Planos',
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 12),
-                      const _PlanCard(
-                          name: 'Mensal', price: 'R\$ 4,50 por mês'),
-                      const _PlanCard(
-                          name: 'Anual', price: 'R\$ 49,50 por ano'),
+                      _PlanCard(name: 'Mensal', price: 'R\$ 4,50 por mês',
+                          onSubscribe: purchasing || widget.accountUid == null ? null : () => _purchase('monthly')),
+                      _PlanCard(name: 'Anual', price: 'R\$ 49,50 por ano',
+                          onSubscribe: purchasing || widget.accountUid == null ? null : () => _purchase('annual')),
                       const SizedBox(height: 16),
                       const Text(
                         'Teste gratuito previsto: 7 dias por conta. A validação do prazo e do bloqueio ainda está em homologação.',
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        'Os planos são apresentados para conferência. A contratação ainda não está disponível nesta versão de testes.',
+                        'Pagamento único pelo período escolhido, sem renovação automática. A licença depende da confirmação financeira pelo servidor.',
                       ),
                     ],
                   ),
@@ -187,7 +219,8 @@ class _PlanCard extends StatelessWidget {
   final String name;
   final String price;
 
-  const _PlanCard({required this.name, required this.price});
+  final VoidCallback? onSubscribe;
+  const _PlanCard({required this.name, required this.price, this.onSubscribe});
 
   @override
   Widget build(BuildContext context) => Card(
@@ -198,6 +231,7 @@ class _PlanCard extends StatelessWidget {
             children: [
               Text(name, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
+              FilledButton(onPressed: onSubscribe, child: const Text('Assinar com Mercado Pago')),
               Text(price,
                   style: const TextStyle(
                       color: RochaColors.gold, fontWeight: FontWeight.bold)),
@@ -206,3 +240,4 @@ class _PlanCard extends StatelessWidget {
         ),
       );
 }
+

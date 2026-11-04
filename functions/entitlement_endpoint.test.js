@@ -45,6 +45,7 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
   vm.runInNewContext(fs.readFileSync(require.resolve('./index.js'), 'utf8'), {
     exports: exported,
     require: name => {
+      if (name === './checkout' || name === './checkout_claim') return require(name);
       if (name === 'firebase-admin') return admin;
       if (name === 'firebase-functions/params') {
         return {defineSecret: secretName => ({value: () => 'fixture-' + secretName})};
@@ -181,3 +182,4 @@ test('actual endpoint rejects mutations and fails closed on storage errors', asy
   assert.deepEqual(response.body, {allowed: false});
   assert.equal(failed.writes(), 0);
 });
+
