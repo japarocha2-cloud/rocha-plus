@@ -24,14 +24,14 @@ void main() {
     expect(find.text('R\$ 4,50 por mês'), findsOneWidget);
     expect(find.text('R\$ 49,50 por ano'), findsOneWidget);
     expect(find.textContaining('Não pague novamente'), findsOneWidget);
-    expect(find.textContaining('A contratação ainda não está disponível'), findsOneWidget);
+    expect(find.textContaining('sem renovação automática'), findsOneWidget);
     expect(find.textContaining('7 dias por conta'), findsOneWidget);
     expect(find.text('Verificar acesso'), findsNothing);
   }
 
-  testWidgets('mobile drawer opens read-only subscription page',
+  testWidgets('mobile drawer opens subscription checkout page',
       (tester) async => openSubscription(tester, const Size(430, 950)));
 
-  testWidgets('wide/TV sidebar opens read-only subscription page',
+  testWidgets('wide/TV sidebar opens subscription checkout page',
       (tester) async => openSubscription(tester, const Size(1200, 950)));
 }
