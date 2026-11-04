@@ -3,6 +3,8 @@ name: Build Rocha+
 on:
   push:
     branches: [main, impl/commercial-checkout-20261104]
+    paths-ignore:
+      - '.github/workflows/checkout-certificate.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
