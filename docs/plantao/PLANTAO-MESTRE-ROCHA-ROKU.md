@@ -457,3 +457,8 @@ Todos os 607 canais ficam visíveis/navegáveis; o arquivo CSV relaciona cada ID
 
 BRS Desktop e Roku física ainda não executados. Status de imagem/áudio/reprodução física: NÃO TESTADO/BLOQUEADO; não declarar homologação real. Instruções de sideload/avaliação e CSV estão no [relatório REV4](../roku/physical-package-rev4-20261103/README.md). Sem produção/Oficial/Android/merge/deploy/publicação.
 
+
+
+## Investigação P0 — elegibilidade de reprodução dos 607 canais (03/11/2026)
+
+Diagnóstico detalhado: [playback-investigation-20261103.md](../roku/physical-package-rev4-20261103/playback-investigation-20261103.md). Resultado: **0/607 canais com autorização Roku/teste físico verificável; 607 ficam bloqueados por falta de evidência; 0 falhas reais de reprodução confirmadas nesta REV4, pois não houve teste físico de playback.** 599 entradas têm extensão indicando candidato HLS; 8 não-HLS/sem extensão reconhecida. Nenhuma dessas contagens comprova compatibilidade ou permissão. O catálogo mesclado contém 395 registros com detecção AV histórica de benchmark, mas `roku_playback_verified:false` e autorização não verificada; outros 212 aparecem como `special_lab_tested` sem evidência/fonte primária anexada. A allowlist no template LAB está vazia, o host não configurado e direitos/integrações desligados. Players web oficiais públicos encontrados não autorizam, por si, incorporação do stream direto no Rocha+ Roku. Nenhuma URL de mídia foi testada ou reproduzida no relatório. Nenhum catálogo/código ou ZIP foi alterado. Próximo gate: documentação do titular por ID que cubra app Roku/teste físico; revisar escopo e validade, depois preparar allowlist + runtime LAB isolado e testar antes de qualquer build novo.
