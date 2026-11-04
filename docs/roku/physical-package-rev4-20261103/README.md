@@ -48,3 +48,16 @@ Developer Mode → Replace with ZIP. Navegue pela Home, TV ao Vivo e categorias;
 - Interface: BRS Desktop/TV física não foi executado nesta etapa. Teste físico real, áudio/vídeo, latência e controle precisam ser preenchidos pela execução na Roku com Developer Mode. A função de registro e exportação está no ZIP, mas CI não substitui esse teste. Não marcar campos como aprovados antes da observação física.
 
 Arquivo de plantão atualizado no commit documental seguinte. Sem merge/deploy/publicação e sem alteração de comercial, Android, Roku oficial ou dados originais.
+
+## ZIP REV4 FINAL — bloqueios de mídia verificados no CI
+
+Esta compilação substitui o artefato anterior do REV4 do run 41749313776. Use somente o artefato abaixo.
+
+- Código final: [commit ee615827](https://github.com/japarocha2-cloud/rocha-plus/commit/ee6158270219bcd752ed1a9a2dd17d735cb8f200); CI [41749761631 — success](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41749761631); 12/12 fixtures passaram, mais as validações de catálogo, avaliações/exportação, gates de playback, manifesto, CRC e segredos.
+- ZIP instalável: RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO.zip; **4.540.531 bytes**; SHA-256 **431a0e05f83433e2cebe5908ea78583675648abd53185a2089aec4fa51029b2c**.
+- [Baixar REV4 FINAL](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41749761631/artifacts/13285642072) — artefato Actions 13285642072, embalagem externa 4.463.210 bytes, digest externo 1306eb921dc47eb70e9d89a64e6bf7fbdd66434f31f8ed071d7976b1cf21bc5e; expira 04/12/2026 00:50 UTC. Download remoto verificado.
+- Inclui 607 itens navegáveis, 599 formatos indicados HLS e 8 não-HLS/sem extensão; 578 associações de capa; 574 arquivos; allowlist 0/607; nenhum segredo detectado.
+- No modo LAB visual, controles de **imagem do stream, áudio e travamentos ficam forçados a BLOQUEADO**; não se pode marcar esses resultados como aprovados sem autorização de playback. O campo de controle remoto pode ser testado e salvo. Aprovar/Reprovar é avaliação técnica e não concede direito; remoção segue lógica, confirmação e restauração.
+- A execução em BRS Desktop/Roku física não foi feita nesta etapa. O pacote está pronto para instalar e verificar UI/controle/relatório; mídia/áudio/desempenho físico seguem NÃO TESTADOS, e playback dos 607 canais segue bloqueado.
+- CSV de todos os impedidos: [blocked-playback-channels.csv](blocked-playback-channels.csv). 607 linhas de canal com IDs e evidência ausente; 599 indicação HLS e 8 outras.
+
