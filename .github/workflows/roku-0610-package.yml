@@ -45,6 +45,7 @@ jobs:
           const blockedList=(await fs.readFile('docs/roku/physical-package-rev4-20261103/blocked-playback-channels.csv','utf8')).trim().split(/\r?\n/);
           assert.equal(blockedList.length,608,'header plus all blocked catalog records');
           for(const field of ['image','audio','freezes','remote','authorizationEvidence']) assert(evaluator.includes(field),'missing evaluation field '+field);
+          assert(evaluator.includes('record[field] = "blocked"')&&evaluator.includes('field <> "remote"'),'unauthorized media results must stay blocked');
           assert(evaluator.includes('> SIM, REMOVER')&&evaluator.includes('CANCELAR'),'remove action needs confirmation');
           assert(evaluator.includes('and (m.showRemoved or not isRemoved(c.id))'),'removed records must be reversible');
           const browser=files['components/ChannelBrowser.brs'].toString();

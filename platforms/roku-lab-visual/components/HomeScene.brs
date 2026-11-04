@@ -365,9 +365,9 @@ sub renderCheckup()
     "APROVAR (PADRÃO)",
     "REPROVAR",
     "RESTAURAR CANAL / AVALIAÇÃO",
-    "IMAGEM: " + assessmentLabel(rec.image),
-    "ÁUDIO: " + assessmentLabel(rec.audio),
-    "TRAVAMENTOS: " + assessmentLabel(rec.freezes),
+    "IMAGEM DO STREAM: " + assessmentLabel(rec.image),
+    "ÁUDIO DO STREAM: " + assessmentLabel(rec.audio),
+    "TRAVAMENTOS DO STREAM: " + assessmentLabel(rec.freezes),
     "CONTROLE: " + assessmentLabel(rec.remote),
     "FAVORITO"
   ]
@@ -411,6 +411,12 @@ end sub
 
 sub cyclePhysicalResult(c as Object, field as String)
   record = ensureCheckupRecord(c)
+  if m.visualLabOnly = true and field <> "remote"
+    record[field] = "blocked"
+    saveCheckupRecord(record)
+    m.status.text = "Teste de " + field + " bloqueado: nenhum canal tem autorização de playback documentada."
+    return
+  end if
   states = ["not_tested", "pass", "fail", "blocked"]
   current = record[field]
   nextIndex = 0
