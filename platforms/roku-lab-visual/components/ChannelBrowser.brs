@@ -246,7 +246,8 @@ sub onPreviewDebounce()
   content = CreateObject("roSGNode", "ContentNode")
   content.title = c.name
   content.url = c.url
-  content.streamFormat = "hls"
+  format = streamFormatForChannel(c)
+  if format <> "" then content.streamFormat = format
   m.video.content = content
   m.previewActive = true
   setVideoBounds()

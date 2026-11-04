@@ -5,6 +5,7 @@ on:
     branches: [lab/roku-0.6.10-google-activation-admin-20261103]
     paths:
       - 'platforms/roku-lab-visual/**'
+      - 'tests/roku-visual/playback-fixture.test.mjs'
       - 'experiments/roku-0610/**'
       - 'tools/roku_visual_lab.mjs'
       - '.github/workflows/roku-0610-package.yml'
@@ -21,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Isolated player fixture checks
+        run: node tests/roku-visual/playback-fixture.test.mjs
       - name: Backend fixtures
         run: node --input-type=module -e "import {runActivationTests} from './experiments/roku-0610/activation.test.mjs'; const r=await runActivationTests(); console.log(JSON.stringify(r)); if(r.failed||r.passed!==12) process.exit(1)"
       - name: Build and validate sideload ZIP
@@ -28,12 +31,13 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs/promises';
           import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
           import {build,readZip} from './tools/roku_visual_lab.mjs';
-          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO.zip';
+          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-REV5-PLAYER-FIXTURE-DIAGNOSTIC.zip';
           const built=await build('platforms/roku-lab-visual',target,{excludeProvisionalCovers:true,onlyMappedLogoFiles:true});
           const files=readZip(await fs.readFile(target));
           const count=x=>Array.isArray(x)?x.length:Object.keys(x).length;
-          assert.equal(Object.keys(files).length,574);
+          assert.equal(Object.keys(files).length,575);
           assert.match(files.manifest.toString(),/build_version=10/);
           const catalog=JSON.parse(files['catalog/commercial-lab-merged.json']);
           assert.equal(count(catalog),607);
@@ -50,7 +54,19 @@ jobs:
           assert(evaluator.includes('and (m.showRemoved or not isRemoved(c.id))'),'removed records must be reversible');
           const browser=files['components/ChannelBrowser.brs'].toString();
           assert(browser.includes('AUTORIZAÇÃO PENDENTE'));
+          assert(browser.includes('if format <> "" then content.streamFormat = format'));
+          assert(!browser.includes('content.streamFormat = "hls"'),'unknown catalog format must not be forced to HLS');
+          assert(home.includes('sub startPlaybackFixture()')&&home.includes('sub onPlaybackFixtureError()'));
+          assert(home.includes('ROKU_PLAYBACK_FIXTURE '));
           assert.equal(count(JSON.parse(files['config/cover-map.json'])),578);
+          const fixture=JSON.parse(files['config/playback-fixture.json']);
+          assert.equal(fixture.enabled,true);
+          assert.equal(fixture.mode,'roku_documentation_sample');
+          assert.equal(fixture.scope,'player_fixture_only');
+          assert.equal(fixture.streamFormat,'hls');
+          assert.equal(fixture.catalogPlayback,false);
+          assert(fixture.url.startsWith('https://roku.s.cpl.delvenetworks.com/'));
+          assert(fixture.url.endsWith('.m3u8'));
           for(const p of ['config/auth.json','config/central-access.json','config/lab-access.json']) assert.equal(JSON.parse(files[p]).enabled,false,p);
           const visual=JSON.parse(files['config/physical-lab-access.json']);
           assert.equal(visual.mode,'visual_only');
@@ -70,11 +86,12 @@ jobs:
           assert(!text.includes('example.invalid'));
           assert(!text.includes('fixture-scenario.json'));
           assert(!/AIza[0-9A-Za-z_-]{35}|-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}/.test(text));
-          console.log(JSON.stringify({...built,catalog:607,coverAssociations:578,integrationsEnabled:false,secretsDetected:0}));
+          const sha256=createHash('sha256').update(await fs.readFile(target)).digest('hex');
+          console.log(JSON.stringify({...built,sha256,catalog:607,coverAssociations:578,fixture:'roku_documentation_sample',catalogPlaybackAllowed:false,integrationsEnabled:false,secretsDetected:0}));
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO
-          path: /tmp/RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO.zip
+          name: RochaPlus-Roku-LAB-0.6.10-REV5-PLAYER-FIXTURE-DIAGNOSTIC
+          path: /tmp/RochaPlus-Roku-LAB-0.6.10-REV5-PLAYER-FIXTURE-DIAGNOSTIC.zip
           if-no-files-found: error
           retention-days: 30

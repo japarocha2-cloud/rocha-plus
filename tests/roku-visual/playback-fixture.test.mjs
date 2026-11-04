@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const lab = path.join(process.cwd(), 'platforms/roku-lab-visual');
+const home = await fs.readFile(path.join(lab, 'components/HomeScene.brs'), 'utf8');
+const xml = await fs.readFile(path.join(lab, 'components/HomeScene.xml'), 'utf8');
+const browser = await fs.readFile(path.join(lab, 'components/ChannelBrowser.brs'), 'utf8');
+const catalog = JSON.parse(await fs.readFile(path.join(lab, 'catalog/commercial-lab-merged.json'), 'utf8'));
+const coverMap = JSON.parse(await fs.readFile(path.join(lab, 'config/cover-map.json'), 'utf8'));
+const access = JSON.parse(await fs.readFile(path.join(lab, 'config/physical-lab-access.json'), 'utf8'));
+const fixture = JSON.parse(await fs.readFile(path.join(lab, 'config/playback-fixture.json'), 'utf8'));
+assert.equal(catalog.length, 607);
+assert.equal(new Set(catalog.map(c => c.id)).size, 607);
+assert.equal(Object.keys(coverMap).length, 578);
+assert.equal(access.mode, 'visual_only');
+assert.equal(access.playbackEnabled, false);
+assert.deepEqual(access.channelAllowlist, []);
+assert.equal(fixture.enabled, true);
+assert.equal(fixture.mode, 'roku_documentation_sample');
+assert.equal(fixture.scope, 'player_fixture_only');
+assert.equal(fixture.streamFormat, 'hls');
+assert.equal(fixture.catalogPlayback, false);
+assert(fixture.url.startsWith('https://roku.s.cpl.delvenetworks.com/'));
+assert(fixture.url.endsWith('.m3u8'));
+assert.equal(catalog.some(c => c.url === fixture.url), false);
+for (const marker of ['sub initPlaybackFixture()', 'sub openPlaybackFixture()', 'sub startPlaybackFixture()', 'sub stopPlaybackFixture()', 'sub closePlaybackFixture()', 'sub onPlaybackFixtureState()', 'sub onPlaybackFixtureError()', 'sub recordPlaybackFixtureEvent(', 'function streamFormatForChannel(c as Object)']) assert(home.includes(marker), 'missing ' + marker);
+assert(home.includes('if m.playbackFixtureOpen then return handlePlaybackFixtureKey(key)'));
+assert(home.includes('m.fixtureVideo.control = "play"'));
+assert(home.includes('m.fixtureVideo.control = "stop"'));
+assert(home.includes('ROKU_PLAYBACK_FIXTURE '));
+const fixtureCode = home.slice(home.indexOf('sub initPlaybackFixture()'), home.indexOf("' Commercial home carousel."));
+assert(!fixtureCode.includes('m.channels'));
+assert(!fixtureCode.includes('hasBillingAccess'));
+assert(xml.includes('id="playbackFixtureVideo"') && xml.includes('id="playbackFixturePanel"'));
+assert(xml.includes('text="Teste do player"'));
+assert(browser.includes('format = streamFormatForChannel(c)'));
+assert(browser.includes('if format <> "" then content.streamFormat = format'));
+assert(!browser.includes('content.streamFormat = "hls"'));
+for (const marker of ['sub queuePreview()', 'sub onPreviewDebounce()', 'sub startPlayback()']) {
+  const i = browser.indexOf(marker);
+  assert(i >= 0 && browser.slice(i, i + 900).includes('if m.visualLabOnly = true'), 'catalog gate changed: ' + marker);
+}
+console.log(JSON.stringify({test:'playback fixture isolation',passed:21,catalog:607,covers:578,catalogPlaybackAllowed:false}));

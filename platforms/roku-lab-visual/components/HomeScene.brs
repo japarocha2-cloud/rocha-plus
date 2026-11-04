@@ -11,6 +11,8 @@ sub init()
   m.channels = []
   m.channelIndex = 0
   m.playing = false
+  m.playbackFixtureOpen = false
+  m.playbackFixtureChoice = 0
   m.registry = CreateObject("roRegistrySection", "RochaPlus")
   savedFavorites = m.registry.Read("favorites")
   m.favorites = []
@@ -42,6 +44,7 @@ sub init()
   renderFocus()
   renderChannelState()
   initAccount()
+  initPlaybackFixture()
   initIntro()
   initBannerCarousel()
   renderHomeFavorites()
@@ -55,7 +58,7 @@ sub renderFocus()
     focus.color = "0xD6B775FF"
     focus.translation = [18,184+84*m.nav]
   end if
-  for i = 0 to 5
+  for i = 0 to 6
     label = m.top.findNode("nav"+i.toStr())
     label.color = "0xFFFFFFFF"
     if m.area = 0 and i = m.nav then label.color = "0x10091FFF"
@@ -64,6 +67,7 @@ end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
   if not press then return false
+  if m.playbackFixtureOpen then return handlePlaybackFixtureKey(key)
   if m.redDialogOpen then return handleRedDialog(key)
   if m.reportOpen then
     if key = "down" or key = "right" then
@@ -135,9 +139,9 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     return true
   end if
   if key = "down" then
-    m.nav = (m.nav + 1) mod 6
+    m.nav = (m.nav + 1) mod 7
   else if key = "up" then
-    m.nav = (m.nav + 5) mod 6
+    m.nav = (m.nav + 6) mod 7
   else if key = "OK" then
     if m.nav = 0 then
       m.status.text = "Escolha TV ao Vivo ou uma categoria no menu."
@@ -152,6 +156,8 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
       openChannelSearch()
     else if m.nav = 5 then
       showCheckupReport()
+    else if m.nav = 6 then
+      openPlaybackFixture()
     else
       m.searchMode = false
       m.searchTerm = ""
@@ -315,6 +321,217 @@ sub stopIntro()
  m.top.setFocus(true)
 end sub
 
+
+
+' Isolated Roku SDK sample player; never connected to the 607-channel catalogue.
+sub initPlaybackFixture()
+  cfg = ParseJson(ReadAsciiFile("pkg:/config/playback-fixture.json"))
+  m.playbackFixtureEnabled = false
+  m.playbackFixtureUrl = ""
+  m.playbackFixtureTitle = "Roku Video node test sample"
+  m.playbackFixtureOpen = false
+  m.playbackFixturePlaying = false
+  m.playbackFixtureChoice = 0
+  m.fixtureVideo = m.top.findNode("playbackFixtureVideo")
+  m.fixtureVideo.observeField("state", "onPlaybackFixtureState")
+  m.fixtureVideo.observeField("errorMsg", "onPlaybackFixtureError")
+  m.fixtureTimeout = m.top.findNode("playbackFixtureTimeout")
+  m.fixtureTimeout.observeField("fire", "onPlaybackFixtureTimeout")
+  m.fixtureRegistry = CreateObject("roRegistrySection", "RochaPlusPlaybackFixture")
+  m.fixtureLogs = []
+  savedLog = m.fixtureRegistry.Read("events_v1")
+  if savedLog <> "" then m.fixtureLogs = ParseJson(savedLog)
+  if type(m.fixtureLogs) <> "roArray" then m.fixtureLogs = []
+  if type(cfg) <> "roAssociativeArray" then return
+  if cfg.enabled <> true or cfg.mode <> "roku_documentation_sample" or cfg.catalogPlayback <> false then return
+  if cfg.streamFormat <> "hls" or type(cfg.url) <> "roString" then return
+  prefix = "https://roku.s.cpl.delvenetworks.com/"
+  if left(lcase(cfg.url), len(prefix)) <> prefix then return
+  if instr(1, cfg.url, "?") > 0 then return
+  m.playbackFixtureUrl = cfg.url
+  if type(cfg.title) = "roString" then m.playbackFixtureTitle = cfg.title
+  m.playbackFixtureEnabled = true
+end sub
+
+sub openPlaybackFixture()
+  if not m.playbackFixtureEnabled
+    m.status.text = "Fixture Roku SDK desativada ou inválida."
+    return
+  end if
+  if m.previewActive or m.previewPending then stopPreview()
+  if m.introPlaying then stopIntro()
+  m.playbackFixtureOpen = true
+  m.playbackFixtureChoice = 0
+  m.playbackFixturePlaying = false
+  m.fixtureVideo.control = "stop"
+  m.fixtureVideo.visible = false
+  m.top.findNode("playbackFixturePanel").visible = true
+  m.top.findNode("playbackFixtureState").text = "Estado Video: " + m.fixtureVideo.state
+  m.top.findNode("playbackFixtureError").text = "Último erro: nenhum"
+  renderPlaybackFixtureControls()
+  m.status.visible = false
+  m.top.setFocus(true)
+  recordPlaybackFixtureEvent("screen_open", "")
+end sub
+
+sub renderPlaybackFixtureControls()
+  choices = ["PLAY / REINICIAR", "STOP", "VOLTAR"]
+  line = ""
+  for i = 0 to choices.count() - 1
+    if i = m.playbackFixtureChoice then
+      line = line + "[ " + choices[i] + " ]    "
+    else
+      line = line + "  " + choices[i] + "      "
+    end if
+  end for
+  m.top.findNode("playbackFixtureControls").text = line + chr(10) + "← →: escolher   OK: executar   Play: iniciar   Stop: parar   Voltar: parar e sair"
+end sub
+
+function handlePlaybackFixtureKey(key as String) as Boolean
+  recordPlaybackFixtureEvent("remote_key", key)
+  if key = "back"
+    closePlaybackFixture()
+    return true
+  else if key = "play"
+    startPlaybackFixture()
+    return true
+  else if key = "stop"
+    stopPlaybackFixture()
+    return true
+  else if key = "left" or key = "up"
+    m.playbackFixtureChoice = (m.playbackFixtureChoice + 2) mod 3
+  else if key = "right" or key = "down"
+    m.playbackFixtureChoice = (m.playbackFixtureChoice + 1) mod 3
+  else if key = "OK"
+    if m.playbackFixtureChoice = 0
+      startPlaybackFixture()
+    else if m.playbackFixtureChoice = 1
+      stopPlaybackFixture()
+    else
+      closePlaybackFixture()
+      return true
+    end if
+    return true
+  else
+    return true
+  end if
+  renderPlaybackFixtureControls()
+  return true
+end function
+
+sub startPlaybackFixture()
+  if not m.playbackFixtureOpen or not m.playbackFixtureEnabled then return
+  state = m.fixtureVideo.state
+  if state = "playing" or state = "buffering" or state = "paused" then stopPlaybackFixture()
+  content = CreateObject("roSGNode", "ContentNode")
+  content.title = m.playbackFixtureTitle
+  content.url = m.playbackFixtureUrl
+  content.streamFormat = "hls"
+  m.fixtureVideo.content = content
+  m.fixtureVideo.translation = [350, 200]
+  m.fixtureVideo.width = 1220
+  m.fixtureVideo.height = 686
+  m.fixtureVideo.visible = true
+  m.fixtureVideo.control = "play"
+  m.playbackFixturePlaying = true
+  m.fixtureTimeout.control = "start"
+  m.top.findNode("playbackFixtureState").text = "Estado Video: solicitando reprodução HLS"
+  m.top.findNode("playbackFixtureError").text = "Último erro: nenhum"
+  recordPlaybackFixtureEvent("play_requested", "Roku documentation HLS sample")
+end sub
+
+sub stopPlaybackFixture()
+  m.fixtureTimeout.control = "stop"
+  if m.fixtureVideo.state = "playing" or m.fixtureVideo.state = "buffering" or m.playbackFixturePlaying
+    m.fixtureVideo.control = "stop"
+    recordPlaybackFixtureEvent("stop_requested", m.fixtureVideo.state)
+  end if
+  m.playbackFixturePlaying = false
+  m.fixtureVideo.visible = false
+  m.top.findNode("playbackFixtureState").text = "Estado Video: parado"
+end sub
+
+sub closePlaybackFixture()
+  stopPlaybackFixture()
+  recordPlaybackFixtureEvent("screen_close", "back")
+  m.playbackFixtureOpen = false
+  m.top.findNode("playbackFixturePanel").visible = false
+  m.status.visible = true
+  m.top.setFocus(true)
+  renderChannelState()
+  renderFocus()
+end sub
+
+sub onPlaybackFixtureState()
+  if not m.playbackFixtureOpen then return
+  state = m.fixtureVideo.state
+  m.top.findNode("playbackFixtureState").text = "Estado Video: " + state
+  if state = "playing"
+    m.fixtureTimeout.control = "stop"
+  else if state = "buffering"
+    m.fixtureTimeout.control = "start"
+  else if state = "error"
+    detail = ""
+    if type(m.fixtureVideo.errorMsg) = "roString" or type(m.fixtureVideo.errorMsg) = "String" then detail = m.fixtureVideo.errorMsg
+    m.top.findNode("playbackFixtureError").text = "Erro do Video node: " + detail
+    m.playbackFixturePlaying = false
+    m.fixtureTimeout.control = "stop"
+  else if state = "finished"
+    m.playbackFixturePlaying = false
+    m.fixtureTimeout.control = "stop"
+  end if
+  recordPlaybackFixtureEvent("video_state", state)
+end sub
+
+sub onPlaybackFixtureError()
+  if not m.playbackFixtureOpen then return
+  detail = ""
+  if type(m.fixtureVideo.errorMsg) = "roString" or type(m.fixtureVideo.errorMsg) = "String" then detail = m.fixtureVideo.errorMsg
+  m.top.findNode("playbackFixtureError").text = "Erro do Video node: " + detail
+  recordPlaybackFixtureEvent("video_error", detail)
+end sub
+
+sub onPlaybackFixtureTimeout()
+  if not m.playbackFixtureOpen or m.fixtureVideo.state = "playing" then return
+  m.top.findNode("playbackFixtureState").text = "Estado Video: timeout aguardando playback"
+  m.top.findNode("playbackFixtureError").text = "Erro do Video node: timeout de inicialização (30 s)"
+  recordPlaybackFixtureEvent("playback_timeout", "Video node did not enter playing within 30 seconds")
+  stopPlaybackFixture()
+end sub
+
+sub recordPlaybackFixtureEvent(eventName as String, detail as String)
+  safeDetail = detail
+  if len(safeDetail) > 240 then safeDetail = left(safeDetail, 240)
+  entry = {at:CreateObject("roDateTime").AsSeconds().toStr(), event:eventName, state:m.fixtureVideo.state, detail:safeDetail}
+  if m.fixtureLogs.count() >= 20
+    trimmed = []
+    for i = 1 to m.fixtureLogs.count() - 1
+      trimmed.push(m.fixtureLogs[i])
+    end for
+    m.fixtureLogs = trimmed
+  end if
+  m.fixtureLogs.push(entry)
+  m.fixtureRegistry.Write("events_v1", FormatJson(m.fixtureLogs))
+  m.fixtureRegistry.Flush()
+  print "ROKU_PLAYBACK_FIXTURE " + FormatJson(entry)
+end sub
+
+function streamFormatForChannel(c as Object) as String
+  if type(c) <> "roAssociativeArray" then return ""
+  if type(c.streamFormat) = "roString" or type(c.streamFormat) = "String"
+    supplied = lcase(trim(c.streamFormat))
+    if supplied = "hls" or supplied = "mp4" or supplied = "dash" or supplied = "ism" or supplied = "mkv" then return supplied
+  end if
+  if type(c.url) <> "roString" and type(c.url) <> "String" then return ""
+  candidate = lcase(c.url)
+  query = instr(1, candidate, "?")
+  if query > 0 then candidate = left(candidate, query - 1)
+  fragment = instr(1, candidate, "#")
+  if fragment > 0 then candidate = left(candidate, fragment - 1)
+  if right(candidate, 6) = ".m3u8" then return "hls"
+  if right(candidate, 4) = ".mp4" then return "mp4"
+  return ""
+end function
 
 ' Commercial home carousel. Only artwork explicitly listed in the approved
 ' configuration is eligible; family/LAB artwork is never loaded implicitly.
