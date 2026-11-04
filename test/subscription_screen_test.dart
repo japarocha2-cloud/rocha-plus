@@ -36,7 +36,7 @@ void main() {
     });
   }
 
-  testWidgets('plans do not offer payment or imply an active trial', (tester) async {
+  testWidgets('plans offer checkout without inventing an active trial', (tester) async {
     await tester.pumpWidget(MaterialApp(
       theme: RochaTheme.dark,
       home: const SubscriptionScreen(accountUid: 'test-account'),
@@ -45,7 +45,9 @@ void main() {
     expect(find.text('R\$ 4,50 por mês'), findsOneWidget);
     expect(find.text('R\$ 49,50 por ano'), findsOneWidget);
     expect(find.textContaining('bloqueio ainda está em homologação'), findsOneWidget);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(find.byType(FilledButton), findsNWidgets(2));
+    expect(find.textContaining('sem renovação automática'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(tester.takeException(), isNull);
   });

@@ -118,8 +118,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
     try {
       await SubscriptionCheckout.open(uid, plan);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Não foi possível abrir o checkout. Tente novamente mais tarde.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Não foi possível abrir o checkout. Tente novamente mais tarde.')));
+      }
     } finally {
       if (mounted) setState(() => purchasing = false);
     }
