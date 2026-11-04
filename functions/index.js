@@ -61,6 +61,14 @@ exports.mercadoPagoWebhook = onRequest({
   region: 'southamerica-east1', cors: false, maxInstances: 10, invoker: 'public',
   secrets: [mpReceivingToken, mpWebhookSecret],
 }, async (req, res) => {
+  // Pause the NEW homologation receiver independently of purchase creation.
+  // Disabling checkout alone must not silently enable historical claim grants.
+  // Return retryable 503 before inbox writes or provider calls; do not acknowledge
+  // financial notifications as processed while this receiver is paused.
+  if (process.env.ROCHA_WEBHOOK_RECONCILIATION_ENABLED !== 'true') {
+    res.set('Cache-Control', 'no-store');
+    return res.status(503).json({received: false, paused: true});
+  }
   const inbox = createFirestoreWebhookInbox({db, admin});
   const handler = createMercadoPagoWebhookHandler({
     secret: () => mpWebhookSecret.value(), inbox,
