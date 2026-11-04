@@ -19,7 +19,7 @@ sub init()
   m.allChannels = []
   m.checkupOpen = false
   m.checkupChoice = 0
-  m.showRejected = false
+  m.showRemoved = false
   m.reportOpen = false
   m.reportPage = 0
   m.redDialogOpen = false
@@ -211,6 +211,12 @@ sub openChannels(favoritesOnly as boolean)
   if favoritesOnly then m.area = 5
 end sub
 
+function isRemoved(id as String) as Boolean
+  record = m.checkupRecords[id]
+  if type(record) <> "roAssociativeArray" then return false
+  return record.decision = "removed"
+end function
+
 function isRejected(id as String) as Boolean
   record = m.checkupRecords[id]
   if type(record) <> "roAssociativeArray" then return false
@@ -223,7 +229,7 @@ sub refreshVisibleChannels()
   visible = []
   for each c in m.allChannels
     searchOk = (not m.searchMode or instr(1, lcase(c.name), lcase(m.searchTerm)) > 0)
-    if (m.activeCategory = "" or categoryOf(c) = m.activeCategory) and (not m.favoritesOnly or isFavorite(c.id)) and (m.showRejected or not isRejected(c.id)) and searchOk then visible.push(c)
+    if (m.activeCategory = "" or categoryOf(c) = m.activeCategory) and (not m.favoritesOnly or isFavorite(c.id)) and (m.showRemoved or not isRemoved(c.id)) and searchOk then visible.push(c)
   end for
   m.channels = visible
   m.channelRevision = m.channelRevision + 1
@@ -354,14 +360,66 @@ sub renderCheckup()
   m.top.findNode("checkupPanel").visible = m.checkupOpen
   if not m.checkupOpen then return
   c = m.channels[m.channelIndex]
-  m.top.findNode("checkupTitle").text = "Check-up LAB: " + c.name
-  choices = ["APROVAR", "REPROVAR / OCULTAR", "PENDENTE", "RESTAURAR", "FAVORITO"]
+  rec = ensureCheckupRecord(c)
+  choices = [
+    "APROVAR (PADRÃO)",
+    "REPROVAR",
+    "RESTAURAR CANAL / AVALIAÇÃO",
+    "IMAGEM: " + assessmentLabel(rec.image),
+    "ÁUDIO: " + assessmentLabel(rec.audio),
+    "TRAVAMENTOS: " + assessmentLabel(rec.freezes),
+    "CONTROLE: " + assessmentLabel(rec.remote),
+    "FAVORITO"
+  ]
   output = ""
   for i = 0 to choices.count() - 1
     if i = m.checkupChoice then output = output + "> " else output = output + "   "
     output = output + choices[i] + chr(10)
   end for
+  m.top.findNode("checkupTitle").text = "Teste físico LAB: " + c.name
   m.top.findNode("checkupChoices").text = output
+end sub
+
+function ensureCheckupRecord(c as Object) as Object
+  record = m.checkupRecords[c.id]
+  if type(record) <> "roAssociativeArray"
+    record = {id:c.id, name:c.name, group:c.group, decision:"untested", image:"not_tested", audio:"not_tested", freezes:"not_tested", remote:"not_tested"}
+  else
+    record.name = c.name
+    record.group = c.group
+    if not record.doesExist("decision") or (type(record.decision) <> "roString" and type(record.decision) <> "String") then record.decision = "untested"
+    if not record.doesExist("image") or (type(record.image) <> "roString" and type(record.image) <> "String") then record.image = "not_tested"
+    if not record.doesExist("audio") or (type(record.audio) <> "roString" and type(record.audio) <> "String") then record.audio = "not_tested"
+    if not record.doesExist("freezes") or (type(record.freezes) <> "roString" and type(record.freezes) <> "String") then record.freezes = "not_tested"
+    if not record.doesExist("remote") or (type(record.remote) <> "roString" and type(record.remote) <> "String") then record.remote = "not_tested"
+  end if
+  return record
+end function
+
+function assessmentLabel(state as String) as String
+  if state = "pass" then return "APROVADO"
+  if state = "fail" then return "REPROVADO"
+  if state = "blocked" then return "BLOQUEADO"
+  return "NÃO TESTADO"
+end function
+
+sub saveCheckupRecord(record as Object)
+  m.checkupRecords[record.id] = record
+  m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
+  m.registry.Flush()
+end sub
+
+sub cyclePhysicalResult(c as Object, field as String)
+  record = ensureCheckupRecord(c)
+  states = ["not_tested", "pass", "fail", "blocked"]
+  current = record[field]
+  nextIndex = 0
+  for i = 0 to states.count() - 1
+    if states[i] = current then nextIndex = (i + 1) mod states.count()
+  end for
+  record[field] = states[nextIndex]
+  saveCheckupRecord(record)
+  m.status.text = "Resultado salvo: " + c.name + " • " + field + " • " + assessmentLabel(record[field])
 end sub
 
 function handleCheckupKey(key as String) as Boolean
@@ -370,22 +428,34 @@ function handleCheckupKey(key as String) as Boolean
     renderCheckup()
     return true
   else if key = "down" then
-    m.checkupChoice = (m.checkupChoice + 1) mod 5
+    m.checkupChoice = (m.checkupChoice + 1) mod 8
   else if key = "up" then
-    m.checkupChoice = (m.checkupChoice + 4) mod 5
+    m.checkupChoice = (m.checkupChoice + 7) mod 8
   else if key = "OK" then
     c = m.channels[m.channelIndex]
-    if m.checkupChoice = 4 then
-      toggleFavorite()
+    record = ensureCheckupRecord(c)
+    if m.checkupChoice = 0 then
+      record.decision = "approved"
+      saveCheckupRecord(record)
+      m.status.text = "Avaliação técnica aprovada: " + c.name + " • autorização de playback não concedida"
+    else if m.checkupChoice = 1 then
+      record.decision = "rejected"
+      saveCheckupRecord(record)
+      m.status.text = "Avaliação técnica reprovada: " + c.name + " • canal mantido no catálogo"
+    else if m.checkupChoice = 2 then
+      record.decision = "untested"
+      saveCheckupRecord(record)
+      m.status.text = "Avaliação/canal restaurado no LAB: " + c.name
+    else if m.checkupChoice = 3 then
+      cyclePhysicalResult(c, "image")
+    else if m.checkupChoice = 4 then
+      cyclePhysicalResult(c, "audio")
+    else if m.checkupChoice = 5 then
+      cyclePhysicalResult(c, "freezes")
+    else if m.checkupChoice = 6 then
+      cyclePhysicalResult(c, "remote")
     else
-      record = {id: c.id, name: c.name, group: c.group, decision: "approved"}
-      if m.checkupChoice = 1 then record.decision = "rejected"
-      if m.checkupChoice = 2 then record.decision = "pending"
-      if m.checkupChoice = 3 then record.decision = "restored"
-      m.checkupRecords[c.id] = record
-      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
-      m.registry.Flush()
-      m.status.text = "Check-up salvo: " + c.name
+      toggleFavorite()
     end if
     m.checkupOpen = false
     renderCheckup()
@@ -401,32 +471,54 @@ end function
 sub showCheckupReport()
   approved = 0
   rejected = 0
+  removed = 0
   pending = 0
-  restored = 0
   untested = 0
   records = []
+  authorizationEvidence = "Ausente: não há autorização Roku para teste físico documentada neste LAB."
   for each c in m.allChannels
-    decision = "untested"
     saved = m.checkupRecords[c.id]
-    if type(saved) = "roAssociativeArray" then decision = saved.decision
+    decision = "untested"
+    imageResult = "not_tested"
+    audioResult = "not_tested"
+    freezeResult = "not_tested"
+    remoteResult = "not_tested"
+    if type(saved) = "roAssociativeArray"
+      if type(saved.decision) = "roString" then decision = saved.decision
+      if type(saved.image) = "roString" then imageResult = saved.image
+      if type(saved.audio) = "roString" then audioResult = saved.audio
+      if type(saved.freezes) = "roString" then freezeResult = saved.freezes
+      if type(saved.remote) = "roString" then remoteResult = saved.remote
+    end if
     if decision = "approved" then approved = approved + 1
     if decision = "rejected" then rejected = rejected + 1
+    if decision = "removed" then removed = removed + 1
     if decision = "pending" then pending = pending + 1
-    if decision = "restored" then restored = restored + 1
     if decision = "untested" then untested = untested + 1
-    records.push({id: c.id, name: c.name, group: c.group, decision: decision})
+    records.push({
+      id:c.id,
+      name:c.name,
+      group:c.group,
+      decision:decision,
+      image:imageResult,
+      audio:audioResult,
+      freezes:freezeResult,
+      remote:remoteResult,
+      playbackAuthorization:"blocked_missing_permission_evidence",
+      authorizationEvidence:authorizationEvidence
+    })
   end for
-  report = {schema: "rochaplus.roku.checkup.v2", source: "roku-lab", records: records}
-  print "ROCHAPLUS_CHECKUP_JSON_BEGIN"
+  report = {schema:"rochaplus.roku.physical-review.v1", source:"roku-lab", total:records.count(), authorizedForPlayback:0, approved:approved, rejected:rejected, removed:removed, pending:pending, untested:untested, records:records}
+  print "ROCHAPLUS_PHYSICAL_REVIEW_JSON_BEGIN"
   print FormatJson(report)
-  print "ROCHAPLUS_CHECKUP_JSON_END"
-  print "ROCHAPLUS_CHECKUP_CSV_BEGIN"
-  print "id,name,group,decision"
+  print "ROCHAPLUS_PHYSICAL_REVIEW_JSON_END"
+  print "ROCHAPLUS_PHYSICAL_REVIEW_CSV_BEGIN"
+  print "id,name,group,decision,image,audio,freezes,remote,playback_authorization,authorization_evidence"
   for each item in records
-    print csvCell(item.id) + "," + csvCell(item.name) + "," + csvCell(item.group) + "," + csvCell(item.decision)
+    print csvCell(item.id) + "," + csvCell(item.name) + "," + csvCell(item.group) + "," + csvCell(item.decision) + "," + csvCell(item.image) + "," + csvCell(item.audio) + "," + csvCell(item.freezes) + "," + csvCell(item.remote) + "," + csvCell(item.playbackAuthorization) + "," + csvCell(item.authorizationEvidence)
   end for
-  print "ROCHAPLUS_CHECKUP_CSV_END"
-  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Restaurados: " + restored.toStr() + chr(10) + "Nao testados: " + untested.toStr() + chr(10) + "Total: " + records.count().toStr()
+  print "ROCHAPLUS_PHYSICAL_REVIEW_CSV_END"
+  m.top.findNode("reportSummary").text = "Aprovados: " + approved.toStr() + chr(10) + "Reprovados: " + rejected.toStr() + chr(10) + "Removidos: " + removed.toStr() + chr(10) + "Pendentes: " + pending.toStr() + chr(10) + "Nao testados: " + untested.toStr() + chr(10) + "Playback autorizado: 0"
   m.reportOpen = true
   m.reportPage = 0
   m.top.findNode("reportPanel").visible = true
@@ -512,11 +604,11 @@ end sub
 sub renderRedDialog()
   if not m.redDialogOpen then return
   c = m.channels[m.channelIndex]
-  m.top.findNode("redDialogTitle").text = "Tem certeza de que deseja excluir este canal? " + c.name
+  m.top.findNode("redDialogTitle").text = "Remover do LAB? O catálogo original será preservado: " + c.name
   if m.redDialogConfirm then
-    m.top.findNode("redDialogOptions").text = "> SIM, EXCLUIR       CANCELAR"
+    m.top.findNode("redDialogOptions").text = "> SIM, REMOVER       CANCELAR"
   else
-    m.top.findNode("redDialogOptions").text = "  SIM, EXCLUIR     > CANCELAR"
+    m.top.findNode("redDialogOptions").text = "  SIM, REMOVER     > CANCELAR"
   end if
 end sub
 
@@ -533,11 +625,11 @@ function handleRedDialog(key as String) as Boolean
   if key = "OK" then
     if m.redDialogConfirm and m.channels.count() > 0 then
       c = m.channels[m.channelIndex]
-      m.checkupRecords[c.id] = {id: c.id, name: c.name, group: c.group, decision: "rejected"}
-      m.registry.Write("roku_checkup_v1", FormatJson(m.checkupRecords))
-      m.registry.Flush()
+      record = ensureCheckupRecord(c)
+      record.decision = "removed"
+      saveCheckupRecord(record)
       if m.playing then stopPlayback()
-      m.status.text = "Canal ocultado no LAB: " + c.name
+      m.status.text = "Canal removido da visualização LAB; registro de origem preservado: " + c.name
       closeRedDialog()
       refreshVisibleChannels()
     else
@@ -559,7 +651,7 @@ sub renderHomeFavorites()
   rows.removeChildrenIndex(rows.getChildCount(), 0)
   m.homeFavoriteChannels = []
   for each entry in m.allChannels
-    if isFavorite(entry.id) and not isRejected(entry.id) then m.homeFavoriteChannels.push(entry)
+    if isFavorite(entry.id) and (m.showRemoved or not isRemoved(entry.id)) then m.homeFavoriteChannels.push(entry)
   end for
   help = m.top.findNode("homeFavoriteHelp")
   preview = m.top.findNode("homeCategoryPreview")

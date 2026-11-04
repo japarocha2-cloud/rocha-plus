@@ -114,8 +114,18 @@ sub renderChannelState()
         if slot.cover.uri <> uri then slot.cover.uri = uri
         slot.label.text = entry.name
       end if
-      slot.hint.text = "AO VIVO"
-      if channelCover(entry) = "" then slot.hint.text = "Capa pendente"
+      slot.hint.text = "AUTORIZAÇÃO PENDENTE"
+      if m.visualLabOnly <> true then slot.hint.text = "ACESSO NÃO VERIFICADO"
+      if isRemoved(entry.id) then
+        slot.hint.text = "REMOVIDO • auditoria"
+      else
+        savedDecision = m.checkupRecords[entry.id]
+        if type(savedDecision) = "roAssociativeArray"
+          if savedDecision.decision = "approved" then slot.hint.text = "TESTE APROVADO • playback pendente"
+          if savedDecision.decision = "rejected" then slot.hint.text = "TESTE REPROVADO • canal mantido"
+        end if
+      end if
+      if channelCover(entry) = "" then slot.hint.text = slot.hint.text + " • Capa pendente"
       if isFavorite(entry.id) then slot.hint.text = slot.hint.text + "  |  Favorito"
     else if rebind
       slot.cover.uri = ""
@@ -149,7 +159,8 @@ function handleChannelBrowserKey(key as String) as Boolean
     return true
   else if key = "play"
     ' Keep historical LAB decisions intact; no automatic approval or restoration.
-    m.showRejected = not m.showRejected
+    m.showRemoved = not m.showRemoved
+    if m.showRemoved then m.status.text = "Auditoria LAB: canais removidos visíveis; catálogo original preservado." else m.status.text = "Auditoria LAB: canais removidos ocultos."
     refreshVisibleChannels()
     return true
   else if key = "down" or key = "up"

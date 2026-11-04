@@ -1,4 +1,4 @@
-name: Roku LAB 0.6.10 REV3 visual-only package
+name: Roku LAB 0.6.10 REV4 full catalog physical review
 
 on:
   push:
@@ -29,13 +29,25 @@ jobs:
           import fs from 'node:fs/promises';
           import assert from 'node:assert/strict';
           import {build,readZip} from './tools/roku_visual_lab.mjs';
-          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip';
+          const target='/tmp/RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO.zip';
           const built=await build('platforms/roku-lab-visual',target,{excludeProvisionalCovers:true,onlyMappedLogoFiles:true});
           const files=readZip(await fs.readFile(target));
           const count=x=>Array.isArray(x)?x.length:Object.keys(x).length;
           assert.equal(Object.keys(files).length,574);
           assert.match(files.manifest.toString(),/build_version=10/);
-          assert.equal(count(JSON.parse(files['catalog/commercial-lab-merged.json'])),607);
+          const catalog=JSON.parse(files['catalog/commercial-lab-merged.json']);
+          assert.equal(count(catalog),607);
+          assert.equal(new Set(catalog.map(x=>x.id)).size,607,'unique catalog IDs');
+          assert.equal(catalog.filter(x=>(x.url.startsWith('https://')||x.url.startsWith('http://'))&&x.url.toLowerCase().includes('.m3u8')&&x.blocked!==true&&x.quarantined!==true).length,607,'all records navigable');
+          const evaluator=files['components/HomeScene.brs'].toString();
+          assert(evaluator.includes('APROVAR (PADRÃO)')&&evaluator.includes('REPROVAR')&&evaluator.includes('ROCHAPLUS_PHYSICAL_REVIEW_CSV_BEGIN'));
+          const blockedList=(await fs.readFile('docs/roku/physical-package-rev4-20261103/blocked-playback-channels.csv','utf8')).trim().split(/\r?\n/);
+          assert.equal(blockedList.length,608,'header plus all blocked catalog records');
+          for(const field of ['image','audio','freezes','remote','authorizationEvidence']) assert(evaluator.includes(field),'missing evaluation field '+field);
+          assert(evaluator.includes('> SIM, REMOVER')&&evaluator.includes('CANCELAR'),'remove action needs confirmation');
+          assert(evaluator.includes('and (m.showRemoved or not isRemoved(c.id))'),'removed records must be reversible');
+          const browser=files['components/ChannelBrowser.brs'].toString();
+          assert(browser.includes('AUTORIZAÇÃO PENDENTE'));
           assert.equal(count(JSON.parse(files['config/cover-map.json'])),578);
           for(const p of ['config/auth.json','config/central-access.json','config/lab-access.json']) assert.equal(JSON.parse(files[p]).enabled,false,p);
           const visual=JSON.parse(files['config/physical-lab-access.json']);
@@ -60,7 +72,7 @@ jobs:
           NODE
       - uses: actions/upload-artifact@v4
         with:
-          name: RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED
-          path: /tmp/RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip
+          name: RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO
+          path: /tmp/RochaPlus-Roku-LAB-0.6.10-REV4-CATALOGO-607-PLAYBACK-BLOQUEADO.zip
           if-no-files-found: error
           retention-days: 30
