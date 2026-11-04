@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - '.github/workflows/checkout-certificate.yml'
       - '.github/workflows/homologation-readonly.yml'
+      - '.github/workflows/mercadopago-receiver-readonly.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
