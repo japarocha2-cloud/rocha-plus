@@ -59,3 +59,16 @@ Foi preparado o modo de acesso **visual_only**, experimental e local ao pacote R
 - [Modo LAB visual](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/platforms/roku-lab-visual/config/physical-lab-access.json)
 - [Workflow REV3](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/.github/workflows/roku-0610-package.yml)
 
+
+
+## REV3 visual-only — build e artifact verificados (03/11/2026 BRT)
+
+- Código e workflow: [commit 445864a](https://github.com/japarocha2-cloud/rocha-plus/commit/445864aed95178c242f14b64cc4c0a4e1e893eca); branch LAB exclusiva. Código muda Account.brs, ChannelBrowser.brs e HomeScene.brs, configuração física visual-only e workflow. Nenhum arquivo Android/produção/Roku Oficial foi alterado.
+- CI: [run 41746676192 — success](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192), no commit 445864aed95178c242f14b64cc4c0a4e1e893eca. Os 12 fixtures existentes passaram (12/0); são fixtures, não login Google ou direitos reais. Build e validação Roku do ZIP também passaram.
+- ZIP interno: RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip; 4.539.279 bytes; SHA-256 f3d018f74d94b6fc2d1f2f0dea04f335695217e057de58c91cf71cc2ff69b358.
+- Artefato GitHub Actions: [baixar REV3 visual-only](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192/artifacts/13284635050); artefato 13284635050, arquivo compactado pelo Actions 4.461.802 bytes, digest externo SHA-256 7a1e07e3a1d32e3240ec1f02f6648a5214734797347b7bbea8d7cf140a72ae06, expira em 04/12/2026 UTC (retenção de 30 dias). É um artifact de workflow, exige acesso GitHub; o ZIP interno é sideloadável.
+- Validações: 574 arquivos no ZIP; manifesto build_version=10; 607 registros do catálogo e 578 associações de capa; auth/central/LAB comerciais desligados; modo visual_only e playbackEnabled=false; allowlist física vazia (0); três guards de playback verificados; intros de vídeo suprimidas; 0 padrões de segredo nos arquivos pesquisados.
+- Navegação visual pode ser testada no BRS/TV sem assinatura: Home, categorias, canais, capas, favoritos, busca. Prévia, Assistir e mídia são bloqueados deliberadamente. BRS Desktop e TV física não foram executados nesta etapa; portanto nenhuma observação gráfica real, reprodução, áudio ou desempenho é declarada. Próxima etapa física: instalar Replace with ZIP, testar visual/controle/Back/reabertura e confirmar que Assistir/prévia exibem bloqueio sem iniciar stream.
+- Lista: não há autorização de playback verificável nos arquivos consultados. Nenhum canal entra na allowlist até existir ID e evidência Roku/teste físico, validade e revisor. Não ativar physical_test_2h.
+
+Link permanente: [este relatório na branch](https://github.com/japarocha2-cloud/rocha-plus/blob/lab/roku-0.6.10-google-activation-admin-20261103/docs/roku/physical-package-rev3-20261103/README.md).

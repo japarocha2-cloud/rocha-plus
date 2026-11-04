@@ -414,3 +414,14 @@ Build/CI pendente de confirmação. O workflow REV3 verificará pacote de 574 ar
 
 Relatório detalhado: [REV3](../roku/physical-package-rev3-20261103/README.md). Código alterado: Account.brs, ChannelBrowser.brs, config/physical-lab-access.json; workflow roku-0610-package.yml. ZIP e SHA serão registrados somente após run/artifact confirmado.
 
+
+
+## Fechamento REV3 visual-only — 03/11/2026 BRT
+
+A pedido do proprietário, foi gerado um ZIP de interface visual testável sem direito comercial. O acesso visual está isolado ao pacote LAB; a allowlist para reprodução continua vazia porque os relatórios/configuração não demonstram IDs com permissão física Roku. O código bloqueia fila e debounce de prévia e o comando Assistir, e também não inicia a intro de vídeo. Lista/categorias/capas/favoritos/busca permanecem alcançáveis pelo acesso visual. Não foi usado o timer local physical_test_2h. Configurações auth, central e comercial permanecem desativadas; nenhum canal toca.
+
+**Commit:** [445864aed95178c242f14b64cc4c0a4e1e893eca](https://github.com/japarocha2-cloud/rocha-plus/commit/445864aed95178c242f14b64cc4c0a4e1e893eca) na branch lab/roku-0.6.10-google-activation-admin-20261103. **CI:** [run 41746676192, success](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192); 12/12 testes de fixture aprovados e build/validação ZIP aprovados. **ZIP:** [artefato 13284635050 para download](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192/artifacts/13284635050), nome RochaPlus-Roku-LAB-0.6.10-REV3-VISUAL-PLAYBACK-BLOCKED.zip, ZIP interno 4.539.279 bytes, SHA-256 f3d018f74d94b6fc2d1f2f0dea04f335695217e057de58c91cf71cc2ff69b358. Artefato Actions: 4.461.802 bytes, digest externo SHA-256 7a1e07e3a1d32e3240ec1f02f6648a5214734797347b7bbea8d7cf140a72ae06, expiração 04/12/2026 UTC. 574 arquivos, 607 registros, 578 associações de capas, 0 segredos detectados.
+
+**Não executar mídia:** a allowlist tem zero canais. O ZIP permite teste visual de Home, navegação, catálogo, capas, favoritos, busca e mensagens de bloqueio; áudio, vídeo e reprodução continuam bloqueados. BRS Desktop e Roku física ainda não foram executados com REV3, e login Google/ADM permanece não testado. Instalação física e controle remoto são o próximo passo. Sem merge, deploy, publicação ou alteração de assinatura.
+
+Detalhes, fontes e roteiro: [relatório REV3](../roku/physical-package-rev3-20261103/README.md), [commit](https://github.com/japarocha2-cloud/rocha-plus/commit/445864aed95178c242f14b64cc4c0a4e1e893eca), [CI](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192), [download Actions](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41746676192/artifacts/13284635050).
