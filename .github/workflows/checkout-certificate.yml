@@ -1,0 +1,65 @@
+name: Checkout public signing fingerprints
+
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/checkout-certificate.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-certificate:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Extract only public SHA1 and SHA256 with existing checkout signing inputs
+        env:
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+          ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
+        shell: python
+        run: |
+          import base64
+          import hashlib
+          import os
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          try:
+              names = ('ROCHA_KEYSTORE_BASE64', 'ROCHA_KEYSTORE_PASSWORD', 'ROCHA_KEY_ALIAS')
+              if not all(os.environ.get(name) for name in names):
+                  raise ValueError()
+              with tempfile.TemporaryDirectory(prefix='checkout-cert-', dir=os.environ['RUNNER_TEMP']) as folder:
+                  os.chmod(folder, 0o700)
+                  key = Path(folder) / 'signing.p12'
+                  key.touch(mode=0o600)
+                  key.write_bytes(base64.b64decode(os.environ['ROCHA_KEYSTORE_BASE64'], validate=True))
+                  # Same store type, secret bindings and alias as prepare_checkout_build.py.
+                  result = subprocess.run([
+                      'keytool', '-exportcert', '-keystore', str(key),
+                      '-storetype', 'PKCS12',
+                      '-storepass:env', 'ROCHA_KEYSTORE_PASSWORD',
+                      '-alias', os.environ['ROCHA_KEY_ALIAS'],
+                  ], check=True, capture_output=True)
+                  certificate = result.stdout
+                  if not certificate or certificate[0] != 0x30:
+                      raise ValueError()
+                  def fingerprint(algorithm):
+                      raw = hashlib.new(algorithm, certificate).hexdigest().upper()
+                      return ':'.join(raw[i:i+2] for i in range(0, len(raw), 2))
+                  lines = ['SHA-1: ' + fingerprint('sha1'), 'SHA-256: ' + fingerprint('sha256')]
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+                  summary.write('\n'.join(lines) + '\n')
+              for line in lines:
+                  print(line)
+          except Exception:
+              # Never emit subprocess stderr, key bytes, alias, passwords or environment.
+              raise SystemExit('Certificate fingerprint extraction failed; private values omitted.')
