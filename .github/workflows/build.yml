@@ -5,6 +5,7 @@ on:
     branches: [main, impl/commercial-checkout-20261104]
     paths-ignore:
       - '.github/workflows/checkout-certificate.yml'
+      - '.github/workflows/homologation-readonly.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
