@@ -1,0 +1,63 @@
+name: Mercado Pago receiver read-only
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/mercadopago-receiver-readonly.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  receiver:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compare authenticated account with canonical payment collector (GET only)
+        env:
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+        shell: python
+        run: |
+          import json, os, re, urllib.request, urllib.error
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          opener = urllib.request.build_opener(NoRedirect)
+          def read(path):
+              req = urllib.request.Request('https://api.mercadopago.com' + path,
+                  method='GET', headers={'Authorization': 'Bearer ' + token,
+                  'Accept': 'application/json'})
+              try:
+                  with opener.open(req, timeout=20) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  raise RuntimeError('GET ' + path + ': HTTP ' + str(error.code)) from None
+              except Exception:
+                  raise RuntimeError('GET ' + path + ': transport or JSON failure; private values omitted') from None
+          def emit(lines):
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as out:
+                  out.write('\n'.join(lines) + '\n')
+              for line in lines:
+                  print(line)
+          token = os.environ.get('MP_RECEIVING_ACCESS_TOKEN')
+          if not token:
+              emit(['BLOCKED: MP_RECEIVING_ACCESS_TOKEN missing'])
+              raise SystemExit(1)
+          try:
+              account = read('/users/me')
+              merchant = str(account.get('id', ''))
+              if not re.fullmatch(r'[0-9]+', merchant):
+                  raise RuntimeError('Authenticated account has no valid merchant ID')
+              payment = read('/v1/payments/185249688226')
+              if str(payment.get('id')) != '185249688226':
+                  raise RuntimeError('Canonical payment identity mismatch')
+              collector = str(payment.get('collector_id', ''))
+              if not re.fullmatch(r'[0-9]+', collector):
+                  raise RuntimeError('Canonical payment has no valid collector ID')
+              matches = collector == merchant
+              emit(['MERCHANT_ID: ' + merchant,
+                    'RECEIVER_MATCH: ' + ('true' if matches else 'false')])
+              if not matches:
+                  raise SystemExit(1)
+          except RuntimeError as error:
+              emit(['BLOCKED: ' + str(error)])
+              raise SystemExit(1)
