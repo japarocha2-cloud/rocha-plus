@@ -4,9 +4,9 @@ Data: 03/11/2026 (BRT). Branch exclusiva: lab/roku-0.6.10-google-activation-admi
 
 ## Escopo e situação
 
-REV4 mantém os 607 registros do catálogo integrado disponíveis para navegação e avaliação. A leitura encontrou 607 IDs únicos, nomes presentes, URLs HTTP(S) HLS, nenhum registro marcado blocked/quarantined. Categorias, ordem, nomes, capas, busca e favoritos são preservados.
+REV4 mantém os 607 registros do catálogo integrado disponíveis para navegação e avaliação. A leitura encontrou 607 IDs únicos e nomes presentes; 599 URLs têm indicação de HLS (.m3u8) e 8 URLs não terminam/incluem essa extensão. Nenhum registro marcado blocked/quarantined. O loader foi alterado para não filtrar por protocolo/formato ou status técnico: os 607 registros ficam navegáveis; os 8 formatos distintos não estão declarados reproduzíveis. Categorias, ordem, nomes, capas, busca e favoritos são preservados.
 
-A evidência de autorização física encontrada no repositório continua vazia. Portanto **0/607 canais têm permissão de playback verificável** nesta revisão. Todos ficam visíveis com indicação “AUTORIZAÇÃO PENDENTE”; prévia e Assistir não iniciam streams. O CSV [dos 607 canais bloqueados](blocked-playback-channels.csv) registra ID, nome, grupo e evidência faltante. Aprovação técnica anterior não é autorização de distribuição.
+A evidência de autorização física encontrada no repositório continua vazia. Portanto **0/607 canais têm permissão de playback verificável** nesta revisão. Todos ficam visíveis com indicação “AUTORIZAÇÃO PENDENTE”; prévia e Assistir não iniciam streams. O CSV [dos 607 canais bloqueados](blocked-playback-channels.csv) registra ID, nome, grupo, formato indicado e evidência faltante. Aprovação técnica anterior não é autorização de distribuição.
 
 ## Avaliação e exportação
 
@@ -21,7 +21,7 @@ A evidência de autorização física encontrada no repositório continua vazia.
 
 Auth, central, acesso comercial LAB e escrita de direitos seguem desligados. Allowlist física: **0 canais**. Podem ser testados a UI, capas, navegação, busca, favoritos, marcação dos resultados e persistência local. Playback, áudio e imagem de canal são BLOQUEADOS pela falta de permissão documentada. Nenhum canal pode ser enumerado como autorizado; a matriz CSV lista os 607 impedidos e a evidência faltante (origem/licença, referência, plataforma Roku/teste físico, validade, revisor).
 
-A workflow CI valida: 607 registros elegíveis e IDs únicos, 578 associações, avaliação/exportação, remoção confirmada e reversível, allowlist vazia, gates do player, manifesto/CRC/estrutura ZIP e ausência de segredos. O link, tamanho e hash serão registrados após CI verde.
+A workflow CI valida: 607 registros elegíveis e IDs únicos, 578 associações, avaliação/exportação, remoção confirmada e reversível, allowlist vazia, gates do player, manifesto/CRC/estrutura ZIP e ausência de segredos. Primeiro CI REV4 falhou corretamente ao encontrar apenas 599 formatos HLS. Loader corrigido para listar os 607, independentemente de extensão, mantendo playback bloqueado. O workflow será executado novamente; tamanho/hash/link serão registrados somente após CI verde.
 
 ## Roteiro físico
 
@@ -32,3 +32,7 @@ Developer Mode → Replace with ZIP. Navegue pela Home, TV ao Vivo e categorias;
 - [Branch LAB](https://github.com/japarocha2-cloud/rocha-plus/tree/lab/roku-0.6.10-google-activation-admin-20261103)
 - [REV3 anterior](../physical-package-rev3-20261103/README.md)
 - [Requisitos de evidência](../../../experiments/roku-readiness/physical-channel-lab.example.json)
+
+### Correção do primeiro CI
+
+[Run 41748923411](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41748923411) falhou na asserção “all records navigable”: 599 de 607 têm .m3u8; oito têm outros formatos/endpoints. Os 12 fixtures de acesso passaram (12/0). Nenhum artefato foi publicado. O código removeu o filtro .m3u8/blocked/quarantined exclusivamente do carregamento de lista e valida apenas ID/nome únicos; playback continua negado no LAB visual. O CSV agora registra media_format_hint para cada ID. CI será reexecutado após a correção.

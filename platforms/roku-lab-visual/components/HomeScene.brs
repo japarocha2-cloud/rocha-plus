@@ -7,7 +7,7 @@ sub init()
   m.homeFavoriteIndex = 0
   m.categoryNames = ["Geral", "TV ao Vivo", "Esportes", "Notícias", "Infantil", "Filmes", "Séries", "Documentários", "Educação", "Cultura", "Comédia", "Culinária", "Entretenimento", "Música", "Religiosos", "Estilo de Vida", "Vida ao Ar Livre", "Viagens", "PET", "Futebol", "Outros"]
   m.status = m.top.findNode("status")
-  m.approvedCount = 0
+  m.loadedCount = 0
   m.channels = []
   m.channelIndex = 0
   m.playing = false
@@ -33,7 +33,7 @@ sub init()
   m.video = m.top.findNode("channelVideo")
   m.video.observeField("state", "onVideoStateChanged")
   m.video.observeField("errorMsg", "onVideoError")
-  loadApprovedCatalogue()
+  loadLabCatalogue()
   m.allChannels = m.channels
   m.timer = m.top.findNode("playbackTimeout")
   m.timer.observeField("fire", "onPlaybackTimeout")
@@ -168,7 +168,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 end function
 
 ' Isolated test snapshot. External AV detection is not Roku playback approval.
-sub loadApprovedCatalogue()
+sub loadLabCatalogue()
   m.experimental = true
   raw = ReadAsciiFile("pkg:/catalog/commercial-lab-merged.json")
   parsed = ParseJson(raw)
@@ -178,22 +178,22 @@ sub loadApprovedCatalogue()
   end if
   seen = {}
   for each item in parsed
-    if type(item) = "roAssociativeArray" then
-      if (type(item.url) = "roString" or type(item.url) = "String") and (type(item.name) = "roString" or type(item.name) = "String") then
-        if (left(item.url, 8) = "https://" or left(item.url, 7) = "http://") and instr(1, lcase(item.url), ".m3u8") > 0 then
-          if item.blocked <> true and item.quarantined <> true then
-            key = item.id
-            if type(key) <> "roString" and type(key) <> "String" then key = item.url
-            if not seen.doesExist(key) then
-              seen[key] = true
-              m.channels.push(item)
-              m.approvedCount = m.approvedCount + 1
-            end if
-          end if
+    if type(item) = "roAssociativeArray"
+      if (type(item.id) = "roString" or type(item.id) = "String") and (type(item.name) = "roString" or type(item.name) = "String")
+        key = item.id
+        if not seen.doesExist(key)
+          seen[key] = true
+          m.channels.push(item)
+          m.loadedCount = m.loadedCount + 1
         end if
       end if
     end if
   end for
+  if m.loadedCount <> parsed.count()
+    m.status.text = "LAB: catálogo incompleto; " + m.loadedCount.toStr() + " de " + parsed.count().toStr() + " registros navegáveis"
+  else
+    m.status.text = m.loadedCount.toStr() + " registros LAB disponíveis • playback sujeito a autorização"
+  end if
 end sub
 
 ' Roku native Video node; explicit selection of an HTTPS HLS test candidate.
