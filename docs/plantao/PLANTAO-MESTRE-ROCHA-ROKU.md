@@ -372,3 +372,28 @@ REV2 foi carregado no BRS Desktop a partir do ZIP selecionado pelo proprietário
 Setas Right/Left/Up/Down, Return (OK) e Backspace (Voltar) foram enviados; o overlay permaneceu sem mudança observável, então navegação não validada. Rodapé visual de versão está truncado como “Roku LAB 0.6…”. Acesso LAB continua desativado; login Google/ADM, persistência real, navegação pelo catálogo, favoritos, busca, mídia, áudio, reprodução, FPS/RAM e TV física NÃO EXECUTADOS. Status AMARELO; sem correção de código ou novo ZIP.
 
 Capturas reais geradas pelo BRS Desktop: brs-rev2-home.png, brs-rev2-after-right.png, brs-rev2-reopened.png e brs-rev2-after-back.png. Permanecem no workspace local em docs/roku/0610-google-activation-admin/; não foram enviados ao GitHub nesta etapa, portanto não têm URL remota permanente.
+
+## REV3 para teste físico — BLOQUEADO por falta de allowlist de direitos (03/11/2026)
+
+Pedido de novo ZIP para testar canais com imagem/áudio sem assinatura comercial foi avaliado a partir da última base validada REV2. A REV2 permanece o artefato mais recente seguro: [run 41729054117](https://github.com/japarocha2-cloud/rocha-plus/actions/runs/41729054117), [commit 2fef125307d9c2e35e9c2d82d1860dbdafb5f3e0](https://github.com/japarocha2-cloud/rocha-plus/commit/2fef125307d9c2e35e9c2d82d1860dbdafb5f3e0), ZIP 4,538,938 bytes, SHA-256 `d789c6607b0f32bb2629adf9b1082518715c3a624f1e16445972fbf6817ddaa1`. Não repetir testes verdes sem alteração.
+
+### Evidências do bloqueio
+
+- `experiments/roku-readiness/physical-channel-lab.example.json`: `approvedForPhysicalTest: []`, host não configurado, autorização desabilitada, `readyForEnabledZip:false`.
+- `platforms/roku-lab-visual/config/lab-access.json`, `auth.json` e `central-access.json`: desativados, endpoints vazios. `physical-lab-access.json` está em `account_homologation`.
+- O código legado tem modo local `physical_test_2h` que habilitaria reprodução local sem identidade no servidor; o loader de catálogo atual percorre `commercial-lab-merged.json`, não exige `approved:true` e só ignora `blocked/quarantined`. Não ativar esse modo para o teste solicitado.
+- No snapshot 0.6.10: catálogo integrado tem 607 itens: 395 `approved:false`, 212 sem campo de aprovação e nenhum `approved:true`. `catalog/approved.json` tem 190 marcas `approved:true`, com evidência de estabilidade/decodificação, mas isso não prova autorização de direitos/plataforma Roku nem substitui referência legal. A amostra isolada de 12 não foi demonstrada como allowlist com direitos.
+
+Um REV3 com playback aberto ou o timer físico daria acesso a itens cuja autorização Roku não está registrada. Por isso não foi criado pacote de playback amplo nem temporizador novo. Nenhuma modificação de código/configuração e nenhum novo ZIP foram feitos; REV2 não foi alterado. Nenhum pagamento, direito, Firebase comercial, assinatura ou versão oficial foi tocado.
+
+### Para liberar a próxima etapa com segurança
+
+1. Fornecer uma allowlist de IDs Rocha+ (ou nomes+IDs), cada uma ligada a evidência de permissão: origem/licença, permissão explícita para Roku/teste físico, validade e responsável pela revisão. Não enviar URLs assinadas, tokens ou credenciais.
+2. Disponibilizar um endpoint HTTPS já existente em Firebase/projeto LAB isolado, com identidade/test account de homologação e escopo/expiração aprovados. Não criar recursos, chaves ou IAM nesta ordem.
+3. Ajustar o build para limitar seleção e reprodução à allowlist no servidor e no cliente, sem alterar os 607 registros nem a fonte comercial; manter duas reproduções/dispositivos conforme política, quando aplicável.
+4. Testar CI com allowlist e expirado/revogado/replay negado; gerar REV3 via Actions com auth comercial desligada; verificar ZIP, SHA-256 e artifact URL.
+5. Instalar manualmente na TV Roku do proprietário e registrar imagem/áudio/controle somente para os IDs autorizados. Reprodução física não é aprovada até essa execução real.
+
+### Estado desta etapa
+
+**Sem REV3 para baixar.** Bloqueio concreto: allowlist jurídica/física vazia e endpoint de homologação ausente. Testes automáticos novos: não executados; os checks aprovados do REV2 foram preservados. Instalação e reprodução física da REV3: não executadas. Incidente/solicitação continua aberto. Próximo passo: anexar allowlist e confirmar endpoint LAB existente; então retomar implementação na mesma branch experimental.
