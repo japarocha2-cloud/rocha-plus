@@ -1,0 +1,85 @@
+name: Checkout private configuration readiness
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/checkout-config-readiness.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  configuration:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check bindings and assemble private candidate without publishing values
+        env:
+          EXPECTED_RECEIVING_MERCHANT_ID: ${{ secrets.EXPECTED_RECEIVING_MERCHANT_ID }}
+          ROCHA_CHECKOUT_HOMOLOGATION_JSON: ${{ secrets.ROCHA_CHECKOUT_HOMOLOGATION_JSON }}
+          ROCHA_KEYSTORE_BASE64: ${{ secrets.ROCHA_KEYSTORE_BASE64 }}
+          ROCHA_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_KEYSTORE_PASSWORD }}
+          ROCHA_KEY_ALIAS: ${{ secrets.ROCHA_KEY_ALIAS }}
+        shell: python
+        run: |
+          import json, os, sys, tempfile
+          from pathlib import Path
+          sys.path.insert(0, 'tools')
+          from prepare_checkout_build import validate
+
+          expected = os.environ.get('EXPECTED_RECEIVING_MERCHANT_ID', '')
+          result = {'expected_receiver_secret_present': bool(expected),
+                    'receiver_matches_previous_canonical_review': expected == '320683687',
+                    'bundle_secret_present': bool(os.environ.get('ROCHA_CHECKOUT_HOMOLOGATION_JSON')),
+                    'signing_bindings_present': all(os.environ.get(k) for k in [
+                        'ROCHA_KEYSTORE_BASE64', 'ROCHA_KEYSTORE_PASSWORD', 'ROCHA_KEY_ALIAS']),
+                    'deployment_executed': False, 'iam_changed': False,
+                    'server_flags_changed': False}
+          candidate = json.loads(Path('config/checkout-homologation.template.json').read_text())
+          candidate['merchant_id'] = expected or None
+          raw = os.environ.get('ROCHA_CHECKOUT_HOMOLOGATION_JSON')
+          try:
+              if raw:
+                  supplied = json.loads(raw)
+                  if not isinstance(supplied, dict): raise ValueError()
+                  candidate.update(supplied)
+              result['pending_fields'] = sorted(k for k, v in candidate.items() if v is None or v == '')
+              result['merchant_binding_matches_bundle'] = bool(expected) and candidate.get('merchant_id') == expected
+              if not result['pending_fields']:
+                  validate(candidate)
+                  if (candidate.get('webhook_reconciliation_enabled') is not False or
+                      candidate.get('firebase_project_id') != 'rocha-plus-homologacao' or
+                      candidate.get('signing_sha256', '').replace(':', '').lower() !=
+                          '8c83b088b0964d7e8bc81b32562e9191f319e0d58cffaa1e5f27f7567b919d22'):
+                      raise ValueError()
+                  result['structural_config_valid'] = True
+              else:
+                  result['structural_config_valid'] = False
+              # Private candidate exists only in a 0700 runner temp directory and
+              # is removed immediately. It is never printed, uploaded or committed.
+              with tempfile.TemporaryDirectory(dir=os.environ['RUNNER_TEMP']) as tmp:
+                  os.chmod(tmp, 0o700)
+                  p = Path(tmp) / 'candidate.json'
+                  p.touch(mode=0o600)
+                  p.write_text(json.dumps(candidate))
+          except Exception:
+              result['structural_config_valid'] = False
+              result['bundle_error'] = 'invalid_bundle_values_omitted'
+          result['apk_config_ready'] = (
+              result.get('structural_config_valid', False) and
+              result['receiver_matches_previous_canonical_review'] and
+              result.get('merchant_binding_matches_bundle', False) and
+              result['signing_bindings_present'])
+          result['deployment_authorization_verified'] = False
+          result['note'] = 'Binding and structural check only; no repeated tests, API queries or deployment'
+          Path('checkout-config-readiness.json').write_text(json.dumps(result, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('```json\n' + json.dumps(result, indent=2) + '\n```\n')
+          print(json.dumps(result, indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checkout-config-readiness
+          path: checkout-config-readiness.json
+          if-no-files-found: error
