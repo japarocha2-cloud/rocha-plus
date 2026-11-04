@@ -53,6 +53,7 @@ jobs:
           assert(evaluator.includes('> SIM, REMOVER')&&evaluator.includes('CANCELAR'),'remove action needs confirmation');
           assert(evaluator.includes('and (m.showRemoved or not isRemoved(c.id))'),'removed records must be reversible');
           const browser=files['components/ChannelBrowser.brs'].toString();
+          const home=files['components/HomeScene.brs'].toString();
           assert(browser.includes('AUTORIZAÇÃO PENDENTE'));
           assert(browser.includes('if format <> "" then content.streamFormat = format'));
           assert(!browser.includes('content.streamFormat = "hls"'),'unknown catalog format must not be forced to HLS');
@@ -74,7 +75,6 @@ jobs:
           assert.deepEqual(visual.channelAllowlist,[]);
           const account=files['components/Account.brs'].toString();
           const player=files['components/ChannelBrowser.brs'].toString();
-          const home=files['components/HomeScene.brs'].toString();
           assert(account.includes('function activateVisualOnlyLabAccess()'));
           assert(account.includes('if m.visualLabOnly = true then return true'));
           assert(home.includes('if m.visualLabOnly = true then return'));
