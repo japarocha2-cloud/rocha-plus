@@ -26,12 +26,12 @@ function fixture(overrides = {}) {
 test('authenticated checkout fixes price and UID on server',async()=>{
   const f=fixture();await f.run();assert.equal(f.res.code,200);
   assert.equal(f.writes[0].data.uid,'firebase-user');
-  assert.equal(f.writes[0].data.amountCents,450);
-  assert.equal(JSON.parse(f.calls[1].opts.body).items[0].unit_price,4.5);
+  assert.equal(f.writes[0].data.amountCents,790);
+  assert.equal(JSON.parse(f.calls[1].opts.body).items[0].unit_price,7.9);
 });
-test('annual amount is 49.50 BRL',async()=>{
+test('annual amount is 86.90 BRL',async()=>{
   const f=fixture();f.req.body.plan='annual';await f.run();
-  assert.equal(f.res.code,200);assert.equal(f.writes[0].data.amountCents,4950);
+  assert.equal(f.res.code,200);assert.equal(f.writes[0].data.amountCents,8690);
 });
 test('disabled configuration never contacts provider',async()=>{
   const f=fixture({config:()=>({enabled:false})});await f.run();
