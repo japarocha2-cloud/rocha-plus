@@ -10,6 +10,7 @@ on:
       - '.github/workflows/checkout-config-readiness.yml'
       - '.github/workflows/actions-principal-readonly.yml'
       - '.github/workflows/checkout-deploy-preflight.yml'
+      - '.github/workflows/bootstrap-download.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
