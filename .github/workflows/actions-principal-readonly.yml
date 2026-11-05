@@ -1,0 +1,88 @@
+name: Actions principal read-only
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/actions-principal-readonly.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  principal:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --disable-pip-version-check google-auth==2.40.3 requests==2.32.4
+      - name: Identify principal and inspect effective read permission without policy writes
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        shell: python
+        run: |
+          import os, json, re
+          from google.oauth2 import service_account
+          from google.auth.transport.requests import AuthorizedSession
+          from pathlib import Path
+          result = {'project': 'rocha-plus-homologacao', 'operation': 'read_only'}
+          def status(response):
+              output = {'http_status': response.status_code}
+              if not response.ok:
+                  try:
+                      error = response.json().get('error', {})
+                      output['status'] = error.get('status')
+                      details = []
+                      for detail in error.get('details', []):
+                          if detail.get('@type', '').endswith('ErrorInfo'):
+                              metadata = detail.get('metadata', {})
+                              details.append({'reason': detail.get('reason'),
+                                  'domain': detail.get('domain'),
+                                  'permission': metadata.get('permission'),
+                                  'service': metadata.get('service')})
+                      output['error_info'] = details
+                  except Exception:
+                      output['error_info'] = 'unavailable'
+              return output
+          try:
+              info = json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', ''))
+              email = info.get('client_email', '')
+              if not re.fullmatch(r'[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.iam\.gserviceaccount\.com', email):
+                  raise ValueError()
+              result['service_account_email'] = email
+              credentials = service_account.Credentials.from_service_account_info(info,
+                  scopes=['https://www.googleapis.com/auth/cloud-platform'])
+              session = AuthorizedSession(credentials)
+              project = result['project']
+              resource = 'https://cloudfunctions.googleapis.com/v2/projects/' + project + '/locations/southamerica-east1/functions/entitlement'
+              function = session.get(resource, timeout=25)
+              result['function_read'] = status(function)
+              # testIamPermissions and getIamPolicy use POST but are read-only;
+              # no setIamPolicy, role creation, account creation, deploy or financial API.
+              base = 'https://cloudresourcemanager.googleapis.com/v1/projects/' + project
+              tested = session.post(base + ':testIamPermissions',
+                  json={'permissions': ['cloudfunctions.functions.get']}, timeout=25)
+              result['permission_test'] = status(tested)
+              if tested.ok:
+                  result['permission_test']['granted'] = (
+                      'cloudfunctions.functions.get' in tested.json().get('permissions', []))
+              policy = session.post(base + ':getIamPolicy', json={'options': {'requestedPolicyVersion': 3}},
+                  timeout=25)
+              result['project_iam_read'] = status(policy)
+              if policy.ok:
+                  matches = [b for b in policy.json().get('bindings', [])
+                      if 'serviceAccount:' + email in b.get('members', [])]
+                  result['project_iam_read']['direct_roles_for_this_principal'] = [
+                      {'role': b.get('role'), 'conditional': bool(b.get('condition'))} for b in matches]
+                  result['project_iam_read']['scope_limit'] = 'direct project bindings; inherited and resource policies not enumerated'
+          except Exception:
+              result['diagnosis_error'] = 'credential_or_request_failure_private_values_omitted'
+          Path('actions-principal-readonly.json').write_text(json.dumps(result, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('```json\n' + json.dumps(result, indent=2) + '\n```\n')
+          print(json.dumps(result, indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: actions-principal-readonly
+          path: actions-principal-readonly.json
+          if-no-files-found: error
