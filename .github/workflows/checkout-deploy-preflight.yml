@@ -1,0 +1,129 @@
+name: Checkout deployment permission preflight
+on:
+  push:
+    branches: [impl/commercial-checkout-20261104]
+    paths: ['.github/workflows/checkout-deploy-preflight.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readonly-preflight:
+    if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --disable-pip-version-check google-auth==2.40.3 requests==2.32.4
+      - name: Inspect effective permissions and proposed flags without any policy or service writes
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          from google.oauth2 import service_account
+          from google.auth.transport.requests import AuthorizedSession
+          project = 'rocha-plus-homologacao'
+          region = 'southamerica-east1'
+          permissions = [
+              'resourcemanager.projects.get',
+              'cloudfunctions.functions.get', 'cloudfunctions.functions.list',
+              'cloudfunctions.functions.create', 'cloudfunctions.functions.update',
+              'cloudfunctions.functions.getIamPolicy', 'cloudfunctions.functions.setIamPolicy',
+              'cloudfunctions.operations.get',
+              'run.services.get', 'run.services.setIamPolicy',
+              'serviceusage.services.get', 'serviceusage.services.list', 'serviceusage.services.use',
+              'cloudbuild.builds.create', 'cloudbuild.builds.get']
+          result = {'project': project, 'read_only': True,
+                    'iam_changed': False, 'services_deployed': False, 'tests_repeated': False}
+          intent = {'project': project, 'region': region,
+                    'config': 'firebase.homologacao.json',
+                    'codebase': 'subscription-homologacao',
+                    'only_exports': ['checkout', 'mercadoPagoWebhook'],
+                    'preserve_export': 'entitlement',
+                    'environment': {'ROCHA_CHECKOUT_ENABLED': 'false',
+                                    'ROCHA_WEBHOOK_RECONCILIATION_ENABLED': 'false'},
+                    'runtime_service_account_candidate': '40393752948-compute@developer.gserviceaccount.com',
+                    'runtime_identity_selection_requires_review': True,
+                    'deploy_authorized': False}
+          try:
+              info = json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', ''))
+              email = info.get('client_email', '')
+              if email != 'firebase-adminsdk-fbsvc@rocha-plus.iam.gserviceaccount.com':
+                  raise ValueError()
+              result['executor'] = email
+              session = AuthorizedSession(service_account.Credentials.from_service_account_info(
+                  info, scopes=['https://www.googleapis.com/auth/cloud-platform']))
+              # Read-only IAM permission evaluation, not an IAM policy mutation.
+              r = session.post('https://cloudresourcemanager.googleapis.com/v1/projects/' +
+                  project + ':testIamPermissions', json={'permissions': permissions}, timeout=25)
+              result['project_permission_test_http'] = r.status_code
+              if r.ok:
+                  granted = set(r.json().get('permissions', []))
+                  result['available_project_permissions'] = sorted(granted)
+                  result['not_granted_at_project_scope'] = sorted(set(permissions) - granted)
+              accounts = {'runtime_candidate': intent['runtime_service_account_candidate']}
+              build = session.get('https://cloudbuild.googleapis.com/v1/projects/' + project +
+                  '/locations/' + region + '/defaultServiceAccount', timeout=25)
+              result['build_identity_lookup_http'] = build.status_code
+              if build.ok:
+                  name = build.json().get('serviceAccountEmail') or build.json().get('name', '')
+                  if name.startswith('projects/') and '/serviceAccounts/' in name:
+                      name = name.split('/serviceAccounts/')[-1]
+                  if name.endswith('.gserviceaccount.com'):
+                      accounts['default_build_candidate'] = name
+              result['service_account_use'] = {}
+              for role, account in accounts.items():
+                  p = session.post('https://iam.googleapis.com/v1/projects/-/serviceAccounts/' +
+                      account + ':testIamPermissions',
+                      json={'permissions': ['iam.serviceAccounts.actAs', 'iam.serviceAccounts.get']},
+                      timeout=25)
+                  row = {'email': account, 'http_status': p.status_code}
+                  if p.ok:
+                      granted = p.json().get('permissions', [])
+                      row['actAs'] = 'iam.serviceAccounts.actAs' in granted
+                      row['get'] = 'iam.serviceAccounts.get' in granted
+                  result['service_account_use'][role] = row
+              # No repeated entitlement GET. Inspect only the two proposed new exports.
+              result['target_functions'] = {}
+              for name in intent['only_exports']:
+                  r = session.get('https://cloudfunctions.googleapis.com/v2/projects/' + project +
+                      '/locations/' + region + '/functions/' + name, timeout=25)
+                  row = {'http_status': r.status_code}
+                  if r.ok:
+                      env = r.json().get('serviceConfig', {}).get('environmentVariables', {})
+                      row['flags_explicitly_false'] = all(env.get(k) == 'false' for k in intent['environment'])
+                  result['target_functions'][name] = row
+                  if r.status_code in (401,403): break
+              result['secret_metadata'] = {}
+              for name in ['MP_RECEIVING_ACCESS_TOKEN', 'MP_WEBHOOK_SECRET']:
+                  # Metadata only. Never access any secret version's payload.
+                  r = session.get('https://secretmanager.googleapis.com/v1/projects/' +
+                      project + '/secrets/' + name, timeout=25)
+                  result['secret_metadata'][name] = {'http_status': r.status_code}
+                  if r.status_code in (401,403): break
+          except Exception:
+              result['inspection_error'] = 'request_or_identity_failure_values_omitted'
+          template = json.loads(Path('config/checkout-homologation.template.json').read_text())
+          index = Path('functions/index.js').read_text()
+          result['prepared_flags_false'] = (template.get('checkout_enabled') is False and
+              template.get('webhook_reconciliation_enabled') is False)
+          result['webhook_default_pause_present'] = (
+              "process.env.ROCHA_WEBHOOK_RECONCILIATION_ENABLED !== 'true'" in index)
+          result['deployment_intent'] = intent
+          result['effective_runtime_data_and_secret_access'] = 'not_tested_no_impersonation'
+          result['iam_or_deploy_authorization'] = 'not_granted_by_this_run'
+          Path('checkout-deploy-preflight.json').write_text(json.dumps(result, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('```json\n' + json.dumps(result, indent=2) + '\n```\n')
+          print(json.dumps(result, indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checkout-deploy-preflight
+          path: checkout-deploy-preflight.json
+          if-no-files-found: error
