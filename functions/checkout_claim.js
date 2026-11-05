@@ -1,6 +1,12 @@
 'use strict';
 const {fetchVerifiedPayment} = require('./mercadopago_reconciliation');
 const {PLANS} = require('./checkout');
+// Keep previously created checkout orders valid at their original server-set amount.
+const LEGACY_PLANS = Object.freeze({monthly: 450, annual: 4950});
+function validOrderAmount(plan, cents) {
+  return Number.isInteger(cents) &&
+    (cents === PLANS[plan] || cents === LEGACY_PLANS[plan]);
+}
 // Called only behind signed webhook verification. Never infer account from email.
 async function bindCheckoutClaim({db, paymentId, accessToken}) {
   const p = await fetchVerifiedPayment(paymentId, accessToken);
@@ -12,7 +18,7 @@ async function bindCheckoutClaim({db, paymentId, accessToken}) {
     if (claimSnap.exists) return; // preserve existing reviewed and historical claims
     const o = orderSnap.data();
     if (!orderSnap.exists || !o?.preferenceId || !o.uid || o.uid.includes('/') ||
-        !Object.hasOwn(PLANS, o.plan || '') || o.amountCents !== PLANS[o.plan] ||
+        !Object.hasOwn(PLANS, o.plan || '') || !validOrderAmount(o.plan, o.amountCents) ||
         o.mode !== 'one_time' || o.currency !== 'BRL' || p.currency !== 'BRL' ||
         o.merchantId !== p.merchantId || p.liveMode !== true ||
         !Number.isFinite(p.amount) || Math.abs(p.amount * 100 - o.amountCents) > 1e-6 ||
