@@ -49,3 +49,31 @@ test('historical references do not generate new claims',async()=>{
   finally {f.restore();}
 });
 
+
+test('current monthly amount binds to verified order',async()=>{
+  const f=fixture({order:{amountCents:790}});
+  global.fetch=async()=>({ok:true,json:async()=>({id:9,external_reference:orderId,
+    collector_id:'123',live_mode:true,transaction_amount:7.9,currency_id:'BRL',
+    status:'approved',status_detail:'accredited',transaction_amount_refunded:0,
+    date_approved:'2026-11-05T12:00:00Z'})});
+  try {await f.run();assert.equal(f.writes[0].data.amountCents,790);}
+  finally {f.restore();}
+});
+test('legacy annual order retains originally recorded price',async()=>{
+  const f=fixture({order:{plan:'annual',amountCents:4950}});
+  global.fetch=async()=>({ok:true,json:async()=>({id:9,external_reference:orderId,
+    collector_id:'123',live_mode:true,transaction_amount:49.5,currency_id:'BRL',
+    status:'approved',status_detail:'accredited',transaction_amount_refunded:0,
+    date_approved:'2026-11-04T12:00:00Z'})});
+  try {await f.run();assert.equal(f.writes[0].data.amountCents,4950);}
+  finally {f.restore();}
+});
+test('unsupported price rejected even if provider agrees',async()=>{
+  const f=fixture({order:{amountCents:123}});
+  global.fetch=async()=>({ok:true,json:async()=>({id:9,external_reference:orderId,
+    collector_id:'123',live_mode:true,transaction_amount:1.23,currency_id:'BRL',
+    status:'approved',status_detail:'accredited',transaction_amount_refunded:0,
+    date_approved:'2026-11-04T12:00:00Z'})});
+  try {await assert.rejects(f.run);assert.equal(f.writes.length,0);}
+  finally {f.restore();}
+});
