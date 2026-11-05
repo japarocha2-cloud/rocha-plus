@@ -1,0 +1,12 @@
+{
+  "name": "rocha-plus-firestore-private-diagnostic-auth",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "check": "node --check verify-owner-token.cjs && node --check functions-firestore-diagnostic/operator-auth.js && node --check functions-firestore-diagnostic/diagnostic.js && node --check functions-firestore-diagnostic/index.js",
+    "test": "node --test test/*.test.cjs"
+  }
+}
