@@ -9,6 +9,7 @@ on:
       - '.github/workflows/mercadopago-receiver-readonly.yml'
       - '.github/workflows/checkout-config-readiness.yml'
       - '.github/workflows/actions-principal-readonly.yml'
+      - '.github/workflows/checkout-deploy-preflight.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
