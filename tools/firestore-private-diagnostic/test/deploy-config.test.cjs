@@ -2,7 +2,11 @@
 
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const {validateDeploymentConfig, validateRuntimeEnvironment} = require('../validate-deploy-config.cjs');
+const {
+  BOOTSTRAP_AUDIENCE,
+  validateDeploymentConfig,
+  validateRuntimeEnvironment,
+} = require('../validate-deploy-config.cjs');
 
 function validConfig() {
   return {
@@ -11,27 +15,39 @@ function validConfig() {
     functionName: 'firestoreReadIsolationDiagnostic',
     codebase: 'firestore-private-diagnostic',
     databaseId: 'rocha-payments-test',
+    deploymentStage: 'verification',
     audience: 'https://firestorereadisolationdiagnostic-example.a.run.app',
     callerServiceAccount: 'diagnostic-caller@rocha-plus-homologacao.iam.gserviceaccount.com',
     runtimeServiceAccount: 'diagnostic-runtime@rocha-plus-homologacao.iam.gserviceaccount.com',
     invokerPrincipal: 'serviceAccount:diagnostic-caller@rocha-plus-homologacao.iam.gserviceaccount.com',
     allowUnauthenticated: false,
-    runtimeNamedDatabaseAccessReviewed: true,
-    runtimeDefaultDatabaseDeniedReviewed: true,
   };
 }
 
-test('accepts an exact, private and fully reviewed isolated deployment configuration', () => {
+test('accepts an exact, private verification-stage deployment configuration', () => {
   assert.equal(validateDeploymentConfig(validConfig()).databaseId, 'rocha-payments-test');
+});
+
+test('accepts a fail-closed bootstrap before the definitive service URL exists', () => {
+  const config = {...validConfig(), deploymentStage: 'bootstrap', audience: BOOTSTRAP_AUDIENCE};
+  const valid = validateDeploymentConfig(config);
+  const environment = [
+    `DIAGNOSTIC_AUDIENCE=${BOOTSTRAP_AUDIENCE}`,
+    `DIAGNOSTIC_CALLER_EMAIL=${config.callerServiceAccount}`,
+    `DIAGNOSTIC_RUNTIME_SERVICE_ACCOUNT=${config.runtimeServiceAccount}`,
+  ].join('\n');
+  assert.equal(validateRuntimeEnvironment(environment, valid).DIAGNOSTIC_AUDIENCE,
+    BOOTSTRAP_AUDIENCE);
 });
 
 for (const [label, change] of [
   ['public access', {allowUnauthenticated: true}],
   ['wrong database', {databaseId: '(default)'}],
-  ['unreviewed named access', {runtimeNamedDatabaseAccessReviewed: false}],
-  ['unreviewed default denial', {runtimeDefaultDatabaseDeniedReviewed: false}],
   ['non-Google audience', {audience: 'https://example.com'}],
   ['audience query', {audience: 'https://example.a.run.app?token=secret'}],
+  ['unknown deployment stage', {deploymentStage: 'ready'}],
+  ['service URL during bootstrap', {deploymentStage: 'bootstrap'}],
+  ['bootstrap sentinel during verification', {audience: BOOTSTRAP_AUDIENCE}],
 ]) {
   test(`rejects ${label}`, () => {
     assert.throws(() => validateDeploymentConfig({...validConfig(), ...change}), /rejected/);

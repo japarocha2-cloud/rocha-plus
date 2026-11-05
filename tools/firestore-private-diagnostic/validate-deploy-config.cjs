@@ -11,6 +11,7 @@ const EXPECTED = Object.freeze({
   codebase: 'firestore-private-diagnostic',
   databaseId: 'rocha-payments-test',
 });
+const BOOTSTRAP_AUDIENCE = 'urn:rocha-plus:firestore-private-diagnostic:bootstrap-deny-all';
 const SERVICE_ACCOUNT = /^[a-z0-9][a-z0-9-]{4,28}[a-z0-9]@rocha-plus-homologacao\.iam\.gserviceaccount\.com$/;
 
 function fail(message) {
@@ -37,15 +38,23 @@ function exactServiceUrl(value) {
 function validateDeploymentConfig(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) fail('JSON object required');
   const expectedKeys = new Set([
-    ...Object.keys(EXPECTED), 'audience', 'callerServiceAccount', 'runtimeServiceAccount',
-    'invokerPrincipal', 'allowUnauthenticated', 'runtimeNamedDatabaseAccessReviewed',
-    'runtimeDefaultDatabaseDeniedReviewed',
+    ...Object.keys(EXPECTED), 'deploymentStage', 'audience', 'callerServiceAccount',
+    'runtimeServiceAccount', 'invokerPrincipal', 'allowUnauthenticated',
   ]);
   for (const key of Object.keys(config)) if (!expectedKeys.has(key)) fail(`unknown field ${key}`);
   for (const [key, value] of Object.entries(EXPECTED)) {
     if (config[key] !== value) fail(`${key} must equal ${value}`);
   }
-  exactServiceUrl(config.audience);
+  if (!['bootstrap', 'verification'].includes(config.deploymentStage)) {
+    fail('deploymentStage must be bootstrap or verification');
+  }
+  if (config.deploymentStage === 'bootstrap') {
+    if (config.audience !== BOOTSTRAP_AUDIENCE) {
+      fail('bootstrap must use the deny-all bootstrap audience');
+    }
+  } else {
+    exactServiceUrl(config.audience);
+  }
   if (!SERVICE_ACCOUNT.test(config.callerServiceAccount)) fail('caller service account is invalid');
   if (!SERVICE_ACCOUNT.test(config.runtimeServiceAccount)) fail('runtime service account is invalid');
   if (config.callerServiceAccount === config.runtimeServiceAccount) {
@@ -55,8 +64,6 @@ function validateDeploymentConfig(config) {
     fail('invoker principal must be the reviewed caller service account');
   }
   if (config.allowUnauthenticated !== false) fail('public access must remain disabled');
-  if (config.runtimeNamedDatabaseAccessReviewed !== true) fail('named database access review is incomplete');
-  if (config.runtimeDefaultDatabaseDeniedReviewed !== true) fail('default database denial review is incomplete');
   return Object.freeze({...config});
 }
 
@@ -96,6 +103,7 @@ function main(argv) {
     .digest('hex');
   process.stdout.write(JSON.stringify({
     valid: true,
+    deploymentStage: valid.deploymentStage,
     projectId: valid.projectId,
     functionName: valid.functionName,
     databaseId: valid.databaseId,
@@ -112,4 +120,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {validateDeploymentConfig, validateRuntimeEnvironment};
+module.exports = {BOOTSTRAP_AUDIENCE, validateDeploymentConfig, validateRuntimeEnvironment};

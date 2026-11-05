@@ -31,3 +31,9 @@ test('generated endpoint remains private, bounded and tied to a reviewed runtime
   assert.equal(endpoint.maxInstances, 1);
   assert.equal(endpoint.serviceAccountEmail.name, 'DIAGNOSTIC_RUNTIME_SERVICE_ACCOUNT');
 });
+
+test('predeploy validates configuration, not unobservable phase-2 isolation claims', () => {
+  const validator = fs.readFileSync(path.join(root, 'validate-deploy-config.cjs'), 'utf8');
+  assert.doesNotMatch(validator, /runtimeNamedDatabaseAccessReviewed/);
+  assert.doesNotMatch(validator, /runtimeDefaultDatabaseDeniedReviewed/);
+});

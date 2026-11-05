@@ -4,11 +4,10 @@
   "functionName": "firestoreReadIsolationDiagnostic",
   "codebase": "firestore-private-diagnostic",
   "databaseId": "rocha-payments-test",
-  "audience": "https://EXACT_URL_REPORTED_BY_GOOGLE_CLOUD",
+  "deploymentStage": "bootstrap",
+  "audience": "urn:rocha-plus:firestore-private-diagnostic:bootstrap-deny-all",
   "callerServiceAccount": "CALLER@rocha-plus-homologacao.iam.gserviceaccount.com",
   "runtimeServiceAccount": "RUNTIME@rocha-plus-homologacao.iam.gserviceaccount.com",
   "invokerPrincipal": "serviceAccount:CALLER@rocha-plus-homologacao.iam.gserviceaccount.com",
-  "allowUnauthenticated": false,
-  "runtimeNamedDatabaseAccessReviewed": false,
-  "runtimeDefaultDatabaseDeniedReviewed": false
+  "allowUnauthenticated": false
 }

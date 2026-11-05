@@ -44,18 +44,26 @@ tested remotely.
 8. Application responses and structured logs share a validated Cloud trace ID or an
    opaque UUID. Logs contain no JWT, Authorization, subject, email, provider message,
    document contents or financial identifier.
+9. The first-deploy circular dependency is removed without weakening authentication:
+   bootstrap accepts only a fixed deny-all audience sentinel and is not invoked;
+   `serviceConfig.uri` is then documentary input to a separately reviewed
+   verification revision. Firestore isolation remains unproved until the Phase 2
+   two-sided runtime result and matching trace exist.
 
 ## Issue #46 local evidence
 
-- Node.js 22.23.4 contract suite: **33 passed, 0 failed**. It covers authentication, explicit database isolation,
+- Node.js 22.23.4 contract suite: **36 passed, 0 failed**. It covers authentication,
+  explicit database isolation,
   denied/default-access counterexamples, error classification, log redaction,
   correlation and deployment validation.
 - `firebase.json` has one isolated codebase and `package-lock.json` pins its runtime
   dependencies. The generated endpoint contract remains GCF v2, private,
   `southamerica-east1`, `maxInstances: 1`, with a required runtime service account
   parameter.
-- `deployment.example.json` intentionally fails until the exact audience, distinct
-  identities and both IAM review assertions are supplied in an ignored review file.
+- `deployment.example.json` models the first creation as a fail-closed bootstrap
+  revision. It requires distinct identities and a fixed deny-all audience sentinel;
+  after creation, a separate verification revision requires the exact URL reported
+  by Google. No predeploy boolean claims remote Firestore behavior.
 - Runtime dependencies are pinned to `firebase-admin` 14.5.0 and
   `firebase-functions` 7.4.0. Safe transitive overrides are locked for
   `rimraf`/`glob`/`minimatch`; `npm audit --omit=dev` reports **0 vulnerabilities**.
@@ -86,6 +94,17 @@ Official contracts used for this conclusion:
   missing invocation permission.
 - [Google ID-token generation](https://cloud.google.com/docs/authentication/get-id-token#impersonating_a_service_account)
   documents short-lived service-account impersonation without downloaded keys.
+- [Service account permissions](https://cloud.google.com/iam/docs/service-account-permissions)
+  documents that `roles/iam.serviceAccountOpenIdTokenCreator` contains only
+  `iam.serviceAccounts.getOpenIdToken` and is the narrow role for OIDC ID tokens.
+- [Cloud Run functions IAM roles](https://cloud.google.com/functions/docs/reference/iam/roles#additional-configuration-for-deployment)
+  documents the deployment role, scoped Service Account User requirements for the
+  runtime/build identities, and the build identity's builder role.
+- [Firebase function management](https://firebase.google.com/docs/functions/manage-functions#clean-up-deployment-artifacts)
+  separates function deployment from Artifact Registry cleanup policy management.
+- [Artifact Registry cleanup](https://cloud.google.com/artifact-registry/docs/repositories/cleanup-policy#required-roles)
+  identifies `artifactregistry.repositories.update` and
+  `artifactregistry.versions.delete` as the cleanup permissions.
 
 ## Missing prior artifacts
 
@@ -99,23 +118,29 @@ artifacts. The replacement package is now versioned under
 
 Do not deploy or change IAM until separately authorized. In the authorized window:
 
-1. Record the exact function URL reported by `serviceConfig.uri`, the backing Cloud
-   Run service URL, ingress setting, and configured custom audiences. Do not record a
-   token.
-2. Confirm one existing approved caller service account and report only whether the
-   operator has `iam.serviceAccounts.getOpenIdToken` on that account and whether that
-   account has `run.routes.invoke` on this one service.
-3. Confirm that the separately approved runtime service account has database-scoped
+1. Confirm the required APIs, deploy/build permissions, actual build identity and two
+   existing distinct approved caller/runtime service accounts. Report only whether
+   the operator has `iam.serviceAccounts.getOpenIdToken` on the caller account.
+2. Confirm that the separately approved runtime service account has database-scoped
    read permission on `rocha-payments-test` and no corresponding permission on
-   `(default)`. A project-wide Firestore role cannot prove this isolation.
-4. Populate the ignored deployment review/environment files, run the fail-closed
-   validator, and retain only its sanitized output.
-5. Recreate the reviewed temporary function only if authorized. Use the exact accepted
-   URL for both request and `aud`; make one invocation with the versioned helper.
-6. Return the HTTP status, response body, Cloud Run request log timestamp/trace,
+   `(default)`. This is documentary review only; a project-wide Firestore role cannot
+   prove isolation.
+3. Populate the ignored deployment review/environment files, run the fail-closed
+   validator for the bootstrap stage, and retain only its sanitized output.
+4. Recreate the reviewed temporary function only if authorized, without any public or
+   caller invoker binding. Do not invoke the bootstrap revision.
+5. Record the exact function URL reported by `serviceConfig.uri`, the backing Cloud
+   Run service URL, ingress, custom audiences and IAM policy. Then prepare and deploy
+   the separately reviewed verification revision using that exact URL as
+   `DIAGNOSTIC_AUDIENCE`.
+6. Only in the authorized Phase 2 IAM window, grant the one caller
+   `roles/run.invoker`; mint with scoped
+   `roles/iam.serviceAccountOpenIdTokenCreator`, use the exact accepted URL for both
+   request and `aud`, and make one invocation with the versioned helper.
+7. Return the HTTP status, response body, Cloud Run request log timestamp/trace,
    `status`, `authenticationInfo.principalEmail` if present, and whether an application
    log with the same trace exists. Redact JWTs and Authorization headers.
-7. Remove the scoped temporary bindings and delete the temporary function after the
+8. Remove the scoped temporary bindings and delete the temporary function after the
    test; confirm both removals.
 
 Expected proof: 200 plus a matching application trace. A 401 with no application log
