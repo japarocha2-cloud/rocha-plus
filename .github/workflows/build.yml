@@ -8,6 +8,7 @@ on:
       - '.github/workflows/homologation-readonly.yml'
       - '.github/workflows/mercadopago-receiver-readonly.yml'
       - '.github/workflows/checkout-config-readiness.yml'
+      - '.github/workflows/actions-principal-readonly.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
