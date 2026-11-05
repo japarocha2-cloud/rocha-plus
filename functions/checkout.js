@@ -1,6 +1,6 @@
 'use strict';
 const {randomUUID} = require('node:crypto');
-const PLANS = Object.freeze({monthly: 450, annual: 4950});
+const PLANS = Object.freeze({monthly: 790, annual: 8690});
 function officialUrl(raw) {
   const u = new URL(raw);
   if (u.protocol !== 'https:' || u.hostname !== 'www.mercadopago.com.br' ||
