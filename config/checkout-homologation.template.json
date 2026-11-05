@@ -9,7 +9,7 @@
   "android_package": "com.rochaplus.app.checkout",
   "signing_sha256": "8C:83:B0:88:B0:96:4D:7E:8B:C8:1B:32:56:2E:91:91:F3:19:E0:D5:8C:FF:AA:1E:5F:27:F7:56:7B:91:9D:22",
   "checkout_url": null,
-  "entitlement_url": null,
+  "entitlement_url": "https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/entitlement",
   "backend_project_id": "rocha-plus-homologacao",
   "backend_token_audience": "rocha-plus-homologacao",
   "merchant_id": null,
