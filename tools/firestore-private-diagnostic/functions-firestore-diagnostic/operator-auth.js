@@ -16,9 +16,11 @@ function createOperatorAuthenticator(options) {
   const verifier = options.verifier ?? verifyGoogleIdToken;
   return async function authenticate(req) {
     const token = oneAuthorizationHeader(req);
+    const audience = typeof options.audience === 'function' ? options.audience() : options.audience;
+    const allowedEmails = typeof options.allowedEmails === 'function' ? options.allowedEmails() : options.allowedEmails;
     return verifier(token, {
-      audience: options.audience,
-      allowedEmails: options.allowedEmails,
+      audience,
+      allowedEmails,
       allowedSubjects: options.allowedSubjects,
       allowedAuthorizedParties: options.allowedAuthorizedParties,
     });

@@ -2,11 +2,21 @@
   "name": "rocha-plus-firestore-private-diagnostic-auth",
   "private": true,
   "version": "1.0.0",
+  "main": "functions-firestore-diagnostic/index.js",
   "engines": {
     "node": "22"
   },
   "scripts": {
-    "check": "node --check verify-owner-token.cjs && node --check functions-firestore-diagnostic/operator-auth.js && node --check functions-firestore-diagnostic/diagnostic.js && node --check functions-firestore-diagnostic/index.js",
+    "check": "node --check verify-owner-token.cjs && node --check validate-deploy-config.cjs && node --check functions-firestore-diagnostic/operator-auth.js && node --check functions-firestore-diagnostic/isolation-proof.js && node --check functions-firestore-diagnostic/diagnostic.js && node --check functions-firestore-diagnostic/index.js",
     "test": "node --test test/*.test.cjs"
+  },
+  "dependencies": {
+    "firebase-admin": "14.5.0",
+    "firebase-functions": "7.4.0"
+  },
+  "overrides": {
+    "glob": "14.0.3",
+    "minimatch": "11.0.4",
+    "rimraf": "6.1.4"
   }
 }

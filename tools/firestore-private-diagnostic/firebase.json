@@ -1,0 +1,28 @@
+{
+  "functions": [
+    {
+      "source": ".",
+      "codebase": "firestore-private-diagnostic",
+      "predeploy": [
+        "node \"$RESOURCE_DIR/validate-deploy-config.cjs\" \"$RESOURCE_DIR/deployment.review.json\" \"$RESOURCE_DIR/.env.rocha-plus-homologacao\"",
+        "npm --prefix \"$RESOURCE_DIR\" test",
+        "npm --prefix \"$RESOURCE_DIR\" run check"
+      ],
+      "ignore": [
+        ".git",
+        ".gitignore",
+        ".env*",
+        "README.md",
+        "deployment.example.json",
+        "deployment.review.json",
+        "firebase-debug.log*",
+        "invoke-private-diagnostic.py",
+        "invocation.json",
+        "owner_auth.py",
+        "prepare-window-local.py",
+        "test",
+        "validate-deploy-config.cjs"
+      ]
+    }
+  ]
+}

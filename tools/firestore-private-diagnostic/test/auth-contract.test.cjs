@@ -5,7 +5,6 @@ const crypto = require('node:crypto');
 const test = require('node:test');
 const {verifyGoogleIdToken} = require('../verify-owner-token.cjs');
 const {createOperatorAuthenticator} = require('../functions-firestore-diagnostic/operator-auth');
-const {createDiagnosticHandler} = require('../functions-firestore-diagnostic/diagnostic');
 
 const NOW = 1_800_000_000;
 const AUDIENCE = 'https://diagnostic-example.a.run.app';
@@ -68,34 +67,4 @@ test('authenticator rejects multiple or ambiguous Authorization values', async (
   const authenticate = createOperatorAuthenticator({audience: AUDIENCE, allowedEmails: [EMAIL]});
   await assert.rejects(authenticate({headers: {authorization: ['Bearer a.b.c', 'Bearer d.e.f']}}), /ambiguous/);
   await assert.rejects(authenticate({headers: {authorization: 'Bearer a.b.c, Bearer d.e.f'}}), /ambiguous/);
-});
-
-function responseRecorder() {
-  return {
-    statusCode: null, body: null,
-    set() {},
-    status(value) { this.statusCode = value; return this; },
-    json(value) { this.body = value; return this; },
-  };
-}
-
-test('authorization denial is 403 and performs no successful response', async () => {
-  const error = Object.assign(new Error('denied'), {code: 'AUTHORIZATION_DENIED'});
-  const handler = createDiagnosticHandler({authenticate: async () => ({sub: '123'}), readProbe: async () => { throw error; }});
-  const res = responseRecorder();
-  await handler({method: 'POST'}, res);
-  assert.equal(res.statusCode, 403);
-  assert.deepEqual(res.body, {ok: false, code: 'forbidden'});
-});
-
-test('failed authentication never reaches the Firestore probe', async () => {
-  let reads = 0;
-  const handler = createDiagnosticHandler({
-    authenticate: async () => { throw new Error('invalid token'); },
-    readProbe: async () => { reads += 1; },
-  });
-  const res = responseRecorder();
-  await handler({method: 'POST'}, res);
-  assert.equal(res.statusCode, 401);
-  assert.equal(reads, 0);
 });

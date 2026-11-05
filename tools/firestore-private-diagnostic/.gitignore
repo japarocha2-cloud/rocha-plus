@@ -1,0 +1,8 @@
+deployment.review.json
+invocation.json
+.env
+.env.*
+!.env.example
+firebase-debug.log
+__pycache__/
+node_modules/
