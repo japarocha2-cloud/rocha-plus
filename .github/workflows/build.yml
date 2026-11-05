@@ -11,6 +11,7 @@ on:
       - '.github/workflows/actions-principal-readonly.yml'
       - '.github/workflows/checkout-deploy-preflight.yml'
       - '.github/workflows/bootstrap-download.yml'
+      - '.github/workflows/hmac-review-download.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
