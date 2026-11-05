@@ -7,82 +7,106 @@ on:
 permissions:
   contents: read
 jobs:
-  principal:
+  entitlement-read:
     if: github.ref == 'refs/heads/impl/commercial-checkout-20261104'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install --disable-pip-version-check google-auth==2.40.3 requests==2.32.4
-      - name: Identify principal and inspect effective read permission without policy writes
+      - name: Single entitlement GET then read-only source comparison if accessible
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         shell: python
         run: |
-          import os, json, re
+          import os, json, re, io, zipfile, hashlib
+          from pathlib import Path
+          from urllib.parse import quote
           from google.oauth2 import service_account
           from google.auth.transport.requests import AuthorizedSession
-          from pathlib import Path
-          result = {'project': 'rocha-plus-homologacao', 'operation': 'read_only'}
-          def status(response):
-              output = {'http_status': response.status_code}
-              if not response.ok:
-                  try:
-                      error = response.json().get('error', {})
-                      output['status'] = error.get('status')
-                      details = []
-                      for detail in error.get('details', []):
-                          if detail.get('@type', '').endswith('ErrorInfo'):
-                              metadata = detail.get('metadata', {})
-                              details.append({'reason': detail.get('reason'),
-                                  'domain': detail.get('domain'),
-                                  'permission': metadata.get('permission'),
-                                  'service': metadata.get('service')})
-                      output['error_info'] = details
-                  except Exception:
-                      output['error_info'] = 'unavailable'
-              return output
+          result = {'project': 'rocha-plus-homologacao', 'function_get_attempts': 0,
+                    'writes': False, 'deployment': False, 'tests_repeated': False}
+          def digest(text):
+              return hashlib.sha256(text.encode()).hexdigest()
+          def entitlement_handler(text):
+              m = re.search(r'exports\.entitlement\s*=\s*onRequest\([\s\S]*?\n\}\);', text)
+              return m.group(0) if m else None
           try:
               info = json.loads(os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON', ''))
               email = info.get('client_email', '')
-              if not re.fullmatch(r'[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.iam\.gserviceaccount\.com', email):
-                  raise ValueError()
-              result['service_account_email'] = email
+              if email != 'firebase-adminsdk-fbsvc@rocha-plus.iam.gserviceaccount.com':
+                  raise ValueError('unexpected_identity')
+              result['principal_matches_expected'] = True
               credentials = service_account.Credentials.from_service_account_info(info,
                   scopes=['https://www.googleapis.com/auth/cloud-platform'])
               session = AuthorizedSession(credentials)
               project = result['project']
-              resource = 'https://cloudfunctions.googleapis.com/v2/projects/' + project + '/locations/southamerica-east1/functions/entitlement'
-              function = session.get(resource, timeout=25)
-              result['function_read'] = status(function)
-              # testIamPermissions and getIamPolicy use POST but are read-only;
-              # no setIamPolicy, role creation, account creation, deploy or financial API.
-              base = 'https://cloudresourcemanager.googleapis.com/v1/projects/' + project
-              tested = session.post(base + ':testIamPermissions',
-                  json={'permissions': ['cloudfunctions.functions.get']}, timeout=25)
-              result['permission_test'] = status(tested)
-              if tested.ok:
-                  result['permission_test']['granted'] = (
-                      'cloudfunctions.functions.get' in tested.json().get('permissions', []))
-              policy = session.post(base + ':getIamPolicy', json={'options': {'requestedPolicyVersion': 3}},
-                  timeout=25)
-              result['project_iam_read'] = status(policy)
-              if policy.ok:
-                  matches = [b for b in policy.json().get('bindings', [])
-                      if 'serviceAccount:' + email in b.get('members', [])]
-                  result['project_iam_read']['direct_roles_for_this_principal'] = [
-                      {'role': b.get('role'), 'conditional': bool(b.get('condition'))} for b in matches]
-                  result['project_iam_read']['scope_limit'] = 'direct project bindings; inherited and resource policies not enumerated'
+              name = 'projects/' + project + '/locations/southamerica-east1/functions/entitlement'
+              result['function_get_attempts'] = 1
+              response = session.get('https://cloudfunctions.googleapis.com/v2/' + name, timeout=30)
+              result['http_status'] = response.status_code
+              result['cloudfunctions.functions.get_authorized'] = response.ok
+              result['previous_403_resolved'] = response.ok
+              if response.ok:
+                  data = response.json()
+                  build = data.get('buildConfig', {})
+                  service = data.get('serviceConfig', {})
+                  env = service.get('environmentVariables', {})
+                  result['deployed'] = {
+                      'resource_matches': data.get('name') == name,
+                      'state': data.get('state'), 'environment': data.get('environment'),
+                      'entry_point': build.get('entryPoint'), 'runtime': build.get('runtime'),
+                      'runtime_service_account': service.get('serviceAccountEmail'),
+                      'entitlement_url': data.get('url') or service.get('uri'),
+                      'checkout_flag': env.get('ROCHA_CHECKOUT_ENABLED', 'unset'),
+                      'webhook_flag': env.get('ROCHA_WEBHOOK_RECONCILIATION_ENABLED', 'unset')}
+                  src = build.get('sourceProvenance', {}).get('resolvedStorageSource') or build.get('source', {}).get('storageSource')
+                  if not src:
+                      result['source_comparison'] = 'blocked_no_source_reference'
+                  else:
+                      url = 'https://storage.googleapis.com/storage/v1/b/' + quote(src['bucket'], safe='') + '/o/' + quote(src['object'], safe='') + '?alt=media'
+                      if src.get('generation'): url += '&generation=' + str(src['generation'])
+                      source = session.get(url, timeout=30)
+                      result['source_read_http_status'] = source.status_code
+                      if source.ok:
+                          result['source_archive_sha256'] = hashlib.sha256(source.content).hexdigest()
+                          with zipfile.ZipFile(io.BytesIO(source.content)) as archive:
+                              files = {p: archive.read(p).decode('utf-8', errors='replace')
+                                  for p in archive.namelist()
+                                  if p.endswith('.js') and 'node_modules/' not in p}
+                          indexes = [text for path, text in files.items()
+                              if path.split('/')[-1] == 'index.js' and entitlement_handler(text)]
+                          current = Path('functions/index.js').read_text()
+                          if len(indexes) == 1:
+                              deployed_handler = entitlement_handler(indexes[0])
+                              result['entitlement_handler_exact_match'] = deployed_handler == entitlement_handler(current)
+                              result['entitlement_handler_sha256'] = digest(deployed_handler)
+                              result['contract_indicators'] = {k: k in deployed_handler for k in [
+                                  'verifyIdToken', 'entitlements', 'trialUntil', 'paidUntil', '7 * 24']}
+                              # Record presence only; constants may be declared outside handler.
+                              result['trial_ms_declaration_matches'] = 'const TRIAL_MS = 7 * 24 * 60 * 60 * 1000;' in indexes[0]
+                          else:
+                              result['entitlement_handler_exact_match'] = 'not_determined_source_layout'
+                          for basename in ['reconcile_and_grant.js', 'mercadopago_reconciliation.js', 'entitlement_periods.js']:
+                              candidates = [text for path, text in files.items() if path.split('/')[-1] == basename]
+                              local = Path('functions') / basename
+                              result[basename + '_exact_match'] = (
+                                  len(candidates) == 1 and candidates[0] == local.read_text())
+                      else:
+                          result['source_comparison'] = 'blocked_source_read_denied_or_unavailable'
           except Exception:
-              result['diagnosis_error'] = 'credential_or_request_failure_private_values_omitted'
-          Path('actions-principal-readonly.json').write_text(json.dumps(result, indent=2))
+              result['inspection_error'] = 'credential_or_source_inspection_failed_private_values_omitted'
+          Path('entitlement-iam-recheck.json').write_text(json.dumps(result, indent=2))
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
               out.write('```json\n' + json.dumps(result, indent=2) + '\n```\n')
           print(json.dumps(result, indent=2))
       - uses: actions/upload-artifact@v4
         with:
-          name: actions-principal-readonly
-          path: actions-principal-readonly.json
+          name: entitlement-iam-recheck
+          path: entitlement-iam-recheck.json
           if-no-files-found: error
