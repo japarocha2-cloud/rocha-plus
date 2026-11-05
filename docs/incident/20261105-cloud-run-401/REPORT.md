@@ -7,6 +7,11 @@ through the Google-managed Cloud Run authentication layer remains intentionally
 pending because the temporary function was deleted and recreation/IAM changes were
 not authorized.
 
+Issue #46 preserves this **AMARELO** classification: the two-sided Firestore
+isolation contract, trace correlation and isolated deployment manifest are locally
+validated, but no Google-managed authentication or database-IAM behavior has been
+tested remotely.
+
 ## Conclusions and evidence
 
 1. The observed 401 was emitted before the diagnostic handler. The handler did not
@@ -30,6 +35,43 @@ not authorized.
    RS256 algorithm, `kid`, and signature are fail-closed. `azp` is checked for shape
    and can be allowlisted when the approved issuer supplies it; it is not required
    because service-account ID tokens need not contain it.
+6. Issue #46 replaces the ambiguous default Firestore client with
+   `getFirestore(app, 'rocha-payments-test')` and separately constructs
+   `getFirestore(app)` solely for the negative `(default)` sentinel probe.
+7. Isolation is proven only by the conjunction `named accessible AND default
+   permission_denied`. Database absence, configuration, network and unknown failures
+   are categorized separately and remain `not_proven`.
+8. Application responses and structured logs share a validated Cloud trace ID or an
+   opaque UUID. Logs contain no JWT, Authorization, subject, email, provider message,
+   document contents or financial identifier.
+
+## Issue #46 local evidence
+
+- Node.js 22.23.4 contract suite: **33 passed, 0 failed**. It covers authentication, explicit database isolation,
+  denied/default-access counterexamples, error classification, log redaction,
+  correlation and deployment validation.
+- `firebase.json` has one isolated codebase and `package-lock.json` pins its runtime
+  dependencies. The generated endpoint contract remains GCF v2, private,
+  `southamerica-east1`, `maxInstances: 1`, with a required runtime service account
+  parameter.
+- `deployment.example.json` intentionally fails until the exact audience, distinct
+  identities and both IAM review assertions are supplied in an ignored review file.
+- Runtime dependencies are pinned to `firebase-admin` 14.5.0 and
+  `firebase-functions` 7.4.0. Safe transitive overrides are locked for
+  `rimraf`/`glob`/`minimatch`; `npm audit --omit=dev` reports **0 vulnerabilities**.
+- JavaScript syntax checks, Python bytecode compilation and `git diff --check` pass.
+- No deploy, IAM inspection/change, Firestore request, function recreation or
+  application modification was performed.
+
+## Issue #46 Git evidence
+
+- Review branch: `fix/cloud-run-private-diagnostic-auth`.
+- Authentication baseline: `f085084231c894138b20c2447876e5fe0c99559c`.
+- Named-database isolation implementation:
+  `7657c5b26a1ea7fdbea104ba2e90d595ac948869`.
+- Scope remains limited to `tools/firestore-private-diagnostic/` and this incident
+  report. The implementation commit contains no change to the main Functions entry
+  point, entitlement, webhook, applications, catalog, subscriptions or prices.
 
 Official contracts used for this conclusion:
 
@@ -63,12 +105,17 @@ Do not deploy or change IAM until separately authorized. In the authorized windo
 2. Confirm one existing approved caller service account and report only whether the
    operator has `iam.serviceAccounts.getOpenIdToken` on that account and whether that
    account has `run.routes.invoke` on this one service.
-3. Recreate the reviewed temporary function only if authorized. Use the exact accepted
+3. Confirm that the separately approved runtime service account has database-scoped
+   read permission on `rocha-payments-test` and no corresponding permission on
+   `(default)`. A project-wide Firestore role cannot prove this isolation.
+4. Populate the ignored deployment review/environment files, run the fail-closed
+   validator, and retain only its sanitized output.
+5. Recreate the reviewed temporary function only if authorized. Use the exact accepted
    URL for both request and `aud`; make one invocation with the versioned helper.
-4. Return the HTTP status, response body, Cloud Run request log timestamp/trace,
+6. Return the HTTP status, response body, Cloud Run request log timestamp/trace,
    `status`, `authenticationInfo.principalEmail` if present, and whether an application
    log with the same trace exists. Redact JWTs and Authorization headers.
-5. Remove the scoped temporary bindings and delete the temporary function after the
+7. Remove the scoped temporary bindings and delete the temporary function after the
    test; confirm both removals.
 
 Expected proof: 200 plus a matching application trace. A 401 with no application log
