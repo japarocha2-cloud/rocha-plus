@@ -3,8 +3,23 @@
 // Isolated Mercado Pago sandbox checkout. Never creates production checkout_orders.
 // Requires a server-configured, explicitly allowlisted Firebase test UID.
 const {randomUUID} = require('node:crypto');
-const {PLANS, officialUrl} = require('./checkout');
+const {PLANS} = require('./checkout');
 const {reconcileSandboxPayment} = require('./sandbox_payment_reconciliation');
+
+function validatedSandboxUrl(raw, preferenceId) {
+  const url = new URL(raw);
+  // Mercado Pago's published sandbox_init_point uses sandbox.mercadopago.com
+  // and /mla/checkout/pay; Brazilian integrations may use /mlb.
+  if (url.protocol !== 'https:' ||
+      !['sandbox.mercadopago.com', 'sandbox.mercadopago.com.br'].includes(url.hostname) ||
+      !/^\/[a-z]{3}\/checkout\/pay$/.test(url.pathname) ||
+      url.username || url.password || url.port || url.hash ||
+      url.searchParams.getAll('pref_id').length !== 1 ||
+      url.searchParams.get('pref_id') !== String(preferenceId)) {
+    throw new Error('invalid Mercado Pago sandbox URL');
+  }
+  return url.href;
+}
 
 function createSandboxCheckoutHandler({verifyToken, db, config, request = fetch}) {
   return async (req, res) => {
@@ -54,9 +69,7 @@ function createSandboxCheckoutHandler({verifyToken, db, config, request = fetch}
           pref.external_reference !== orderId || !pref.sandbox_init_point) {
         throw Error('sandbox preference identity');
       }
-      const url = officialUrl(pref.sandbox_init_point);
-      if (new URL(url).searchParams.get('pref_id') !== pref.id)
-        throw Error('sandbox preference URL');
+      const url = validatedSandboxUrl(pref.sandbox_init_point, pref.id);
       await orderRef.update({preferenceId: pref.id});
       return res.status(200).json({url, orderId, sandbox: true, plan,
         amountCents: PLANS[plan]});
@@ -91,4 +104,4 @@ function createSandboxVerifyHandler({verifyToken, db, config}) {
   };
 }
 
-module.exports = {createSandboxCheckoutHandler, createSandboxVerifyHandler};
+module.exports = {createSandboxCheckoutHandler, createSandboxVerifyHandler, validatedSandboxUrl};
