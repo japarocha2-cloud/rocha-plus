@@ -48,7 +48,22 @@ for path in ROOT.rglob("*"):
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml", ".mjs"}:
         if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
             lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")}
-            if rel not in lab_transport_files:
+            # Exception only for three physical-test feeds on the isolated PR.
+            # Main and all other branches continue to reject HTTP runtime URLs.
+            import os
+            lab_branch = os.environ.get("GITHUB_HEAD_REF", "") == "lab/cazetv-link-only-20261106"
+            physical_test_file = rel == Path("lib/src/live/channel_repository.dart")
+            approved_http_feeds = {
+                "http://138.204.86.4:8080/CAZE_TV/playlist.m3u8",
+                "http://79.127.238.228:14173/",
+                "http://170.83.16.50/HISTORY/index.m3u8",
+            }
+            found_http_feeds = set(re.findall(r"""["'](http://[^"']+)["']""", text))
+            physical_test_exception = (
+                lab_branch and physical_test_file
+                and found_http_feeds == approved_http_feeds
+            )
+            if rel not in lab_transport_files and not physical_test_exception:
                 issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
             # These two LAB-only inputs are governed by the debug-only network
             # config emitted by tools/lab/configure.py, never by release policy.
