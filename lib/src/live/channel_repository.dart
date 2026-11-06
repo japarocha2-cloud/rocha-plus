@@ -161,10 +161,16 @@ class ChannelRepository {
     // canais antes de a interface aparecer. Falhas do player são registradas
     // para diagnóstico, sem esconder um canal após um erro transitório.
     // Cache source data before local hiding so restore also works offline.
-    final updatedChannels = merged.values
-        .map(applyPhysicalTestStream)
-        .toList(growable: false);
-    final ordered = _orderSportsFirst(updatedChannels);
+    // When multiple source URLs describe the same corrected card, show it
+    // once. Source records are retained; other channels and regional variants
+    // remain untouched. Never deduplicate by stream URL alone.
+    final correctedCards = <(String, String), Channel>{};
+    for (final original in merged.values) {
+      final channel = applyPhysicalTestStream(original);
+      final key = (channelIdentity(channel.name), channel.url.trim());
+      correctedCards.putIfAbsent(key, () => channel);
+    }
+    final ordered = _orderSportsFirst(correctedCards.values.toList());
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;
