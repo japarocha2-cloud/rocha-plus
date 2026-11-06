@@ -11,7 +11,7 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(MaterialApp(
         theme: RochaTheme.dark,
-        home: const HomeScreen(previewOnly: true),
+        home: const HomeScreen(previewOnly: true, accountUid: 'test-account'),
       ));
       if (size.width < 900) {
         tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
