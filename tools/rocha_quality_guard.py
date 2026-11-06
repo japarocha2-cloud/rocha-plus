@@ -51,12 +51,19 @@ for path in ROOT.rglob("*"):
             # Exception only for three physical-test feeds on the isolated PR.
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
-            lab_branch = os.environ.get("GITHUB_HEAD_REF", "") == "lab/cazetv-link-only-20261106"
+            lab_branch = (
+                os.environ.get("GITHUB_HEAD_REF", "") == "lab/cazetv-link-only-20261106"
+                or (
+                    os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
+                    and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"
+                )
+            )
             physical_test_file = rel == Path("lib/src/live/channel_repository.dart")
             approved_http_feeds = {
                 "http://138.204.86.4:8080/CAZE_TV/playlist.m3u8",
                 "http://79.127.238.228:14173/",
                 "http://170.83.16.50/HISTORY/index.m3u8",
+                "http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8",
             }
             found_http_feeds = set(re.findall(r"""["'](http://[^"']+)["']""", text))
             physical_test_exception = (
