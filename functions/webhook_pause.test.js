@@ -21,6 +21,8 @@ function load(env) {
       if (name === './reconcile_and_grant') return {reconcileAndGrant: forbidden};
       if (name === './checkout') return {createCheckoutHandler: forbidden};
       if (name === './checkout_claim') return {bindCheckoutClaim: forbidden};
+      if (name === './sandbox_checkout') return {createSandboxCheckoutHandler: forbidden, createSandboxVerifyHandler: forbidden};
+      if (name === './sandbox_payment_reconciliation') return {reconcileSandboxPayment: forbidden};
       throw Error('unexpected dependency');
     },
   });
