@@ -48,7 +48,10 @@ Future<List<Channel>> loadLabCatalog() async {
       logo: row['logo'] as String?,
     );
     final corrected = ChannelRepository.applyPhysicalTestStream(channel);
-    if (repo.isBlocked(corrected) || !seen.add(corrected.url)) continue;
+    // Different channels may legitimately share a stream URL. Only remove
+    // identical card identities; preserve distinct names and categories.
+    final cardKey = '${channelIdentity(corrected.name)}\u0000${corrected.url.trim()}';
+    if (repo.isBlocked(corrected) || !seen.add(cardKey)) continue;
     // Persistent blocks are normally loaded by ChannelRepository's remote path.
     // This loader does not use that path, so honor them explicitly.
     if (userBlocked.contains(channelIdentity(channel.name))) continue;
