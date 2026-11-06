@@ -17,6 +17,27 @@ class ChannelRepository {
   static final Uri sportsPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
 
+  // One shared stream correction for existing cards in remote and LAB catalogs.
+  // Never adds channels or changes their identity, artwork or category.
+  static Channel applyPhysicalTestStream(Channel channel) {
+    final identity = channelIdentity(channel.name);
+    const streams = <String, String>{
+      'cazetv': 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
+      'globo': 'http://79.127.238.228:14173/',
+      'history (brazil)': 'http://170.83.16.50/HISTORY/index.m3u8',
+    };
+    final url = streams[identity];
+    if (url == null || url == channel.url) return channel;
+    return Channel(
+      name: channel.name,
+      url: url,
+      logo: channel.logo,
+      group: channel.group,
+      genres: channel.genres,
+      preferredEngine: channel.preferredEngine,
+    );
+  }
+
   static Set<String> _userBlockedNames = {};
   final ChannelBlocks _blocks = ChannelBlocks();
 
@@ -140,22 +161,9 @@ class ChannelRepository {
     // canais antes de a interface aparecer. Falhas do player são registradas
     // para diagnóstico, sem esconder um canal após um erro transitório.
     // Cache source data before local hiding so restore also works offline.
-    // Physical-test override for the existing CazeTV card only.
-    // Preserve its name, artwork and category; do not create a new channel.
-    const cazeTestStream = 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8';
-    const globoTestStream = 'http://79.127.238.228:14173/';
-    final updatedChannels = merged.values.map((channel) {
-      final identity = channelIdentity(channel.name);
-      if (identity != 'cazetv' && identity != 'globo') return channel;
-      return Channel(
-        name: channel.name,
-        url: identity == 'globo' ? globoTestStream : cazeTestStream,
-        logo: channel.logo,
-        group: channel.group,
-        genres: channel.genres,
-        preferredEngine: channel.preferredEngine,
-      );
-    }).toList();
+    final updatedChannels = merged.values
+        .map(applyPhysicalTestStream)
+        .toList(growable: false);
     final ordered = _orderSportsFirst(updatedChannels);
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
