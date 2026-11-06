@@ -1,9 +1,9 @@
 'use strict';
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const {createSandboxCheckoutHandler, createSandboxVerifyHandler} = require('./sandbox_checkout');
+const {createSandboxCheckoutHandler, createSandboxVerifyHandler, validatedSandboxUrl} = require('./sandbox_checkout');
 
-const sandboxUrl = 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=test-1';
+const sandboxUrl = 'https://sandbox.mercadopago.com/mla/checkout/pay?pref_id=test-1';
 function fixture({enabled = true, uid = 'test-account-001', sandboxLink = sandboxUrl} = {}) {
   const writes = []; const calls = [];
   const orders = new Map();
@@ -72,4 +72,16 @@ test('sandbox verify endpoint denies other accounts before provider request', as
   await handler({method:'POST',body:{paymentId:'42'},
     get:()=> 'Bearer token'},res);
   assert.equal(res.code,403);
+});
+
+test('sandbox checkout URL validator rejects production, lookalike and foreign hosts', () => {
+  assert.equal(validatedSandboxUrl(sandboxUrl, 'test-1'), sandboxUrl);
+  for (const url of [
+    'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=test-1',
+    'https://sandbox.mercadopago.com.evil.test/mla/checkout/pay?pref_id=test-1',
+    'http://sandbox.mercadopago.com/mla/checkout/pay?pref_id=test-1',
+    'https://attacker@sandbox.mercadopago.com/mla/checkout/pay?pref_id=test-1',
+    'https://sandbox.mercadopago.com/mla/checkout/pay?pref_id=other',
+    'https://sandbox.mercadopago.com/mla/checkout/pay?pref_id=test-1&pref_id=other',
+  ]) assert.throws(() => validatedSandboxUrl(url, 'test-1'));
 });
