@@ -47,11 +47,12 @@ Future<List<Channel>> loadLabCatalog() async {
       group: row['group'] as String? ?? 'Outros',
       logo: row['logo'] as String?,
     );
-    if (repo.isBlocked(channel) || !seen.add(channel.url)) continue;
+    final corrected = ChannelRepository.applyPhysicalTestStream(channel);
+    if (repo.isBlocked(corrected) || !seen.add(corrected.url)) continue;
     // Persistent blocks are normally loaded by ChannelRepository's remote path.
     // This loader does not use that path, so honor them explicitly.
     if (userBlocked.contains(channelIdentity(channel.name))) continue;
-    channels.add(channel);
+    channels.add(corrected);
   }
   final selected = channels.skip(offset);
   return (limit > 0 ? selected.take(limit) : selected).toList();
