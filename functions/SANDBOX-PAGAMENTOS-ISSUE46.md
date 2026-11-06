@@ -2,6 +2,14 @@
 
 **Branch de implementação:** `fix/sandbox-payment-isolation-20261106`
 
+## Isolamento de banco verificado em 06/11/2026
+- Firestore já existente: `rocha-payments-test`, região `southamerica-east1`.
+- Os três endpoints sandbox usam **exclusivamente** `getFirestore(admin.app(), 'rocha-payments-test')`. O banco `(default)` não é usado por esses endpoints.
+- Cada endpoint sandbox define `serviceAccount: rocha-sandbox-payments@rocha-plus-homologacao.iam.gserviceaccount.com`.
+- A conta de serviço recebeu `roles/secretmanager.secretAccessor` somente nos dois segredos sandbox; **nenhuma permissão Firestore foi concedida**.
+- Antes do deploy, avaliar IAM **no recurso do banco nomeado**, sem atribuir `roles/datastore.user` ao projeto inteiro, e testar o acesso efetivo.
+- O banco não foi criado nem modificado nesta etapa. Nenhum deploy autorizado.
+
 ## O que mudou
 - `sandboxCheckout`: cria pedido somente em `sandbox_checkout_orders` após autenticar o Firebase UID autorizado; retorna exclusivamente `sandbox_init_point`.
 - `sandboxPaymentWebhook`: recebe notificações **payment** assinadas, consulta o pagamento pela API do Mercado Pago, correlaciona com o pedido autenticado e grava apenas em `sandbox_payment_events`, `sandbox_entitlements` e inbox/locks de sandbox.
