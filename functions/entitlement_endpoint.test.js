@@ -56,6 +56,13 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
       if (name === './reconcile_and_grant') {
         return {reconcileAndGrant: async () => ({})};
       }
+      if (name === './sandbox_checkout') {
+        return {createSandboxCheckoutHandler: () => {throw Error('sandbox not called');},
+          createSandboxVerifyHandler: () => {throw Error('sandbox not called');}};
+      }
+      if (name === './sandbox_payment_reconciliation') {
+        return {reconcileSandboxPayment: () => {throw Error('sandbox not called');}};
+      }
             if (name === 'firebase-functions/v2/https') {
         return {onRequest: (options, handler) => handler};
       }
