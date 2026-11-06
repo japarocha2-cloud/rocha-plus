@@ -224,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+        if (widget.accountUid != null)
         _NavItem(
           label: 'Assinatura',
           icon: Icons.workspace_premium_outlined,
