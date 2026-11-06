@@ -140,9 +140,21 @@ class ChannelRepository {
     // canais antes de a interface aparecer. Falhas do player são registradas
     // para diagnóstico, sem esconder um canal após um erro transitório.
     // Cache source data before local hiding so restore also works offline.
-    final ordered = _orderSportsFirst(
-      merged.values.toList(),
-    );
+    // Physical-test override for the existing CazeTV card only.
+    // Preserve its name, artwork and category; do not create a new channel.
+    const cazeTestStream = 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8';
+    final updatedChannels = merged.values.map((channel) {
+      if (channelIdentity(channel.name) != 'cazetv') return channel;
+      return Channel(
+        name: channel.name,
+        url: cazeTestStream,
+        logo: channel.logo,
+        group: channel.group,
+        genres: channel.genres,
+        preferredEngine: channel.preferredEngine,
+      );
+    }).toList();
+    final ordered = _orderSportsFirst(updatedChannels);
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;
