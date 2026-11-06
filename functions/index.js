@@ -11,6 +11,8 @@ const {createMercadoPagoWebhookHandler, createFirestoreWebhookInbox} = require('
 const {reconcileAndGrant} = require('./reconcile_and_grant');
 const {createCheckoutHandler} = require('./checkout');
 const {bindCheckoutClaim} = require('./checkout_claim');
+const {createSandboxCheckoutHandler, createSandboxVerifyHandler} = require('./sandbox_checkout');
+const {reconcileSandboxPayment} = require('./sandbox_payment_reconciliation');
 const mpReceivingToken = defineSecret('MP_RECEIVING_ACCESS_TOKEN');
 const mpWebhookSecret = defineSecret('MP_WEBHOOK_SECRET');
 
@@ -99,3 +101,58 @@ exports.checkout = onRequest({
   savePreference: (id, preferenceId) => db.collection('checkout_orders').doc(id).update({preferenceId}),
 })(req, res));
 
+
+
+// Isolated sandbox endpoints (opt-in, disabled by default). These NEVER write
+// production checkout_orders, payment_events, payment_claims, or entitlements.
+// Do not deploy until sandbox credentials, test UID, merchant, and notification
+// URL have been independently verified. Production webhook stays untouched.
+const mpSandboxToken = defineSecret('MP_SANDBOX_ACCESS_TOKEN');
+const mpSandboxWebhookSecret = defineSecret('MP_SANDBOX_WEBHOOK_SECRET');
+function sandboxConfig() {
+  return {
+    enabled: process.env.ROCHA_SANDBOX_ENABLED === 'true',
+    testUid: process.env.ROCHA_SANDBOX_TEST_UID,
+    merchantId: process.env.ROCHA_SANDBOX_MERCHANT_ID,
+    notificationUrl: process.env.ROCHA_SANDBOX_WEBHOOK_URL,
+    accessToken: mpSandboxToken.value(),
+  };
+}
+exports.sandboxCheckout = onRequest({
+  region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  secrets: [mpSandboxToken],
+}, (req, res) => createSandboxCheckoutHandler({
+  verifyToken: token => admin.auth().verifyIdToken(token, true),
+  db, config: sandboxConfig,
+})(req, res));
+
+exports.sandboxPaymentVerify = onRequest({
+  region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  secrets: [mpSandboxToken],
+}, (req, res) => createSandboxVerifyHandler({
+  verifyToken: token => admin.auth().verifyIdToken(token, true),
+  db, config: sandboxConfig,
+})(req, res));
+
+exports.sandboxPaymentWebhook = onRequest({
+  region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  secrets: [mpSandboxToken, mpSandboxWebhookSecret],
+}, async (req, res) => {
+  // Disabled configuration never fetches a payment or writes a document.
+  const c = sandboxConfig();
+  if (!c.enabled || !c.testUid || !c.merchantId || !c.accessToken) {
+    res.set('Cache-Control', 'no-store');
+    return res.status(503).json({received: false, paused: true, sandbox: true});
+  }
+  const inbox = createFirestoreWebhookInbox({db, admin,
+    collectionName: 'sandboxMercadoPagoWebhookInbox',
+    lockCollectionName: 'sandboxMercadoPagoWebhookLocks'});
+  const handler = createMercadoPagoWebhookHandler({
+    secret: () => mpSandboxWebhookSecret.value(), inbox,
+    reconcilePayment: ({paymentId}) => reconcileSandboxPayment({
+      db, paymentId, accessToken: c.accessToken, merchantId: c.merchantId,
+      testUid: c.testUid,
+    }),
+  });
+  await handler(req, res);
+});
