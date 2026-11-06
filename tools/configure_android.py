@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+import os
 import xml.etree.ElementTree as ET
 
 ANDROID = "http://schemas.android.com/apk/res/android"
@@ -80,7 +81,7 @@ def configure(root):
         if dependency not in text:
             text += "\n dependencies { " + dependency + " }\n"
         # Debug laboratory installs alongside production instead of replacing it.
-        lab_suffix = 'applicationIdSuffix = ".lab"'
+        lab_suffix = 'applicationIdSuffix = ".labcazetv"' if os.environ.get('GITHUB_HEAD_REF') == 'lab/cazetv-link-only-20261106' else 'applicationIdSuffix = ".lab"'
         if lab_suffix not in text:
             text += '\nandroid { buildTypes { getByName("debug") { ' + lab_suffix + ' } } }\n'
         gradle.write_text(text, encoding="utf-8")
