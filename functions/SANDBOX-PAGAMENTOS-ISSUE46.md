@@ -6,9 +6,33 @@
 - Firestore já existente: `rocha-payments-test`, região `southamerica-east1`.
 - Os três endpoints sandbox usam **exclusivamente** `getFirestore(admin.app(), 'rocha-payments-test')`. O banco `(default)` não é usado por esses endpoints.
 - Cada endpoint sandbox define `serviceAccount: rocha-sandbox-payments@rocha-plus-homologacao.iam.gserviceaccount.com`.
-- A conta de serviço recebeu `roles/secretmanager.secretAccessor` somente nos dois segredos sandbox; **nenhuma permissão Firestore foi concedida**.
-- Antes do deploy, avaliar IAM **no recurso do banco nomeado**, sem atribuir `roles/datastore.user` ao projeto inteiro, e testar o acesso efetivo.
+- A conta de serviço recebeu `roles/secretmanager.secretAccessor` somente nos dois segredos sandbox; foi concedido `roles/datastore.user` com condição IAM `RochaSandboxPaymentsOnly` para `resource.name=='projects/rocha-plus-homologacao/databases/rocha-payments-test'`; a eficácia da condição ainda não foi verificada em execução.
+- Antes do deploy, validar que o papel condicionado realmente permite operações no banco nomeado e não permite no `(default)`; não presumir que a presença da condição prova isolamento efetivo.
 - O banco não foi criado nem modificado nesta etapa. Nenhum deploy autorizado.
+
+## Procedimento preparado para deploy limitado — NÃO EXECUTAR SEM NOVA AUTORIZAÇÃO
+**Escopo:** as funções `sandboxCheckout`, `sandboxPaymentVerify` e `sandboxPaymentWebhook` **somente** no projeto `rocha-plus-homologacao` e região `southamerica-east1`. Nada de merge, deploy comercial ou movimentação de dinheiro.
+
+**Evidências:** o GitHub Actions (run `42257775278`) passou backend, entitlement, Android e Flutter. A conta `rocha-sandbox-payments` existe. Os dois segredos sandbox possuem versão 1 ativa e vínculos `secretAccessor` no nível dos segredos. Banco nomeado `rocha-payments-test` já existe. O Cloud Shell ainda não comprovou acesso efetivo pela conta de serviço; Policy Troubleshooter API desativada e endpoint de testIamPermissions do Firestore retornou 501.
+
+**Pré-requisitos obrigatórios antes de autorizar o deploy:**
+1. Confirmar SHA da branch e passar o CI no commit exato.
+2. Confirmar que o projeto e conta selecionados no terminal são os autorizados.
+3. Validar com fonte autorizada o ID do vendedor de teste, o token **sem exibi-lo**, a URL de webhook sandbox final e a assinatura do ambiente de teste (não confundir com webhook comercial).
+4. Confirmar que o Firebase UID `6f5WMpl6ZbSprXE5R66SvWtFx2g1` corresponde à conta independente autorizada; sem tocar outros usuários.
+5. Testar efetivamente que o papel condicionado limita a conta à base `rocha-payments-test`; NÃO conceder `roles/datastore.user` irrestrito. Se o teste requerer impersonação, pedir aprovação específica para concessão temporária e emissão de token antes de usá-los.
+6. Revisar como o CLI Firebase resolve `functions` (o repositório não contém `firebase.json` nem `.firebaserc` na raiz da branch consultada); preparar manifesto local temporário e revisar diff/target. Não acionar deploy sem essa revisão.
+7. Garantir variáveis apenas para os três endpoints sandbox: `ROCHA_SANDBOX_ENABLED`, `ROCHA_SANDBOX_TEST_UID`, `ROCHA_SANDBOX_MERCHANT_ID`, `ROCHA_SANDBOX_WEBHOOK_URL`. Verificar que o processo de deploy seletivo não atualiza funções existentes nem configura flags comerciais.
+8. Confirmar que a identidade usada no deploy possui `iam.serviceAccounts.actAs` **somente onde necessário**, sem criar papéis novos automaticamente. Não conceder no planejamento.
+9. Documentar mecanismo de reversão que apague apenas as funções sandbox comprovadamente novas e preserve os bancos e segredos.
+
+**Comando de deploy previsto, MAS NÃO AUTORIZADO PARA EXECUTAR AINDA:**
+```bash
+firebase deploy --project rocha-plus-homologacao --only functions:sandboxCheckout,functions:sandboxPaymentVerify,functions:sandboxPaymentWebhook
+```
+O comando só é utilizável após confirmar manifesto Firebase, fonte/commit, variáveis, IAM e URL. Nenhum comando de deploy deve ser rodado só com este procedimento.
+
+**Pós-deploy sujeito a aprovação futura:** testar HTTP não autenticado (401/405/503 esperado conforme gate), verificar identidade e banco de execução, habilitar sandbox apenas após validação; criar checkout com conta Firebase autorizada e comprador de teste Mercado Pago; reconciliar evento real em `sandbox_entitlements`; verificar integridade do banco padrão.
 
 ## O que mudou
 - `sandboxCheckout`: cria pedido somente em `sandbox_checkout_orders` após autenticar o Firebase UID autorizado; retorna exclusivamente `sandbox_init_point`.
