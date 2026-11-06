@@ -109,6 +109,15 @@ exports.checkout = onRequest({
 // URL have been independently verified. Production webhook stays untouched.
 const mpSandboxToken = defineSecret('MP_SANDBOX_ACCESS_TOKEN');
 const mpSandboxWebhookSecret = defineSecret('MP_SANDBOX_WEBHOOK_SECRET');
+const SANDBOX_DB_ID = 'rocha-payments-test';
+const SANDBOX_SERVICE_ACCOUNT =
+  'rocha-sandbox-payments@rocha-plus-homologacao.iam.gserviceaccount.com';
+// Fail closed: never use admin.firestore() / (default) for a sandbox endpoint.
+// Firebase Admin SDK supports explicitly named Firestore databases.
+function sandboxDb() {
+  return require('firebase-admin/firestore').getFirestore(admin.app(), SANDBOX_DB_ID);
+}
+
 function sandboxConfig() {
   return {
     enabled: process.env.ROCHA_SANDBOX_ENABLED === 'true',
@@ -120,22 +129,25 @@ function sandboxConfig() {
 }
 exports.sandboxCheckout = onRequest({
   region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  serviceAccount: SANDBOX_SERVICE_ACCOUNT,
   secrets: [mpSandboxToken],
 }, (req, res) => createSandboxCheckoutHandler({
   verifyToken: token => admin.auth().verifyIdToken(token, true),
-  db, config: sandboxConfig,
+  db: sandboxDb(), config: sandboxConfig,
 })(req, res));
 
 exports.sandboxPaymentVerify = onRequest({
   region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  serviceAccount: SANDBOX_SERVICE_ACCOUNT,
   secrets: [mpSandboxToken],
 }, (req, res) => createSandboxVerifyHandler({
   verifyToken: token => admin.auth().verifyIdToken(token, true),
-  db, config: sandboxConfig,
+  db: sandboxDb(), config: sandboxConfig,
 })(req, res));
 
 exports.sandboxPaymentWebhook = onRequest({
   region: 'southamerica-east1', cors: false, maxInstances: 2, invoker: 'public',
+  serviceAccount: SANDBOX_SERVICE_ACCOUNT,
   secrets: [mpSandboxToken, mpSandboxWebhookSecret],
 }, async (req, res) => {
   // Disabled configuration never fetches a payment or writes a document.
@@ -144,13 +156,14 @@ exports.sandboxPaymentWebhook = onRequest({
     res.set('Cache-Control', 'no-store');
     return res.status(503).json({received: false, paused: true, sandbox: true});
   }
-  const inbox = createFirestoreWebhookInbox({db, admin,
+  const isolatedDb = sandboxDb();
+  const inbox = createFirestoreWebhookInbox({db: isolatedDb, admin,
     collectionName: 'sandboxMercadoPagoWebhookInbox',
     lockCollectionName: 'sandboxMercadoPagoWebhookLocks'});
   const handler = createMercadoPagoWebhookHandler({
     secret: () => mpSandboxWebhookSecret.value(), inbox,
     reconcilePayment: ({paymentId}) => reconcileSandboxPayment({
-      db, paymentId, accessToken: c.accessToken, merchantId: c.merchantId,
+      db: isolatedDb, paymentId, accessToken: c.accessToken, merchantId: c.merchantId,
       testUid: c.testUid,
     }),
   });
