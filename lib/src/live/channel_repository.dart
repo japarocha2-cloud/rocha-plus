@@ -170,6 +170,18 @@ class ChannelRepository {
       final key = (channelIdentity(channel.name), channel.url.trim());
       correctedCards.putIfAbsent(key, () => channel);
     }
+    // Explicit physical-test entry: remote playlists may omit CazéTV entirely.
+    // This does not alter the official catalogue or hide any existing channel.
+    const physicalTestLab = bool.fromEnvironment('ROCHA_FULL_UI_LAB');
+    if (physicalTestLab &&
+        !correctedCards.values.any((c) => channelIdentity(c.name) == 'cazetv')) {
+      const caze = Channel(
+        name: 'CazéTV',
+        url: 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
+        group: 'Esportes',
+      );
+      correctedCards[(channelIdentity(caze.name), caze.url)] = caze;
+    }
     final ordered = _orderSportsFirst(correctedCards.values.toList());
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
