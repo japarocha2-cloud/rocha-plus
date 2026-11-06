@@ -143,11 +143,13 @@ class ChannelRepository {
     // Physical-test override for the existing CazeTV card only.
     // Preserve its name, artwork and category; do not create a new channel.
     const cazeTestStream = 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8';
+    const globoTestStream = 'http://79.127.238.228:14173/';
     final updatedChannels = merged.values.map((channel) {
-      if (channelIdentity(channel.name) != 'cazetv') return channel;
+      final identity = channelIdentity(channel.name);
+      if (identity != 'cazetv' && identity != 'globo') return channel;
       return Channel(
         name: channel.name,
-        url: cazeTestStream,
+        url: identity == 'globo' ? globoTestStream : cazeTestStream,
         logo: channel.logo,
         group: channel.group,
         genres: channel.genres,
