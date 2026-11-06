@@ -186,7 +186,7 @@ jobs:
           python3 tools/lab/configure_stable_signing.py
       - name: Build experimental player lab APK
         if: github.event_name == 'pull_request'
-        run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
+        run: flutter build apk --debug --dart-define=ROCHA_FULL_UI_LAB=true
       - name: Report exact experimental APK signing certificate (diagnostic only)
         if: github.event_name == 'pull_request'
         run: |
