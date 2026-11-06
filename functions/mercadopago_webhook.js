@@ -131,9 +131,10 @@ function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox}) {
 /** Firestore inbox with a per-payment lease to serialize simultaneous notices.
  * Expired leases can be recovered after a function crash; all data stays server-side.
  */
-function createFirestoreWebhookInbox({db, admin, leaseMs = 120000}) {
-  const collection = db.collection('mercadoPagoWebhookInbox');
-  const locks = db.collection('mercadoPagoWebhookLocks');
+function createFirestoreWebhookInbox({db, admin, leaseMs = 120000,
+  collectionName = 'mercadoPagoWebhookInbox', lockCollectionName = 'mercadoPagoWebhookLocks'}) {
+  const collection = db.collection(collectionName);
+  const locks = db.collection(lockCollectionName);
   return {
     begin: ({notificationId, paymentId, action}) => db.runTransaction(async tx => {
       const eventRef = collection.doc(notificationId);
