@@ -28,3 +28,11 @@ A Candidata 6 permanece congelada. Não fazer merge ou publicar.
 Antes de compilar para teste físico, comparar manifesto efetivo da Candidata 6 com o catálogo carregado pela Candidata 7, reconciliando nome, identidade, URL, categoria, ordem e capa. Não converter 479 pendentes em aprovados automaticamente.
 
 Depois verificar login, exibição de assinaturas, trial existente, checkout homologado sem cobrança real, reprodução e testes Flutter. Não afirmar que está pronto antes dos testes e da geração de APK funcional.
+
+## Verificação do pipeline Android (07/11/2026)
+
+O workflow `.github/workflows/build.yml` oferece `workflow_dispatch` com `signed_login=true` para gerar APK universal e ARM64 com Firebase e assinatura, sujeito à existência dos secrets e à conclusão do CI. Na branch Candidata 7, **não** selecionar `subscription_lab=true` antes da homologação de direitos e pagamentos. O fluxo de prévia `ROCHA_LAYOUT_PREVIEW=true` gera APK **sem canais** e não é uma entrega funcional da Candidata 7. O build de laboratório por PR pode usar `ROCHA_FULL_UI_LAB=true`, mas não substitui a validação de login e assinatura reais.
+
+**Não foi disparado workflow nesta etapa; não há APK compilado ou teste físico novo confirmado.**
+
+**Critério de liberação:** somente APK assinado funcional, com catálogo reconciliado com a Candidata 6, e verificação de reprodução, navegação, login e assinaturas. Não repetir aprovação manual do catálogo congelado.
