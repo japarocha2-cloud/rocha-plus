@@ -1,3 +1,7 @@
+> [!WARNING]
+> **⚠️ NÃO SOLICITAR APROVAÇÃO MANUAL DO CATÁLOGO DA CANDIDATA 6.**
+> O catálogo da Candidata 6 **JÁ FOI APROVADO EM TESTES FÍSICOS**, realizados de **19/10/2026 a 21/10/2026**, com **180 segundos por canal** e validação de **áudio e imagem**. Não exigir nova aprovação manual nem reabrir a homologação integral dos canais já aprovados. Preservar o catálogo e os resultados históricos. Na Candidata 7, verificar somente a fidelidade da migração e as alterações, novos canais ou regressões efetivas. A existência de arquivos LAB com status `pending` não revoga a aprovação física da Candidata 6.
+
 # Candidata 7 — auditoria do catálogo — 07/11/2026
 
 A Candidata 6 permanece congelada. Não fazer merge ou publicar.
