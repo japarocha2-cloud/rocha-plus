@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: github.head_ref == 'feat/dual-player-lab-20261020'
+    if: github.head_ref == 'feat/dual-player-lab-20261020' || github.head_ref == 'lab/cazetv-link-only-20261106'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     outputs:
@@ -109,7 +109,7 @@ jobs:
       offset: ${{ matrix.offset }}
       count: ${{ matrix.count }}
   aggregate:
-    if: always()
+    if: ${{ always() && needs.build.result == 'success' }}
     needs: [build, smoke, audio-compatibility, batch10, batch25, remaining]
     runs-on: ubuntu-latest
     steps:
