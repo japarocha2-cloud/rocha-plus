@@ -80,9 +80,10 @@ def download(url):
 
 
 def blocked_names(root):
-    text = (root / 'lib/src/live/channel_repository.dart').read_text()
-    block = text.split('_blockedChannelNames = <String>{', 1)[1].split('};', 1)[0]
-    return {identity(x) for x in re.findall(r"'([^']+)'", block)}
+    # Blocks are now per-device user preferences in ChannelBlocks, not a
+    # hardcoded repository constant. Do not exclude LAB test candidates.
+    # Keep the argument for compatibility with the inventory caller.
+    return set()
 
 
 def build(snapshots, metadata, blocked=()):
