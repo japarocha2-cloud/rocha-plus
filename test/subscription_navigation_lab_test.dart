@@ -23,7 +23,7 @@ void main() {
     expect(find.text('Rocha+ • Assinaturas'), findsNWidgets(2));
     expect(find.text('R\$ 7,90 por mês'), findsOneWidget);
     expect(find.text('R\$ 86,90 por ano'), findsOneWidget);
-    expect(find.textContaining('Não pague novamente'), findsOneWidget);
+    expect(find.textContaining('Não pague novamente'), findsNWidgets(2));
     expect(find.textContaining('A contratação depende da disponibilidade'), findsOneWidget);
     expect(find.textContaining('Teste gratuito de até 7 dias'), findsOneWidget);
     expect(find.text('Verificar acesso'), findsNothing);
