@@ -8,11 +8,11 @@ void main() {
     expect(channels.single.group, 'Outros');
   });
 
-  test('empty title uses tvg-name and duplicate URLs keep the first entry', () {
+  test('empty title uses tvg-name and shared URLs preserve distinct names', () {
     final channels = M3uParser.parse('\uFEFF#EXTM3U\n'
         '#EXTINF:-1 tvg-name="Canal correto",\nhttps://example.com/live\n'
         '#EXTINF:-1,Duplicado\nhttps://example.com/live\n');
-    expect(channels.single.name, 'Canal correto');
+    expect(channels.map((c) => c.name), ['Canal correto', 'Duplicado']);
   });
 
   test('display title cannot inject EXTINF metadata', () {
@@ -68,17 +68,20 @@ https://example.com/live.m3u8
     expect(channels.single.group, 'Outros');
   });
 
-  test('accepts https streams and rejects insecure http', () {
+  test('accepts HTTP and HTTPS stream URLs but not other schemes', () {
     const playlist = '''#EXTM3U
 #EXTINF:-1,HTTP
 http://example.com/a.m3u8
 #EXTINF:-1,HTTPS
 https://example.com/b.m3u8
+#EXTINF:-1,FILE
+file:///tmp/not-a-stream.m3u8
 ''';
     final channels = M3uParser.parse(playlist);
-    expect(channels, hasLength(1));
-    expect(channels.single.name, 'HTTPS');
-    expect(channels.single.url, 'https://example.com/b.m3u8');
+    expect(channels, hasLength(2));
+    expect(channels.map((c) => c.name), ['HTTP', 'HTTPS']);
+    expect(channels.map((c) => c.url),
+        ['http://example.com/a.m3u8', 'https://example.com/b.m3u8']);
   });
   test('sanitizes Undefined and technical compound groups', () {
     const playlist = '''#EXTM3U
@@ -125,5 +128,16 @@ https://example.com/kids.m3u8
         '#EXTINF:-1 tvg-id="BandSports.br@SD" group-title="Sports",Band Sports\nhttps://example.com/sports\n'
         '#EXTINF:-1 group-title="General",Canal Generalista Desconhecido\nhttps://example.com/general\n');
     expect(channels.map((c) => c.group), ['Infantil', 'Notícias', 'Esportes', 'Geral']);
+  });
+  test('exact name and URL repeats collapse while alternate URLs survive', () {
+    final channels = M3uParser.parse('#EXTM3U\n'
+        '#EXTINF:-1,Canal (720p)\nhttps://example.com/live\n'
+        '#EXTINF:-1,Canal (1080p)\nhttps://example.com/live\n'
+        '#EXTINF:-1,Canal\nhttps://example.com/backup\n'
+        '#EXTINF:-1,Canal Interior\nhttps://example.com/live\n');
+    expect(channels, hasLength(3));
+    expect(channels.first.name, 'Canal (720p)');
+    expect(channels.map((c) => c.url), contains('https://example.com/backup'));
+    expect(channels.map((c) => c.name), contains('Canal Interior'));
   });
 }

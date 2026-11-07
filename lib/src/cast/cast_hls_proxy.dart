@@ -56,8 +56,10 @@ class CastHlsProxy {
     }
   }
 
-  Future<Uri> relay(Uri source) async {
+  Future<Uri> relay(Uri source, {void Function()? ensureAuthorized}) async {
+    ensureAuthorized?.call();
     await _validate(source);
+    ensureAuthorized?.call();
     if (_server == null) {
       InternetAddress? address = _testAddress;
       if (address == null) {
@@ -71,9 +73,18 @@ class CastHlsProxy {
         }
       }
       if (address == null) throw StateError('Rede Wi-Fi IPv4 local não disponível.');
-      _server = await HttpServer.bind(address, 0);
+      ensureAuthorized?.call();
+      final server = await HttpServer.bind(address, 0);
+      try {
+        ensureAuthorized?.call();
+      } catch (_) {
+        await server.close(force: true);
+        rethrow;
+      }
+      _server = server;
       _server!.listen(_handle);
     }
+    ensureAuthorized?.call();
     _renewExpiry();
     return _link(source);
   }

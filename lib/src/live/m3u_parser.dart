@@ -1,11 +1,12 @@
 import 'channel.dart';
+import 'channel_identity.dart';
 import 'open_tv_channels.dart';
 
 class M3uParser {
   static List<Channel> parse(String source) {
     final lines = source.split(RegExp(r'\r?\n'));
     final channels = <Channel>[];
-    final seenUrls = <String>{};
+    final seenStreams = <(String, String)>{};
     String? name;
     String? logo;
     String? tvgId;
@@ -20,7 +21,9 @@ class M3uParser {
         group = _attribute(line, 'group-title') ?? 'Outros';
       } else if (line.isNotEmpty && !line.startsWith('#') && name != null) {
         final uri = Uri.tryParse(line);
-        if (uri != null && uri.scheme == 'https' && uri.host.isNotEmpty && uri.userInfo.isEmpty && seenUrls.add(line)) {
+        if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') &&
+            uri.host.isNotEmpty && uri.userInfo.isEmpty &&
+            seenStreams.add((line, channelIdentity(_cleanName(name))))) {
           channels.add(Channel(
             name: _cleanName(name),
             url: line,

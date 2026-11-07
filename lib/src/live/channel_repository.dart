@@ -5,6 +5,7 @@ import 'channel_identity.dart';
 import 'channel_blocks.dart';
 import 'channel_scanner.dart';
 import 'm3u_parser.dart';
+import 'playback_failure.dart';
 
 class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
@@ -15,6 +16,29 @@ class ChannelRepository {
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
+
+  // One shared stream correction for existing cards in remote and LAB catalogs.
+  // Never adds channels or changes their identity, artwork or category.
+  static Channel applyPhysicalTestStream(Channel channel) {
+    final identity = channelIdentity(channel.name);
+    const streams = <String, String>{
+      'cazetv': 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
+      'globo': 'http://79.127.238.228:14173/',
+      'history (brazil)': 'http://170.83.16.50/HISTORY/index.m3u8',
+      'tv ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
+      'ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
+    };
+    final url = streams[identity];
+    if (url == null || url == channel.url) return channel;
+    return Channel(
+      name: channel.name,
+      url: url,
+      logo: channel.logo,
+      group: channel.group,
+      genres: channel.genres,
+      preferredEngine: channel.preferredEngine,
+    );
+  }
 
   static Set<String> _userBlockedNames = {};
   final ChannelBlocks _blocks = ChannelBlocks();
@@ -27,43 +51,32 @@ class ChannelRepository {
   Future<void> restoreUserBlockedChannels() async {
     await _blocks.clear();
     _userBlockedNames = {};
-    _memoryCache = null;
   }
 
   static final Map<Uri, List<Channel>> _sourceCache = {};
   static List<Channel>? _memoryCache;
   static List<Channel>? _lastKnownGoodCache;
-  static final Set<String> _sessionFailedUrls = <String>{};
+  static final Map<String, PlaybackFailure> _playbackFailures = {};
 
-  // Bloqueio persistente por nome. Use esta camada para canais reprovados
-  // em teste físico: eles não voltam quando o diretório remoto é atualizado.
-  static const Set<String> _blockedChannelNames = <String>{
-    '1001 noites',
-    '30a golf kingdom (720p)',
-    'pluto tv esportes',
-    'canal do inter (720p) [not 24/7]',
-    'band sports (1080p)',
-    'times brasil (720p)',
-    'tv thathi (720p) [not 24/7]',
-    'tv sul de minas (720p)',
-    'tv meio (720p)',
-    'tv difusora leste (1080p)',
-    'tv encontro das aguas',
-  };
+  // Only an explicit local user choice hides a channel. Historical names
+  // without URL/device/date evidence must not block alternative feeds.
+  bool _isPermanentlyBlocked(Channel channel) =>
+      _userBlockedNames.contains(channelIdentity(channel.name));
 
-  bool _isPermanentlyBlocked(Channel channel) {
-    final normalized = channelIdentity(channel.name);
-    return _userBlockedNames.contains(normalized) ||
-        _blockedChannelNames.any((name) => channelIdentity(name) == normalized);
+  void reportPlaybackFailure(String url, {
+    PlaybackFailure failure = PlaybackFailure.unknown,
+  }) {
+    _playbackFailures[url] = failure;
   }
 
-  void reportPlaybackFailure(String url) {
-    _sessionFailedUrls.add(url);
-  }
+  void reportPlaybackSuccess(String url) => _playbackFailures.remove(url);
 
-  void reportPlaybackSuccess(String url) => _sessionFailedUrls.remove(url);
+  PlaybackFailure? lastPlaybackFailure(String url) => _playbackFailures[url];
 
-  bool isQuarantined(String url) => _sessionFailedUrls.contains(url);
+  // A transient player error is diagnostic evidence, not a channel exclusion.
+  // Keep this compatibility query for callers; explicit/user blocks are still
+  // enforced separately by isBlocked and the catalogue approval rules.
+  bool isQuarantined(String url) => false;
 
   Future<Map<String, ChannelReachability>> scanChannels(List<Channel> channels) =>
       ChannelScanner(_client).scan(channels);
@@ -77,7 +90,6 @@ class ChannelRepository {
     final filtered = channels
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
-        .where((channel) => !_sessionFailedUrls.contains(channel.url))
         .toList(growable: false);
     return _orderSportsFirst(filtered);
   }
@@ -85,14 +97,13 @@ class ChannelRepository {
   static void resetSessionHealthForTests() {
     _userBlockedNames = {};
     _sourceCache.clear();
-    _sessionFailedUrls.clear();
+    _playbackFailures.clear();
     _memoryCache = null;
     _lastKnownGoodCache = null;
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
       channels
-          .where((channel) => !_sessionFailedUrls.contains(channel.url))
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -121,27 +132,59 @@ class ChannelRepository {
               url: channel.url,
               logo: channel.logo,
               group: 'Esportes',
+              genres: channel.genres,
+              preferredEngine: channel.preferredEngine,
             ))
         .toList(growable: false);
 
-    final merged = <String, Channel>{};
+    // Deduplicate only exact stream/name identities. Identically addressed
+    // regional or editorial variants must not silently inherit each other's
+    // title or category. Different URLs stay as fallback streams until a
+    // playback audit can prove which variants are genuinely duplicates.
+    final merged = <(String, String), Channel>{};
     for (final channel in [...brazil, ...sports]) {
-      final previous = merged[channel.url];
-      merged[channel.url] = previous == null ? channel : Channel(
+      final identity = channelIdentity(channel.name);
+      final key = (channel.url.trim(), identity);
+      final previous = merged[key];
+      merged[key] = previous == null ? channel : Channel(
         name: previous.name,
         url: previous.url,
         logo: previous.logo ?? channel.logo,
-        group: channel.group == 'Esportes' ? 'Esportes' : previous.group,
+        group: previous.group == 'Esportes' || channel.group == 'Esportes'
+            ? 'Esportes'
+            : previous.group,
+        genres: previous.genres.isNotEmpty ? previous.genres : channel.genres,
+        preferredEngine: previous.preferredEngine ?? channel.preferredEngine,
       );
     }
 
     // A tela precisa abrir rápido. O catálogo é exibido assim que as fontes
     // são carregadas; a validação profunda não bloqueia mais centenas de
-    // canais antes de a interface aparecer. Falhas reais do player entram
-    // em quarentena durante a sessão por reportPlaybackFailure().
-    final ordered = _orderSportsFirst(
-      merged.values.where((channel) => !_isPermanentlyBlocked(channel)).toList(),
-    );
+    // canais antes de a interface aparecer. Falhas do player são registradas
+    // para diagnóstico, sem esconder um canal após um erro transitório.
+    // Cache source data before local hiding so restore also works offline.
+    // When multiple source URLs describe the same corrected card, show it
+    // once. Source records are retained; other channels and regional variants
+    // remain untouched. Never deduplicate by stream URL alone.
+    final correctedCards = <(String, String), Channel>{};
+    for (final original in merged.values) {
+      final channel = applyPhysicalTestStream(original);
+      final key = (channelIdentity(channel.name), channel.url.trim());
+      correctedCards.putIfAbsent(key, () => channel);
+    }
+    // Explicit physical-test entry: remote playlists may omit CazéTV entirely.
+    // This does not alter the official catalogue or hide any existing channel.
+    const physicalTestLab = bool.fromEnvironment('ROCHA_FULL_UI_LAB');
+    if (physicalTestLab &&
+        !correctedCards.values.any((c) => channelIdentity(c.name) == 'cazetv')) {
+      const caze = Channel(
+        name: 'CazéTV',
+        url: 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
+        group: 'Esportes',
+      );
+      correctedCards[(channelIdentity(caze.name), caze.url)] = caze;
+    }
+    final ordered = _orderSportsFirst(correctedCards.values.toList());
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;

@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from configure_android import configure, attr
 
 class AndroidConfigurationTest(unittest.TestCase):
-    def test_manifest_is_idempotent_and_keeps_cast_and_tv_without_cleartext(self):
+    def test_manifest_is_idempotent_and_scopes_cleartext_to_reviewed_hosts(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             manifest = root / "android/app/src/main/AndroidManifest.xml"
@@ -22,6 +22,8 @@ class AndroidConfigurationTest(unittest.TestCase):
             native = root / "tools/MainActivity.kt"
             native.parent.mkdir(exist_ok=True)
             native.write_text("package com.rochaplus.app\nclass MainActivity", encoding="utf-8")
+            allowed = root / "tools/allowed_http_hosts.txt"
+            allowed.write_text("example.com\n192.0.2.15\n", encoding="utf-8")
             gradle = root / "android/app/build.gradle.kts"
             gradle.write_text('android { namespace = "com.example.rocha_plus"\n'
                               'defaultConfig { applicationId = "com.example.rocha_plus" } }',
@@ -38,7 +40,18 @@ class AndroidConfigurationTest(unittest.TestCase):
             node = ET.parse(manifest).getroot()
             app = node.find("application")
             self.assertEqual(app.get(attr("usesCleartextTraffic")), "false")
+            self.assertEqual(app.get(attr("networkSecurityConfig")), "@xml/rocha_network_security")
+            security = ET.parse(root / "android/app/src/main/res/xml/rocha_network_security.xml").getroot()
+            self.assertEqual(security.find("base-config").get("cleartextTrafficPermitted"), "false")
+            self.assertEqual(security.find("domain-config").get("cleartextTrafficPermitted"), "true")
+            self.assertEqual({node.text for node in security.findall("domain-config/domain")},
+                             {"example.com", "192.0.2.15"})
             self.assertEqual(app.get(attr("label")), "Rocha+")
+            gradle_text = gradle.read_text(encoding="utf-8")
+            self.assertEqual(gradle_text.count('applicationIdSuffix = ".lab"'), 1)
+            debug_app = ET.parse(root / "android/app/src/debug/AndroidManifest.xml").getroot().find("application")
+            self.assertEqual(debug_app.get(attr("label")), "Rocha+ LAB")
+            self.assertEqual(debug_app.get('{http://schemas.android.com/tools}replace'), 'android:label')
             self.assertEqual(len(node.findall("uses-permission")), 4)
             self.assertEqual(len(app.findall("service")), 1)
             self.assertEqual(app.find("service").get(attr("exported")), "false")

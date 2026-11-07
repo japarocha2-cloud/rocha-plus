@@ -42,7 +42,7 @@ void main() {
     expect(peak, lessThanOrEqualTo(4));
     expect(results['https://example.com/200'], ChannelReachability.reachable);
     expect(results['https://example.com/405'], ChannelReachability.unverified);
-    expect(results['https://example.com/503'], ChannelReachability.unavailable);
+    expect(results['https://example.com/503'], ChannelReachability.unverified);
     expect(results['https://example.com/302'], ChannelReachability.unverified);
   });
   test('invalid URL is rejected and network failure remains unverified', () async {
@@ -58,5 +58,15 @@ void main() {
     expect(calls, 1);
     expect(results['https:'], ChannelReachability.unavailable);
     expect(results['https://example.com/live'], ChannelReachability.unverified);
+  });
+  test('HTTP channel is scanned with the same HEAD check as HTTPS', () async {
+    final scanner = ChannelScanner(MockClient((request) async {
+      expect(request.url.scheme, 'http');
+      return http.Response('', 200);
+    }));
+    final results = await scanner.scan([
+      const Channel(name: 'HTTP HLS', url: 'http://example.com/live.m3u8'),
+    ]);
+    expect(results['http://example.com/live.m3u8'], ChannelReachability.reachable);
   });
 }

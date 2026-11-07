@@ -1,0 +1,123 @@
+name: Subscription safety checks
+on:
+  push:
+    branches:
+      - fix/subscription-access-20261026
+  pull_request:
+    paths:
+      - 'functions/**'
+      - 'lib/src/auth/**'
+      - 'lib/src/live/**'
+      - 'lib/src/cast/**'
+      - 'lib/src/widgets/**'
+      - 'test/channel_catalog_identity_test.dart'
+      - 'lib/src/screens/subscription_screen.dart'
+      - 'lib/src/screens/home_screen.dart'
+      - 'test/**'
+      - 'tools/**'
+      - 'backend/entitlement/**'
+      - '.github/workflows/subscription-ci.yml'
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check index.js
+          node --check mercadopago_reconciliation.js
+          node --check reconcile_and_grant.js
+          node --check entitlement_periods.js
+      - name: Unit tests
+        run: npm test
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - name: Flutter dependencies
+        run: flutter pub get
+      - name: Full Flutter suite (catalogue, scanner, TV remote, Cast and access)
+        run: flutter test
+      - name: Analyze complete Flutter application and tests
+        run: flutter analyze
+      - name: Verify opt-in subscription policy
+        run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
+  entitlement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked test dependencies without lifecycle scripts
+        working-directory: backend/entitlement
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Entitlement unit and local HTTP integration tests
+        run: node --test backend/entitlement/*.test.mjs
+  android-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Android phone and TV configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+  experimental-apk:
+    if: ${{ false }} # No APK generation or publication during this safety audit.
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate isolated Android phone and TV scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+      - name: Test Android configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Fetch dependencies
+        run: flutter pub get
+      - name: Build safe debug APK (payments remain disabled)
+        run: flutter build apk --debug --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=false
+      - name: Verify isolated package and APK signature
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/aapt" dump badging build/app/outputs/flutter-apk/app-debug.apk > /tmp/rocha-apk-badging.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          data = Path('/tmp/rocha-apk-badging.txt').read_text()
+          match = re.search(r"^package: name='([^']+)'", data, re.MULTILINE)
+          if not match or match[1] != 'com.rochaplus.app.lab':
+              raise SystemExit('Experimental package must be com.rochaplus.app.lab')
+          PY
+          python3 tools/report_apk_certificate.py build/app/outputs/flutter-apk/app-debug.apk "$BUILD_TOOLS/apksigner"
+          sha256sum build/app/outputs/flutter-apk/app-debug.apk > build/app/outputs/flutter-apk/app-debug.apk.sha256
+      - name: Upload experimental APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-subscription-safe-debug
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/flutter-apk/app-debug.apk.sha256
+          if-no-files-found: error
