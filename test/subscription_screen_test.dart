@@ -41,10 +41,10 @@ void main() {
       theme: RochaTheme.dark,
       home: const SubscriptionScreen(accountUid: 'test-account'),
     ));
-    await tester.scrollUntilVisible(find.text('R\$ 49,50 por ano'), 200);
-    expect(find.text('R\$ 4,50 por mês'), findsOneWidget);
-    expect(find.text('R\$ 49,50 por ano'), findsOneWidget);
-    expect(find.textContaining('bloqueio ainda está em homologação'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('R\$ 86,90 por ano'), 200);
+    expect(find.text('R\$ 7,90 por mês'), findsOneWidget);
+    expect(find.text('R\$ 86,90 por ano'), findsOneWidget);
+    expect(find.textContaining('prazo e a elegibilidade são confirmados pelo servidor'), findsOneWidget);
     expect(find.byType(FilledButton), findsNothing);
     expect(find.byType(OutlinedButton), findsNothing);
     expect(tester.takeException(), isNull);
