@@ -106,7 +106,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Sua assinatura Rocha+',
+                      Text('Rocha+ • Assinaturas',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
                       Card(
@@ -162,16 +162,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 12),
                       const _PlanCard(
-                          name: 'Mensal', price: 'R\$ 4,50 por mês'),
+                          name: 'Plano Fundador Mensal', price: 'R\$ 7,90 por mês'),
                       const _PlanCard(
-                          name: 'Anual', price: 'R\$ 49,50 por ano'),
+                          name: 'Plano Fundador Anual', price: 'R\$ 86,90 por ano'),
                       const SizedBox(height: 16),
                       const Text(
-                        'Teste gratuito previsto: 7 dias por conta. A validação do prazo e do bloqueio ainda está em homologação.',
+                        'Teste gratuito de até 7 dias para contas elegíveis. O prazo e a elegibilidade são confirmados pelo servidor.',
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        'Os planos são apresentados para conferência. A contratação ainda não está disponível nesta versão de testes.',
+                        'Preços de lançamento para assinantes fundadores. A contratação depende da disponibilidade do checkout homologado. Não pague novamente para tentar liberar um acesso já contratado.',
                       ),
                     ],
                   ),
