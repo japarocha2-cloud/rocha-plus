@@ -3,5 +3,14 @@ class Channel {
   final String url;
   final String? logo;
   final String group;
-  const Channel({required this.name, required this.url, this.logo, this.group = 'Outros'});
+  final List<String> genres;
+  final String? preferredEngine;
+  const Channel({
+    required this.name,
+    required this.url,
+    this.logo,
+    this.group = 'Outros',
+    this.genres = const [],
+    this.preferredEngine,
+  });
 }

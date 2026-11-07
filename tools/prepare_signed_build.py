@@ -2,7 +2,37 @@
 import base64
 import json
 import os
+from urllib.parse import urlsplit
+import ipaddress
 from pathlib import Path
+
+def subscription_config(env):
+    enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
+    if enabled not in ('true', 'false'):
+        raise ValueError('Opcao experimental invalida')
+    result = {'ROCHA_EXPERIMENTAL_SUBSCRIPTIONS': enabled,
+              'ROCHA_LAB_ONLY': 'false', 'ROCHA_LAYOUT_PREVIEW': 'false',
+              'ROCHA_ENTITLEMENT_URL': ''}
+    if enabled == 'false':
+        return result
+    if env.get('GITHUB_REF') != 'refs/heads/feat/dual-player-lab-20261020':
+        raise ValueError('Bloqueio permitido apenas na branch experimental')
+    endpoint = env.get('ROCHA_ENTITLEMENT_URL', '')
+    parsed = urlsplit(endpoint)
+    host = parsed.hostname or ''
+    try:
+        ipaddress.ip_address(host)
+        is_ip = True
+    except ValueError:
+        is_ip = False
+    if (parsed.scheme != 'https' or not host or '.' not in host or is_ip
+            or host.endswith(('.localhost', '.local'))
+            or parsed.username is not None or parsed.password is not None
+            or parsed.port not in (None, 443) or parsed.query or parsed.fragment
+            or not parsed.path or any(c.isspace() for c in endpoint)):
+        raise ValueError('Servico experimental exige URL HTTPS publica sem credenciais')
+    result['ROCHA_ENTITLEMENT_URL'] = endpoint
+    return result
 
 def prepare(root, private, env):
     names = ('ROCHA_KEYSTORE_BASE64', 'ROCHA_KEYSTORE_PASSWORD',
@@ -20,6 +50,8 @@ def prepare(root, private, env):
         raise ValueError('Projeto Firebase inesperado')
     if config['ROCHA_FIREBASE_APP_ID'] != '1:977269532083:android:7f7b15eff64a6a443f97c6':
         raise ValueError('App Firebase inesperado')
+    # Controlled build modes cannot be injected through the Firebase JSON.
+    config.update(subscription_config(env))
     private = Path(private)
     private.mkdir(parents=True, exist_ok=True)
     key = private / 'release.p12'
@@ -55,4 +87,4 @@ if __name__ == '__main__':
             output.write(f'ROCHA_SIGNING_FILE={key}\nROCHA_FIREBASE_FILE={config}\n')
         print('Configuracao privada preparada; valores omitidos.')
     except (ValueError, KeyError):
-        raise SystemExit('Configuracao assinada invalida ou Secrets ausentes. Confira os quatro Secrets obrigatorios.')
+        raise SystemExit('Configuracao assinada invalida. Confira os Secrets e, no teste de bloqueio, a branch experimental e a URL HTTPS.')
