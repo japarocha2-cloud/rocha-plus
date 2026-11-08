@@ -1,0 +1,32 @@
+name: LAB intelligent cleanup inventory
+on:
+  push:
+    branches: [lab/limpeza-inteligente-p0-20261108]
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install image validator
+        run: python3 -m pip install Pillow==13.0.0
+      - name: Verify audit behavior and existing Android tooling
+        run: |
+          python3 -m unittest discover -s tools/audit -p 'test_*.py'
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s tools/lab -p 'test_*.py'
+      - name: Inventory tracked snapshot without mutations
+        run: |
+          python3 tools/audit/inventory.py --ref HEAD --output /tmp/cleanup-inventory.json
+          python3 - <<'PY'
+          import json
+          rows=json.load(open('/tmp/cleanup-inventory.json'))
+          assert rows and rows[0]['files']
+          assert not rows[0]['formatFailures'], rows[0]['formatFailures']
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cleanup-inventory
+          path: /tmp/cleanup-inventory.json
