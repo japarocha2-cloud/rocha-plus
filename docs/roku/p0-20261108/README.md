@@ -6,7 +6,7 @@ A ordem P0 autoriza teste físico em LAB sem bloquear o catálogo. Esta ordem su
 ## Alterações
 - Preservados os 607 IDs/registros e decisões existentes, com snapshot anterior e diff; uma entrada CazéTV adicionada em primeiro lugar em Esportes, fonte PR51.
 - Globo (ID 8cfb1575ec9cbf69) recebe a fonte de teste do PR51. HISTORY conserva a URL corrigida no commit dc63e32; não houve nova alteração.
-- Categoria adicional Não testados consulta ausência de evidência Roku sem remover ou recategorizar os registros originais. Não altera aprovações Android da Candidata 6.
+- Categoria adicional Não testados consulta ausência de evidência Roku ou de resultado local de áudio e imagem sem remover ou recategorizar os registros originais. Não altera aprovações Android da Candidata 6.
 - Modo physical_test_manual explicitamente configurado para sideload LAB, sem cobrança/servidor ou expiração de duas horas. Exige auth, central e lab-access desativados. Não cria assinatura, conta ou direito comercial.
 - Corrigida chamada inválida trim() no reconhecimento de formato do player, usando String.Trim().
 - Capas aprovadas, favoritos persistidos e navegação/Voltar existentes preservados. CazéTV ainda não tem capa local aprovada: não foi criada arte substituta.

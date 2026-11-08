@@ -240,6 +240,12 @@ sub refreshVisibleChannels()
       evidence = c.evidence
       tested = false
       if type(evidence) = "roAssociativeArray" then tested = (evidence.roku_playback_verified = true)
+      localResult = m.checkupRecords[c.id]
+      if type(localResult) = "roAssociativeArray"
+        imageTested = (localResult.image = "pass" or localResult.image = "fail")
+        audioTested = (localResult.audio = "pass" or localResult.audio = "fail")
+        if imageTested and audioTested then tested = true
+      end if
       categoryMatches = not tested
     end if
     if categoryMatches and (not m.favoritesOnly or isFavorite(c.id)) and (m.showRemoved or not isRemoved(c.id)) and searchOk then visible.push(c)
@@ -738,7 +744,7 @@ sub showCheckupReport()
       authorizationEvidence:authorizationEvidence
     })
   end for
-  report = {schema:"rochaplus.roku.physical-review.v1", source:"roku-lab", total:records.count(), authorizedForPlayback:0, approved:approved, rejected:rejected, removed:removed, pending:pending, untested:untested, records:records}
+  report = {schema:"rochaplus.roku.physical-review.v1", source:"roku-lab", total:records.count(), authorizedForPlayback:0, physicalLabPlaybackEnabled:(m.physicalLabManual = true), approved:approved, rejected:rejected, removed:removed, pending:pending, untested:untested, records:records}
   print "ROCHAPLUS_PHYSICAL_REVIEW_JSON_BEGIN"
   print FormatJson(report)
   print "ROCHAPLUS_PHYSICAL_REVIEW_JSON_END"
