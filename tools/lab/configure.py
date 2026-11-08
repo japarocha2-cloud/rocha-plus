@@ -57,7 +57,7 @@ def configure_lab(root):
     import json
     from urllib.parse import urlsplit
     rows = json.loads((root / 'branding/lab_candidates.json').read_text())
-    hosts = {'10.0.2.2'} | {urlsplit(r['url']).hostname for r in rows if r['url'].startswith('http://')}
+    hosts = {'10.0.2.2', '138.204.86.4'} | {urlsplit(r['url']).hostname for r in rows if r['url'].startswith('http://')}
     # The debug resource overrides main: retain the already reviewed origins,
     # including corrected feeds that are absent from the candidate snapshot.
     main_security = root / 'android/app/src/main/res/xml/rocha_network_security.xml'

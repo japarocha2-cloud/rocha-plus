@@ -34,7 +34,7 @@ class LabConfigurationTest(unittest.TestCase):
             self.assertNotIn('open open', main.read_text())
             debug = root / 'android/app/src/debug/res/xml/rocha_network_security.xml'
             config = ET.parse(debug).getroot()
-            self.assertEqual({x.text for x in config.findall('domain-config/domain')}, {'10.0.2.2', 'example.com', 'reviewed.example'})
+            self.assertEqual({x.text for x in config.findall('domain-config/domain')}, {'10.0.2.2', '138.204.86.4', 'example.com', 'reviewed.example'})
             self.assertIn('reviewed.example', security.read_text())
 
 
