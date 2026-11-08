@@ -9,13 +9,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Install image validator
         run: python3 -m pip install Pillow==13.0.0
       - name: Verify audit behavior and existing Android tooling
         run: |
-          python3 -m unittest discover -s tools/audit -p 'test_*.py'
-          python3 -m unittest discover -s tools -p 'test_*.py'
-          python3 -m unittest discover -s tools/lab -p 'test_*.py'
+          python3 - <<'PY'
+          import subprocess
+          import sys
+          for directory in ['tools/audit', 'tools', 'tools/lab']:
+              result=subprocess.run([sys.executable,'-m','unittest','discover','-s',directory,'-p','test_*.py'],capture_output=True,text=True)
+              print(result.stdout, result.stderr)
+              if result.returncode:
+                  detail=(result.stdout+result.stderr)[-5000:].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+                  print('::error title=Test failure '+directory+'::'+detail)
+                  sys.exit(result.returncode)
+          PY
       - name: Inventory tracked snapshot without mutations
         run: |
           python3 tools/audit/inventory.py --ref HEAD --output /tmp/cleanup-inventory.json
