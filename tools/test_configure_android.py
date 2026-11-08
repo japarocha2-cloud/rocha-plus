@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from configure_android import configure, attr
@@ -28,9 +29,12 @@ class AndroidConfigurationTest(unittest.TestCase):
             gradle.write_text('android { namespace = "com.example.rocha_plus"\n'
                               'defaultConfig { applicationId = "com.example.rocha_plus" } }',
                               encoding="utf-8")
-            configure(root)
-            configure(root)
+            with patch.dict('os.environ', {'GITHUB_HEAD_REF': 'lab/candidata7-teste-fisico-20261107'}):
+                configure(root)
+                configure(root)
             configured_gradle = gradle.read_text(encoding="utf-8")
+            self.assertEqual(configured_gradle.count('applicationIdSuffix = ".labc7"'), 1)
+            self.assertNotIn('applicationIdSuffix = ".lab"', configured_gradle)
             self.assertNotIn("com.example.rocha_plus", configured_gradle)
             self.assertEqual(configured_gradle.count('"com.rochaplus.app"'), 2)
             self.assertEqual(configured_gradle.count("play-services-cast-framework"), 1)
@@ -48,7 +52,7 @@ class AndroidConfigurationTest(unittest.TestCase):
                              {"example.com", "192.0.2.15"})
             self.assertEqual(app.get(attr("label")), "Rocha+")
             gradle_text = gradle.read_text(encoding="utf-8")
-            self.assertEqual(gradle_text.count('applicationIdSuffix = ".lab"'), 1)
+            self.assertEqual(gradle_text.count('applicationIdSuffix = ".labc7"'), 1)
             debug_app = ET.parse(root / "android/app/src/debug/AndroidManifest.xml").getroot().find("application")
             self.assertEqual(debug_app.get(attr("label")), "Rocha+ LAB")
             self.assertEqual(debug_app.get('{http://schemas.android.com/tools}replace'), 'android:label')

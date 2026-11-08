@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 import shutil
 import os
@@ -82,10 +83,18 @@ def configure(root):
             text += "\n dependencies { " + dependency + " }\n"
         # Debug laboratory installs alongside production instead of replacing it.
         lab_suffix = 'applicationIdSuffix = ".lab"'
-        if lab_suffix not in text:
+        if not re.search(r'applicationIdSuffix = "\.lab(?:cazetv|c7)?"', text):
             text += '\nandroid { buildTypes { getByName("debug") { ' + lab_suffix + ' } } }\n'
-        if os.environ.get("GITHUB_HEAD_REF") == "lab/cazetv-link-only-20261106":
-            text += '\nandroid { buildTypes { getByName("debug") { applicationIdSuffix = ".labcazetv" } } }\n'
+        branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
+        suffix = None
+        if branch == "lab/cazetv-link-only-20261106":
+            suffix = ".labcazetv"
+        elif branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")):
+            suffix = ".labc7"
+        if suffix:
+            # Replace the debug suffix; never stack overrides on repeated setup.
+            text = re.sub(r'applicationIdSuffix = "\.lab(?:cazetv|c7)?"',
+                          'applicationIdSuffix = "' + suffix + '"', text)
         gradle.write_text(text, encoding="utf-8")
     debug_manifest = root / "android/app/src/debug/AndroidManifest.xml"
     debug_manifest.parent.mkdir(parents=True, exist_ok=True)

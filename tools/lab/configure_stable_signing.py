@@ -12,6 +12,10 @@ def configure(env, root):
     env = lab_environment(env)
     fields = ('LAB_KEYSTORE_BASE64', 'LAB_KEYSTORE_PASSWORD', 'LAB_KEY_ALIAS')
     present = [bool(env.get(k)) for k in fields]
+    branch = env.get('GITHUB_HEAD_REF') or env.get('GITHUB_REF_NAME', '')
+    candidate7 = branch.startswith(('lab/candidata7-', 'lab/p0-candidata7-'))
+    if candidate7 and not all(present):
+        raise ValueError('Candidata 7 requires the existing dedicated LAB key; refusing a random update certificate')
     if not any(present):
         print('LAB signing secrets absent: temporary debug signing; SHA-1 is diagnostic only.')
         return False
@@ -19,7 +23,7 @@ def configure(env, root):
         raise ValueError('Incomplete dedicated LAB signing secrets')
     gradle = Path(root) / 'android/app/build.gradle.kts'
     content = gradle.read_text()
-    marker = 'applicationIdSuffix = ".lab"'
+    marker = 'applicationIdSuffix = ".lab'
     if marker not in content or 'rochaLabSigning' in content:
         raise ValueError('LAB Android configuration not prepared or already modified')
     directory = Path(root) / '.rocha-private-lab'
