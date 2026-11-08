@@ -32,6 +32,9 @@ class AndroidConfigurationTest(unittest.TestCase):
             with patch.dict('os.environ', {'GITHUB_HEAD_REF': 'lab/candidata7-teste-fisico-20261107'}):
                 configure(root)
                 configure(root)
+            launch = ET.parse(root / 'android/app/src/main/res/drawable/launch_background.xml').getroot()
+            self.assertEqual(launch.find('item').get(attr('drawable')), '@android:color/black')
+            self.assertEqual(launch.findall('item')[1].get(attr('width')), '200dp')
             configured_gradle = gradle.read_text(encoding="utf-8")
             self.assertEqual(configured_gradle.count('applicationIdSuffix = ".labc7"'), 1)
             self.assertNotIn('applicationIdSuffix = ".lab"', configured_gradle)

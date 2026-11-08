@@ -1,3 +1,5 @@
+import 'c7_catalog_policy.dart';
+import 'lab_runtime.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
@@ -91,7 +93,7 @@ class ChannelRepository {
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
         .toList(growable: false);
-    return _orderSportsFirst(filtered);
+    return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(filtered) : _orderSportsFirst(filtered);
   }
 
   static void resetSessionHealthForTests() {
@@ -103,7 +105,7 @@ class ChannelRepository {
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
-      channels
+      (C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(channels) : channels)
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 
@@ -185,6 +187,22 @@ class ChannelRepository {
       correctedCards[(channelIdentity(caze.name), caze.url)] = caze;
     }
     final ordered = _orderSportsFirst(correctedCards.values.toList());
+    if (C7CatalogPolicy.enabled) {
+      try {
+        final runtime = await LabRuntime.open();
+        await runtime?.write('record-c7-inventory.json', {
+          'source': 'effective remote C7 input before policy; source snapshots retained',
+          'records': ordered.where((c) => channelIdentity(c.name).contains('record')).map((c) => {
+            'id': base64Url.encode(utf8.encode('${channelIdentity(c.name)}\u0000${c.url}')),
+            'idOrigin': 'derived base64url(nameIdentity+NUL+url), no native source ID',
+            'name': c.name, 'url': c.url, 'category': c.group, 'logo': c.logo,
+            'decision': C7CatalogPolicy.removeRecord(c) ? 'exclude C7 effective catalog only' : 'retain',
+          }).toList(),
+        });
+      } catch (_) {
+        // An unavailable evidence bridge must never block physical testing.
+      }
+    }
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;

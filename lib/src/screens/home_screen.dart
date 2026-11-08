@@ -205,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.logout,
             onTap: _signOut,
           ),
-        const SizedBox(height: 174, child: Center(child: RochaBrand())),
+        SizedBox(height: widget.laboratoryFeatures ? 104 : 174, child: const Center(child: RochaBrand())),
         _NavItem(
           label: 'Início',
           icon: Icons.home_outlined,
@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (drawer) Navigator.pop(context);
           },
         ),
-        ...sections.map(
+        ...sections.where((item) => !widget.laboratoryFeatures || HomeScreen.sections.contains(item)).map(
           (item) => _NavItem(
             label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1,
             icon: item.$2,
@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
-        if (widget.accountUid != null)
+        if (widget.accountUid != null || widget.laboratoryFeatures)
         _NavItem(
           label: 'Assinatura',
           icon: Icons.workspace_premium_outlined,

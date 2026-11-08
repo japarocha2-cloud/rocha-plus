@@ -1,3 +1,4 @@
+import 'c7_catalog_policy.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -82,6 +83,7 @@ class ValidatedLabRepository extends ChannelRepository {
         continue;
       }
     }
-    return popularChannelsFirst(channels.values);
+    final result = popularChannelsFirst(channels.values);
+    return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(result) : result;
   }
 }

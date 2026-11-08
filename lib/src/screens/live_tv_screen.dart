@@ -1,3 +1,4 @@
+import '../live/c7_catalog_policy.dart';
 import 'package:flutter/material.dart';
 
 import '../live/channel.dart';
@@ -201,7 +202,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         .toList(growable: false);
 
     final ordered = widget.laboratoryFeatures
-        ? popularChannelsFirst(visible)
+        ? (C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(visible) : popularChannelsFirst(visible))
         : visible;
 
     return Scaffold(

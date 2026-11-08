@@ -8,7 +8,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     // Preview mode avoids loading live channels and all network requests.
     await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(previewOnly: true, accountUid: 'test-only-uid'),
+      home: HomeScreen(previewOnly: true, laboratoryFeatures: true),
     ));
     await tester.pumpAndSettle();
     if (size.width < 900) {

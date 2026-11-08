@@ -1,3 +1,4 @@
+import 'c7_catalog_policy.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -58,5 +59,6 @@ Future<List<Channel>> loadLabCatalog() async {
     channels.add(corrected);
   }
   final selected = channels.skip(offset);
-  return (limit > 0 ? selected.take(limit) : selected).toList();
+  final result = (limit > 0 ? selected.take(limit) : selected).toList();
+  return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(result) : result;
 }

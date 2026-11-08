@@ -1,0 +1,84 @@
+name: C7 physical corrections LAB
+on:
+  push:
+    branches: [lab/candidata7-correcao-fisica-20261108]
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Verify protected sources and Python regressions
+        run: |
+          git diff --exit-code 50fd7fa -- branding platforms backend functions firestore.rules
+          python3 -m pip install pillow numpy
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s tools/lab -p 'test_*.py'
+      - name: Prepare isolated Android LAB
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+          python3 tools/lab/configure.py
+          flutter pub get
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
+      - name: Analyze and run regression suites
+        run: |
+          python3 tools/rocha_quality_guard.py
+          check() {
+            if "$@" > /tmp/c7-check.log 2>&1; then cat /tmp/c7-check.log; else
+              cat /tmp/c7-check.log
+              python3 - <<'PYDIAG'
+          from pathlib import Path
+          text=Path('/tmp/c7-check.log').read_text(errors='replace')[-7000:]
+          print('::error title=C7 regression::'+text.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
+          PYDIAG
+              return 1
+            fi
+          }
+          check flutter analyze
+          check flutter test
+          check flutter test test/c7_effective_catalog_test.dart test/c7_physical_catalog_test.dart --dart-define=ROCHA_FULL_UI_LAB=true
+      - name: Require unchanged dedicated LAB signing
+        env:
+          ROCHA_LAB_BUNDLE_JSON: ${{ secrets.ROCHA_LAB_BUNDLE_JSON }}
+          LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+        run: python3 tools/lab/configure_stable_signing.py
+      - name: Build exactly one LAB APK after checks
+        # Universal preserves the tested APK's supported ABIs; the physical
+        # device ABI has not been supplied. No silent ARM64-only restriction.
+        run: flutter build apk --debug --build-number=$((738 + GITHUB_RUN_NUMBER)) --dart-define=ROCHA_FULL_UI_LAB=true
+      - name: Verify package, original certificate and exact APK contents
+        run: |
+          set -euo pipefail
+          mkdir -p build/qa
+          TOOLS_DIR="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          "$TOOLS_DIR/apksigner" verify --print-certs "$APK" > build/qa/certificate.txt
+          grep -i 'certificate SHA-256 digest: 5345c8a438838c297ee4925ec732555b8a47295992a188cc1fa53cd5c9e3f796' build/qa/certificate.txt
+          "$TOOLS_DIR/aapt" dump badging "$APK" > build/qa/package.txt
+          grep "^package: name='com.rochaplus.app.labc7'" build/qa/package.txt
+          python3 tools/report_apk_certificate.py "$APK" "$TOOLS_DIR/apksigner"
+          python3 tools/c7_apk_evidence.py "$APK" build/qa/apk-size.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-candidata7-physical-lab
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/qa/
+            docs/lab/c7-fisico-20261108/
+          if-no-files-found: error

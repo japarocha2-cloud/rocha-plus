@@ -6,7 +6,7 @@ import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'src/app.dart';
 import 'src/cast/cast_readiness.dart';
 import 'src/screens/lab_entry_screen.dart';
-import 'src/screens/home_screen.dart';
+import 'src/full_ui_lab_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,6 @@ Future<void> main() async {
   const fullUiLab = bool.fromEnvironment('ROCHA_FULL_UI_LAB', defaultValue: false);
   assert(!(labOnly && fullUiLab), 'Choose one LAB entry mode');
   runApp(fullUiLab
-      ? MaterialApp(title: 'Rocha+ LAB', debugShowCheckedModeBanner: false,
-          home: const HomeScreen(laboratoryFeatures: true))
+      ? const RochaFullUiLabApp()
       : labOnly ? const RochaLabApp() : const RochaPlusApp());
 }
