@@ -27,6 +27,12 @@ jobs:
                   print('::error title=Test failure '+directory+'::'+detail)
                   sys.exit(result.returncode)
           PY
+      - name: Ensure MP4 inspection tool is available
+        run: |
+          if ! command -v ffprobe; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
       - name: Inventory tracked snapshot without mutations
         run: |
           python3 tools/audit/inventory.py --ref HEAD --output /tmp/cleanup-inventory.json
@@ -34,6 +40,9 @@ jobs:
           import json
           rows=json.load(open('/tmp/cleanup-inventory.json'))
           assert rows and rows[0]['files']
+          for failure in rows[0]['formatFailures']:
+              detail=json.dumps(failure).replace('%','%25').replace('\n','%0A')
+              print('::error title=Format validation::'+detail)
           assert not rows[0]['formatFailures'], rows[0]['formatFailures']
           PY
           git diff --exit-code
