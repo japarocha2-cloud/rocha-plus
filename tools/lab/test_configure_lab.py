@@ -19,6 +19,9 @@ class LabConfigurationTest(unittest.TestCase):
             asset = root / 'branding/lab_candidates.json'
             asset.parent.mkdir()
             asset.write_text(json.dumps([{'url': 'http://example.com/live'}]))
+            security = root / 'android/app/src/main/res/xml/rocha_network_security.xml'
+            security.parent.mkdir(parents=True)
+            security.write_text('<network-security-config><domain-config cleartextTrafficPermitted="true"><domain>reviewed.example</domain></domain-config></network-security-config>')
             configure_lab(root)
             configure_lab(root)
             bridge = root / 'android/app/src/debug/kotlin/com/rochaplus/app/LabActivity.kt'
@@ -31,8 +34,8 @@ class LabConfigurationTest(unittest.TestCase):
             self.assertNotIn('open open', main.read_text())
             debug = root / 'android/app/src/debug/res/xml/rocha_network_security.xml'
             config = ET.parse(debug).getroot()
-            self.assertEqual({x.text for x in config.findall('domain-config/domain')}, {'10.0.2.2', 'example.com'})
-            self.assertFalse((root / 'android/app/src/main/res/xml/rocha_network_security.xml').exists())
+            self.assertEqual({x.text for x in config.findall('domain-config/domain')}, {'10.0.2.2', 'example.com', 'reviewed.example'})
+            self.assertIn('reviewed.example', security.read_text())
 
 
 if __name__ == '__main__':
