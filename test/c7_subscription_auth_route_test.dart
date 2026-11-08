@@ -27,10 +27,12 @@ void main() {
     repository.changes.add(const AuthAccount(uid: 'verified-subject'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Verificar acesso'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Verificar acesso'));
     await tester.pumpAndSettle();
     expect(find.text('Acesso pago confirmado pelo servidor'), findsOneWidget);
     await tester.ensureVisible(find.text('Trocar conta'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Trocar conta'));
     await tester.pumpAndSettle();
     expect(find.text('Acesso pago confirmado pelo servidor'), findsNothing);
