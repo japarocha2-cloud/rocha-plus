@@ -1,0 +1,25 @@
+name: LAB cleanup reference regression
+on:
+  push:
+    branches: [lab/limpeza-roku-p0-20261108]
+permissions:
+  contents: read
+jobs:
+  references:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify corrected historical references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          count=0
+          for name in ['playback-investigation-20261103.md','playback-p0-20261103.md']:
+              source=Path('docs/roku/physical-package-rev4-20261103')/name
+              for target in re.findall(r'\]\((\.\./[^\s)]+)\)',source.read_text()):
+                  assert (source.parent/target.split('#')[0]).exists(), (source,target)
+                  count+=1
+          assert count==8, count
+          print('8 corrected links resolve')
+          PY

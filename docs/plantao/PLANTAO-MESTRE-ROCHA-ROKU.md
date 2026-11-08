@@ -485,3 +485,7 @@ Implementada tela de teste do player Roku com Play/Stop/Voltar, eventos e erros 
 ## P0 — 08/11/2026 — branch lab/p0-roku-20261108
 
 Continuidade da base dc63e32, sem reiniciar testes físicos anteriores. [Relatório e diff](../roku/p0-20261108/README.md): novo ZIP 0.6.11, CazéTV primeiro em Esportes, fonte Globo alinhada ao PR51, HISTORY preservada, categoria Não testados, correção BrightScript Trim(). Ordem P0 autoriza modo físico manual somente no sideload LAB; comerciais desligados. 607 IDs anteriores preservados, 1 adição, zero exclusões; 578 associações de capa preservadas. Validadores locais e empacotamento determinístico aprovados. Testes físicos ainda não executados. Próximo comando reproduzível: `node tools/package_roku_p0.mjs`; workflow isolado `roku-p0-package.yml`. Evidência de SHA/tamanho em `docs/roku/p0-20261108/package-evidence.json`. Commit e push serão registrados pelo histórico Git; não presumir CI remoto verde.
+
+## Limpeza inteligente P0 — 08/11/2026
+
+Branch isolada lab/limpeza-roku-p0-20261108, base 4f281e6. Corrigidos oito links relativos em dois relatórios históricos (um nível de diretório a mais). Destinos conferidos no Git; conteúdo das evidências, catálogos, capas e pacotes não alterado. Nenhuma exclusão. Inventário SHA-256 e relatório consolidado na branch lab/limpeza-inteligente-p0-20261108. Testes de referências locais e CI dedicado acompanham esta correção documental; não repetir testes físicos aprovados.

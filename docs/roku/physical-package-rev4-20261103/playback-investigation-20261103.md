@@ -15,7 +15,7 @@ CI: [run 41749761631 — success](https://github.com/japarocha2-cloud/rocha-plus
 
 ## Origem e qualidade das evidências dos 607 registros
 
-Fonte de inventário: [commercial-lab-merged.json](../../../../platforms/roku-lab-visual/catalog/commercial-lab-merged.json). O arquivo contém 607 IDs únicos e nomes.
+Fonte de inventário: [commercial-lab-merged.json](../../../platforms/roku-lab-visual/catalog/commercial-lab-merged.json). O arquivo contém 607 IDs únicos e nomes.
 
 | Origem/classificação encontrada no registro mesclado | Qtde | O que comprova | O que não comprova |
 |---|---:|---|---|
@@ -44,10 +44,10 @@ Nenhum URL direto, query string ou possível token do catálogo é reproduzido n
 
 ## Gate e arquivos examinados
 
-- [Configuração de requisitos da allowlist](../../../../experiments/roku-readiness/physical-channel-lab.example.json): `enabled:false`; host não configurado; `approvedForPhysicalTest: []`; playback comercial desligado.
+- [Configuração de requisitos da allowlist](../../../experiments/roku-readiness/physical-channel-lab.example.json): `enabled:false`; host não configurado; `approvedForPhysicalTest: []`; playback comercial desligado.
 - [Matriz de canais bloqueados](blocked-playback-channels.csv): 607/607 e campos de evidência faltantes.
-- [Código do catálogo e avaliação](../../../../platforms/roku-lab-visual/components/HomeScene.brs) e [navegador de canais](../../../../platforms/roku-lab-visual/components/ChannelBrowser.brs): REV4 permite navegação/avaliação; os controles de imagem, áudio e travamentos permanecem bloqueados sem playback permitido.
-- [Manifesto de benchmark](../../../../platforms/roku-lab-visual/catalog/benchmark-manifest.json): 788 linhas-fonte no arquivo original, com deteções históricas; declara explicitamente `roku_playback_verified:false` e `public_release_approved:false`.
+- [Código do catálogo e avaliação](../../../platforms/roku-lab-visual/components/HomeScene.brs) e [navegador de canais](../../../platforms/roku-lab-visual/components/ChannelBrowser.brs): REV4 permite navegação/avaliação; os controles de imagem, áudio e travamentos permanecem bloqueados sem playback permitido.
+- [Manifesto de benchmark](../../../platforms/roku-lab-visual/catalog/benchmark-manifest.json): 788 linhas-fonte no arquivo original, com deteções históricas; declara explicitamente `roku_playback_verified:false` e `public_release_approved:false`.
 - [Build e validação REV4](README.md): 607 navegáveis, 578 associações de capa, CI/fixtures, hash e ZIP. CI não é teste de reprodução.
 
 ## O que falta para desbloquear algum canal com segurança
