@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install image validator
-        run: python3 -m pip install Pillow==13.0.0
+        run: python3 -m pip install Pillow==13.0.0 numpy
       - name: Verify audit behavior and existing Android tooling
         run: |
           python3 - <<'PY'

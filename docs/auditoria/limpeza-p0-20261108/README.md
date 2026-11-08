@@ -44,3 +44,7 @@ Imports/exports/parts Dart relativos e caminhos literais Roku pkg:/ foram resolv
 A lista completa `noTextualReferenceCandidates` no inventário é triagem, não prova de arquivo morto. No Android C7: `lib/src/ads/ad_campaign.dart` (AdCampaign/AdPlacement) e `lib/src/screens/news_screen.dart` (NewsScreen) não têm callers encontrados; NewsScreen delega a LiveTvScreen. Preservar até decisão sobre funcionalidade futura/consumidores externos. Outras revisões também apresentam ad_metrics_repository e manifests/componentes de plataforma; estes foram preservados por uso implícito ou histórico.
 
 Nenhuma exclusão definitiva será feita sem autorização específica. Antes de propor remoção: confirmar consumidores externos/dinâmicos, plano funcional e rollback por arquivo. Não pedir reaprovação dos catálogos como requisito de limpeza. Nenhum merge, deploy ou publicação realizado.
+
+## Acompanhamento CI
+
+Links Roku aprovados: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/42526074314 (commit 6ccbf96). As primeiras execuções do inventário falharam por NumPy ausente no runner dos testes de preflight; o diagnóstico confirmou ModuleNotFoundError, não defeito de produto. Dependência adicionada ao workflow sem relaxar testes. O scanner e a regressão documental não alteram código Flutter, portanto não se recompilam APKs nem se repetem testes físicos nesta etapa.
