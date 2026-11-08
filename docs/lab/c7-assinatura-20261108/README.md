@@ -39,3 +39,9 @@ A rotina de períodos existente aceita, em fixture verificada, mensal de 20/10/2
 Não se gera APK rotulado como consulta funcional enquanto faltarem prova autenticada, vínculo correto de identidade/direito e configuração compatível C7. Um APK com flags/URL preenchidos sem essa prova repetiria a falha anterior. O último APK C7 continua preservado. A ordem permanece aberta; o CI desta branch demonstra apenas prontidão do código e testes de fixtures, não homologação do servidor.
 
 Próximas ações: acesso seguro somente leitura e rede para os diagnósticos já existentes; conferir vínculo por subject/UID, ledger e trialStartedAt; confirmar OAuth .labc7 e certificado; validar a consulta autenticada sem inicializar novo trial ou reconciliar produção; testar checkout com contas/credenciais sandbox já existentes; só então preparar o build LAB com configuração comprovada e medições de pacote/tamanho/hash/certificado. Nenhum valor secreto deve ser enviado no chat.
+
+## Configuração existente confirmada no CI
+
+O preflight de 42534779256 confirmou, sem revelar valores: bundle LAB válido, configuração Firebase LAB presente e projeto de homologação correto; credenciais de leitura oficial, conta recebedora e sandbox vinculadas nos Secrets GitHub. Não solicitar cadastro duplicado desses secrets. Entretanto, c7PackageClientPresent=false e c7CertificateRegistered=false: o JSON disponível não contém cliente .labc7, portanto não comprova OAuth para o certificado desse pacote. webOAuthClientPresent=false refere-se ao cliente C7 ausente, não prova ausência global de um OAuth Web no projeto.
+
+Acesso seguro dessas credenciais no runtime e domínios de rede ainda faltam; presença de secret no CI não prova IAM nem consulta autenticada bem-sucedida. A rota nova distingue sessão ausente de endpoint não configurado, sem apresentar o usuário como inadimplente.

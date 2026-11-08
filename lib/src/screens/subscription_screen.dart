@@ -153,9 +153,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                                 ),
                               ] else ...[
                                 const SizedBox(height: 12),
-                                const Text(
-                                  'A consulta da assinatura ainda não está disponível nesta versão.',
-                                ),
+                                Text(widget.accountUid == null
+                                    ? 'Entre com sua conta para consultar sua assinatura.'
+                                    : 'O serviço de consulta não está configurado neste aplicativo.'),
                               ],
                             ],
                           ),
