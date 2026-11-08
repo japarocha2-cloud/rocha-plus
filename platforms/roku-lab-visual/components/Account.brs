@@ -3,6 +3,7 @@ sub initAccount()
  m.authorized = false
  m.labMode = false
  m.visualLabOnly = false
+ m.physicalLabManual = false
  m.authGeneration = 1
  m.authBusy = false
  m.billingClock = CreateObject("roTimespan")
@@ -23,6 +24,7 @@ sub initAccount()
  if initCentralAccess() then return
  if initLabAccess() then return
  if activateVisualOnlyLabAccess() then return
+ if activateManualPhysicalLabAccess() then return
  if activatePhysicalLabAccess() then return
  if type(m.authConfig) <> "roAssociativeArray"
   accountMessage("Conexão à conta indisponível.")
@@ -291,6 +293,7 @@ sub checkBilling()
  accountRequest("billing",m.authConfig.billingEndpoint,FormatJson({action:"status"}),m.idToken,"application/json")
 end sub
 function hasBillingAccess() as boolean
+ if m.physicalLabManual = true then return m.authorized
  if m.visualLabOnly = true then return true
  return m.authorized and m.billingLifetime > m.billingClock.TotalMilliseconds()
 end function
@@ -401,6 +404,28 @@ function activatePhysicalLabAccess() as Boolean
  m.top.findNode("accountPanel").visible = false
  m.top.findNode("accountCode").text = ""
  m.status.text = "LAB FÍSICO • acesso temporário • sem assinatura comercial"
+ m.top.setFocus(true)
+ return true
+end function
+
+' Explicit P0 sideload configuration only; never a commercial entitlement.
+function activateManualPhysicalLabAccess() as Boolean
+ cfg = ParseJson(ReadAsciiFile("pkg:/config/physical-lab-access.json"))
+ if type(cfg) <> "roAssociativeArray" then return false
+ if cfg.mode <> "physical_test_manual" or cfg.playbackEnabled <> true then return false
+ if cfg.scope <> "roku_lab_only" then return false
+ for each name in ["auth", "central-access", "lab-access"]
+  integration = ParseJson(ReadAsciiFile("pkg:/config/" + name + ".json"))
+  if type(integration) <> "roAssociativeArray" then return false
+  if integration.enabled <> false then return false
+ end for
+ m.physicalLabManual = true
+ m.visualLabOnly = false
+ m.authorized = true
+ m.authStage = "lab_physical_manual"
+ m.top.findNode("accountPanel").visible = false
+ m.top.findNode("accountCode").text = ""
+ m.status.text = "LAB FÍSICO • avaliação manual • sem cobrança"
  m.top.setFocus(true)
  return true
 end function

@@ -10,12 +10,12 @@ const catalog = JSON.parse(await fs.readFile(path.join(lab, 'catalog/commercial-
 const coverMap = JSON.parse(await fs.readFile(path.join(lab, 'config/cover-map.json'), 'utf8'));
 const access = JSON.parse(await fs.readFile(path.join(lab, 'config/physical-lab-access.json'), 'utf8'));
 const fixture = JSON.parse(await fs.readFile(path.join(lab, 'config/playback-fixture.json'), 'utf8'));
-assert.equal(catalog.length, 607);
-assert.equal(new Set(catalog.map(c => c.id)).size, 607);
+assert.equal(catalog.length, 608);
+assert.equal(new Set(catalog.map(c => c.id)).size, 608);
 assert.equal(Object.keys(coverMap).length, 578);
-assert.equal(access.mode, 'visual_only');
-assert.equal(access.playbackEnabled, false);
-assert.deepEqual(access.channelAllowlist, []);
+assert.equal(access.mode, 'physical_test_manual');
+assert.equal(access.playbackEnabled, true);
+assert.equal(access.scope, 'roku_lab_only');
 assert.equal(fixture.enabled, true);
 assert.equal(fixture.mode, 'roku_documentation_sample');
 assert.equal(fixture.scope, 'player_fixture_only');
@@ -41,4 +41,4 @@ for (const marker of ['sub queuePreview()', 'sub onPreviewDebounce()', 'sub star
   const i = browser.indexOf(marker);
   assert(i >= 0 && browser.slice(i, i + 900).includes('if m.visualLabOnly = true'), 'catalog gate changed: ' + marker);
 }
-console.log(JSON.stringify({test:'playback fixture isolation',passed:21,catalog:607,covers:578,catalogPlaybackAllowed:false}));
+console.log(JSON.stringify({test:'playback fixture isolation',passed:21,catalog:608,covers:578,catalogPlaybackAllowed:true}));

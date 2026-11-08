@@ -1,0 +1,29 @@
+name: Roku P0 isolated LAB package
+on:
+  push:
+    branches: [lab/p0-roku-20261108]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate BrightScript and SceneGraph
+        run: npx --yes brighterscript@0.73.8 --cwd platforms/roku-lab-visual --root-dir . --files '**/*' --create-package false --copy-to-staging false --diagnostic-level error
+      - name: Verify player fixture and physical LAB configuration
+        run: node tests/roku-visual/playback-fixture.test.mjs
+      - name: Package, check preservation, CRC and repeatability
+        run: node tools/package_roku_p0.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RochaPlus-Roku-LAB-P0-0.6.11
+          path: |
+            build/RochaPlus-Roku-LAB-P0-0.6.11-20261108.zip
+            docs/roku/p0-20261108/package-evidence.json
+            docs/roku/p0-20261108/catalog-diff.json
+          if-no-files-found: error

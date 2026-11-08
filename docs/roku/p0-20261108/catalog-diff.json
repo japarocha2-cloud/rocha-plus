@@ -1,0 +1,25 @@
+{
+  "beforeSha256": "1883b95d04a84747963ebdfc06985ff871f4aa257660fa3929fb66afd92504b6",
+  "afterSha256": "f3047ab887612e374f31519e2165cdae33eb12a41bb0924848de329f1beab88a",
+  "before": 607,
+  "after": 608,
+  "added": [
+    {
+      "id": "lab-cazetv-20261108",
+      "name": "CazéTV",
+      "positionInSports": 1
+    }
+  ],
+  "changed": [
+    {
+      "id": "8cfb1575ec9cbf69",
+      "name": "Globo",
+      "changed": [
+        "url"
+      ],
+      "source": "PR51 channel_repository.dart; physical test pending on this ZIP"
+    }
+  ],
+  "removed": [],
+  "historicalDecisionsChanged": false
+}

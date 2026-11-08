@@ -481,3 +481,7 @@ Implementada tela de teste do player Roku com Play/Stop/Voltar, eventos e erros 
 - Imagem/áudio no hardware permanecem pendentes. A fixture valida somente o caminho do player Roku e **não valida os 607 streams**. Nenhuma reprodução de canal está liberada.
 
 [Relatório REV5](../roku/playback-fixture-rev5-20261103/README.md). Sem merge, deploy, publicação, alteração de produção, direitos, pagamentos ou aplicativos oficiais.
+
+## P0 — 08/11/2026 — branch lab/p0-roku-20261108
+
+Continuidade da base dc63e32, sem reiniciar testes físicos anteriores. [Relatório e diff](../roku/p0-20261108/README.md): novo ZIP 0.6.11, CazéTV primeiro em Esportes, fonte Globo alinhada ao PR51, HISTORY preservada, categoria Não testados, correção BrightScript Trim(). Ordem P0 autoriza modo físico manual somente no sideload LAB; comerciais desligados. 607 IDs anteriores preservados, 1 adição, zero exclusões; 578 associações de capa preservadas. Validadores locais e empacotamento determinístico aprovados. Testes físicos ainda não executados. Próximo comando reproduzível: `node tools/package_roku_p0.mjs`; workflow isolado `roku-p0-package.yml`. Evidência de SHA/tamanho em `docs/roku/p0-20261108/package-evidence.json`. Commit e push serão registrados pelo histórico Git; não presumir CI remoto verde.

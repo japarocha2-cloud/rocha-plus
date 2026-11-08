@@ -5,7 +5,7 @@ sub init()
   m.categoryIndex = 0
   m.homeFavoriteFocus = false
   m.homeFavoriteIndex = 0
-  m.categoryNames = ["Geral", "TV ao Vivo", "Esportes", "Notícias", "Infantil", "Filmes", "Séries", "Documentários", "Educação", "Cultura", "Comédia", "Culinária", "Entretenimento", "Música", "Religiosos", "Estilo de Vida", "Vida ao Ar Livre", "Viagens", "PET", "Futebol", "Outros"]
+  m.categoryNames = ["Geral", "TV ao Vivo", "Esportes", "Notícias", "Infantil", "Filmes", "Séries", "Documentários", "Educação", "Cultura", "Comédia", "Culinária", "Entretenimento", "Música", "Religiosos", "Estilo de Vida", "Vida ao Ar Livre", "Viagens", "PET", "Futebol", "Outros", "Não testados"]
   m.status = m.top.findNode("status")
   m.loadedCount = 0
   m.channels = []
@@ -235,7 +235,14 @@ sub refreshVisibleChannels()
   visible = []
   for each c in m.allChannels
     searchOk = (not m.searchMode or instr(1, lcase(c.name), lcase(m.searchTerm)) > 0)
-    if (m.activeCategory = "" or categoryOf(c) = m.activeCategory) and (not m.favoritesOnly or isFavorite(c.id)) and (m.showRemoved or not isRemoved(c.id)) and searchOk then visible.push(c)
+    categoryMatches = (m.activeCategory = "" or categoryOf(c) = m.activeCategory)
+    if m.activeCategory = "Não testados"
+      evidence = c.evidence
+      tested = false
+      if type(evidence) = "roAssociativeArray" then tested = (evidence.roku_playback_verified = true)
+      categoryMatches = not tested
+    end if
+    if categoryMatches and (not m.favoritesOnly or isFavorite(c.id)) and (m.showRemoved or not isRemoved(c.id)) and searchOk then visible.push(c)
   end for
   m.channels = visible
   m.channelRevision = m.channelRevision + 1
@@ -519,7 +526,7 @@ end sub
 function streamFormatForChannel(c as Object) as String
   if type(c) <> "roAssociativeArray" then return ""
   if type(c.streamFormat) = "roString" or type(c.streamFormat) = "String"
-    supplied = lcase(trim(c.streamFormat))
+    supplied = lcase(c.streamFormat.Trim())
     if supplied = "hls" or supplied = "mp4" or supplied = "dash" or supplied = "ism" or supplied = "mkv" then return supplied
   end if
   if type(c.url) <> "roString" and type(c.url) <> "String" then return ""

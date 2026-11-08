@@ -116,6 +116,7 @@ sub renderChannelState()
       end if
       slot.hint.text = "AUTORIZAÇÃO PENDENTE"
       if m.visualLabOnly <> true then slot.hint.text = "ACESSO NÃO VERIFICADO"
+      if m.physicalLabManual = true then slot.hint.text = "LAB FÍSICO • NÃO TESTADO"
       if isRemoved(entry.id) then
         slot.hint.text = "REMOVIDO • auditoria"
       else
