@@ -33,7 +33,7 @@ def configure_lab(root):
             MethodChannel(engine.dartExecutor.binaryMessenger, "com.rochaplus.app/lab")
                 .setMethodCallHandler { call, result ->
                 android.util.Log.i("RochaLab", "method=${call.method}")
-                    if (!packageName.endsWith(".lab")) {
+                    if (!(packageName.endsWith(".lab") || packageName.endsWith(".labc7") || packageName.endsWith(".labcazetv"))) {
                         result.error("LAB_ONLY", "Debug laboratory required", null)
                     } else if (call.method == "directory") {
                         val run = intent.getStringExtra("lab_run") ?: "manual"

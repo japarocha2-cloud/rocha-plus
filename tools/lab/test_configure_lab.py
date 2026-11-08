@@ -21,6 +21,8 @@ class LabConfigurationTest(unittest.TestCase):
             asset.write_text(json.dumps([{'url': 'http://example.com/live'}]))
             configure_lab(root)
             configure_lab(root)
+            bridge = root / 'android/app/src/debug/kotlin/com/rochaplus/app/LabActivity.kt'
+            self.assertIn('packageName.endsWith(".labc7")', bridge.read_text())
             text = manifest.read_text()
             self.assertIn('android:name="flutterEmbedding"', text)
             self.assertIn('android:value="2"', text)
