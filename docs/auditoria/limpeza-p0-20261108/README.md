@@ -48,3 +48,9 @@ Nenhuma exclusão definitiva será feita sem autorização específica. Antes de
 ## Acompanhamento CI
 
 Links Roku aprovados: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/42526074314 (commit 6ccbf96). As primeiras execuções do inventário falharam por NumPy ausente no runner dos testes de preflight; o diagnóstico confirmou ModuleNotFoundError, não defeito de produto. Dependência adicionada ao workflow sem relaxar testes. O scanner e a regressão documental não alteram código Flutter, portanto não se recompilam APKs nem se repetem testes físicos nesta etapa.
+
+### Resultado confirmado
+
+CI do inventário/testes aprovado no código 4a6995d: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/42526479510 — 30 segundos, artefato cleanup-inventory. Além de NumPy, o runner prepara ffprobe quando ausente para executar a inspeção MP4; não se suprime nenhuma falha de formato. CI dos oito links Roku aprovado: https://github.com/japarocha2-cloud/rocha-plus/actions/runs/42526074314. Falhas anteriores de configuração de runner foram superadas, não tratadas como defeitos do produto.
+
+Balanço: oito referências corrigidas; zero exclusões; duplicados e candidatos de uso incerto preservados; nenhuma alteração funcional Android/Roku/Web TV. Nenhuma remoção foi autorizada ou executada. Pendências limitam-se à decisão funcional sobre candidatos sem callers e à validação de consumidores dinâmicos/externos antes de qualquer proposta de remoção. Ausência de evidência de uso não autoriza exclusão.
