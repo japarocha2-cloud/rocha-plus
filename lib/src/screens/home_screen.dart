@@ -1,3 +1,4 @@
+import 'lab_subscription_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -233,7 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => SubscriptionScreen(accountUid: widget.accountUid),
+                builder: (_) => widget.laboratoryFeatures
+                    ? const LabSubscriptionScreen()
+                    : SubscriptionScreen(accountUid: widget.accountUid),
               ),
             );
           },

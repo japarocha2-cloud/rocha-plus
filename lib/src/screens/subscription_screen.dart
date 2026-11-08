@@ -7,9 +7,10 @@ import '../theme/rocha_theme.dart';
 /// Account access is checked by the backend, never inferred from a plan card.
 class SubscriptionScreen extends StatefulWidget {
   final String? accountUid;
+  final Widget? accountActions;
   final Future<SubscriptionAccessResult?> Function(String)? verifyAccess;
 
-  const SubscriptionScreen({super.key, this.accountUid, this.verifyAccess});
+  const SubscriptionScreen({super.key, this.accountUid, this.verifyAccess, this.accountActions});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -108,6 +109,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (widget.accountActions != null) widget.accountActions!,
                       Text('Rocha+ • Assinaturas',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
