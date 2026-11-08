@@ -51,13 +51,16 @@ jobs:
               cat /tmp/c7-query-check.log
               python3 - <<'PYDIAG'
           from pathlib import Path
-          text=Path('/tmp/c7-query-check.log').read_text(errors='replace')[-6000:]
+          text=Path('/tmp/c7-query-check.log').read_text(errors='replace')
+          start=text.find('EXCEPTION CAUGHT')
+          text=text[max(0,start-100):start+4800]+'\n'+text[-900:] if start>=0 else text[-6000:]
           print('::error title=C7 query regression::'+text.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
           PYDIAG
               return 1
             fi
           }
           check flutter analyze
+          check flutter test test/c7_subscription_auth_route_test.dart
           check flutter test
       # No binary pretending to support real queries is produced here.
       # Authenticated query, C7 OAuth registration and compatible server binding
