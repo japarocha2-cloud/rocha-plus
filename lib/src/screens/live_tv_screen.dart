@@ -202,8 +202,8 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
         })
         .toList(growable: false);
 
-    final ordered = widget.laboratoryFeatures
-        ? (C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(visible) : popularChannelsFirst(visible))
+    final ordered = widget.laboratoryFeatures && !C7CatalogPolicy.enabled
+        ? popularChannelsFirst(visible)
         : visible;
 
     return Scaffold(

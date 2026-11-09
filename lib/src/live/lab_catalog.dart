@@ -62,5 +62,5 @@ Future<List<Channel>> loadLabCatalog() async {
   }
   final selected = channels.skip(offset);
   final result = (limit > 0 ? selected.take(limit) : selected).toList();
-  return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(result) : result;
+  return result;
 }

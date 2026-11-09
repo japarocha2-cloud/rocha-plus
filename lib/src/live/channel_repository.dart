@@ -96,7 +96,7 @@ class ChannelRepository {
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
         .toList(growable: false);
-    return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(filtered) : _orderSportsFirst(filtered);
+    return C7CatalogPolicy.enabled ? filtered : _orderSportsFirst(filtered);
   }
 
   static void resetSessionHealthForTests() {
@@ -108,7 +108,7 @@ class ChannelRepository {
   }
 
   List<Channel> _withoutSessionFailures(Iterable<Channel> channels) =>
-      (C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(channels) : channels)
+      channels
           .where((channel) => !_isPermanentlyBlocked(channel))
           .toList(growable: false);
 

@@ -85,6 +85,6 @@ class ValidatedLabRepository extends ChannelRepository {
       }
     }
     final result = popularChannelsFirst(channels.values);
-    return C7CatalogPolicy.enabled ? C7CatalogPolicy.apply(result) : result;
+    return result;
   }
 }
