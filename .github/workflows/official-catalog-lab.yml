@@ -28,6 +28,7 @@ jobs:
           python3 -m unittest discover -s tools/official_catalog -p 'test_*.py' -v
           python3 -m unittest discover -s tools/c7_catalog -p 'test_*.py' -v
           python3 -m unittest discover -s tools -p 'test_configure_android.py' -v
+          python3 -m unittest discover -s tools -p 'test_quality_guard.py' -v
           python3 -m unittest discover -s tools/lab -p 'test_configure_lab.py' -v
           python3 -m unittest discover -s tools/lab -p 'test_stable_signing.py' -v
       - name: Roku BrightScript and SceneGraph compilation without ZIP
