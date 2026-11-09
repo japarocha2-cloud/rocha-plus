@@ -24,6 +24,9 @@ class ChannelRepository {
     const streams = <String, String>{
       'cazetv': 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
       'globo': 'http://79.127.238.228:14173/',
+      // The remote catalogue labels the same national feed as Rede Globo.
+      // channelIdentity strips resolution suffixes, e.g. (1080p).
+      'rede globo': 'http://79.127.238.228:14173/',
       'history (brazil)': 'http://170.83.16.50/HISTORY/index.m3u8',
       'tv ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
       'ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
