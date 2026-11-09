@@ -69,7 +69,7 @@ class SelectionTests(unittest.TestCase):
         rows=[{'id':'a','name':'A','url':'https://example.test/a'}]
         self.apply(rows,apply=False)
         self.assertFalse((self.store/'HEAD.json').exists())
-        for value in [rows*2,[dict(rows[0],url='file:///private')],[dict(rows[0],url='https://user:pass@example.test/a')]]:
+        for value in [rows*2,[dict(rows[0],url='file:///private')],[dict(rows[0],url='https://user:pass@example.test/a')],[dict(rows[0],url='https://:@example.test/a')],[dict(rows[0],url='https://example.test:wrong/a')]]:
             with self.assertRaises(ValueError):self.apply(value)
         self.assertFalse((self.store/'HEAD.json').exists())
     def test_authorized_removals_are_archived_not_reinstated(self):

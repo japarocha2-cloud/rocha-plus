@@ -40,7 +40,8 @@ def normalize(rows,old):
     for r in rows:
         if not isinstance(r,dict) or not isinstance(r.get('name'),str) or not r['name'].strip():raise ValueError('invalid channel name')
         uri=urlsplit(r.get('url',''))
-        if uri.scheme not in ('http','https') or not uri.hostname or uri.username or uri.password or any(c.isspace() for c in r['url']):raise ValueError('invalid channel URL')
+        if uri.scheme not in ('http','https') or not uri.hostname or uri.username is not None or uri.password is not None or any(c.isspace() for c in r['url']):raise ValueError('invalid channel URL')
+        if uri.port is not None and not 1<=uri.port<=65535:raise ValueError('invalid channel port')
         row=dict(r)
         if any(r.get(k) is not None and not isinstance(r[k],str) for k in ('logo','preferredEngine')):raise ValueError('invalid channel metadata')
         if 'genres' in r and (not isinstance(r['genres'],list) or not all(isinstance(g,str) for g in r['genres'])):raise ValueError('invalid genres')
