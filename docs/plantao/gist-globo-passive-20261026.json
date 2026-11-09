@@ -1,0 +1,42 @@
+{
+  "globo": [
+    {
+      "name": "GLOBO 1",
+      "protocol": "http",
+      "authenticationParameters": []
+    },
+    {
+      "name": "GLOBO 2",
+      "protocol": "http",
+      "authenticationParameters": [
+        "pxAuth"
+      ]
+    },
+    {
+      "name": "GLOBO NORDESTE1",
+      "protocol": "http",
+      "authenticationParameters": [
+        "pxAuth"
+      ]
+    }
+  ],
+  "sbt": [
+    {
+      "name": "SBT",
+      "protocol": "http",
+      "authenticationParameters": [
+        "wmsAuthSign"
+      ],
+      "tokenServerTime": [
+        "2/22/2018 5:36:26 PM"
+      ],
+      "tokenValidityMinutes": [
+        "20"
+      ]
+    }
+  ],
+  "tvMorenaPresent": false,
+  "playbackTest": "blocked_by_automatic_review_not_executed",
+  "distributionPermission": "not_documented_in_gist",
+  "productionApproved": false
+}

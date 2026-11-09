@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "index.category.m3u": {
+      "entries": 12067,
+      "sha256": "5845f0ec73114bca16d9e470a5db8f72871d613a0869df7122676d0ef74c2871"
+    },
+    "index.language.m3u": {
+      "entries": 12837,
+      "sha256": "47a76df25c52d245b4973a8220887f4d1eaebd9f6c81dd47e6d7c88e9d1ec763"
+    },
+    "index.country.m3u": {
+      "entries": 12884,
+      "sha256": "7648a1d3b0e5871460e5cd354d6d6f2877e7e166664dad73dcc3de1a560055d6"
+    },
+    "categories/movies.m3u": {
+      "entries": 798,
+      "sha256": "ab70d16aa38a6c069cb9bdcd03b4fb58ab8458d0415a03b0e902546ba693605f"
+    },
+    "categories/music.m3u": {
+      "entries": 780,
+      "sha256": "ed5c3fb367c3bee3d4f8accf9dd25b14e77345f4a8d36f513ef997c1089ce57d"
+    },
+    "categories/kids.m3u": {
+      "entries": 431,
+      "sha256": "1472d57d6cb13f22b5117aea51921be9db157dc6f128aad20bc4ea07917f7c73"
+    },
+    "categories/documentary.m3u": {
+      "entries": 273,
+      "sha256": "1cd066a95cfc1114de4ba02f77d3ceb5f3de5ee8a1dcf35de7e1bfefbc9f3489"
+    },
+    "categories/news.m3u": {
+      "entries": 1015,
+      "sha256": "e45cde1dfcd85846fee16c983dfc3e4656e2b3fca04f61f5bf6e2f30357f8605"
+    },
+    "categories/entertainment.m3u": {
+      "entries": 906,
+      "sha256": "9813b702877d312ceb4fe585f91a5ac43f2855000e003f774c3127f3efd36b25"
+    },
+    "categories/general.m3u": {
+      "entries": 2752,
+      "sha256": "cfc25640f02f0facb4bb3b7fbe9a931037571c7ac374c6d8096043bdd0f91e52"
+    },
+    "categories/sports.m3u": {
+      "entries": 482,
+      "sha256": "373d3025fa30be3b64e80bc5959b2eecb94677f67fd64206ec7e1e710bfc9d20"
+    },
+    "languages/eng.m3u": {
+      "entries": 3031,
+      "sha256": "e2cb1a25be40c5a13c1fa364ecea7d337a67ea7dba311828fdd149d8dbee90fe"
+    },
+    "languages/zho.m3u": {
+      "entries": 214,
+      "sha256": "6b871f0412fdabfaf1c4c18d8e40dc204a47a1810493832fa31c8f96af91419f"
+    },
+    "languages/spa.m3u": {
+      "entries": 2409,
+      "sha256": "054a72e7cc11291cddb63aafc4edab31e612489a1fe3c8ff89b0498679aa4548"
+    },
+    "languages/fra.m3u": {
+      "entries": 464,
+      "sha256": "cb379b7934f6fac21e07ec257108540aebead1009e654a07b53196cb50ce4d52"
+    },
+    "languages/ara.m3u": {
+      "entries": 354,
+      "sha256": "ff88133ff7d5581525d41ab5eae6c345883512df51c17d7f96582b98548c8478"
+    },
+    "languages/por.m3u": {
+      "entries": 476,
+      "sha256": "928191f7e5e58e3804194b73c542b33d4ebc1c38adfd1e24ca81c8b031be3efa"
+    },
+    "countries/us.m3u": {
+      "entries": 1481,
+      "sha256": "d1af6cd16298763be6d1db5b76f5e46983284072729b4746f51f90c8312ae65e"
+    },
+    "countries/uk.m3u": {
+      "entries": 301,
+      "sha256": "0c20520b1911eb9d441f7fe923be1af5b1fde0d7b7d4c9c1c205b6f6446adbd6"
+    },
+    "countries/ca.m3u": {
+      "entries": 264,
+      "sha256": "025860295616b66790f5f87ab3714d9d0dbcba671e76c8a0bb60bfcb297a1b32"
+    },
+    "countries/au.m3u": {
+      "entries": 75,
+      "sha256": "7f8b936cd2a216c91115243bfff26c6898818236180caaf2d7586bf17dbf53f4"
+    },
+    "countries/de.m3u": {
+      "entries": 290,
+      "sha256": "36cf3f9b82141b99ca265f8130395f1265cab64f61e235f6980a48150845b0bf"
+    },
+    "countries/fr.m3u": {
+      "entries": 214,
+      "sha256": "780313f672e491197603eecf13608becc55dbe569a0a389cda976d1eb26a26b5"
+    },
+    "countries/kr.m3u": {
+      "entries": 73,
+      "sha256": "14045f25628dc92f41cf0a54c09fc8d781f33c88ff11e4b5d153514df889d1e8"
+    },
+    "countries/br.m3u": {
+      "entries": 396,
+      "sha256": "a92e331233a574f2132a6a2c360554bff5c55aec09e50e2873e541d94b296bdf"
+    }
+  },
+  "summary": {
+    "rawEntries": 55267,
+    "uniqueUrls": 11366,
+    "duplicateOccurrences": 43901,
+    "eligibleUrls": 479,
+    "eligibleChannels": 479,
+    "newEligibleUrls": 77,
+    "blockedUrls": 11,
+    "tested": 0,
+    "approved": 0,
+    "categories": {
+      "Cultura": 3,
+      "Documentários": 10,
+      "Educação": 23,
+      "Entretenimento": 38,
+      "Esportes": 15,
+      "Filmes": 33,
+      "Futebol": 11,
+      "Infantil": 44,
+      "Música": 23,
+      "Notícias": 32,
+      "Outros": 93,
+      "Religiosos": 28,
+      "Séries": 26,
+      "TV ao Vivo": 100
+    }
+  },
+  "createdAt": "2026-10-20T00:54:00.056950+00:00",
+  "sourceFailures": {},
+  "complete": true,
+  "metadataSha256": "faf50042a69d88a3410346cc524d99051a1c75207d6c83649b01b96360715dea"
+}
