@@ -1,0 +1,4355 @@
+{
+  "projeto": "ROCHA+ TV",
+  "data_congelamento": "2026-11-08",
+  "tipo": "Referência oficial de catálogo congelada por decisão do proprietário; sem deploy",
+  "fonte": "21.10 rocha_lab_pc_resultados.json",
+  "sha256_fonte": "a8f522fb126b487eedd6545ed7b39b2fcb54d2d3addbbbe366c6bb0e61ac17ae",
+  "quantidade_base": 479,
+  "base_imutavel": true,
+  "politica": "Preservar os 479 registros sem exclusão ou reclassificação; correções e novos canais somente em camada separada. C6 e produção não alteradas.",
+  "canais": [
+    {
+      "nome": "Combate (720p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://143.14.134.107/167/index.m3u8",
+      "url_atual": "http://143.14.134.107/167/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Discovery Kids Latin America Brazil (720p) [Geo-blocked]",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://15.204.246.24:8080/DiscoveryKidsHD/index.m3u8",
+      "url_atual": "http://15.204.246.24:8080/DiscoveryKidsHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Discovery World Brazil (720p) [Geo-blocked]",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://15.204.246.24:8080/DiscoveryWorldHD/index.m3u8",
+      "url_atual": "http://15.204.246.24:8080/DiscoveryWorldHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Disney Channel Latin America (1080p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://15.204.246.24:8080/DisneyHD/index.m3u8",
+      "url_atual": "http://15.204.246.24:8080/DisneyHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TNT Latin America Brazil (720p) [Geo-blocked]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://15.204.246.24:8080/TNTHD/index.m3u8",
+      "url_atual": "http://15.204.246.24:8080/TNTHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Disney Channel (Portugal) (1080p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://151.80.18.177:86/Disney_Channel_HD/index.m3u8",
+      "url_atual": "http://151.80.18.177:86/Disney_Channel_HD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Adult Swim Latin America Brazil (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/ADULT_SWIM/index.m3u8",
+      "url_atual": "http://168.197.104.22/ADULT_SWIM/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Chef TV (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/CHEF_TV/index.m3u8",
+      "url_atual": "http://168.197.104.22/CHEF_TV/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Music Box Brazil (720p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/MUSIC/index.m3u8",
+      "url_atual": "http://168.197.104.22/MUSIC/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Familia (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/REDE_FAMILIA/index.m3u8",
+      "url_atual": "http://168.197.104.22/REDE_FAMILIA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Vida (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/REDE_VIDA/index.m3u8",
+      "url_atual": "http://168.197.104.22/REDE_VIDA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Travel Box Brazil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.197.104.22/TRAVEL_BOX_BRASIL/index.m3u8",
+      "url_atual": "http://168.197.104.22/TRAVEL_BOX_BRASIL/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede CNT Salvador (576i)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://168.205.87.198:8555/live/1368/123456/150.m3u8",
+      "url_atual": "http://168.205.87.198:8555/live/1368/123456/150.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "GNT (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.82.202.31/GNT/index.m3u8",
+      "url_atual": "http://170.82.202.31/GNT/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Off (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.82.202.31/OFF/index.m3u8",
+      "url_atual": "http://170.82.202.31/OFF/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Globoplay Novelas (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.82.202.31/Viva/index.m3u8",
+      "url_atual": "http://79.127.238.228:14455",
+      "atualizacao": "URL base; caminho de reprodução não confirmado",
+      "alterado": true
+    },
+    {
+      "nome": "AXN (Brazil) (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.16.50/AXN/index.m3u8",
+      "url_atual": "http://170.83.16.50/AXN/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "A&E Latin America Brazil (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.16.50/AeE/index.m3u8",
+      "url_atual": "http://170.83.16.50/AeE/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Lifetime Latin America Brazil (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.16.50/LIFETIME/index.m3u8",
+      "url_atual": "http://170.83.16.50/LIFETIME/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sony Channel (Brazil) (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.16.50/SONY_CHANNEL/index.m3u8",
+      "url_atual": "http://170.83.16.50/SONY_CHANNEL/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AMC Latin America Brazil (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.49.66:8083/AMCHD/index.m3u8",
+      "url_atual": "http://170.83.49.66:8083/AMCHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Box Kids TV (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.49.66:8083/BOXKIDSHD/index.m3u8",
+      "url_atual": "http://170.83.49.66:8083/BOXKIDSHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Rural (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.49.66:8083/CANALRURALHD/index.m3u8",
+      "url_atual": "http://170.83.49.66:8083/CANALRURALHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Futura (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.49.66:8083/FUTURAHD/index.m3u8",
+      "url_atual": "http://170.83.49.66:8083/FUTURAHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Jovem Pan News (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.83.49.66:8083/JOVEMPANNEWSHD/index.m3u8",
+      "url_atual": "http://170.83.49.66:8083/JOVEMPANNEWSHD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Band (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.84.165.204/BAND_HD/index.m3u8",
+      "url_atual": "http://170.84.165.204/BAND_HD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cultura Para (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.84.165.204/CANAL_21_HD/index.m3u8",
+      "url_atual": "http://170.84.165.204/CANAL_21_HD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Globo Sao Paulo (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.84.165.204/Globo_HD/index.m3u8",
+      "url_atual": "http://79.127.238.228:14173/",
+      "atualizacao": "URL base; caminho de reprodução não confirmado",
+      "alterado": true
+    },
+    {
+      "nome": "Record (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://170.84.165.204/Record_HD/index.m3u8",
+      "url_atual": "http://170.84.165.204/Record_HD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ESPN 4 (Brazil) (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://181.78.197.59:8000/play/a07n/index.m3u8",
+      "url_atual": "http://181.78.197.59:8000/play/a07n/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ESPN (Brazil) (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://181.78.197.59:8000/play/a07z/index.m3u8",
+      "url_atual": "http://181.78.197.59:8000/play/a07z/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Natal (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://185.228.163.146:8000/play/a01y/index.m3u8",
+      "url_atual": "http://185.228.163.146:8000/play/a01y/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Studio Universal Latin America Brazil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://187.102.210.46/universo/index.m3u8",
+      "url_atual": "http://187.102.210.46/universo/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MCM Pop (580p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://188.115.15.121:8000/play/a014",
+      "url_atual": "http://188.115.15.121:8000/play/a014",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AXN White (United States) Portugal (576p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://188.115.15.121:8000/play/a01u",
+      "url_atual": "http://188.115.15.121:8000/play/a01u",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AXN (Portugal) (1080p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://188.115.15.121:8000/play/a02z",
+      "url_atual": "http://188.115.15.121:8000/play/a02z",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Fish TV (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://190.128.214.97:64333/play/a006/index.m3u8",
+      "url_atual": "http://190.128.214.97:64333/play/a006/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ESPN 3 (Brazil) (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://190.83.2.182:8090/ESPN3/index.m3u8",
+      "url_atual": "http://190.83.2.182:8090/ESPN3/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SporTV 2 (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://195.178.110.110/sportv2/index.m3u8",
+      "url_atual": "http://195.178.110.110/sportv2/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SporTV 3 (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://195.178.110.110/sportv3/index.m3u8",
+      "url_atual": "http://195.178.110.110/sportv3/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Kuriakos Music (1080p)",
+      "categoria": "Música",
+      "status_historico": "Revisar PC",
+      "url_original": "http://195.23.211.179:1935/kmusic/smil:kmusic.smil/playlist.m3u8",
+      "url_atual": "http://195.23.211.179:1935/kmusic/smil:kmusic.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVM (Mozambique) (480p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://196.28.226.121:1935/live/smil:Channel1.smil/playlist.m3u8",
+      "url_atual": "http://196.28.226.121:1935/live/smil:Channel1.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Parana Turismo (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://200.189.113.201/hls/tve.m3u8",
+      "url_atual": "http://200.189.113.201/hls/tve.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Primer TV (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://200.194.238.229:8383/live/primer/playlist.m3u8",
+      "url_atual": "http://200.194.238.229:8383/live/primer/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Interior SP",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://200.77.176.130:8000/udp/224.0.0.4:49152",
+      "url_atual": "http://200.77.176.130:8000/udp/224.0.0.4:49152",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "JimJam Europe (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://212.5.144.156:8080/jimjam/index.m3u8",
+      "url_atual": "http://212.5.144.156:8080/jimjam/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Football (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://31.148.48.15/Futbol_HD/index.m3u8",
+      "url_atual": "http://31.148.48.15/Futbol_HD/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Tooncast (1080p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://38.134.250.110:8000/play/a01t/index.m3u8",
+      "url_atual": "http://38.134.250.110:8000/play/a01t/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "CCTV-Storm Football (1080p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub",
+      "url_atual": "http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Disney Channel Latin America Panregional HD (1080p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.134.141.161:2200/ARG/Disney_Channel/index.m3u8",
+      "url_atual": "http://45.134.141.161:2200/ARG/Disney_Channel/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AgroBrasil TV (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.230.234:1935/agrobrasiltv/agrobrasiltv/playlist.m3u8",
+      "url_atual": "http://45.162.230.234:1935/agrobrasiltv/agrobrasiltv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AgroMais (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/AGROMAIS/index.m3u8",
+      "url_atual": "http://45.162.64.114/AGROMAIS/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AgroCanal (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/AGRO_CANAL/index.m3u8",
+      "url_atual": "http://45.162.64.114/AGRO_CANAL/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Arte 1 (720p)",
+      "categoria": "Cultura",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/ARTE1/index.m3u8",
+      "url_atual": "http://45.162.64.114/ARTE1/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal do Boi (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/CANAL_DO_BOI/index.m3u8",
+      "url_atual": "http://45.162.64.114/CANAL_DO_BOI/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Educacao (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/CANAL_EDUCACAO/index.m3u8",
+      "url_atual": "http://45.162.64.114/CANAL_EDUCACAO/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Cancao Nova (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/CANCAO_NOVA/index.m3u8",
+      "url_atual": "http://45.162.64.114/CANCAO_NOVA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cartoon Network Latin America Brazil (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/CARTOON_NETWORK/index.m3u8",
+      "url_atual": "http://45.162.64.114/CARTOON_NETWORK/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede CNT Rio de Janeiro (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/CNT/index.m3u8",
+      "url_atual": "http://45.162.64.114/CNT/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Evangelizar (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/EVANGELIZAR/index.m3u8",
+      "url_atual": "http://45.162.64.114/EVANGELIZAR/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Futura (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/FUTURA/index.m3u8",
+      "url_atual": "http://45.162.64.114/FUTURA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Novo Tempo (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/NOVO_TEMPO/index.m3u8",
+      "url_atual": "http://45.162.64.114/NOVO_TEMPO/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Play TV (Brazil) (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/PLAY_TV/index.m3u8",
+      "url_atual": "http://45.162.64.114/PLAY_TV/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Record News (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/RECORD_NEWS/index.m3u8",
+      "url_atual": "http://45.162.64.114/RECORD_NEWS/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Seculo 21 (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/REDE_SECULO_21/index.m3u8",
+      "url_atual": "http://45.162.64.114/REDE_SECULO_21/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede TV! SD (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/REDE_TV/index.m3u8",
+      "url_atual": "http://45.162.64.114/REDE_TV/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sony Movies (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/SONY_MOVIES/index.m3u8",
+      "url_atual": "http://45.162.64.114/SONY_MOVIES/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Terra Viva (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TERRAVIVA/index.m3u8",
+      "url_atual": "http://45.162.64.114/TERRAVIVA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TNT Novelas Brazil (720p)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TNT_NOVELAS/index.m3u8",
+      "url_atual": "http://45.162.64.114/TNT_NOVELAS/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Aparecida (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_APARECIDA/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_APARECIDA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Brasil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_BRASIL/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_BRASIL/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Cultura (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_CULTURA/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_CULTURA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Gazeta (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_GAZETA/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_GAZETA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Justica (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_JUSTICA/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_JUSTICA/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Pai Eterno (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_PAI_ETERNO/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_PAI_ETERNO/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Senado (Brazil) (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/TV_SENADO/index.m3u8",
+      "url_atual": "http://45.162.64.114/TV_SENADO/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "WooHoo (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/WOOHOO/index.m3u8",
+      "url_atual": "http://45.162.64.114/WOOHOO/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "DumDum (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.162.64.114/ZOOMOO_KIDS/index.m3u8",
+      "url_atual": "http://45.162.64.114/ZOOMOO_KIDS/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Disney Channel Latin America Mexico (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.166.93.156:9999/play/a0f3/index.m3u8",
+      "url_atual": "http://45.166.93.156:9999/play/a0f3/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "History (Brazil) (720p)",
+      "categoria": "Documentários",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.177.114.114/HISTORY/index.m3u8",
+      "url_atual": "http://170.83.16.50/HISTORY/index.m3u8",
+      "atualizacao": "URL completa; aprovado em teste físico",
+      "alterado": true
+    },
+    {
+      "nome": "History 2 Latin America Brazil (720p)",
+      "categoria": "Documentários",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.177.114.114/HISTORY_2/index.m3u8",
+      "url_atual": "http://45.177.114.114/HISTORY_2/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Gov (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.177.114.115/TV_BRASIL_2/index.m3u8",
+      "url_atual": "http://45.177.114.115/TV_BRASIL_2/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Ra Tim Bum (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.177.114.115/TV_RA_TIM_BUM/index.m3u8",
+      "url_atual": "http://45.177.114.115/TV_RA_TIM_BUM/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Gloob (576p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://45.235.0.78/Gloob/playlist.m3u8",
+      "url_atual": "http://45.235.0.78/Gloob/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Telecine Action (1080p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://46.151.196.223:14326/",
+      "url_atual": "http://46.151.196.223:14326/",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AXN Movies (Portugal) (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://50.7.120.34:8080/AXN_BLACK/index.m3u8",
+      "url_atual": "http://50.7.120.34:8080/AXN_BLACK/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "GloboNews (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://79.127.238.228:14093/",
+      "url_atual": "http://79.127.238.228:14093/",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TLC Latin America Brazil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://79.127.238.228:14433/",
+      "url_atual": "http://79.127.238.228:14433/",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic Comedy (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/comedy.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/comedy.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic Crafts (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/crafts.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/crafts.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic Facebook (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/facebook.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/facebook.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic Fight (720p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/fight.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/fight.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic Funny (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/funny.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/funny.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVMatic TikTok (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://cdn.tvmatic.net/tiktok.m3u8",
+      "url_atual": "http://cdn.tvmatic.net/tiktok.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV UFG (720p) [Not 24/7]",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://flash.softhost.com.br:1935/ufg/tvufgweb/playlist.m3u8",
+      "url_atual": "http://flash.softhost.com.br:1935/ufg/tvufgweb/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Bahia (1080i)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
+      "url_atual": "http://hls1.sua.tv/live/globotvbahiafhdbr2/s.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVM Internacional (480p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://online.tvm.co.mz:1935/live/smil:Channel2.smil/playlist.m3u8",
+      "url_atual": "http://online.tvm.co.mz:1935/live/smil:Channel2.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Sete",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Revisar PC",
+      "url_original": "http://play.canalsete.com.br:1935/canalsete/xpl-c7_source/playlist.m3u8",
+      "url_atual": "http://play.canalsete.com.br:1935/canalsete/xpl-c7_source/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVE Bahia (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://streaming.procergs.com.br:1935/tve/stve/playlist.m3u8",
+      "url_atual": "http://streaming.procergs.com.br:1935/tve/stve/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Sol Comunidade (480p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://streaming03.zas.media:1935/tvsol/tvsol/playlist.m3u8",
+      "url_atual": "http://streaming03.zas.media:1935/tvsol/tvsol/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Destak (360p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://tv02.logicahost.com.br:1935/pascoal/pascoal/live.m3u8",
+      "url_atual": "http://tv02.logicahost.com.br:1935/pascoal/pascoal/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede RC (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://tv02.logicahost.com.br:1935/rederc/rederc/live.m3u8",
+      "url_atual": "http://tv02.logicahost.com.br:1935/rederc/rederc/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV das Artes (360p)",
+      "categoria": "Cultura",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://tv02.logicahost.com.br:1935/tvdasartes/tvdasartes/playlist.m3u8",
+      "url_atual": "http://tv02.logicahost.com.br:1935/tvdasartes/tvdasartes/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV GRANDE NATAL HDTV BRASIL (1080p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://tvgrandenatalhd.duckdns.org:8080/hls/live.m3u8",
+      "url_atual": "http://tvgrandenatalhd.duckdns.org:8080/hls/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "UniTV Porto Alegre (480p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://unitvaovivo.ufrgs.br:8080/live.ogg",
+      "url_atual": "http://unitvaovivo.ufrgs.br:8080/live.ogg",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Digital Birigui (640p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://wse01.logicahost.com.br:1935/tvdigitalbirigui/_definst_/tvdigitalbirigui/playlist.m3u8",
+      "url_atual": "http://wse01.logicahost.com.br:1935/tvdigitalbirigui/_definst_/tvdigitalbirigui/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nova Era TV (1080p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://wz3.dnip.com.br:1935/novaeratv/novaeratv.sdp/live.m3u8",
+      "url_atual": "http://wz3.dnip.com.br:1935/novaeratv/novaeratv.sdp/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Vicosa (480p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://wz4.dnip.com.br/fratevitv/fratevitv.sdp/playlist.m3u8",
+      "url_atual": "http://wz4.dnip.com.br/fratevitv/fratevitv.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sertao TV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://wz4.dnip.com.br/sertaotv/sertaotv.sdp/playlist.m3u8",
+      "url_atual": "http://wz4.dnip.com.br/sertaotv/sertaotv.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC Mulher",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://zntx.dyndns.org:8085/hls/sicm.m3u8",
+      "url_atual": "http://zntx.dyndns.org:8085/hls/sicm.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV6",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://zntx.dyndns.org:8085/hls/stv6.m3u8",
+      "url_atual": "http://zntx.dyndns.org:8085/hls/stv6.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV7",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://zntx.dyndns.org:8085/hls/stv7.m3u8",
+      "url_atual": "http://zntx.dyndns.org:8085/hls/stv7.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Channel (Portugal)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/fox.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/fox.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Comedy",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/foxcomedy.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/foxcomedy.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Crime (Portugal)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/foxcrime.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/foxcrime.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Life (Portugal)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/foxlife.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/foxlife.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Movies (Portugal)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/foxm.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/foxm.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC Radical",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/sicr.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/sicr.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV+",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/sportv+.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/sportv+.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV1",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/stv1.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/stv1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV2",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/stv2.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/stv2.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Sport TV5",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "http://znty.dyndns.org:5010/hls/stv5.m3u8",
+      "url_atual": "http://znty.dyndns.org:5010/hls/stv5.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ French (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://37b4c228.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWZyX0ZJRkFQbHVzRnJlbmNoX0hMUw/playlist.m3u8",
+      "url_atual": "https://37b4c228.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWZyX0ZJRkFQbHVzRnJlbmNoX0hMUw/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ German (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://4397879b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWRlX0ZJRkFQbHVzR2VybWFuX0hMUw/playlist.m3u8",
+      "url_atual": "https://4397879b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWRlX0ZJRkFQbHVzR2VybWFuX0hMUw/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Camara Salvador (288p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://596639ebdd89b.streamlock.net/8114/8114/playlist.m3u8",
+      "url_atual": "https://596639ebdd89b.streamlock.net/8114/8114/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cabo Frio TV (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://59f2354c05961.streamlock.net:1443/ararutv/_definst_/ararutv/playlist.m3u8",
+      "url_atual": "https://59f2354c05961.streamlock.net:1443/ararutv/_definst_/ararutv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Birigui (640p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://59f2354c05961.streamlock.net:1443/tvdigitalbirigui/_definst_/tvdigitalbirigui/playlist.m3u8",
+      "url_atual": "https://59f2354c05961.streamlock.net:1443/tvdigitalbirigui/_definst_/tvdigitalbirigui/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Fonte TV",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8",
+      "url_atual": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Pantanal MS (360p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5a2b083e9f360.streamlock.net/tvpantanal/tvpantanal.sdp/playlist.m3u8",
+      "url_atual": "https://5a2b083e9f360.streamlock.net/tvpantanal/tvpantanal.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Conexao TV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5a57bda70564a.streamlock.net/conexaotv/conexaotv.sdp/playlist.m3u8",
+      "url_atual": "https://5a57bda70564a.streamlock.net/conexaotv/conexaotv.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Passo Fundo (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5a57bda70564a.streamlock.net/tvpasso/tvpasso.sdp/playlist.m3u8",
+      "url_atual": "https://5a57bda70564a.streamlock.net/tvpasso/tvpasso.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Diario Macapa (1080p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5ad482a77183d.streamlock.net/marliomelohotmail.com/marliomelohotmail.com/playlist.m3u8",
+      "url_atual": "https://5ad482a77183d.streamlock.net/marliomelohotmail.com/marliomelohotmail.com/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Brasil Oeste (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8",
+      "url_atual": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Brusque (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5ad482a77183d.streamlock.net/rodrigotvbrusque.com.br/5d880199c902eb4a1e8df00d/playlist.m3u8",
+      "url_atual": "https://5ad482a77183d.streamlock.net/rodrigotvbrusque.com.br/5d880199c902eb4a1e8df00d/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Litoral RN (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5ad482a77183d.streamlock.net/tvnordesteegmail.com/tvnordesteegmail.com/playlist.m3u8",
+      "url_atual": "https://5ad482a77183d.streamlock.net/tvnordesteegmail.com/tvnordesteegmail.com/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Alpha Channel (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b01a3d32b65c.streamlock.net:1936/tvalpha/tvalpha/playlist.m3u8",
+      "url_atual": "https://5b01a3d32b65c.streamlock.net:1936/tvalpha/tvalpha/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Catve2 (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b33b873179a2.streamlock.net:1443/catve2/catve2/playlist.m3u8",
+      "url_atual": "https://5b33b873179a2.streamlock.net:1443/catve2/catve2/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Catve Master TV (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b33b873179a2.streamlock.net:1443/mastertv/livestream/playlist.m3u8",
+      "url_atual": "https://5b33b873179a2.streamlock.net:1443/mastertv/livestream/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Catve FM (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b33b873179a2.streamlock.net:1443/radiocamera/livestream/playlist.m3u8",
+      "url_atual": "https://5b33b873179a2.streamlock.net:1443/radiocamera/livestream/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Comunitaria (360p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b7f3c45ab7c2.streamlock.net/8008/smil:8008.smil/playlist.m3u8?DVR=",
+      "url_atual": "https://5b7f3c45ab7c2.streamlock.net/8008/smil:8008.smil/playlist.m3u8?DVR=",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Arapuan (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8",
+      "url_atual": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Chroma TV (480p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://5c483b9d1019c.streamlock.net/8054/8054/playlist.m3u8",
+      "url_atual": "https://5c483b9d1019c.streamlock.net/8054/8054/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Clube (720p)",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://5c483b9d1019c.streamlock.net/8186/8186/playlist.m3u8",
+      "url_atual": "https://5c483b9d1019c.streamlock.net/8186/8186/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Fala Litoral (480p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Revisar PC",
+      "url_original": "https://5c483b9d1019c.streamlock.net/falalitoraltv/falalitoraltv/playlist.m3u8",
+      "url_atual": "https://5c483b9d1019c.streamlock.net/falalitoraltv/falalitoraltv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ON FM (720p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5ce9406b73c33.streamlock.net/ONFM/livestream/playlist.m3u8",
+      "url_atual": "https://5ce9406b73c33.streamlock.net/ONFM/livestream/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Sim Cachoeiro (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5cf4a2c2512a2.streamlock.net/8104/8104/playlist.m3u8",
+      "url_atual": "https://5cf4a2c2512a2.streamlock.net/8104/8104/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Sim Sao Mateus (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5cf4a2c2512a2.streamlock.net/8236/8236/playlist.m3u8",
+      "url_atual": "https://5cf4a2c2512a2.streamlock.net/8236/8236/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mais Marica (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5cf4a2c2512a2.streamlock.net/tvmaismarica/tvmaismarica/playlist.m3u8",
+      "url_atual": "https://5cf4a2c2512a2.streamlock.net/tvmaismarica/tvmaismarica/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Muzangala TV (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5cf4a2c2512a2.streamlock.net/tvmuzangala/tvmuzangala/playlist.m3u8",
+      "url_atual": "https://5cf4a2c2512a2.streamlock.net/tvmuzangala/tvmuzangala/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Elemental Channel (1080p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5d82644094cc0.streamlock.net/8116/8116/playlist.m3u8",
+      "url_atual": "https://5d82644094cc0.streamlock.net/8116/8116/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Empire (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5d82644094cc0.streamlock.net/empiremagazinetv/empiremagazinetv/playlist.m3u8",
+      "url_atual": "https://5d82644094cc0.streamlock.net/empiremagazinetv/empiremagazinetv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Ricos (480p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5d82644094cc0.streamlock.net/ricostv/ricostv/playlist.m3u8",
+      "url_atual": "https://5d82644094cc0.streamlock.net/ricostv/ricostv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ Italy (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5d95f7d7.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWl0X0ZJRkFQbHVzSXRhbGlhbl9ITFM/playlist.m3u8",
+      "url_atual": "https://5d95f7d7.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWl0X0ZJRkFQbHVzSXRhbGlhbl9ITFM/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Santa Cecilia TV (1080p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://5fb29de4928ea.streamlock.net/2063/2063/playlist.m3u8",
+      "url_atual": "https://5fb29de4928ea.streamlock.net/2063/2063/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal do Criador (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://607d2a1a47b1f.streamlock.net/crur/smil:canaldocriador.smil/playlist.m3u8",
+      "url_atual": "https://607d2a1a47b1f.streamlock.net/crur/smil:canaldocriador.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Universal (480p)",
+      "categoria": "Religiosos",
+      "status_historico": "Revisar PC",
+      "url_original": "https://644398c.ha.azioncdn.net/primary/tvuniversal_480p.sdp/playlist.m3u8",
+      "url_atual": "https://644398c.ha.azioncdn.net/primary/tvuniversal_480p.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "O Dia TV",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://6836041ea1117.streamlock.net/tvodia/tvodia/playlist.m3u8",
+      "url_atual": "https://6836041ea1117.streamlock.net/tvodia/tvodia/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ Hispanic America (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://6c849fb3.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctbXhfRklGQVBsdXNTcGFuaXNoLTFfSExT/playlist.m3u8",
+      "url_atual": "https://6c849fb3.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctbXhfRklGQVBsdXNTcGFuaXNoLTFfSExT/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Kids (1080p) [Geo-blocked]",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://8994803e454548319ffc0775bc04e0c1.mediatailor.us-east-1.amazonaws.com/v1/master/215c0da80606fed29372070168106400a6ca7e1a/SSAI-TVZyn/index.m3u8",
+      "url_atual": "https://8994803e454548319ffc0775bc04e0c1.mediatailor.us-east-1.amazonaws.com/v1/master/215c0da80606fed29372070168106400a6ca7e1a/SSAI-TVZyn/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Minas (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/playlist.m3u8",
+      "url_atual": "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Lamore Rock Show WebTV (720p)",
+      "categoria": "Música",
+      "status_historico": "Revisar PC",
+      "url_original": "https://a.cdni.live/rodrigo2364/rodrigo2364/playlist.m3u8",
+      "url_atual": "https://a.cdni.live/rodrigo2364/rodrigo2364/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RIT TV (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://acesso.ecast.site:3648/live/ritlive.m3u8",
+      "url_atual": "https://acesso.ecast.site:3648/live/ritlive.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Conecta Mais TV (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://adylnet.streampool.net/10324/live/hls/Conecta/index.m3u8",
+      "url_atual": "https://adylnet.streampool.net/10324/live/hls/Conecta/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Amazon Sat (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8",
+      "url_atual": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Trace Brazuca (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://amg01131-tracetv-amg01131c4-stirr-us-4390.playouts.now.amagi.tv/playlist.m3u8",
+      "url_atual": "https://amg01131-tracetv-amg01131c4-stirr-us-4390.playouts.now.amagi.tv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV UFOP (1080p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://app.tvufop.com.br/hls/tvufop.m3u8",
+      "url_atual": "https://app.tvufop.com.br/hls/tvufop.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MyTime Movie Network (Brazil) (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://appletree-mytime-samsungbrazil.amagi.tv/playlist.m3u8",
+      "url_atual": "https://appletree-mytime-samsungbrazil.amagi.tv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "AWTV (1080p) [Geo-blocked]",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://awtv.nuvemplay.live/hls/stream.m3u8",
+      "url_atual": "https://awtv.nuvemplay.live/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "NickOnline Bob Esponja (720p) [Not 24/7]",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://bob.x1colegal.com/hls/stream.m3u8",
+      "url_atual": "https://bob.x1colegal.com/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Despertar TV (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://br.conectmy.com.br/DespertarTV/index.m3u8",
+      "url_atual": "https://br.conectmy.com.br/DespertarTV/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Libras (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://canallibras-stream.ebc.com.br/mux_video_ts/index-1.m3u8",
+      "url_atual": "https://canallibras-stream.ebc.com.br/mux_video_ts/index-1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "CINDIE TV (1080p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cc-hqw8u5r1nshjc.akamaized.net/scheduler/scheduleMaster/352.m3u8",
+      "url_atual": "https://cc-hqw8u5r1nshjc.akamaized.net/scheduler/scheduleMaster/352.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BandNews (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-5.nxplay.com.br/BAND_NEWS/index.m3u8",
+      "url_atual": "https://cdn-5.nxplay.com.br/BAND_NEWS/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Metropole (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-fundacao-2110.ciclano.io:1443/fundacao-2110/fundacao-2110/playlist.m3u8",
+      "url_atual": "https://cdn-fundacao-2110.ciclano.io:1443/fundacao-2110/fundacao-2110/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Globo (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-sp2.satlabscloud.com.br/RBS_HD/index.m3u8?token=Mw3YKkujzIi9hYQJ6kAQjQvly2VdBNuGPjHOq",
+      "url_atual": "https://cdn-sp2.satlabscloud.com.br/RBS_HD/index.m3u8?token=Mw3YKkujzIi9hYQJ6kAQjQvly2VdBNuGPjHOq",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Metropole (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-isaocorp-cloudecast-com.smartbit.co/metropole/index.m3u8",
+      "url_atual": "https://cdn-tiva-isaocorp-cloudecast-com.smartbit.co/metropole/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Adorar (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-isaocorp-cloudecast-com.smartbit.co/tvadorar/index.m3u8",
+      "url_atual": "https://cdn-tiva-isaocorp-cloudecast-com.smartbit.co/tvadorar/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal START (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-srv5-zcast-com-br.smartbit.co/canalstart/canalstart/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-srv5-zcast-com-br.smartbit.co/canalstart/canalstart/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Demais TV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-stmv1-samcast-com-br.smartbit.co/demaistv6503/demaistv6503/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-stmv1-samcast-com-br.smartbit.co/demaistv6503/demaistv6503/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Premium TV (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-stmv2-samcast-com-br.smartbit.co/leonardo9878/leonardo9878/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-stmv2-samcast-com-br.smartbit.co/leonardo9878/leonardo9878/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal 25 Jundiai (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-stream01-msolutionbrasil-com-br.smartbit.co/hls/canal25/live.m3u8",
+      "url_atual": "https://cdn-tiva-stream01-msolutionbrasil-com-br.smartbit.co/hls/canal25/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Bem Melhor (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video01-logicahost-com-br.smartbit.co/bemmelhor/bemmelhor/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video01-logicahost-com-br.smartbit.co/bemmelhor/bemmelhor/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Auge TV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video01-logicahost-com-br.smartbit.co/canalaugetv/canalaugetv/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video01-logicahost-com-br.smartbit.co/canalaugetv/canalaugetv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Carioca (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video03-logicahost-com-br.smartbit.co/cariocainternacional1/cariocainternacional1/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video03-logicahost-com-br.smartbit.co/cariocainternacional1/cariocainternacional1/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Lider TV (Brazil) (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video08-logicahost-com-br.smartbit.co/lidertvssp/lidertvssp/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video08-logicahost-com-br.smartbit.co/lidertvssp/lidertvssp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Gazin (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video09-logicahost-com-br.smartbit.co/tvgazin/tvgazin/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video09-logicahost-com-br.smartbit.co/tvgazin/tvgazin/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Series Classic (720p)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video10-logicahost-com-br.smartbit.co/serieclassic/serieclassic/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video10-logicahost-com-br.smartbit.co/serieclassic/serieclassic/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mon (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-tiva-video10-logicahost-com-br.smartbit.co/tvmon/tvmon/playlist.m3u8",
+      "url_atual": "https://cdn-tiva-video10-logicahost-com-br.smartbit.co/tvmon/tvmon/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Trace Brazuca HD (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8",
+      "url_atual": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BabyFirst (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://cdn.fast.jwp.services/v1/channel/1_jB6940Ei_TvhvIHDL/manifest.m3u8",
+      "url_atual": "https://cdn.fast.jwp.services/v1/channel/1_jB6940Ei_TvhvIHDL/manifest.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Interior (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Vila Real (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVNBN (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-8410/LVW8410_uiZOVm6vz1/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-8410/LVW8410_uiZOVm6vz1/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal 38 (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "EUTV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Boas Novas (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Plena TV (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Adesso TV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Zoom (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Nacional (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BR8 TV",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-11668/ngrp:LVW11668_wiJpjbMrks_all/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-11668/ngrp:LVW11668_wiJpjbMrks_all/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RBATV (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV A Critica",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Gospel (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Aratu On",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "STZ TV (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede TV! Mais",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8",
+      "url_atual": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "NTV (Brazil) (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cdn.livespanel.com/nossatv/nossatv/playlist.m3u8",
+      "url_atual": "https://cdn.livespanel.com/nossatv/nossatv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ Women (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cffda8ff.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9GSUZBUGx1c3dvbWVuX0hMUw/playlist.m3u8",
+      "url_atual": "https://cffda8ff.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9GSUZBUGx1c3dvbWVuX0hMUw/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Trace Toca (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://channels.trace.plus/Traceprod/TOCA_hd/index.m3u8",
+      "url_atual": "https://channels.trace.plus/Traceprod/TOCA_hd/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Trace Urban HD (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://channels.trace.plus/Traceprod/URBAN_FR_hd/index.m3u8",
+      "url_atual": "https://channels.trace.plus/Traceprod/URBAN_FR_hd/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "L!ke (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://cnl-cl.otteravision.com/cnl/cl_h265/cl_h265.m3u8",
+      "url_atual": "https://cnl-cl.otteravision.com/cnl/cl_h265/cl_h265.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Red Bull TV BR (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d03ae6b5c6724c24867e97a3dc04934a.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-1026-WORBBRPTFAST-WHALETVPLUS/1026/hls/master/playlist.m3u8",
+      "url_atual": "https://d03ae6b5c6724c24867e97a3dc04934a.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-1026-WORBBRPTFAST-WHALETVPLUS/1026/hls/master/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TikTok Radio Brasil (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d1bl6tskrpq9ze.cloudfront.net/hls/master.m3u8?ads.xumo_channelId=99992529",
+      "url_atual": "https://d1bl6tskrpq9ze.cloudfront.net/hls/master.m3u8?ads.xumo_channelId=99992529",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "XITE Siempre Latino (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d1xc25jm9e0l4b.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-xplkt8i7m24dc/XITE_Siempre_Latino.m3u8",
+      "url_atual": "https://d1xc25jm9e0l4b.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-xplkt8i7m24dc/XITE_Siempre_Latino.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "CNN Brasil (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8",
+      "url_atual": "https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ United States (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+      "url_atual": "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Show do Milhao (1080p) [Geo-blocked]",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d38s7rrdbnh4oy.cloudfront.net/v1/master/215c0da80606fed29372070168106400a6ca7e1a/SSAI-Saudades/index.m3u8",
+      "url_atual": "https://d38s7rrdbnh4oy.cloudfront.net/v1/master/215c0da80606fed29372070168106400a6ca7e1a/SSAI-Saudades/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "XITE Nuevo Latino (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d3bsgqzbpkrvbb.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-w288eaw03izg1/XITE_Nuevo_Latino.m3u8",
+      "url_atual": "https://d3bsgqzbpkrvbb.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-w288eaw03izg1/XITE_Nuevo_Latino.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ Spain (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://d63fabad.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWVzX0ZJRkFQbHVzU3BhbmlzaF9ITFM/playlist.m3u8",
+      "url_atual": "https://d63fabad.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWVzX0ZJRkFQbHVzU3BhbmlzaF9ITFM/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT News (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8",
+      "url_atual": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "COM Brasil (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://dfr80qz435crc.cloudfront.net/EFGH/Amagi/NewCo/New_Brasil_BR/New_Brasil.m3u8",
+      "url_atual": "https://dfr80qz435crc.cloudfront.net/EFGH/Amagi/NewCo/New_Brasil_BR/New_Brasil.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ Portuguese (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://e3be9ac5.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctYnJfRklGQVBsdXNQb3J0dWd1ZXNlX0hMUw/playlist.m3u8",
+      "url_atual": "https://e3be9ac5.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctYnJfRklGQVBsdXNQb3J0dWd1ZXNlX0hMUw/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Saude",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://eitv7.cdn.broadpeak.io/account351-i1495/event/canalsaude/format720p.m3u8",
+      "url_atual": "https://eitv7.cdn.broadpeak.io/account351-i1495/event/canalsaude/format720p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cultura Fast (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8",
+      "url_atual": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "KpopTV Play (576p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://giatv.bozztv.com/giatv/giatv-kpoptvplay/kpoptvplay/playlist.m3u8",
+      "url_atual": "https://giatv.bozztv.com/giatv/giatv-kpoptvplay/kpoptvplay/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "CNN Portugal",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://github.com/thomraider12/canaistvpt/raw/main/m3u8s/cnnpt.m3u8",
+      "url_atual": "https://github.com/thomraider12/canaistvpt/raw/main/m3u8s/cnnpt.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "VEJA+ TV (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://gpa-vja.otteravision.com/gpa/vja/vja.m3u8",
+      "url_atual": "https://gpa-vja.otteravision.com/gpa/vja/vja.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "IMPD TV Worldwide (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://igrejamundial.nuvemplay.live/hls/stream.m3u8",
+      "url_atual": "https://igrejamundial.nuvemplay.live/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede NGT (1080p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://isaocorp.cloudecast.com/ngt/index.m3u8",
+      "url_atual": "https://isaocorp.cloudecast.com/ngt/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Angel TV Portuguese (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://janya-digimix.akamaized.net/vglive-sk-382409/portuese/ngrp:angelportuguese_all/playlist.m3u8",
+      "url_atual": "https://janya-digimix.akamaized.net/vglive-sk-382409/portuese/ngrp:angelportuguese_all/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Assembleia Ceara (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jjn5dkk9bd.zoeweb.tv/z404-live/stream/playlist.m3u8",
+      "url_atual": "https://jjn5dkk9bd.zoeweb.tv/z404-live/stream/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Sucessos",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Filmes Acao",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f120f41b7d403000783a6d6.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f120f41b7d403000783a6d6.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Comedia (United States) BR",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f12101f0b12f00007844c7c.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f12101f0b12f00007844c7c.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Drama",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1210d14ae1f80007bafb1d.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1210d14ae1f80007bafb1d.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cine Terror BR",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f12111c9e6c2c00078ef3bb.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f12111c9e6c2c00078ef3bb.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Retro",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1212ad1728050007a523b8.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1212ad1728050007a523b8.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Pluto TV BR",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1212fb81e85c00077ae9ef.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1212fb81e85c00077ae9ef.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Anime BR",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f12136385bccc00070142ed.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f12136385bccc00070142ed.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Natureza",
+      "categoria": "Educação",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1213ba0ecebc00070e170f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1213ba0ecebc00070e170f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Junior",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f12141b146d760007934ea7.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f12141b146d760007934ea7.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Kids",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1214a637c6fd00079c652f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1214a637c6fd00079c652f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Filmes Suspense",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f171d3442a0500007362f22.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f171d3442a0500007362f22.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Familia",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f171f032cd22e0007f17f3d.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f171f032cd22e0007f17f3d.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Romance",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f171f988ab9780007fa95ea.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f171f988ab9780007fa95ea.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Historia (United States)",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1ef1a8cec6be00072a7ac9.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1ef1a8cec6be00072a7ac9.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cozinha",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f1ef23020a5ac0007e5e8ea.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f1ef23020a5ac0007e5e8ea.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Investigacao",
+      "categoria": "Documentários",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f32cf37c9ff2b00082adbc8.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f32cf37c9ff2b00082adbc8.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Viagens",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f32d432d612e50007e56133.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f32d432d612e50007e56133.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Vida Real",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f32d4d9ec194100070c7449.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f32d4d9ec194100070c7449.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Comedy Central Pluto TV BR",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f357e91b18f0b00073583d2.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f357e91b18f0b00073583d2.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BabyFirst Brazil",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f4fb4cf605ddf000748e16f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f4fb4cf605ddf000748e16f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Novelas BR",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f512365abe1f50007d3ff56.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f512365abe1f50007d3ff56.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FailArmy Brazil",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f5141c1605ddf000748eb1b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f5141c1605ddf000748eb1b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "The Pet Collective Brazil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f515ebac01c0f00080e8439.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f515ebac01c0f00080e8439.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Filmes Nacionais",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f5a545d0dbf7f0007c09408.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f5a545d0dbf7f0007c09408.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "O Reino Infantil",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f5c216df68f920007888315.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f5c216df68f920007888315.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Are you the One?",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f6108d8cc331900075e98e4.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f6108d8cc331900075e98e4.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Naruto Brazil",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f6df5a173d7340007c559f7.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f6df5a173d7340007c559f7.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Turma da Monica (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5f997e44949bc70007a6941e.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f997e44949bc70007a6941e.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Star Trek",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5f99ac4fded33000078f29ab.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5f99ac4fded33000078f29ab.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Ficcao Cientifica",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5fa15ad6367e170007cdd098.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5fa15ad6367e170007cdd098.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Classicos",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5fa1612a669ba0000702017b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5fa1612a669ba0000702017b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Inspiracao",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5fa991b1f09e020007e78626.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5fa991b1f09e020007e78626.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Misterios",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5fac52f142044f00078e2a51.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5fac52f142044f00078e2a51.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Tastemade Brasil (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5fd1419a3b4f4b000773ba85.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5fd1419a3b4f4b000773ba85.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Tokusato",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-5ff609de50ab210008025c1b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5ff609de50ab210008025c1b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BET Pluto TV BR",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5ff768b6a4c8b80008498610.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5ff768b6a4c8b80008498610.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Kenan & Kel BR",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-5ffcc5130fd98c0007f2e216.m3u8",
+      "url_atual": "https://jmp2.uk/plu-5ffcc5130fd98c0007f2e216.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Turbo",
+      "categoria": "Documentários",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6014761dfb91870008ea6463.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6014761dfb91870008ea6463.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Biggest Pop BR (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6047fbdbbb776a0007e7f2ff.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6047fbdbbb776a0007e7f2ff.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Paisagens por Stingray (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-604a8dedbca75b0007b1c753.m3u8",
+      "url_atual": "https://jmp2.uk/plu-604a8dedbca75b0007b1c753.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Anime Acao",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-604b79c558393100078faeef.m3u8",
+      "url_atual": "https://jmp2.uk/plu-604b79c558393100078faeef.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Shows por Stingray (720p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-604b91e0692f770007d9f33f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-604b91e0692f770007d9f33f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Karaoke por Stingray (720p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-604b99d633a72b00078e05ad.m3u8",
+      "url_atual": "https://jmp2.uk/plu-604b99d633a72b00078e05ad.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MasterChef",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6077045b6031bd00078de127.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6077045b6031bd00078de127.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Comedy Central South Park",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-609ae66b359b270007869ff1.m3u8",
+      "url_atual": "https://jmp2.uk/plu-609ae66b359b270007869ff1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nickelodeon Teen (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-60f5fabf0721880007cd50e3.m3u8",
+      "url_atual": "https://jmp2.uk/plu-60f5fabf0721880007cd50e3.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Record News (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6102e04e9ab1db0007a980a1.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6102e04e9ab1db0007a980a1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "O Encantador de Caes",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-61099df8cee03b00074b2ecf.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61099df8cee03b00074b2ecf.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Minha Obsessao Favorita",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-61843f5e491af10007f7eefa.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61843f5e491af10007f7eefa.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Euronews Portuguese (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-619e6614c9d9650007a2b171.m3u8",
+      "url_atual": "https://jmp2.uk/plu-619e6614c9d9650007a2b171.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Com o Ex",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-61a528267e1b8b0007357920.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61a528267e1b8b0007357920.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Adrenalina Pura TV Brazil",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pronto-socorro: Historias De Emergencia",
+      "categoria": "Educação",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-61bb72a7bf8c520007a8fd27.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61bb72a7bf8c520007a8fd27.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Diff'rent Strokes Arnold",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-61f1d27a189ed10007b7393e.m3u8",
+      "url_atual": "https://jmp2.uk/plu-61f1d27a189ed10007b7393e.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Jovens e Maes (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-620fdc7d8a36fc000710e3ba.m3u8",
+      "url_atual": "https://jmp2.uk/plu-620fdc7d8a36fc000710e3ba.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "iCarly (United States)",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-620ff46e0a576e0007dc2f89.m3u8",
+      "url_atual": "https://jmp2.uk/plu-620ff46e0a576e0007dc2f89.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "One Piece BR",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-624b1c8d4321e200073ee421.m3u8",
+      "url_atual": "https://jmp2.uk/plu-624b1c8d4321e200073ee421.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Bob Esponja Calca Quadrada (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-62545c0b002f4b0007688b61.m3u8",
+      "url_atual": "https://jmp2.uk/plu-62545c0b002f4b0007688b61.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Comedia Romantica",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-62545ed3dab4380007582f7c.m3u8",
+      "url_atual": "https://jmp2.uk/plu-62545ed3dab4380007582f7c.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Shore",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-625463563b8ddc0007134aeb.m3u8",
+      "url_atual": "https://jmp2.uk/plu-625463563b8ddc0007134aeb.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Catfish (United States) BR (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-626c2a3502d84a0007cec817.m3u8",
+      "url_atual": "https://jmp2.uk/plu-626c2a3502d84a0007cec817.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Smithsonian Channel Pluto TV",
+      "categoria": "Documentários",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6298bd10d88ef000073f16b7.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6298bd10d88ef000073f16b7.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Oggy e as Baratas Tontas",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-63221bafdc6e110007b50270.m3u8",
+      "url_atual": "https://jmp2.uk/plu-63221bafdc6e110007b50270.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV KFOOD",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-633ee9ba83c08f00076b60a6.m3u8",
+      "url_atual": "https://jmp2.uk/plu-633ee9ba83c08f00076b60a6.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Detetives Medicos",
+      "categoria": "Documentários",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-638df93ae2f2a3000737c168.m3u8",
+      "url_atual": "https://jmp2.uk/plu-638df93ae2f2a3000737c168.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Sci-Fi (United States)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-63d2ba2f60bc8f0008981a0e.m3u8",
+      "url_atual": "https://jmp2.uk/plu-63d2ba2f60bc8f0008981a0e.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "CSI: Miami BR",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-63eb9c5351f5d000085e8d7e.m3u8",
+      "url_atual": "https://jmp2.uk/plu-63eb9c5351f5d000085e8d7e.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MacGyver (United States)",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-63eb9dc84e83e70008abea92.m3u8",
+      "url_atual": "https://jmp2.uk/plu-63eb9dc84e83e70008abea92.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "NCIS (United States)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-63eb9fdda995710008991c54.m3u8",
+      "url_atual": "https://jmp2.uk/plu-63eb9fdda995710008991c54.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Drag",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-645111f1d8436e00081bb2bd.m3u8",
+      "url_atual": "https://jmp2.uk/plu-645111f1d8436e00081bb2bd.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nickelodeon Toons (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-645951c0e94c38000802d2cb.m3u8",
+      "url_atual": "https://jmp2.uk/plu-645951c0e94c38000802d2cb.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Animais",
+      "categoria": "Documentários",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6474aa984cfc2c0008883a92.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6474aa984cfc2c0008883a92.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Acao",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6474ab1da51cb80008bfb5f4.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6474ab1da51cb80008bfb5f4.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Criminais",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6474ab5cdc7a760008745008.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6474ab5cdc7a760008745008.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Cine Crime",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6479ff764f5ba5000878dfe2.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6479ff764f5ba5000878dfe2.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Negocio Fechado",
+      "categoria": "Documentários",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-64ad7394798def00087b2bfe.m3u8",
+      "url_atual": "https://jmp2.uk/plu-64ad7394798def00087b2bfe.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Canal UOL (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-64b9370b409629000802d32b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-64b9370b409629000802d32b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Comedia",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-655e5bc94261ca000810cb17.m3u8",
+      "url_atual": "https://jmp2.uk/plu-655e5bc94261ca000810cb17.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Desenhos Classicos",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-655e5c4d2c46f3000877a54b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-655e5c4d2c46f3000877a54b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "South Park: Colecao Kenny",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-65df704366eec8000898e32f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-65df704366eec8000898e32f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "South Park: Colecao Stan",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-65df70b0f7f0af0008c3b316.m3u8",
+      "url_atual": "https://jmp2.uk/plu-65df70b0f7f0af0008c3b316.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "South Park: Colecao Cartman",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-65df71008b24c80008f04281.m3u8",
+      "url_atual": "https://jmp2.uk/plu-65df71008b24c80008f04281.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "South Park: Colecao Kyle",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-65df713dec9fda0008b7a81d.m3u8",
+      "url_atual": "https://jmp2.uk/plu-65df713dec9fda0008b7a81d.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Drama",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-65f060d84e01740008d7421f.m3u8",
+      "url_atual": "https://jmp2.uk/plu-65f060d84e01740008d7421f.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "FIFA+ (720p)",
+      "categoria": "Futebol",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-660c29b5aec9680008f5b4a4.m3u8",
+      "url_atual": "https://jmp2.uk/plu-660c29b5aec9680008f5b4a4.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Bang Bang",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-663b9dc7cb3ea10008f1a0ce.m3u8",
+      "url_atual": "https://jmp2.uk/plu-663b9dc7cb3ea10008f1a0ce.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Netmovies",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-663b9de4f999220008230fa8.m3u8",
+      "url_atual": "https://jmp2.uk/plu-663b9de4f999220008230fa8.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "BM&C News (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-666c9c60a7efd40008f552f0.m3u8",
+      "url_atual": "https://jmp2.uk/plu-666c9c60a7efd40008f552f0.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Classic BR (720p)",
+      "categoria": "Música",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-66a01dcb8561260008b0a41d.m3u8",
+      "url_atual": "https://jmp2.uk/plu-66a01dcb8561260008b0a41d.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Rocks",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-66a01e07d2d50d0008100d6a.m3u8",
+      "url_atual": "https://jmp2.uk/plu-66a01e07d2d50d0008100d6a.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Terror Trash",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-66aa67493a4ad2000806d91b.m3u8",
+      "url_atual": "https://jmp2.uk/plu-66aa67493a4ad2000806d91b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Filmes Aventura",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-66c79a4262e5510008ff68a5.m3u8",
+      "url_atual": "https://jmp2.uk/plu-66c79a4262e5510008ff68a5.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Kids Club (United States)",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-66c8cae7fed35b0008580ec0.m3u8",
+      "url_atual": "https://jmp2.uk/plu-66c8cae7fed35b0008580ec0.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Avatar: A lenda de Aang",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6759eeb1bd523200083b4f29.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6759eeb1bd523200083b4f29.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Policial",
+      "categoria": "Documentários",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-678fdf9e3de7c8cf948e8824.m3u8",
+      "url_atual": "https://jmp2.uk/plu-678fdf9e3de7c8cf948e8824.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Numbers (United States)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-67f960c5441853fe50e7afc1.m3u8",
+      "url_atual": "https://jmp2.uk/plu-67f960c5441853fe50e7afc1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Filmes de Luta",
+      "categoria": "Filmes",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Aliens",
+      "categoria": "Documentários",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6806d65e84f24b70109485fa.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6806d65e84f24b70109485fa.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nickelodeon Classico (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6824ce10c5d53e1351ceb8d1.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6824ce10c5d53e1351ceb8d1.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nick Jr. Club (United States) BR (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6824ce95f09106f4b18f4114.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6824ce95f09106f4b18f4114.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Dating (United States)",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-6851bb3426beced4f2f67ee6.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6851bb3426beced4f2f67ee6.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MTV Reality (United States) (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-6851bdfc9ac48fde5e07f5ae.m3u8",
+      "url_atual": "https://jmp2.uk/plu-6851bdfc9ac48fde5e07f5ae.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Pluto TV Series Novelescas",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-691627e4a29a6123e400b3e0.m3u8",
+      "url_atual": "https://jmp2.uk/plu-691627e4a29a6123e400b3e0.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Jornada nas Estrelas: A Nova Geracao",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://jmp2.uk/plu-69162ad79505d0f3b1ebf07d.m3u8",
+      "url_atual": "https://jmp2.uk/plu-69162ad79505d0f3b1ebf07d.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Jornada nas Estrelas: Deep Space Nine",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-69162af591700f4c4c135c95.m3u8",
+      "url_atual": "https://jmp2.uk/plu-69162af591700f4c4c135c95.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Jornada nas Estrelas: Voyager",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://jmp2.uk/plu-69162b1ef189e235142b17ab.m3u8",
+      "url_atual": "https://jmp2.uk/plu-69162b1ef189e235142b17ab.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TELE 6 (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://lbgo.bozztv.com/ssh101/ssh101/tele6/playlist.m3u8",
+      "url_atual": "https://lbgo.bozztv.com/ssh101/ssh101/tele6/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Trace Urban (1080p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://lightning-traceurban-samsungau.amagi.tv/playlist.m3u8",
+      "url_atual": "https://lightning-traceurban-samsungau.amagi.tv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ADB TV (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://live-tv.waytv.pt/adbtv/adbtv/playlist.m3u8",
+      "url_atual": "https://live-tv.waytv.pt/adbtv/adbtv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Sul Bahia (320p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8",
+      "url_atual": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TCM 10 HD (1080p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://live.tcm10.com.br/tcm10hd/stream.m3u8",
+      "url_atual": "https://live.tcm10.com.br/tcm10hd/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Macau (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://live3.tdm.com.mo/ch2/ch2.live/playlist.m3u8",
+      "url_atual": "https://live3.tdm.com.mo/ch2/ch2.live/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Radio Sines (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://load-balancer.azotosolutions.com/cdnedge19/smil:live19.smil/playlist.m3u8",
+      "url_atual": "https://load-balancer.azotosolutions.com/cdnedge19/smil:live19.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Meio Norte (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://maystreaming.cloudecast.com/redemeio/index.m3u8",
+      "url_atual": "https://maystreaming.cloudecast.com/redemeio/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "N Sports (1080p)",
+      "categoria": "Esportes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://ogc-nsprt-tcl-roku-syndication.otteravision.com/ogc/nsprt/nsprt.m3u8",
+      "url_atual": "https://ogc-nsprt-tcl-roku-syndication.otteravision.com/ogc/nsprt/nsprt.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC TV (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://parecisfmlive.brasilstream.com.br/hls/parecisfmlive/index.m3u8",
+      "url_atual": "https://parecisfmlive.brasilstream.com.br/hls/parecisfmlive/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MBC Brasil TV",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://play.mbcbrasil.tv.br/playlist.m3u8",
+      "url_atual": "https://play.mbcbrasil.tv.br/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Cinturao Verde",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://play.redecinturaoverde.com.br/playlist.m3u8",
+      "url_atual": "https://play.redecinturaoverde.com.br/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mackenzie (480p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://player.internetaovivo.com:8443/live_tvmackenzieabr/tvmackenzieabr/playlist.m3u8",
+      "url_atual": "https://player.internetaovivo.com:8443/live_tvmackenzieabr/tvmackenzieabr/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ARTV (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playout172.livextend.cloud/liveiframe/_definst_/liveartvabr/playlist.m3u8",
+      "url_atual": "https://playout172.livextend.cloud/liveiframe/_definst_/liveartvabr/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Brasilia (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playplusbsa-lh.akamaihd.net/i/pp_bsa@377860/index_720_av-p.m3u8",
+      "url_atual": "https://playplusbsa-lh.akamaihd.net/i/pp_bsa@377860/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Goias (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playplusgoya-lh.akamaihd.net/i/pp_gna@377833/index_720_av-p.m3u8",
+      "url_atual": "https://playplusgoya-lh.akamaihd.net/i/pp_gna@377833/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Belem (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playpluspa-lh.akamaihd.net/i/pp_pa@377468/index_720_av-p.m3u8",
+      "url_atual": "https://playpluspa-lh.akamaihd.net/i/pp_pa@377468/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Record RS (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playpluspoa-lh.akamaihd.net/i/pp_poa@377864/index_720_av-p.m3u8",
+      "url_atual": "https://playpluspoa-lh.akamaihd.net/i/pp_poa@377864/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Rio (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playplusrjo-lh.akamaihd.net/i/pp_rj@377859/index_720_av-p.m3u8",
+      "url_atual": "https://playplusrjo-lh.akamaihd.net/i/pp_rj@377859/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Itapoan (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playplussdr-lh.akamaihd.net/i/pp_sdr@377858/index_720_av-b.m3u8",
+      "url_atual": "https://playplussdr-lh.akamaihd.net/i/pp_sdr@377858/index_720_av-b.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RecordTV Sao Paulo (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://playplusspo-lh.akamaihd.net/i/pp_sp@350176/index_720_av-p.m3u8",
+      "url_atual": "https://playplusspo-lh.akamaihd.net/i/pp_sp@350176/index_720_av-p.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV BRICS Portuguese (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8",
+      "url_atual": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC Replay (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://production-fast-sic.content.okast.tv/fa2e8c4385712f9a7dce4ff2dcebac2e/channels/d9070446-8448-455e-8075-773b1ba12562/d47eae0f-ad77-414a-9a1d-2a6628ba18c3/media_.m3u8",
+      "url_atual": "https://production-fast-sic.content.okast.tv/fa2e8c4385712f9a7dce4ff2dcebac2e/channels/d9070446-8448-455e-8075-773b1ba12562/d47eae0f-ad77-414a-9a1d-2a6628ba18c3/media_.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC Alta Definicao (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://production-fast-sic.content.okast.tv/fa2e8c4385712f9aa54bbe52b1bd9b6b/channels/d9070446-8448-455e-8075-773b1ba12562/fc831b20-f252-4e7d-8cc5-2d05f4d43c1c/media_.m3u8",
+      "url_atual": "https://production-fast-sic.content.okast.tv/fa2e8c4385712f9aa54bbe52b1bd9b6b/channels/d9070446-8448-455e-8075-773b1ba12562/fc831b20-f252-4e7d-8cc5-2d05f4d43c1c/media_.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Porto Canal (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://pull-live-156-1.global.ssl.fastly.net/pc5865dc25400thmb-ea6bf03b14fa318f7133/smil:pc1-jhrgyuoqe5865db-68tkgb14fa318f7133f03.smil/playlist.m3u8",
+      "url_atual": "https://pull-live-156-1.global.ssl.fastly.net/pc5865dc25400thmb-ea6bf03b14fa318f7133/smil:pc1-jhrgyuoqe5865db-68tkgb14fa318f7133f03.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVI (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvi.m3u8",
+      "url_atual": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvi.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVI Ficcao (720p)",
+      "categoria": "Séries",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvificcao.m3u8",
+      "url_atual": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvificcao.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVI Reality (720p) [Not 24/7]",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvireality.m3u8",
+      "url_atual": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/tvireality.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "V+ TVI (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/vmaistvi.m3u8",
+      "url_atual": "https://raw.githubusercontent.com/thomraider12/canaistvpt/main/m3u8s/vmaistvi.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede Brasil (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://redebrasil.nuvemplay.live/hls/stream.m3u8",
+      "url_atual": "https://redebrasil.nuvemplay.live/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Zimbo (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://sgn-cdn-video.vods2africa.com/Tv-Zimbo/index.fmp4.m3u8",
+      "url_atual": "https://sgn-cdn-video.vods2africa.com/Tv-Zimbo/index.fmp4.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC (1080p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://sic.live.impresa.pt/sic.m3u8",
+      "url_atual": "https://sic.live.impresa.pt/sic.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SIC Noticias (1080p) [Geo-blocked]",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://sicnot.live.impresa.pt/sicnot.m3u8",
+      "url_atual": "https://sicnot.live.impresa.pt/sicnot.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "VRT Channel (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://sistemavrt.vrtchannel.tv.br:3473/stream/play.m3u8",
+      "url_atual": "https://sistemavrt.vrtchannel.tv.br:3473/stream/play.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Unisul TV (720p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://sitetv.brasilstream.com.br/hls/sitetv/index.m3u8?token=",
+      "url_atual": "https://sitetv.brasilstream.com.br/hls/sitetv/index.m3u8?token=",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SESC TV (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://slbps-ml-sambatech.akamaized.net/samba-live/2472/7424/8a00fe7cc36ac263b2c3e9324497d5ff/video/93a9920d-1b24-4c5e-a7d2-63d5489f59b5_index.m3u8",
+      "url_atual": "https://slbps-ml-sambatech.akamaized.net/samba-live/2472/7424/8a00fe7cc36ac263b2c3e9324497d5ff/video/93a9920d-1b24-4c5e-a7d2-63d5489f59b5_index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Liberdade (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://srv1.paineldevideo.com/liberdaderadioetv/liberdaderadioetv/playlist.m3u8",
+      "url_atual": "https://srv1.paineldevideo.com/liberdaderadioetv/liberdaderadioetv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVCOM Maceio (480p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://srv5.zcast.com.br/tvcommaceio/tvcommaceio/playlist.m3u8",
+      "url_atual": "https://srv5.zcast.com.br/tvcommaceio/tvcommaceio/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Ghost TV (712p) [Not 24/7]",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv.video.expressolider.com.br/ghostv/ghostv/playlist.m3u8",
+      "url_atual": "https://stmv.video.expressolider.com.br/ghostv/ghostv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RCTV Brasil",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv.webtvninjas.com.br/rctv/rctv/playlist.m3u8",
+      "url_atual": "https://stmv.webtvninjas.com.br/rctv/rctv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV 3 Curitiba (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv.webtvninjas.com.br/tv3/tv3/playlist.m3u8",
+      "url_atual": "https://stmv.webtvninjas.com.br/tv3/tv3/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Profissao",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv.webtvninjas.com.br/tvprofissao/tvprofissao/playlist.m3u8",
+      "url_atual": "https://stmv.webtvninjas.com.br/tvprofissao/tvprofissao/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Aldeia (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.samcast.com.br/giovane7843/giovane7843/playlist.m3u8",
+      "url_atual": "https://stmv1.samcast.com.br/giovane7843/giovane7843/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Classique TV (360p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/classique/classique/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/classique/classique/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Gospel Cartoon (360p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Gospel Movie TV (360p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/gospelf/gospelf/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/gospelf/gospelf/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Loading (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Revisar PC",
+      "url_original": "https://stmv1.srvif.com/loadingtv/loadingtv/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/loadingtv/loadingtv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Cidade",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/tvcidade/tvcidade/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/tvcidade/tvcidade/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Curuca (360p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/tvcurucasp/tvcurucasp/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/tvcurucasp/tvcurucasp/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Series (480p)",
+      "categoria": "Séries",
+      "status_historico": "Revisar PC",
+      "url_original": "https://stmv1.srvif.com/tvserie/tvserie/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/tvserie/tvserie/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Vitoria (720p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvif.com/tvvitoriamz/tvvitoriamz/playlist.m3u8",
+      "url_atual": "https://stmv1.srvif.com/tvvitoriamz/tvvitoriamz/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ElyTV (360p)",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8",
+      "url_atual": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Assembleia Piaui",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvstm.com/piaui8071/piaui8071/playlist.m3u8",
+      "url_atual": "https://stmv1.srvstm.com/piaui8071/piaui8071/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ISTV (Brazil) (720p) [Not 24/7]",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.srvstm.com/sistema7933/sistema7933/playlist.m3u8",
+      "url_atual": "https://stmv1.srvstm.com/sistema7933/sistema7933/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Blitstv",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.transmissaodigital.com/blitstv/blitstv/playlist.m3u8",
+      "url_atual": "https://stmv1.transmissaodigital.com/blitstv/blitstv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Retro Cartoon (720p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8",
+      "url_atual": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Sao Raimundo (268p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8",
+      "url_atual": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Fora Tedio TV (720p)",
+      "categoria": "Outros",
+      "status_historico": "Revisar PC",
+      "url_original": "https://stmv2.srvif.com/foratedio/foratedio/playlist.m3u8",
+      "url_atual": "https://stmv2.srvif.com/foratedio/foratedio/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Comedy Central Brasil (480p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv2.srvif.com/gafeab/gafeab/playlist.m3u8",
+      "url_atual": "https://stmv2.srvif.com/gafeab/gafeab/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Nickelodeon (Brazil) (480p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv2.srvif.com/nicktoons/nicktoons/playlist.m3u8",
+      "url_atual": "https://stmv2.srvif.com/nicktoons/nicktoons/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal Metropolitano de Noticias",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv5.samcast.com.br/claudio8701/claudio8701/playlist.m3u8",
+      "url_atual": "https://stmv5.samcast.com.br/claudio8701/claudio8701/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "NPC Radio e TV (720p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv5.samcast.com.br/nasciparacantartv/nasciparacantartv/playlist.m3u8",
+      "url_atual": "https://stmv5.samcast.com.br/nasciparacantartv/nasciparacantartv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV+Pet",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv5.samcast.com.br/tvmaispet6354/tvmaispet6354/playlist.m3u8",
+      "url_atual": "https://stmv5.samcast.com.br/tvmaispet6354/tvmaispet6354/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Alternativa (410p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv5.samcast.com.br/wagner7919/wagner7919/playlist.m3u8",
+      "url_atual": "https://stmv5.samcast.com.br/wagner7919/wagner7919/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Show Fortaleza (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stmv8.samcast.com.br/raimundoanselmolimamororo1908/raimundoanselmolimamororo1908/playlist.m3u8",
+      "url_atual": "https://stmv8.samcast.com.br/raimundoanselmolimamororo1908/raimundoanselmolimamororo1908/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "+MaisUm (720p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stream.ichibansys.com:3230/hybrid/play.m3u8",
+      "url_atual": "https://stream.ichibansys.com:3230/hybrid/play.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Geekdot (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stream.ichibantv.com:3764/hybrid/play.m3u8",
+      "url_atual": "https://stream.ichibantv.com:3764/hybrid/play.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "ConecTV Brasil (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stream01.msolutionbrasil.com.br/hls/conectv/live.m3u8",
+      "url_atual": "https://stream01.msolutionbrasil.com.br/hls/conectv/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVitape (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Revisar PC",
+      "url_original": "https://stream01.msolutionbrasil.com.br/hls/tvitape/live.m3u8",
+      "url_atual": "https://stream01.msolutionbrasil.com.br/hls/tvitape/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Camara (Brazil) (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stream3.camara.gov.br/tv1/manifest.m3u8",
+      "url_atual": "https://stream3.camara.gov.br/tv1/manifest.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Camara 2 (1080p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://stream3.camara.gov.br/tv2/manifest.m3u8",
+      "url_atual": "https://stream3.camara.gov.br/tv2/manifest.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Terceiro Anjo (360p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streamer1.streamhost.org/salive/GMI3anjoh/playlist.m3u8",
+      "url_atual": "https://streamer1.streamhost.org/salive/GMI3anjoh/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP 1 (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/rtp1HD.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/rtp1HD.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP 2 (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/rtp2HD.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/rtp2HD.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Acores SD (504p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpacores.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpacores.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Acores (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpacoresHD.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpacoresHD.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Africa (504p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpafrica.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpafrica.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Mundo (504p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpi.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpi.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Madeira SD (504p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpmadeira.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpmadeira.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Memoria (504p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/liverepeater/smil:rtpmem.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/liverepeater/smil:rtpmem.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Noticias (720p) [Not 24/7]",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/livetvhlsDVR/rtpnHDdvr.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/livetvhlsDVR/rtpnHDdvr.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RTP Noticias SD (504p) [Not 24/7]",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming-live.rtp.pt/livetvhlsDVR/rtpndvr.smil/playlist.m3u8",
+      "url_atual": "https://streaming-live.rtp.pt/livetvhlsDVR/rtpndvr.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Life America (720p)",
+      "categoria": "Cultura",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming.cloudecast.com/hls/tvlifeamerica/index.m3u8",
+      "url_atual": "https://streaming.cloudecast.com/hls/tvlifeamerica/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVE RS (1080p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming.procergs.com.br:8443/tve/stve/playlist.m3u8",
+      "url_atual": "https://streaming.procergs.com.br:8443/tve/stve/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Gideoes (1080p) [Not 24/7]",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streaming01.zas.media/gideoes/programacao/playlist.m3u8",
+      "url_atual": "https://streaming01.zas.media/gideoes/programacao/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "EbS (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streams.prd.commavservices.eu/live/ebs/index.m3u8",
+      "url_atual": "https://streams.prd.commavservices.eu/live/ebs/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "EbS+ (1080p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://streams.prd.commavservices.eu/live/ebsplus/index.m3u8",
+      "url_atual": "https://streams.prd.commavservices.eu/live/ebsplus/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Plenitude TV",
+      "categoria": "Religiosos",
+      "status_historico": "Revisar PC",
+      "url_original": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8",
+      "url_atual": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Cidade Verde Cuiaba",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://televisaocidadeverde.brasilstream.com.br/hls/televisaocidadeverde/index.m3u8",
+      "url_atual": "https://televisaocidadeverde.brasilstream.com.br/hls/televisaocidadeverde/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TNT (United States) West (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://turnerlive.warnermediacdn.com/hls/live/2023170/tntwest/slate/VIDEO_0_3564000.m3u8",
+      "url_atual": "https://turnerlive.warnermediacdn.com/hls/live/2023170/tntwest/slate/VIDEO_0_3564000.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TBS West (720p) [Geo-blocked]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://turnerlive.warnermediacdn.com/hls/live/2023174/tbswest/slate/VIDEO_0_3564000.m3u8",
+      "url_atual": "https://turnerlive.warnermediacdn.com/hls/live/2023174/tbswest/slate/VIDEO_0_3564000.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Laboral TV (360p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://tv.laboralsst.com.br/hls/stream.m3u8",
+      "url_atual": "https://tv.laboralsst.com.br/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RedeTV! Parana",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8",
+      "url_atual": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Futuro (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://tv02.zas.media:1936/tvfuturo/tvfuturo/playlist.m3u8",
+      "url_atual": "https://tv02.zas.media:1936/tvfuturo/tvfuturo/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Marajoara (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Revisar PC",
+      "url_original": "https://tv02.zas.media:1936/tvmarajoara/tvmarajoara/playlist.m3u8",
+      "url_atual": "https://tv02.zas.media:1936/tvmarajoara/tvmarajoara/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Famatv (1080p) [Not 24/7]",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://tv2.fastcast4u.com:3310/live/famatvlive.m3u8",
+      "url_atual": "https://tv2.fastcast4u.com:3310/live/famatvlive.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Difusao (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Revisar PC",
+      "url_original": "https://tvdsoultv.acessaradios.com.br/tvdsoultv/tvdsoultv.stream/playlist.m3u8",
+      "url_atual": "https://tvdsoultv.acessaradios.com.br/tvdsoultv/tvdsoultv.stream/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Fronteira (480i)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://tvfronteira.brasilstream.com.br/hls/tvfronteira/index.m3u8",
+      "url_atual": "https://tvfronteira.brasilstream.com.br/hls/tvfronteira/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "UMA TV",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://umatv.nuvemplay.live/hls/stream.m3u8",
+      "url_atual": "https://umatv.nuvemplay.live/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal FDR",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://v-us-01.wisestream.io/memfs/e4ade538-7924-4359-81ef-b9d4dd229e91.m3u8",
+      "url_atual": "https://v-us-01.wisestream.io/memfs/e4ade538-7924-4359-81ef-b9d4dd229e91.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Interlagos (360p)",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://v8.ciclano.io:1443/tvinterlagos/_definst_/tvinterlagos/playlist.m3u8",
+      "url_atual": "https://v8.ciclano.io:1443/tvinterlagos/_definst_/tvinterlagos/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Guarapari (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video.welltecnologia.com.br/tvguarapari/tvguarapari/playlist.m3u8",
+      "url_atual": "https://video.welltecnologia.com.br/tvguarapari/tvguarapari/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "J3NEWS TV",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.brascast.com/d92ebb4f/d92ebb4f/playlist.m3u8",
+      "url_atual": "https://video01.brascast.com/d92ebb4f/d92ebb4f/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Cidade de Petropolis (1080p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.kshost.com.br:4443/inside2133/inside2133/playlist.m3u8",
+      "url_atual": "https://video01.kshost.com.br:4443/inside2133/inside2133/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Grao Para (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.kshost.com.br:4443/moises3834/moises3834/playlist.m3u8",
+      "url_atual": "https://video01.kshost.com.br:4443/moises3834/moises3834/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MKK Web TV (720p) [Not 24/7]",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/mkkwebtv/mkkwebtv/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/mkkwebtv/mkkwebtv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV A Folha (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/tvafolha/tvafolha/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/tvafolha/tvafolha/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Alianca Catarinense (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/tvalianca/tvalianca/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/tvalianca/tvalianca/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVideoNews (720p) [Not 24/7]",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/tvideonews/tvideonews/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/tvideonews/tvideonews/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Padre Cicero (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/tvpadrecicero/tvpadrecicero/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/tvpadrecicero/tvpadrecicero/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Rede SPTV (360p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8",
+      "url_atual": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Guara (720p) [Not 24/7]",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video02.logicahost.com.br/tvguara23/tvguara23/playlist.m3u8",
+      "url_atual": "https://video02.logicahost.com.br/tvguara23/tvguara23/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Petropolis (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video02.logicahost.com.br/tvpetropolis/tvpetropolis/playlist.m3u8",
+      "url_atual": "https://video02.logicahost.com.br/tvpetropolis/tvpetropolis/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "RFPtv (360p)",
+      "categoria": "Música",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video03.logicahost.com.br/rfptv/rfptv/playlist.m3u8",
+      "url_atual": "https://video03.logicahost.com.br/rfptv/rfptv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Petlovers TV",
+      "categoria": "Entretenimento",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video04.logicahost.com.br/petloverstv/petloverstv/playlist.m3u8",
+      "url_atual": "https://video04.logicahost.com.br/petloverstv/petloverstv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Araruna TV",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8",
+      "url_atual": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVC-Rio",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video05.logicahost.com.br/comunitariario/comunitariario/playlist.m3u8",
+      "url_atual": "https://video05.logicahost.com.br/comunitariario/comunitariario/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Bem Mais TV (1080p)",
+      "categoria": "Educação",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video09.logicahost.com.br/bemmaistv01/bemmaistv01/playlist.m3u8",
+      "url_atual": "https://video09.logicahost.com.br/bemmaistv01/bemmaistv01/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Cuiaba",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video09.logicahost.com.br/sbtcuiaba/sbtcuiaba/playlist.m3u8",
+      "url_atual": "https://video09.logicahost.com.br/sbtcuiaba/sbtcuiaba/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Nova Mutum",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video09.logicahost.com.br/sbtmutum/sbtmutum/playlist.m3u8",
+      "url_atual": "https://video09.logicahost.com.br/sbtmutum/sbtmutum/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBT Rondonopolis",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video09.logicahost.com.br/sbtroo/sbtroo/playlist.m3u8",
+      "url_atual": "https://video09.logicahost.com.br/sbtroo/sbtroo/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Paraense (720p)",
+      "categoria": "Notícias",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u",
+      "url_atual": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SOU TV",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video10.logicahost.com.br/soutv/soutv/playlist.m3u8",
+      "url_atual": "https://video10.logicahost.com.br/soutv/soutv/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Canal UOL (1080p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://video24.mais.uol.com.br/live/6146.m3u8",
+      "url_atual": "https://video24.mais.uol.com.br/live/6146.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "New Channel Pop! (480p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://vodcdn.bamboo-cloud.com/livehls/6ab37c6c7e057f9063071c85/master.m3u8",
+      "url_atual": "https://vodcdn.bamboo-cloud.com/livehls/6ab37c6c7e057f9063071c85/master.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Gloob Web [Not 24/7]",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://vs20.live.opencaster.com/globiosat_73a904af/index.m3u8",
+      "url_atual": "https://vs20.live.opencaster.com/globiosat_73a904af/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Mana Igreja Online (1080p) [Not 24/7]",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/igrejaonline/smil:igrejaonline.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/igrejaonline/smil:igrejaonline.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "KK TV (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/ktv-angola/smil:ktv-angola.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/ktv-angola/smil:ktv-angola.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Kuriakos TV (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/ktv/smil:ktv.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/ktv/smil:ktv.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mana 1 (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/tvmana-1/smil:tvmana-1.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/tvmana-1/smil:tvmana-1.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mana 2 (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/tvmana-2/smil:tvmana-2.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/tvmana-2/smil:tvmana-2.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mana Brasil (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w1.manasat.com/tvmana-brasil/smil:tvmana-brasil.smil/playlist.m3u8",
+      "url_atual": "https://w1.manasat.com/tvmana-brasil/smil:tvmana-brasil.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Kuriakos Cine (1080p)",
+      "categoria": "Filmes",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w2.manasat.com/kcine/smil:kcine.smil/playlist.m3u8",
+      "url_atual": "https://w2.manasat.com/kcine/smil:kcine.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Kuriakos Kids (1080p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8",
+      "url_atual": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TV Mana Mocambique (1080p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://w2.manasat.com/tvmana-mz/smil:tvmana-mz.smil/playlist.m3u8",
+      "url_atual": "https://w2.manasat.com/tvmana-mz/smil:tvmana-mz.smil/playlist.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "SBN TV Global (720p)",
+      "categoria": "Religiosos",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://watch.sardius.media/channels/Ea867F3e1F56B06/site_8D363D13Eb/live.m3u8",
+      "url_atual": "https://watch.sardius.media/channels/Ea867F3e1F56B06/site_8D363D13Eb/live.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "MNTV",
+      "categoria": "Outros",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://www.khuwemultimedia.com/hls/mntv/mntv.m3u8",
+      "url_atual": "https://www.khuwemultimedia.com/hls/mntv/mntv.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "Reino Infantil",
+      "categoria": "Infantil",
+      "status_historico": "Revisar PC",
+      "url_original": "https://www.khuwemultimedia.com/hls/reinoinfantiltv/reinoinfantiltv.m3u8",
+      "url_atual": "https://www.khuwemultimedia.com/hls/reinoinfantiltv/reinoinfantiltv.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "TVLatinaSat (720p)",
+      "categoria": "TV ao Vivo",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://www.latinasat.com.br/hls/live/stream/index.m3u8",
+      "url_atual": "https://www.latinasat.com.br/hls/live/stream/index.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    },
+    {
+      "nome": "NickOnline HD (720p)",
+      "categoria": "Infantil",
+      "status_historico": "Confirmado PC",
+      "url_original": "https://x1colegal.com/hls/stream.m3u8",
+      "url_atual": "https://x1colegal.com/hls/stream.m3u8",
+      "atualizacao": "Sem substituição autorizada nesta revisão",
+      "alterado": false
+    }
+  ],
+  "adicoes_aprovadas_fora_da_base": [
+    {
+      "nome": "CazéTV",
+      "categoria": "Esportes",
+      "url_atual": "http://138.204.86.4:8080/CAZE_TV/playlist.m3u8",
+      "atualizacao": "Aprovado fisicamente; primeiro na categoria Esportes"
+    },
+    {
+      "nome": "TV Rá-Tim-Bum HD",
+      "categoria": "Infantil",
+      "url_atual": "http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8",
+      "atualizacao": "Aprovado fisicamente; alternativas aprovadas documentadas"
+    },
+    {
+      "nome": "Record TV MT",
+      "categoria": "TV ao Vivo",
+      "url_atual": "https://cdn.jmvstream.com/w/LVW-10842/LVW10842_513N26MDBL/chunklist.m3u8",
+      "atualizacao": "Aprovado fisicamente; variante distinta de Record"
+    },
+    {
+      "nome": "Telecine Action",
+      "categoria": "Filmes",
+      "url_atual": "http://46.151.196.223:14326/",
+      "atualizacao": "URL base, caminho não confirmado"
+    }
+  ],
+  "notas": [
+    "A marca Confirmado PC não equivale a validação física independente.",
+    "Links de Globo e Globoplay Novelas são endereços-base, não URLs HLS completas.",
+    "A adição dos canais fora da base não muda a contagem congelada de 479.",
+    "Nenhum APK, ZIP, repositório ou produção foi alterado."
+  ]
+}

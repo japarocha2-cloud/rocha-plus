@@ -1,0 +1,37 @@
+name: Official unified catalog LAB - no packages
+on:
+  push:
+    branches: [lab/catalogo-unico-oficial-20261108]
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frozen originals, backups, identical adapters and preserved artwork
+        run: |
+          python3 tools/official_catalog/catalog.py
+          python3 tools/official_catalog/preservation.py
+          python3 -m unittest discover -s tools/official_catalog -p 'test_*.py' -v
+          python3 -m unittest discover -s tools/c7_catalog -p 'test_*.py' -v
+      - name: Roku BrightScript and SceneGraph compilation without ZIP
+        run: npx --yes --package=brighterscript@0.73.8 bsc --project platforms/roku-lab-visual/bsconfig.official.json
+      - name: Android shared reader, navigation and playback regressions
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+          flutter test test/official_catalog_test.dart test/c7_selected_catalog_test.dart test/c7_effective_catalog_test.dart test/c7_category_navigation_test.dart --dart-define=ROCHA_FULL_UI_LAB=true
+      # No APK, ZIP, signing, secrets, provider calls or deployment.

@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'channel.dart';
 import 'c7_catalog_policy.dart';
+import 'official_catalog_pin.dart';
 
 class C7CatalogUnavailable implements Exception {
   final String message;
@@ -14,7 +15,7 @@ class C7CatalogUnavailable implements Exception {
 /// C7 selection is local, explicitly imported and pinned at build time.
 /// No HTTP client, public-playlist fallback or candidate promotion exists here.
 class C7SelectedCatalog {
-  static const compiledSha256 = String.fromEnvironment('ROCHA_C7_CATALOG_SHA256');
+  static const compiledSha256 = String.fromEnvironment('ROCHA_C7_CATALOG_SHA256', defaultValue: officialCatalogSha256);
   final Future<String> Function() read;
   final String expectedSha256;
   C7SelectedCatalog({Future<String> Function()? read, String? expectedSha256})
@@ -64,6 +65,20 @@ class C7SelectedCatalog {
             uri.userInfo.isNotEmpty || RegExp(r'\s').hasMatch(url) || !categories.contains(group)) {
           throw const FormatException('Invalid selected channel');
         }
+        final alternatives = row['urls'] == null
+            ? const <String>[] : List<String>.from(row['urls'] as List);
+        if (alternatives.isNotEmpty) {
+          final preferred = row['preferredUrlIndex'];
+          if (preferred is! int || preferred < 0 || preferred >= alternatives.length ||
+              alternatives[preferred] != url || alternatives.any((value) {
+                final candidate = Uri.tryParse(value);
+                return candidate == null || !{'http','https'}.contains(candidate.scheme) ||
+                    candidate.host.isEmpty || candidate.userInfo.isNotEmpty ||
+                    RegExp(r'\s').hasMatch(value);
+              })) {
+            throw const FormatException('Invalid approved alternatives');
+          }
+        }
         final key = C7CatalogPolicy.identity(name);
         for (final value in removals) {
           final tombstone = value as Map;
@@ -74,7 +89,8 @@ class C7SelectedCatalog {
         }
         final genres = row['genres'] == null ? const <String>[] : List<String>.from(row['genres'] as List);
         channels.add(Channel(name:name, url:url, group:group, logo:row['logo'] as String?,
-            genres:genres, preferredEngine:row['preferredEngine'] as String?));
+            genres:genres, preferredEngine:row['preferredEngine'] as String?,
+            alternateUrls: alternatives));
       }
       // Only CazéTV moves; every other relative position/field stays intact.
       final caze = channels.where(C7CatalogPolicy.isCaze).toList();

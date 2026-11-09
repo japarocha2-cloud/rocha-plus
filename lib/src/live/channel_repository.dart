@@ -123,9 +123,9 @@ class ChannelRepository {
 
   Future<List<Channel>> _loadC7Selection() async {
     final selected = await _c7Selection.load();
-    _userBlockedNames = await _blocks.load();
-    // Preserve explicit user hiding without sharing any remote source cache.
-    return selected.where((c) => !_isPermanentlyBlocked(c)).toList(growable: false);
+    // Owner-frozen records are never filtered by legacy pending/removal caches.
+    // Historical device decisions remain stored for evidence, without exclusion.
+    return selected;
   }
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
