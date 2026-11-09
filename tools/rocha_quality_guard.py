@@ -48,13 +48,13 @@ for path in ROOT.rglob("*"):
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml", ".mjs"}:
         if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
             lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")}
-            # Exception only for three physical-test feeds on the isolated PR.
+            # Narrow allowlist for physically tested feeds on isolated C7 PR/dispatch only.
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
             lab_branch = (
                 os.environ.get("GITHUB_HEAD_REF", "") in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108"}
                 or (
-                    os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
+                    os.environ.get("GITHUB_REF", "") in {"refs/heads/lab/candidate6-approved-link-patch-20261106", "refs/heads/lab/candidata7-teste-fisico-20261107"}
                     and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"
                 )
             )
