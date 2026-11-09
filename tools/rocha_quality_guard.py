@@ -1,6 +1,9 @@
 from pathlib import Path
 import re
 import sys
+import os
+import hashlib
+import json
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +22,34 @@ TEXT_EXTS = {
 ignore_parts = {".git", "build", ".dart_tool", "node_modules"}
 issues = []
 dart_files = []
+
+# Historical HTTP stream origins are permitted only in exact, verified LAB data.
+# A modified generated file, source or inventory cannot acquire this exception.
+official_transport_files = set()
+if (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) == "lab/catalogo-unico-oficial-20261108":
+    from official_catalog.catalog import build, PINS, BASE, SOURCE
+    try:
+        products = build(ROOT)
+        for name in ("branding/c7/selection.json", "platforms/roku-lab-visual/catalog/official-selection.json"):
+            if (ROOT/name).read_bytes() != products[name]:
+                raise ValueError("generated adapter mismatch")
+            official_transport_files.add(Path(name))
+        official_transport_files.add(Path(BASE+SOURCE))
+        # This overlay contains only the three previously documented alternatives.
+        overlay = ROOT/"catalog/official/overrides.json"
+        evidence = (ROOT/"docs/lab/CANDIDATA6_LINKS_APROVADOS_20261106.md").read_text()
+        entries = json.loads(overlay.read_bytes())["byName"]
+        if set(entries) != {"TV Rá-Tim-Bum HD"} or any(url not in evidence for entry in entries.values() for url in entry["urls"]):
+            raise ValueError("overlay outside documented approval")
+        official_transport_files.add(Path("catalog/official/overrides.json"))
+        baseline = json.loads((ROOT/"catalog/official/roku-baseline-files.json").read_bytes())["files"]
+        for name in ("platforms/roku-lab-visual/catalog/benchmark-pending.json", "platforms/roku-lab-visual/catalog/commercial-lab-merged.json"):
+            if hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != baseline[name]:
+                raise ValueError("historical inventory mismatch")
+            official_transport_files.add(Path(name))
+    except (ValueError, KeyError, OSError) as error:
+        official_transport_files.clear()
+        issues.append("official LAB catalog integrity: " + str(error))
 
 for path in ROOT.rglob("*"):
     if not path.is_file() or any(part in ignore_parts for part in path.parts):
@@ -42,17 +73,17 @@ for path in ROOT.rglob("*"):
         issues.append(f"{rel}: texto visível 'Undefined' encontrado")
 
     # Segredos e transporte inseguro são bloqueadores de release.
-    if re.search(r'(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["\'][^"\']{8,}', text):
+    if re.search(r'(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["\'][^"\'\r\n]{8,}', text):
         issues.append(f"{rel}: possível segredo fixo no código")
     # Só URLs literais de runtime contam. Ignora namespaces XML e testes/documentação.
     if rel.parts[0] not in {"test", "docs"} and path.suffix in {".dart", ".json", ".yaml", ".yml", ".mjs"}:
         if re.search(r"[\"']http://(?!localhost|127\\.0\\.0\\.1)", text):
-            lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")}
+            lab_transport_files = {Path("branding/lab_candidates.json"), Path("lib/src/live/lab_catalog.dart")} | official_transport_files
             # Exception only for three physical-test feeds on the isolated PR.
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
             lab_branch = (
-                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108"}
+                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108", "lab/catalogo-unico-oficial-20261108"}
                 or (
                     os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
                     and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"

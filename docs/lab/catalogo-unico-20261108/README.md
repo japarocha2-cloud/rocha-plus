@@ -76,4 +76,6 @@ A integridade da fonte já permite preparar futuros APK/ZIP LAB a partir desta b
 
 Nenhum APK ou ZIP foi gerado nesta tarefa. Assinatura, certificado, instalação e reprodução em hardware não foram revalidados e não são declarados homologados. Os endereços-base continuam pendências já documentadas, sem bloquear acesso aos registros. C6, versão oficial, pagamentos, Firebase e secrets não foram alterados. Sem merge, deploy ou publicação.
 
+O fiscal de qualidade também foi executado: a exceção HTTP desta branch fica restrita aos originais/adaptadores verificados e inventários Roku com hash idêntico ao baseline. Corrigido falso positivo de segredo quando `token=` vazio no fim de URL fazia a expressão atravessar a quebra de linha do JSON. Demais arquivos e branches continuam fiscalizados.
+
 Workflow: `.github/workflows/official-catalog-lab.yml`. Resultado remoto e commit final devem acompanhar a entrega; não presumir CI aprovado antes da execução.

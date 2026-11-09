@@ -24,6 +24,7 @@ jobs:
         run: |
           python3 tools/official_catalog/catalog.py
           python3 tools/official_catalog/preservation.py
+          python3 tools/rocha_quality_guard.py
           python3 -m unittest discover -s tools/official_catalog -p 'test_*.py' -v
           python3 -m unittest discover -s tools/c7_catalog -p 'test_*.py' -v
           python3 -m unittest discover -s tools -p 'test_configure_android.py' -v
