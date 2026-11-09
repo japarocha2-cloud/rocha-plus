@@ -1,3 +1,4 @@
+import 'c7_selected_catalog.dart';
 import 'c7_catalog_policy.dart';
 import 'dart:convert';
 
@@ -11,6 +12,7 @@ import 'channel_repository.dart';
 
 /// A generated, auditable candidate snapshot. Never imported by production.
 Future<List<Channel>> loadLabCatalog() async {
+  if (C7CatalogPolicy.enabled) return C7SelectedCatalog().load();
   final config = await LabRuntime.configuration();
   if (config['fixture'] == true) {
     return const [

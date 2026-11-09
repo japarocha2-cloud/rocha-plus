@@ -52,7 +52,7 @@ for path in ROOT.rglob("*"):
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
             lab_branch = (
-                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108"}
+                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108"}
                 or (
                     os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
                     and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"

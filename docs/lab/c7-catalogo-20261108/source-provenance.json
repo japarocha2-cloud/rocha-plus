@@ -1,0 +1,56 @@
+[
+  {
+    "description": "C7 candidates",
+    "ref": "HEAD",
+    "commit": "1cd674e3e99b4c206c6ecef3ed9ff56bd7a36194",
+    "path": "branding/lab_candidates.json",
+    "sha256": "92eba3310d4b307e47f295ef1e1c5ad9b73ae673657223e93fb6587b86af6d00",
+    "records": 479,
+    "c6OriginalSelectionIdentified": false,
+    "statuses": {
+      "pending": 479
+    }
+  },
+  {
+    "description": "C7 approved placeholder",
+    "ref": "HEAD",
+    "commit": "1cd674e3e99b4c206c6ecef3ed9ff56bd7a36194",
+    "path": "branding/lab_approved.json",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "records": 0,
+    "c6OriginalSelectionIdentified": false,
+    "statuses": {}
+  },
+  {
+    "description": "C6 recovery approved placeholder",
+    "ref": "origin/c6-recovery",
+    "commit": "f96134d76907c2b17df3c754775a6282fe71d843",
+    "path": "branding/lab_approved.json",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "records": 0,
+    "c6OriginalSelectionIdentified": false,
+    "statuses": {}
+  },
+  {
+    "description": "C6 link-patch approved placeholder",
+    "ref": "origin/c6-links",
+    "commit": "b3aac02fbc24eb7799a866b3b82f083a4736df99",
+    "path": "branding/lab_approved.json",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "records": 0,
+    "c6OriginalSelectionIdentified": false,
+    "statuses": {}
+  },
+  {
+    "description": "Roku historical approved, not C6",
+    "ref": "origin/roku-audit",
+    "commit": "4f281e6f8f04e787790d21b666a2f2f6d6a0d2aa",
+    "path": "catalog/approved.json",
+    "sha256": "b101e453673053a7b8723652e7727b42bde83b41d4b84beaf49711304a583d67",
+    "records": 190,
+    "c6OriginalSelectionIdentified": false,
+    "statuses": {
+      "approved": 190
+    }
+  }
+]

@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  crypto: ^3.0.6
   http: ^1.2.2
   flutter_chrome_cast: 1.5.0
   shared_preferences: ^2.5.3
@@ -28,6 +29,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - branding/c7/
     - branding/rocha_plus_icon.webp
     - branding/dashboard-reference.png
     - branding/cast-reference.png

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "d96f9a09d7396fe105ef63e7769653c7d18c40f50221d8f816640148234e7d7a",
+    "identity": "record",
+    "name": "Record (720p)",
+    "url": "http://170.84.165.204/Record_HD/index.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "2ec17d91d31a6af5550a1a0d6141f23d71645a276f826ab77e83390f0bd21215",
+    "identity": "record brasilia",
+    "name": "RecordTV Brasilia (720p) [Geo-blocked]",
+    "url": "https://playplusbsa-lh.akamaihd.net/i/pp_bsa@377860/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "ebe9c403ba9ee781067a4e771fad8b1f1f2b1fb6be7834afa32a86c08abcdbed",
+    "identity": "record goias",
+    "name": "RecordTV Goias (720p) [Geo-blocked]",
+    "url": "https://playplusgoya-lh.akamaihd.net/i/pp_gna@377833/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "881432a8bbd28b997cba7008339ef731e127345aceee84ebc01bf7b410c38737",
+    "identity": "record belem",
+    "name": "RecordTV Belem (720p) [Geo-blocked]",
+    "url": "https://playpluspa-lh.akamaihd.net/i/pp_pa@377468/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "eb8d2e56d75100bd445fea5463c63b15043b493ed11aa48a7b7413210be44453",
+    "identity": "record rs",
+    "name": "Record RS (720p) [Geo-blocked]",
+    "url": "https://playpluspoa-lh.akamaihd.net/i/pp_poa@377864/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "89238aae15a53152263790539d2a3b8e61e3d0623e7d40ed1c6d8bb6ad50b847",
+    "identity": "record rio",
+    "name": "RecordTV Rio (720p) [Geo-blocked]",
+    "url": "https://playplusrjo-lh.akamaihd.net/i/pp_rj@377859/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "5e7f5e2313c8e1a02c22b8ac5f3ef98650be3343e36be5994fac07c486f431f9",
+    "identity": "record itapoan",
+    "name": "RecordTV Itapoan (720p) [Geo-blocked]",
+    "url": "https://playplussdr-lh.akamaihd.net/i/pp_sdr@377858/index_720_av-b.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  },
+  {
+    "id": "11ca68179864dab187b0f6a7299f96e43d999f9894c9e54f4c1fafc82b3b3bb3",
+    "identity": "record sao paulo",
+    "name": "RecordTV Sao Paulo (720p) [Geo-blocked]",
+    "url": "https://playplusspo-lh.akamaihd.net/i/pp_sp@350176/index_720_av-p.m3u8",
+    "blockIdentity": true,
+    "authority": "physical C7 order 2026-11-08; source snapshot preserved"
+  }
+]

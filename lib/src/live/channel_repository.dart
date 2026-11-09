@@ -1,5 +1,5 @@
+import 'c7_selected_catalog.dart';
 import 'c7_catalog_policy.dart';
-import 'lab_runtime.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
@@ -13,7 +13,10 @@ class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
   final http.Client _client;
   Future<List<Channel>>? _pendingLoad;
-  ChannelRepository({http.Client? client}) : _client = client ?? _defaultClient;
+  final C7SelectedCatalog _c7Selection;
+  ChannelRepository({http.Client? client, C7SelectedCatalog? c7Selection})
+      : _client = client ?? _defaultClient,
+        _c7Selection = c7Selection ?? C7SelectedCatalog();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
@@ -110,8 +113,19 @@ class ChannelRepository {
           .toList(growable: false);
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) {
+    if (C7CatalogPolicy.enabled) {
+      // Before all remote/last-known-good caches: C7 never imports br/sports.
+      return _loadC7Selection();
+    }
     return _pendingLoad ??= _loadDirectory(forceRefresh: forceRefresh)
         .whenComplete(() => _pendingLoad = null);
+  }
+
+  Future<List<Channel>> _loadC7Selection() async {
+    final selected = await _c7Selection.load();
+    _userBlockedNames = await _blocks.load();
+    // Preserve explicit user hiding without sharing any remote source cache.
+    return selected.where((c) => !_isPermanentlyBlocked(c)).toList(growable: false);
   }
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
@@ -174,35 +188,7 @@ class ChannelRepository {
       final key = (channelIdentity(channel.name), channel.url.trim());
       correctedCards.putIfAbsent(key, () => channel);
     }
-    // Explicit physical-test entry: remote playlists may omit CazéTV entirely.
-    // This does not alter the official catalogue or hide any existing channel.
-    const physicalTestLab = bool.fromEnvironment('ROCHA_FULL_UI_LAB');
-    if (physicalTestLab &&
-        !correctedCards.values.any((c) => channelIdentity(c.name) == 'cazetv')) {
-      const caze = Channel(
-        name: 'CazéTV',
-        url: 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
-        group: 'Esportes',
-      );
-      correctedCards[(channelIdentity(caze.name), caze.url)] = caze;
-    }
     final ordered = _orderSportsFirst(correctedCards.values.toList());
-    if (C7CatalogPolicy.enabled) {
-      try {
-        final runtime = await LabRuntime.open();
-        await runtime?.write('record-c7-inventory.json', {
-          'source': 'effective remote C7 input before policy; source snapshots retained',
-          'records': ordered.where((c) => channelIdentity(c.name).contains('record')).map((c) => {
-            'id': base64Url.encode(utf8.encode('${channelIdentity(c.name)}\u0000${c.url}')),
-            'idOrigin': 'derived base64url(nameIdentity+NUL+url), no native source ID',
-            'name': c.name, 'url': c.url, 'category': c.group, 'logo': c.logo,
-            'decision': C7CatalogPolicy.removeRecord(c) ? 'exclude C7 effective catalog only' : 'retain',
-          }).toList(),
-        });
-      } catch (_) {
-        // An unavailable evidence bridge must never block physical testing.
-      }
-    }
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;

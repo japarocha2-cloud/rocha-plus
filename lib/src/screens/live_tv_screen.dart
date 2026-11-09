@@ -1,3 +1,4 @@
+import '../live/c7_selected_catalog.dart';
 import '../live/c7_catalog_policy.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
     super.initState();
     favoritesRepository = FavoritesRepository(accountUid: widget.accountUid);
     repository = widget.repository ?? ChannelRepository();
-    selectedGroup = widget.initialGroup;
+    selectedGroup = C7CatalogPolicy.enabled && widget.initialGroup == 'TV aberta' ? 'TV ao Vivo' : widget.initialGroup;
     load();
   }
 
@@ -80,10 +81,10 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
           loading = false;
         });
       }
-    } catch (_) {
+    } catch (failure) {
       if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
-          error = 'Não foi possível carregar os canais.';
+          error = failure is C7CatalogUnavailable ? failure.message : 'Não foi possível carregar os canais.';
           loading = false;
         });
       }
@@ -148,7 +149,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
   @override
   Widget build(BuildContext context) {
     final preferredGroups = widget.laboratoryFeatures
-        ? labCategories.map(repositoryCategory).toList()
+        ? (C7CatalogPolicy.enabled ? labCategories : labCategories.map(repositoryCategory).toList())
         : ['TV aberta', 'Esportes', 'Notícias', 'Infantil', 'Geral'];
     final available = channels.map((c) => c.group).toSet();
     final extraGroups = available.difference(preferredGroups.toSet()).toList()
@@ -157,7 +158,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
       ...preferredGroups.where(available.contains),
       ...extraGroups,
     ];
-    final requestedGroup = widget.initialGroup;
+    final requestedGroup = C7CatalogPolicy.enabled && widget.initialGroup == 'TV aberta' ? 'TV ao Vivo' : widget.initialGroup;
     final keepRequestedEmptyGroup =
         requestedGroup != 'Todos' &&
         requestedGroup != 'Favoritos' &&
