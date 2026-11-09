@@ -24,6 +24,7 @@ class SelectionTests(unittest.TestCase):
             original=next(r for r in rows if r['id']==row['id'])
             self.assertEqual(row['name'],original['name']);self.assertEqual(row['url'],original['url']);self.assertEqual(row.get('logo'),original.get('logo'))
         self.assertEqual(category('Noticias'),'Notícias')
+        self.assertEqual(category('Noti\u0301cias'),'Notícias')
         self.assertEqual(category('Education'),'Educação')
         self.assertEqual(category('Unknown external group'),'Outros')
         self.assertTrue((self.store/'sources'/digest(self.source.read_bytes())).is_file())
@@ -56,6 +57,14 @@ class SelectionTests(unittest.TestCase):
         target=self.store/'selections'/f"{first['sha256']}.json";target.write_bytes(target.read_bytes()+b' ')
         with self.assertRaisesRegex(ValueError,'stored selection SHA'):
             read_head(self.store)
+    def test_reformatted_pending_inventory_cannot_be_promoted(self):
+        from selection import encoded
+        rows=[{'id':'a','name':'Candidate','url':'https://example.test/a','status':'pending'}]
+        self.source.write_text(json.dumps(rows,indent=4))
+        with self.assertRaisesRegex(ValueError,'pending'):
+            import_selection(self.store,self.source,digest(self.source.read_bytes()),'none','owner-selection','not a real selection',[],{digest(encoded(rows))},True)
+        self.assertFalse((self.store/'HEAD.json').exists())
+
     def test_duplicate_ids_invalid_urls_and_dry_run_are_not_activated(self):
         rows=[{'id':'a','name':'A','url':'https://example.test/a'}]
         self.apply(rows,apply=False)

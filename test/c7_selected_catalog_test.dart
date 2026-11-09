@@ -15,6 +15,15 @@ void main() {
     expect(rows.last.url, 'http://170.83.16.50/HISTORY/index.m3u8');
     expect(rows[1].logo, 'https://example.test/logo');
   });
+  test('decomposed CazéTV identity retains first Sports placement', () async {
+    final data = jsonDecode(raw) as Map<String,dynamic>;
+    final rows = data['channels'] as List;
+    rows[1]['name'] = 'Caze\u0301TV';
+    final caze = rows.removeAt(1); rows.add(caze);
+    final changed = jsonEncode(data);
+    final result = await C7SelectedCatalog(read: () async => changed, expectedSha256: sha256.convert(utf8.encode(changed)).toString()).load();
+    expect(result.where((c) => c.group=='Esportes').first.name, 'Caze\u0301TV');
+  });
   test('missing pin and tampered bytes fail without reading candidates', () async {
     var reads = 0;
     await expectLater(C7SelectedCatalog(read: () async {reads++; return raw;}, expectedSha256: '').load(), throwsA(isA<C7CatalogUnavailable>()));

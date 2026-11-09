@@ -14,6 +14,7 @@ def digest(data): return hashlib.sha256(data).hexdigest()
 def encoded(data): return (json.dumps(data,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
 def identity(name):
     value=re.sub(r'\s*\(\d+p\)|\s*\[not 24/7\]|\s*\[geo-blocked\]','',name.strip().lower())
+    value=re.sub(r'[\u0300-\u036f]','',value)
     value=value.translate(str.maketrans(dict(zip('áàãâéêíóôõúç','aaaaeeiooouc'))))
     value=re.sub(r'^(recordtv|record tv|tv record)\b','record',value)
     return ' '.join(value.split())
@@ -47,6 +48,7 @@ def normalize(rows,old):
         if not isinstance(row['id'],str) or not row['id'] or row['id'] in ids:raise ValueError('missing/duplicate channel ID')
         ids.add(row['id'])
         group=r.get('group',r.get('category','Outros'))
+        if not isinstance(group,str):raise ValueError('invalid category metadata')
         if 'group' in r and 'category' in r and category(r['group'])!=category(r['category']):raise ValueError('conflicting categories')
         row['group']=category(group)
         if group!=row['group']:row['originalCategory']=group

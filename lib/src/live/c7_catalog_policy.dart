@@ -5,6 +5,7 @@ import 'channel_identity.dart';
 class C7CatalogPolicy {
   static const enabled = bool.fromEnvironment('ROCHA_FULL_UI_LAB');
   static String identity(String name) => channelIdentity(name)
+      .replaceAll(RegExp(r'[\u0300-\u036f]'), '')
       .replaceAll(RegExp(r'\s*\[geo-blocked\]'), '')
       .replaceFirst(RegExp(r'^recordtv\b'), 'record')
       .replaceFirst(RegExp(r'^record tv\b'), 'record')
@@ -26,7 +27,7 @@ class C7CatalogPolicy {
   }
 
   static bool isCaze(Channel c) => c.group == 'Esportes' &&
-      channelIdentity(c.name).replaceAll(' ', '') == 'cazetv';
+      identity(c.name).replaceAll(' ', '') == 'cazetv';
 
   static List<Channel> apply(Iterable<Channel> source) {
     final retained = source.where((c) => !removeRecord(c)).toList();
