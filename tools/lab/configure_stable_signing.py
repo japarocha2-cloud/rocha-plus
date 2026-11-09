@@ -13,7 +13,7 @@ def configure(env, root):
     fields = ('LAB_KEYSTORE_BASE64', 'LAB_KEYSTORE_PASSWORD', 'LAB_KEY_ALIAS')
     present = [bool(env.get(k)) for k in fields]
     branch = env.get('GITHUB_HEAD_REF') or env.get('GITHUB_REF_NAME', '')
-    candidate7 = branch.startswith(('lab/candidata7-', 'lab/p0-candidata7-'))
+    candidate7 = branch.startswith(('lab/candidata7-', 'lab/p0-candidata7-')) or branch == 'lab/catalogo-unico-oficial-20261108'
     if candidate7 and not all(present):
         raise ValueError('Candidata 7 requires the existing dedicated LAB key; refusing a random update certificate')
     if not any(present):

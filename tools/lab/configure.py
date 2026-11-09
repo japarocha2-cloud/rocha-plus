@@ -4,6 +4,23 @@ import xml.etree.ElementTree as ET
 import re
 ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
 
+def official_http_hosts(root):
+    """Include only pinned official URLs in the debug resource, never main."""
+    import hashlib
+    import json
+    from urllib.parse import urlsplit
+    root = Path(root)
+    asset = root / 'branding/c7/selection.json'
+    if not asset.exists():
+        return set()
+    raw = asset.read_bytes()
+    pin = (root / 'catalog/official/runtime.sha256').read_text().strip()
+    if hashlib.sha256(raw).hexdigest() != pin:
+        raise ValueError('Official catalogue SHA mismatch before debug network setup')
+    return {urlsplit(url).hostname for row in json.loads(raw)['channels']
+            for url in [row['url']] + row.get('urls', [])
+            if url.startswith('http://') and urlsplit(url).hostname}
+
 def configure_lab(root):
     root = Path(root)
     a = '{http://schemas.android.com/apk/res/android}'
@@ -63,6 +80,7 @@ def configure_lab(root):
     main_security = root / 'android/app/src/main/res/xml/rocha_network_security.xml'
     if main_security.exists():
         hosts |= {node.text for node in ET.parse(main_security).getroot().findall('domain-config/domain') if node.text}
+    hosts |= official_http_hosts(root)
     hosts = sorted(hosts)
     security = ET.Element('network-security-config')
     ET.SubElement(security, 'base-config', {'cleartextTrafficPermitted': 'false'})

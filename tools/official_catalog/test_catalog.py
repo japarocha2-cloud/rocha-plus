@@ -79,6 +79,23 @@ class OfficialCatalogueTest(unittest.TestCase):
         self.assertNotIn('and (m.showRemoved or not isRemoved',brs)
         self.assertIn('OfficialCatalogue.brs',(ROOT/catalog.ROKU/'components/HomeScene.xml').read_text())
 
+    def test_approved_alternative_hosts_are_debug_only_and_pinned(self):
+        spec=importlib.util.spec_from_file_location('lab_configure',ROOT/'tools/lab/configure.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        hosts=module.official_http_hosts(ROOT)
+        self.assertIn('186.219.52.187',hosts)
+        self.assertNotIn('186.219.52.187',(ROOT/'tools/allowed_http_hosts.txt').read_text().splitlines())
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            self.assertEqual(module.official_http_hosts(root),set())
+            for name in ['branding/c7/selection.json','catalog/official/runtime.sha256']:
+                target=root/name;target.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copyfile(ROOT/name,target)
+            self.assertEqual(module.official_http_hosts(root),hosts)
+            asset=root/'branding/c7/selection.json';asset.write_bytes(asset.read_bytes()+b' ')
+            with self.assertRaisesRegex(ValueError,'SHA mismatch'):
+                module.official_http_hosts(root)
+
     def test_frozen_tampering_fails_before_regeneration(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)

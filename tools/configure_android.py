@@ -89,7 +89,7 @@ def configure(root):
         suffix = None
         if branch == "lab/cazetv-link-only-20261106":
             suffix = ".labcazetv"
-        elif branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")):
+        elif (branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")) or branch == "lab/catalogo-unico-oficial-20261108"):
             suffix = ".labc7"
         if suffix:
             # Replace the debug suffix; never stack overrides on repeated setup.
@@ -108,7 +108,7 @@ def configure(root):
     activity.parent.mkdir(parents=True, exist_ok=True)
     activity.write_text((root / "tools/MainActivity.kt").read_text(encoding="utf-8"), encoding="utf-8")
     branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
-    if branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")):
+    if (branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")) or branch == "lab/catalogo-unico-oficial-20261108"):
         res = root / "android/app/src/main/res"
         launch = res / "drawable/launch_background.xml"
         launch.parent.mkdir(parents=True, exist_ok=True)

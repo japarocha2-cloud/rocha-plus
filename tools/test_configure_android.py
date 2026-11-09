@@ -7,6 +7,11 @@ from configure_android import configure, attr
 
 class AndroidConfigurationTest(unittest.TestCase):
     def test_manifest_is_idempotent_and_scopes_cleartext_to_reviewed_hosts(self):
+        for branch in ['lab/candidata7-teste-fisico-20261107', 'lab/catalogo-unico-oficial-20261108']:
+            with self.subTest(branch=branch):
+                self._check_lab_branch(branch)
+
+    def _check_lab_branch(self, branch):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             manifest = root / "android/app/src/main/AndroidManifest.xml"
@@ -29,7 +34,7 @@ class AndroidConfigurationTest(unittest.TestCase):
             gradle.write_text('android { namespace = "com.example.rocha_plus"\n'
                               'defaultConfig { applicationId = "com.example.rocha_plus" } }',
                               encoding="utf-8")
-            with patch.dict('os.environ', {'GITHUB_HEAD_REF': 'lab/candidata7-teste-fisico-20261107'}):
+            with patch.dict('os.environ', {'GITHUB_HEAD_REF': branch}):
                 configure(root)
                 configure(root)
             launch = ET.parse(root / 'android/app/src/main/res/drawable/launch_background.xml').getroot()

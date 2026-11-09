@@ -26,6 +26,9 @@ jobs:
           python3 tools/official_catalog/preservation.py
           python3 -m unittest discover -s tools/official_catalog -p 'test_*.py' -v
           python3 -m unittest discover -s tools/c7_catalog -p 'test_*.py' -v
+          python3 -m unittest discover -s tools -p 'test_configure_android.py' -v
+          python3 -m unittest discover -s tools/lab -p 'test_configure_lab.py' -v
+          python3 -m unittest discover -s tools/lab -p 'test_stable_signing.py' -v
       - name: Roku BrightScript and SceneGraph compilation without ZIP
         run: npx --yes --package=brighterscript@0.73.8 bsc --project platforms/roku-lab-visual/bsconfig.official.json
       - name: Android shared reader, navigation and playback regressions
