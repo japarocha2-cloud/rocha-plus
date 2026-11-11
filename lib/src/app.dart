@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
+import 'field_test_mode.dart';
 import 'auth/firebase_auth_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -24,7 +25,10 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   void initState() {
     super.initState();
     controller = widget.authController ?? AuthController(FirebaseAuthRepository());
-    if (controller.initializing) unawaited(controller.initialize());
+    // The isolated TV field-test build deliberately has no authentication.
+    if (!rochaTvFieldTest && controller.initializing) {
+      unawaited(controller.initialize());
+    }
   }
   @override
   void dispose() {
@@ -36,12 +40,13 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(animation: controller, builder: (_, __) => MaterialApp(
       // Clear every nested channel/player route when the session changes.
-      key: ValueKey(controller.account?.uid ??
-          (showingLayoutPreview ? 'layout-preview' : 'signed-out')),
+      key: ValueKey(rochaTvFieldTest ? 'tv-field-test' : (controller.account?.uid ??
+          (showingLayoutPreview ? 'layout-preview' : 'signed-out'))),
       title: 'Rocha+',
       debugShowCheckedModeBanner: false,
       theme: RochaTheme.dark,
-      home: !introFinished ? IntroScreen(onFinished: () => setState(() => introFinished = true)) :
+      home: rochaTvFieldTest ? const HomeScreen() :
+          !introFinished ? IntroScreen(onFinished: () => setState(() => introFinished = true)) :
           controller.initializing ? const Scaffold(body: Center(child: CircularProgressIndicator())) :
           controller.account == null
               ? showingLayoutPreview && _mayPreview

@@ -6,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import '../live/channel.dart';
 import '../live/playback_evidence.dart';
 import '../live/channel_repository.dart';
+import '../live/tv_fullscreen_policy.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/player_viewport.dart';
 import '../widgets/player_controls_focus.dart';
@@ -29,12 +30,28 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _casting = false;
   bool _controlsVisible = false;
   bool _fullscreen = false;
+  bool _tvFullscreenOnOpen = false;
+  bool _tvLayoutChecked = false;
   bool? _portraitOnExit;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _portraitOnExit ??= MediaQuery.sizeOf(context).width < 600;
+    final media = MediaQuery.of(context);
+    _portraitOnExit ??= media.size.width < 600;
+    if (!_tvLayoutChecked) {
+      _tvLayoutChecked = true;
+      _tvFullscreenOnOpen = shouldStartTvFullscreen(media, Theme.of(context).platform);
+      if (_tvFullscreenOnOpen) {
+        // Enter TV playback fullscreen immediately, including while buffering.
+        _fullscreen = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _fullscreen) {
+            unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+          }
+        });
+      }
+    }
   }
   bool _playbackConfirmed = false;
   bool _isPlaying = false;
@@ -267,16 +284,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (mounted) setState(() => _fullscreen = enterFullscreen);
 
     if (enterFullscreen) {
-      // Lock the player to landscape and remove Android system chrome.
-      await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
+      // TVs already control their orientation; avoid rotating the entire app.
+      if (!_tvFullscreenOnOpen) {
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]);
+      }
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
-      await SystemChrome.setPreferredOrientations(
-        _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
-      );
+      if (!_tvFullscreenOnOpen) {
+        await SystemChrome.setPreferredOrientations(
+          _portraitOnExit == true ? [DeviceOrientation.portraitUp] : DeviceOrientation.values,
+        );
+      }
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
   }
@@ -308,7 +329,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Widget build(BuildContext context) {
     final controller = _controller;
     return PopScope(
-      canPop: !_fullscreen,
+      // On TV, one Back press returns to the channel grid.
+      // Mobile keeps its existing Back = leave fullscreen behavior.
+      canPop: !_fullscreen || _tvFullscreenOnOpen,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _fullscreen) _toggleFullscreen();
       },
