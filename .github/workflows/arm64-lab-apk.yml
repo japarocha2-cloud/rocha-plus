@@ -2,6 +2,9 @@
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - lab/arm64-apk-isolated-20261111
 
 permissions:
   contents: read
