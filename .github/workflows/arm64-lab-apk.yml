@@ -188,13 +188,13 @@ jobs:
           }
 
       - name: Build the ARM64 debug LAB APK
-        run: flutter build apk --debug --target-platform android-arm64 --no-pub
+        run: flutter build apk --debug --target-platform android-arm64 --no-pub --split-per-abi
 
       - name: Verify APK package, ABI, and LAB certificate
         shell: bash
         run: |
           set -euo pipefail
-          apk='build/app/outputs/flutter-apk/app-debug.apk'
+          apk='build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk'
           sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
           if [[ -z "$sdk_root" ]]; then
             echo '::error::Android SDK root is not configured on the runner.'
@@ -263,7 +263,7 @@ jobs:
         with:
           name: rocha-plus-arm64-lab-apk-${{ github.run_id }}
           path: |
-            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk
             build/qa/arm64-lab-apk-evidence.md
           if-no-files-found: error
           retention-days: 7
