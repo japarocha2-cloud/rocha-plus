@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#071527">
+<title>Rocha+ | Planos e fidelidade (prévia)</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#080811;color:#fff;--violet:#e23c52;--gold:#f9cc6c;--muted:#b7b1c9}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 90% 0%,#3b1728 0,transparent 36%),#080811;line-height:1.5}
+main{max-width:1060px;margin:auto;padding:24px 17px 80px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;gap:12px}
+.logo{font-size:30px;font-weight:850;letter-spacing:-1.5px}.logo span{color:#ff4158}
+.pill{border:1px solid #4a396c;background:#231938;border-radius:999px;padding:7px 11px;color:#d6bee9;font-size:12px}
+h1{font-size:clamp(32px,5vw,56px);letter-spacing:-1.8px;line-height:1.08;margin:0 0 12px}
+h1 em{font-style:normal;color:var(--gold)}
+.lead,.sub{color:var(--muted);max-width:720px}
+.lead{font-size:17px;margin-bottom:23px}
+.notice{border:1px solid #65481d;border-radius:14px;padding:12px 16px;background:#2b1d0a;color:#ffdf9f;margin:20px 0 28px;font-size:14px}
+h2{font-size:24px;margin:34px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:linear-gradient(150deg,#28131f,#10101d 72%);border:1px solid #40304f;border-radius:20px;padding:23px;box-shadow:0 10px 25px #05030840}
+.card.featured{border-color:#a77b42;box-shadow:inset 0 0 0 1px #a77b4250}
+.card h3{font-size:20px;margin:4px 0 8px}.price{font-size:clamp(33px,4vw,45px);font-weight:850;letter-spacing:-1.7px;margin:8px 0}.price small{font-size:14px;font-weight:450;letter-spacing:0;color:#cfc7de}
+.tag{display:inline-block;font-size:11px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;border:1px solid #ac883c;color:#f6d78d;border-radius:99px;padding:5px 9px;background:#35260d}
+.tag.alt{border-color:#6652a8;background:#2a1d4e;color:#d3c5ff}
+ul{padding-left:20px;margin-bottom:0}li{margin:8px 0;color:#d6d0e1}
+.benefit{border:1px solid #7d5d2b;background:#251b10;border-radius:18px;padding:22px;margin-top:20px}
+.benefit strong{color:var(--gold)}.benefit p{color:#e3d4bd;margin:9px 0 0}
+.note{color:var(--muted);font-size:13px}
+.compare{width:100%;border-collapse:collapse;background:#141020;border-radius:14px;overflow:hidden;margin:10px 0}
+.compare th,.compare td{text-align:left;padding:13px 12px;border-bottom:1px solid #322a3f}
+.compare th{color:#f3db9c;font-size:13px}.compare td{font-size:14px}
+.compare tr:last-child td{border:0}
+.summary{padding:16px;background:#161124;border-radius:14px;border:1px solid #44345e;color:#ded6f0}
+label.choice{display:flex;align-items:start;gap:10px;margin-top:13px;color:#e8e0fa}
+label.choice input{accent-color:#e44058;margin-top:4px;width:18px;height:18px;flex-shrink:0}
+select{width:100%;background:#251522;border:1px solid #b44f61;border-radius:12px;padding:12px;color:white;font:inherit}
+button{background:linear-gradient(110deg,#eb4a64,#a62243);border:0;border-radius:13px;padding:14px 18px;color:white;font:inherit;font-weight:750;cursor:pointer}
+button:disabled{background:#363044;color:#9d95ad;cursor:not-allowed}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+.dialog{border:1px solid #a34b5c;background:#21141e;color:#f5f0ff;border-radius:18px;max-width:650px;width:calc(100% - 30px);padding:24px}
+.dialog::backdrop{background:#000a}.dialog h2{margin-top:0}.dialog p,.dialog li{color:#d6cee4}
+.link{background:none;color:#ffb1bd;border:0;text-decoration:underline;cursor:pointer;padding:5px}
+footer{color:#968ca7;font-size:12px;border-top:1px solid #2b2440;margin-top:45px;padding-top:20px}
+.status{min-height:24px;color:#ffd89f;font-size:13px}
+@media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:18px 14px 50px}.card{padding:18px}.compare th,.compare td{padding:9px 7px;font-size:12px}.logo{font-size:26px}}
+
+.doc-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.doc-links a{color:#ffd3dc;border:1px solid #853d4e;border-radius:10px;padding:9px 12px;text-decoration:none;background:#281822;font-size:13px;font-weight:650}.doc-links a:hover{text-decoration:underline}.doc-links a:focus-visible{outline:2px solid #f9cc6c;outline-offset:3px}
+
+/* Fundo cósmico do Rocha+ existente no próprio repositório. A imagem é exclusiva do fundo;
+   cartões e textos usam azul-ciano, dourado e verde-água para contraste. */
+:root{--cosmos:#061528;--cyan:#2ce7ef;--gold:#ffd270;--mint:#8cf1c7;--ink:#d9eef4;--muted:#b9d2df;--violet:var(--cyan)}
+body{background:#061528;color:#f6fbff}
+body::before{
+ content:"";position:fixed;z-index:-2;inset:0;pointer-events:none;
+ background:linear-gradient(180deg,rgba(3,10,28,.45),rgba(4,13,31,.70) 45%,rgba(2,13,29,.86)),url("../../branding/home-tv-galaxy.png") center center/cover no-repeat;
+}
+body::after{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 80% 10%,rgba(0,223,242,.12),transparent 33%),radial-gradient(circle at 15% 85%,rgba(37,135,213,.16),transparent 42%)}
+main{position:relative}
+.logo span{color:var(--cyan)}
+.pill{background:rgba(4,24,41,.90);border-color:#317687;color:#c7faff}
+h1 em{color:var(--gold)}
+.lead,.sub{color:#e1edf5}
+.notice{background:rgba(56,42,9,.90);border-color:#c8a54f;color:#ffecbf}
+.card{background:linear-gradient(165deg,rgba(5,25,43,.94),rgba(6,15,34,.96));border:1px solid rgba(51,191,210,.56);box-shadow:0 10px 35px rgba(0,4,13,.44)}
+.card.featured{border-color:#e5bf68;box-shadow:0 0 0 1px rgba(242,205,129,.28),0 14px 25px rgba(0,4,13,.30)}
+.card .price{color:var(--gold);text-shadow:0 0 24px rgba(255,200,92,.14)}
+.card h3{color:#f6fbff}
+.card li{color:#dcecf3}
+.tag{background:rgba(86,69,23,.66);border-color:#a58a4b;color:#ffe3a4}
+.tag.alt{background:rgba(6,55,71,.95);border-color:#2bc5da;color:#91f6ff}
+.benefit{background:rgba(7,47,43,.94);border-color:#44ae98}
+.benefit strong{color:var(--mint)}.benefit p{color:#dcfdf0}
+.compare{background:rgba(6,22,40,.94)}
+.compare th,.compare td{border-color:#244b62}
+.compare th{color:#89ecf4}
+.summary{background:#092536;border-color:#3597a1;color:#e1faff}
+label.choice{color:#e4f5f9}
+label.choice input{accent-color:#00cedd}
+select{background:#092638;border-color:#2bbdd2;color:#f5fcff}
+button:not(.link){background:linear-gradient(110deg,#00c8dd,#087cab);color:#04121f}
+button:not(.link):disabled{background:#293f4c;color:#b3c3cb}
+.link{color:#6df7e3}
+.dialog{background:#091d31;border-color:#248c9e;color:#eef9ff}
+.dialog p,.dialog li{color:#deebf3}
+.doc-links a{color:#adfbff;background:#092c3d;border-color:#2e8897}
+.doc-links a:focus-visible,.link:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid #ffdf86;outline-offset:3px}
+footer{color:#bccfda;border-color:#2a5567}
+.status{color:#b6ffde}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+/* Keep cosmic layers above the body background and below content. */
+body{isolation:isolate}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">Rocha<span>+</span></div><div class="pill">Prévia • sem cobranças</div></header>
+<section aria-labelledby="intro">
+<h1>Entre desde o começo. <em>Seu apoio vale mais.</em></h1>
+<p class="lead">O Rocha+ começa com TV aberta autorizada. Quem assinar nessa fase poderá receber a condição especial de <strong>Assinante Fundador</strong> quando houver uma futura expansão para filmes e séries.</p>
+<div class="notice"><strong>Atenção:</strong> filmes e séries são uma expansão em planejamento, sem data de lançamento garantida. Esta página é uma demonstração, não aceita pagamentos nem ativa assinaturas.</div>
+</section>
+<section aria-labelledby="hoje">
+<h2 id="hoje">Planos do lançamento • TV aberta</h2>
+<div class="grid">
+<article class="card"><span class="tag">Fundador mensal</span><h3>Plano Mensal</h3><div class="price">R$ 4,90 <small>/mês</small></div><ul><li>Pagamento a cada mês</li><li>Menor valor desembolsado por vez</li><li>Cancelamento da renovação pela Google Play, quando comercialmente disponível</li><li>Preço de fundador planejado para renovações elegíveis</li></ul></article>
+<article class="card featured"><span class="tag">Fundador anual</span><h3>Plano Anual</h3><div class="price">R$ 53,90 <small>/ano</small></div><ul><li>12 meses de acesso, conforme as condições da assinatura</li><li>Equivale a aproximadamente R$ 4,49/mês</li><li>Economia de R$ 4,90 frente a 12 mensalidades</li><li>Preço anual de fundador planejado para renovações elegíveis</li></ul></article>
+</div>
+<div class="benefit"><span class="tag">Reconhecimento pela fidelidade</span><p><strong>Fundadores preservam o preço contratado nas renovações elegíveis.</strong> Mensal: R$ 4,90/mês. Anual: R$ 53,90/ano. Se cancelar e deixar a assinatura vencer, você perde o preço fundador ao voltar. O acesso já pago continua até o vencimento.</p></div>
+</section>
+<section aria-labelledby="futuro">
+<h2 id="futuro">Possível expansão com filmes e séries</h2>
+<p class="sub">Esta é a tabela <strong>planejada para quem assinar depois da expansão</strong>. Os novos preços não se aplicariam automaticamente aos fundadores que mantiverem o direito ao preço legado.</p>
+<div class="grid">
+<article class="card"><span class="tag alt">Novo assinante</span><h3>Mensal futuro</h3><div class="price">R$ 15,50 <small>/mês</small></div><p class="note">12 mensalidades equivalem a R$ 186,00.</p></article>
+<article class="card"><span class="tag alt">Novo assinante • 1 mês de desconto</span><h3>Anual futuro</h3><div class="price">R$ 170,50 <small>/ano</small></div><p class="note">11 × R$ 15,50, com desconto equivalente a uma mensalidade sobre o total anual de R$ 186,00.</p></article>
+</div>
+<h2>Comparação rápida</h2>
+<table class="compare">
+<thead><tr><th>Modalidade</th><th>Fundador (lançamento)</th><th>Novo cliente (expansão)</th></tr></thead>
+<tbody><tr><td>Mensal</td><td>R$ 4,90/mês</td><td>R$ 15,50/mês</td></tr><tr><td>Anual</td><td>R$ 53,90/ano</td><td>R$ 170,50/ano</td></tr><tr><td>Filmes e séries</td><td colspan="2">Somente após a expansão, se e quando lançada</td></tr></tbody>
+</table>
+<p class="note">Cancelar e deixar vencer implica perda do desconto fundador. Outras regras de elegibilidade, restauração e eventuais alterações de preços precisam constar no regulamento final. Números futuros são hipóteses comerciais e não oferta em vigor.</p>
+</section>
+<section aria-labelledby="aceite">
+<h2 id="aceite">Prévia de confirmação do assinante</h2>
+<div class="card">
+<label for="plan">Escolha um plano para visualizar as condições</label>
+<select id="plan"><option value="monthly">Fundador mensal • R$ 4,90/mês</option><option value="yearly">Fundador anual • R$ 53,90/ano</option></select>
+<div id="selected" class="summary" style="margin-top:15px" aria-live="polite">R$ 4,90 por mês, renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.</div>
+<label class="choice"><input type="checkbox" id="accepted"> <span>Li e concordo com os <button type="button" class="link" data-doc="terms">Termos de Assinatura</button> e com o <button type="button" class="link" data-doc="founder">Regulamento do Plano Fundador</button>.</span></label>
+<p class="note">A <button type="button" class="link" data-doc="privacy">Política de Privacidade</button> deve ser apresentada ao usuário sem substituir as bases legais de tratamento de dados por consentimento genérico.</p>
+<div class="doc-links" aria-label="Informações e documentos para revisão"><a href="./ajuda.html">Dúvidas frequentes e ajuda ↗</a><a href="./documentos.html#termos">Ver termos de assinatura ↗</a><a href="./documentos.html#fundador">Ver regras dos fundadores ↗</a><a href="./documentos.html#privacidade">Ver privacidade ↗</a></div>
+<p class="note">Documentos em versão preliminar, ainda sem aprovação jurídica ou publicação comercial.</p><div class="actions"><button id="simulate" disabled>Simular confirmação (sem pagamento)</button><span class="note">Não contrata nem cobra nada.</span></div>
+<p id="result" class="status" role="status"></p>
+</div>
+</section>
+<footer>Visual inspirado no fundo cósmico do Rocha+. <a href="./ajuda.html" style="color:#97f5f9">Perguntas frequentes</a>. Protótipo independente. Não está publicado nem conectado ao Google Play Billing. Documentos completos disponíveis nos links acima. Antes da comercialização: revisar juridicamente textos e implementar registros auditáveis de versão/aceite e conferência dos preços pela Play.</footer>
+</main>
+<dialog id="docs" class="dialog"><h2 id="dialog-title">Documento</h2><div id="dialog-body"></div><button id="close" type="button">Fechar</button></dialog>
+<script>
+const plan=document.getElementById('plan');
+const selected=document.getElementById('selected');
+const accepted=document.getElementById('accepted');
+const simulate=document.getElementById('simulate');
+const result=document.getElementById('result');
+const dialog=document.getElementById('docs');
+const documents={
+ terms:{title:'Termos de Assinatura • resumo ilustrativo',body:'<p>Antes da contratação real, o Rocha+ informará claramente preço, periodicidade, renovação automática, início da cobrança e eventual teste gratuito apenas quando elegível e oferecido pela Google Play.</p><p>O cancelamento da renovação será gerenciado pela loja e não elimina direitos do consumidor, como eventuais reembolsos devidos por lei. Disponibilidade dos canais depende das autorizações e da operação do serviço.</p><p><strong>Este resumo não substitui os termos jurídicos definitivos.</strong></p>'},
+ founder:{title:'Regulamento do Fundador • minuta',body:'<p>O benefício de fundador será destinado a assinaturas elegíveis contratadas antes de uma data de corte a ser anunciada e registrada.</p><p>Durante as renovações elegíveis, a intenção comercial é preservar o preço mensal de R$ 4,90 ou anual de R$ 53,90, inclusive após eventual lançamento de filmes e séries. Se cancelar e deixar a assinatura vencer, você perderá o preço fundador ao voltar. O acesso já pago continua até o vencimento. Se reativar antes de vencer e permanecer na mesma assinatura sem interrupção, o preço legado continua. Regras de mudança de plano e falhas de pagamento serão detalhadas antes da contratação.</p><p>Filmes e séries constituem uma expansão futura, não uma entrega garantida em data determinada. As condições estarão sujeitas às regras legais e técnicas da plataforma de pagamento.</p>'},
+ privacy:{title:'Política de Privacidade • tópicos para a versão final',body:'<p>A versão final descreverá os dados tratados para conta, autenticação, pagamentos, suporte e segurança; bases legais; fornecedores (inclusive Google Play e Firebase, conforme efetivamente utilizados); retenção; direitos dos titulares; e canal de contato.</p><p>Não preencher dados de empresa, controlador, endereço, contato ou políticas técnicas sem confirmação. Esta é uma prévia, não a política publicada.</p>'}
+};
+function update(){
+ selected.textContent=plan.value==='monthly'?'R$ 4,90 por mês. Renovação mensal prevista. Filmes e séries não estão disponíveis no lançamento.':'R$ 53,90 por 12 meses. Renovação anual prevista. Economia de R$ 4,90 sobre 12 mensalidades de R$ 4,90. Filmes e séries não estão disponíveis no lançamento.';
+ result.textContent='';
+}
+plan.addEventListener('change',update);
+accepted.addEventListener('change',()=>{simulate.disabled=!accepted.checked;result.textContent='';});
+simulate.addEventListener('click',()=>{result.textContent='Prévia concluída: plano selecionado e aceite simulado. Nenhuma compra ou dado pessoal foi registrado.';});
+document.querySelectorAll('[data-doc]').forEach(button=>button.addEventListener('click',()=>{
+ const doc=documents[button.getAttribute('data-doc')];
+ document.getElementById('dialog-title').textContent=doc.title;
+ document.getElementById('dialog-body').innerHTML=doc.body;
+ dialog.showModal();
+}));
+document.getElementById('close').addEventListener('click',()=>dialog.close());
+</script>
+</body></html>

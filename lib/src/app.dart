@@ -1,3 +1,6 @@
+import 'billing/subscription_gate.dart';
+import 'live/account_favorites.dart';
+import 'live/favorites_repository.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
@@ -9,7 +12,8 @@ import 'theme/rocha_theme.dart';
 
 class RochaPlusApp extends StatefulWidget {
   final AuthController? authController;
-  const RochaPlusApp({super.key, this.authController});
+  final FavoritesRepository Function(String)? favoritesFactory;
+  const RochaPlusApp({super.key, this.authController, this.favoritesFactory});
   @override
   State<RochaPlusApp> createState() => _RochaPlusAppState();
 }
@@ -52,10 +56,13 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
-              : HomeScreen(onSignOut: () async {
+              : AccountFavorites(key: ValueKey(controller.account!.uid),
+            uid: controller.account!.uid, repositoryFactory: widget.favoritesFactory, builder: (favoritesRepository) =>
+            SubscriptionGate(uid: controller.account!.uid,
+              favoritesRepository: favoritesRepository, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
-          }),
+          })),
     ));
   }
 }

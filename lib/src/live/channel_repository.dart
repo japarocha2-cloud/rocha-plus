@@ -49,6 +49,10 @@ class ChannelRepository {
     'tv meio (720p)',
     'tv difusora leste (1080p)',
     'tv encontro das aguas',
+    // Reprovados no Motorola Beta 2417 em 10/10/2026; ver docs/VARREDURA-CANAIS.md.
+    'record rs [geo-blocked]',
+    'sbt cuiaba',
+    'sbt nova mutum',
   };
 
   bool _isPermanentlyBlocked(Channel channel) {
