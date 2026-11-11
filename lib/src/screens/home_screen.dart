@@ -14,8 +14,9 @@ class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
   final Future<void> Function()? onSignOut;
   final bool previewOnly;
+  final void Function(BuildContext)? onSubscription;
   const HomeScreen({super.key, this.repository, this.onSignOut,
-    this.previewOnly = false});
+    this.previewOnly = false, this.onSubscription});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
     ('Esportes', Icons.sports_soccer_outlined),
@@ -108,6 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
     child: ListView(padding: const EdgeInsets.symmetric(vertical: 12), children: [
+      if (widget.onSubscription != null) _NavItem(label: 'Assinatura', icon: Icons.credit_card,
+        onTap: () => widget.onSubscription!(context)),
       if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' :
         (widget.previewOnly ? 'Sair da prévia' : 'Sair da conta'), icon: Icons.logout,
         onTap: _signOut),

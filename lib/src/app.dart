@@ -1,3 +1,4 @@
+import 'billing/subscription_gate.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
@@ -52,7 +53,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
-              : HomeScreen(onSignOut: () async {
+              : SubscriptionGate(uid: controller.account!.uid, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
           }),
