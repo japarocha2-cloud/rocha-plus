@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/rocha_theme.dart';
 import '../widgets/rocha_artwork.dart';
 import '../widgets/rocha_channel_card.dart';
@@ -103,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Widget _menu({bool drawer = false}) => Container(
     key: const ValueKey('official-sidebar'),
-    width: 218,
+    width: 240,
     decoration: const BoxDecoration(
       color: Color(0xFF07060C),
       border: Border(right: BorderSide(color: Color(0xFF272032)))),
@@ -183,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 22),
             sliver: SliverGrid.builder(itemCount: HomeScreen.sections.length,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 220, mainAxisExtent: 120,
+                maxCrossAxisExtent: 240, mainAxisExtent: 132,
                 crossAxisSpacing: 12, mainAxisSpacing: 12),
               itemBuilder: (_, index) {
                 final item = HomeScreen.sections[index];
@@ -260,9 +261,11 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
   late final PageController controller;
   Timer? _autoTimer;
   int currentPage = initialPage;
+  int _targetPage = initialPage;
   int selected = 1;
   bool _dragging = false;
   bool _appActive = true;
+  bool _tvFocused = false;
 
   @override
   void initState() {
@@ -284,7 +287,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 
   void _restartAuto() {
     _autoTimer?.cancel();
-    if (!_appActive || _dragging) return;
+    if (!_appActive || _dragging || (widget.wide && _tvFocused)) return;
     _autoTimer = Timer.periodic(autoAdvanceInterval, (_) {
       if (!mounted || !controller.hasClients) return;
       _move(1, automatic: true);
@@ -301,13 +304,51 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
 
   void _move(int direction, {bool automatic = false}) {
     if (!controller.hasClients || _dragging) return;
+    if (automatic && widget.wide && _tvFocused) return;
     if (!automatic) _restartAuto();
-    controller.animateToPage(currentPage + direction,
+    _targetPage += direction;
+    controller.animateToPage(_targetPage,
       duration: transitionDuration, curve: Curves.easeInOutCubic);
   }
 
   @override
-  Widget build(BuildContext context) => Column(children: [
+  Widget build(BuildContext context) => Focus(
+    key: const ValueKey('tv-featured-keyboard-focus'),
+    autofocus: widget.wide,
+    onFocusChange: (focused) {
+      setState(() => _tvFocused = focused);
+      if (focused) {
+        _autoTimer?.cancel();
+      } else {
+        _restartAuto();
+      }
+    },
+    onKeyEvent: (node, event) {
+      if (!widget.wide || event is! KeyDownEvent) {
+        return KeyEventResult.ignored;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        _move(-1);
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        _move(1);
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.select ||
+          event.logicalKey == LogicalKeyboardKey.enter) {
+        final section = switch (selected) {
+          0 => 'Esportes',
+          1 => 'TV ao Vivo',
+          _ => 'Infantil',
+        };
+        widget.onOpen(section);
+        return KeyEventResult.handled;
+      }
+      // Up/down remain available for normal navigation among sections.
+      return KeyEventResult.ignored;
+    },
+    child: Column(children: [
     Padding(padding: EdgeInsets.fromLTRB(widget.wide ? 24 : 14, 0,
       widget.wide ? 24 : 14, 8), child: Row(children: [
       const Expanded(child: Text('Destaques', style: TextStyle(
@@ -335,6 +376,7 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
           controller: controller,
           onPageChanged: (value) => setState(() {
             currentPage = value;
+            _targetPage = value;
             selected = value % 3;
           }),
           itemBuilder: (context, page) => AnimatedPadding(
@@ -344,13 +386,16 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             child: switch (page % 3) {
               0 => _FeatureCategory(
                 key: const ValueKey('feature-sports'),
+                carouselFocused: widget.wide && _tvFocused && selected == 0,
                 icon: Icons.sports_soccer_outlined,
                 label: 'Esportes ao vivo',
                 onTap: () => widget.onOpen('Esportes')),
               1 => _OfficialHero(wide: widget.wide,
+                focused: widget.wide && _tvFocused && selected == 1,
                 onWatch: () => widget.onOpen('TV ao Vivo')),
               _ => _FeatureCategory(
                 key: const ValueKey('feature-kids'),
+                carouselFocused: widget.wide && _tvFocused && selected == 2,
                 icon: Icons.toys_outlined,
                 label: 'Espaço infantil',
                 onTap: () => widget.onOpen('Infantil')),
@@ -358,48 +403,76 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
           ),
         ),
       )),
-  ]);
+  ]));
 }
 
-class _FeatureCategory extends StatelessWidget {
+class _FeatureCategory extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool carouselFocused;
   const _FeatureCategory({super.key, required this.icon,
-    required this.label, required this.onTap});
+    required this.label, required this.onTap, this.carouselFocused = false});
 
   @override
-  Widget build(BuildContext context) => Container(
+  State<_FeatureCategory> createState() => _FeatureCategoryState();
+}
+
+class _FeatureCategoryState extends State<_FeatureCategory> {
+  bool focused = false;
+
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 180),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft, end: Alignment.bottomRight,
-        colors: [Color(0xFF24113D), Color(0xFF0B0A11)]),
-      border: Border.all(color: const Color(0xFF4A286A))),
+      border: Border.all(
+        color: (focused || widget.carouselFocused) ? RochaColors.gold : const Color(0xFF4A286A),
+        width: (focused || widget.carouselFocused) ? 3 : 1),
+      boxShadow: (focused || widget.carouselFocused)
+        ? const [BoxShadow(color: Color(0x668D54CF), blurRadius: 22)]
+        : const []),
     clipBehavior: Clip.antiAlias,
-    child: Material(type: MaterialType.transparency, child: InkWell(
-      onTap: onTap,
-      child: Center(child: Padding(padding: const EdgeInsets.all(14),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 42, color: RochaColors.gold),
-          const SizedBox(height: 14),
-          Text(label, textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
-        ]))),
-    )),
+    child: Stack(fit: StackFit.expand, children: [
+      // Reuse the actual cosmic Home asset from the frozen APK, not a mockup.
+      Image.asset('branding/home-tv-galaxy.png',
+        fit: BoxFit.cover, alignment: Alignment.centerRight),
+      const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
+        begin: Alignment.topLeft, end: Alignment.bottomRight,
+        colors: [Color(0xE9130A25), Color(0xC3211037), Color(0xD9080610)]))),
+      Material(type: MaterialType.transparency, child: InkWell(
+        onTap: widget.onTap,
+        onFocusChange: (value) => setState(() => focused = value),
+        child: Center(child: Padding(padding: const EdgeInsets.all(14),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Icon(widget.icon, size: 46, color: RochaColors.gold),
+            const SizedBox(height: 14),
+            Text(widget.label, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          ]))),
+      )),
+    ]),
   );
 }
 
 class _OfficialHero extends StatelessWidget {
   final bool wide;
   final VoidCallback onWatch;
-  const _OfficialHero({required this.wide, required this.onWatch});
+  final bool focused;
+  const _OfficialHero({required this.wide, required this.onWatch,
+    this.focused = false});
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 180),
     key: const ValueKey('official-hero'),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: focused ? RochaColors.gold : Colors.transparent,
+        width: 3),
+      boxShadow: focused
+        ? const [BoxShadow(color: Color(0x66FFC43D), blurRadius: 18)]
+        : const [],
       gradient: const LinearGradient(colors: [
         Color(0xFF050409), Color(0xFF210937), Color(0xFF08060C)])),
     clipBehavior: Clip.antiAlias,
@@ -425,7 +498,7 @@ class _OfficialHero extends StatelessWidget {
             letterSpacing: wide ? 2 : 1.3, color: RochaColors.silver)),
           SizedBox(height: wide ? 14 : 12),
           OutlinedButton.icon(
-            autofocus: true, onPressed: onWatch,
+            autofocus: !wide, onPressed: onWatch,
             style: OutlinedButton.styleFrom(
               foregroundColor: RochaColors.gold,
               backgroundColor: const Color(0xCC050405),
@@ -441,7 +514,7 @@ class _OfficialHero extends StatelessWidget {
   );
 }
 
-class _NavItem extends StatelessWidget {
+class _NavItem extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
@@ -449,14 +522,26 @@ class _NavItem extends StatelessWidget {
   const _NavItem({required this.label, required this.icon,
     required this.onTap, this.selected = false});
   @override
+  State<_NavItem> createState() => _NavItemState();
+}
+
+class _NavItemState extends State<_NavItem> {
+  bool focused = false;
+  @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-    child: Container(decoration: BoxDecoration(
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 130),
+      decoration: BoxDecoration(
+      border: Border.all(color: focused ? RochaColors.gold : Colors.transparent,
+        width: 2),
       borderRadius: BorderRadius.circular(10),
-      gradient: selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
-      child: Material(type: MaterialType.transparency, child: ListTile(leading: Icon(icon, color: Colors.white70),
-        title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-        onTap: onTap))),
+      gradient: widget.selected ? const LinearGradient(colors: [Color(0xFF8518EC), Color(0xFF351069)]) : null),
+      child: Material(type: MaterialType.transparency, child: ListTile(
+        onFocusChange: (value) => setState(() => focused = value),
+        leading: Icon(widget.icon, color: focused ? RochaColors.gold : Colors.white70),
+        title: Text(widget.label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.w600)),
+        onTap: widget.onTap))),
   );
 }
 
@@ -483,10 +568,10 @@ class _CategoryCardState extends State<_CategoryCard> {
       onFocusChange: (v) => setState(() => focused = v),
       child: Padding(padding: const EdgeInsets.all(15), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(widget.icon, color: RochaColors.gold, size: 28),
+          Icon(widget.icon, color: RochaColors.gold, size: 32),
           const Spacer(),
           Text(widget.label, maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
         ]))),
   );
 }

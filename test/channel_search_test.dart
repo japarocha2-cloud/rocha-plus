@@ -1,3 +1,4 @@
+import 'reviewed_catalog_fixture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -34,7 +35,7 @@ void main() {
     ChannelRepository.resetSessionHealthForTests();
     await tester.binding.setSurfaceSize(const Size(430, 932));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repo = ChannelRepository(client: MockClient((request) async =>
+    final repo = reviewedFixtureRepository(client: MockClient((request) async =>
         http.Response(request.url == ChannelRepository.sportsPlaylist ? '#EXTM3U' :
           '#EXTM3U\n'
           '#EXTINF:-1 tvg-id="SBTCuiaba.br@SD",SBT Cuiaba\nhttps://example.com/cuiaba\n'

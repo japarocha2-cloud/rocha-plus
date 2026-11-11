@@ -1,3 +1,4 @@
+import 'reviewed_catalog_fixture.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -50,7 +51,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     ChannelRepository.resetSessionHealthForTests();
   });
-  ChannelRepository repo() => ChannelRepository(client: MockClient((request) async =>
+  ChannelRepository repo() => reviewedFixtureRepository(client: MockClient((request) async =>
     http.Response(request.url == ChannelRepository.sportsPlaylist ? '#EXTM3U' :
         '#EXTM3U\n#EXTINF:-1 group-title="General",SBT Nacional\nhttps://example.com/sbt\n',
         200, headers: {'content-type': 'text/plain; charset=utf-8'})));
