@@ -37,17 +37,17 @@ void main() {
     final repo = ChannelRepository(client: MockClient((request) async =>
         http.Response(request.url == ChannelRepository.sportsPlaylist ? '#EXTM3U' :
           '#EXTM3U\n'
-          '#EXTINF:-1 tvg-id="SBTCuiaba.br@SD",SBT Cuiaba\nhttps://example.com/cuiaba\n'
-          '#EXTINF:-1 tvg-id="SBTRondonopolis.br@SD",SBT Rondonopolis\nhttps://example.com/rondon\n'
-          '#EXTINF:-1 tvg-id="SBTNovaMutum.br@SD",SBT Nova Mutum\nhttps://example.com/mutum\n',
+          '#EXTINF:-1 tvg-id="RedeTVParana.br@SD",RedeTV! Parana\nhttps://example.com/parana\n'
+          '#EXTINF:-1 tvg-id="SBTInterior.br@SD",SBT Interior\nhttps://example.com/interior\n'
+          '#EXTINF:-1 tvg-id="TVPantanalMS.br@SD",TV Pantanal MS\nhttps://example.com/pantanal\n',
           200, headers: {'content-type': 'text/plain; charset=utf-8'})));
     await tester.pumpWidget(MaterialApp(home:
         LiveTvScreen(initialGroup: 'TV aberta', repository: repo)));
     await tester.pumpAndSettle();
     for (final entry in {
-      'Cuiabá': 'SBT Cuiaba',
-      'Rondonópolis': 'SBT Rondonopolis',
-      'NOVA  MUTUM': 'SBT Nova Mutum',
+      'Paraná': 'RedeTV! Parana',
+      'INTERIOR': 'SBT Interior',
+      'PANTANAL  MS': 'TV Pantanal MS',
     }.entries) {
       await tester.enterText(find.byType(TextField), entry.key);
       await tester.pumpAndSettle();

@@ -14,6 +14,8 @@ class FakeAuth extends AuthRepository {
   LoginFailure? initializationFailure;
   LoginFailure? signInFailure;
   bool logoutFails = false;
+  LoginFailure? deletionFailure;
+  int deletions = 0;
   int attempts = 0;
   Completer<void>? gate;
   @override
@@ -32,6 +34,13 @@ class FakeAuth extends AuthRepository {
     attempts++;
     if (gate != null) await gate!.future;
     if (signInFailure != null) throw signInFailure!;
+  }
+  @override
+  Future<void> deleteAccount() async {
+    deletions++;
+    if (gate != null) await gate!.future;
+    if (deletionFailure != null) throw deletionFailure!;
+    changes.add(null);
   }
   @override
   Future<void> signOut() async {
@@ -112,6 +121,32 @@ void main() {
     repository.logoutFails = false;
     await controller.signOut();
     expect(controller.account, isNull);
+  });
+  test('deletion failure preserves account and explains recent login', () async {
+    repository.initial = const AuthAccount(uid: 'verified');
+    await initialize(controller);
+    repository.deletionFailure = const LoginFailure('Entre novamente');
+    expect(await controller.deleteAccount(), isFalse);
+    expect(controller.account?.uid, 'verified');
+    expect(controller.error, 'Entre novamente');
+    expect(controller.busy, isFalse);
+  });
+  test('confirmed deletion clears account and prevents duplicate requests', () async {
+    repository.initial = const AuthAccount(uid: 'verified');
+    await initialize(controller);
+    repository.gate = Completer<void>();
+    final deletion = controller.deleteAccount();
+    expect(await controller.deleteAccount(), isFalse);
+    expect(repository.deletions, 1);
+    repository.gate!.complete();
+    expect(await deletion, isTrue);
+    expect(controller.account, isNull);
+    expect(controller.busy, isFalse);
+  });
+  test('signed-out users cannot request deletion', () async {
+    await initialize(controller);
+    expect(await controller.deleteAccount(), isFalse);
+    expect(repository.deletions, 0);
   });
   testWidgets('login has no guest bypass and errors stay on login', (tester) async {
     await initialize(controller);

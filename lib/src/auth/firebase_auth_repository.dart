@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'auth_repository.dart';
+import '../live/favorites_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuth? _auth;
@@ -79,6 +80,31 @@ class FirebaseAuthRepository implements AuthRepository {
         throw const LoginFailure('Use a opção de login utilizada anteriormente nesta conta.');
       }
       throw const LoginFailure('Não foi possível confirmar o login. Confira a conexão e tente novamente.');
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    final user = _auth?.currentUser;
+    if (user == null) throw const LoginFailure('Entre na conta que deseja excluir.');
+    try {
+      // Delete the confirmed Firebase account, never a newly selected Google account.
+      await user.delete();
+    } on FirebaseAuthException catch (failure) {
+      if (failure.code == 'requires-recent-login') {
+        throw const LoginFailure(
+          'Por segurança, saia e entre novamente na mesma conta antes de excluí-la.');
+      }
+      throw const LoginFailure('Não foi possível excluir a conta. Confira a conexão e tente novamente.');
+    }
+    // Firebase deletion is already confirmed. Local cleanup must not report
+    // a failed remote deletion or leave another user's favorites visible.
+    try { await FavoritesRepository().save({}); } catch (_) {
+      throw const LoginFailure(
+        'A conta foi excluída, mas os favoritos locais não foram apagados. Limpe os dados do Rocha+ nas configurações do Android.');
+    }
+    if (_googleReady) {
+      try { await GoogleSignIn.instance.signOut(); } catch (_) { /* Account deleted. */ }
     }
   }
 

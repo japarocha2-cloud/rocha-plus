@@ -52,7 +52,10 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                       onPreviewLayout: _mayPreview
                           ? () => setState(() => showingLayoutPreview = true)
                           : null)
-              : HomeScreen(onSignOut: () async {
+              : HomeScreen(onDeleteAccount: () async {
+            final deleted = await controller.deleteAccount();
+            return deleted ? null : controller.error;
+          }, onSignOut: () async {
             await controller.signOut();
             if (controller.account != null) throw StateError('Sign-out failed');
           }),

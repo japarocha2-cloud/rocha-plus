@@ -23,6 +23,8 @@ class _DisabledAuth implements AuthRepository {
   Future<void> signIn(LoginProvider provider) async => throw StateError('blocked');
   @override
   Future<void> signOut() async => throw StateError('blocked');
+  @override
+  Future<void> deleteAccount() async => throw StateError('blocked');
 }
 
 void main() {

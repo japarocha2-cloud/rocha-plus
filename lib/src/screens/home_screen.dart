@@ -9,12 +9,14 @@ import '../live/favorites_repository.dart';
 import 'live_tv_screen.dart';
 import 'news_screen.dart';
 import 'player_screen.dart';
+import 'caze_tv_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
   final Future<void> Function()? onSignOut;
+  final Future<String?> Function()? onDeleteAccount;
   final bool previewOnly;
-  const HomeScreen({super.key, this.repository, this.onSignOut,
+  const HomeScreen({super.key, this.repository, this.onSignOut, this.onDeleteAccount,
     this.previewOnly = false});
   static const sections = [
     ('TV ao Vivo', Icons.live_tv_outlined),
@@ -49,6 +51,37 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) setState(() => signingOut = false);
     }
   }
+  Future<void> _deleteAccount() async {
+    if (signingOut || widget.onDeleteAccount == null) return;
+    final confirmed = await showDialog<bool>(context: context, builder: (context) =>
+      AlertDialog(
+        title: const Text('Excluir conta do Rocha+?'),
+        content: const Text('Sua conta do Rocha+ e seus favoritos neste aparelho serão removidos. '
+          'Esta ação não exclui sua conta Google ou Apple. A exclusão da conta Rocha+ é permanente.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir conta')),
+        ],
+      ));
+    if (confirmed != true || !mounted) return;
+    setState(() => signingOut = true);
+    try {
+      final error = await widget.onDeleteAccount!();
+      if (mounted && error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível excluir a conta. Tente novamente.')));
+      }
+    } finally {
+      if (mounted) setState(() => signingOut = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -92,6 +125,11 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Text('Prévia do layout: canais, player e transmissão exigem login ativo.')));
       return;
     }
+    if (title == 'CazéTV') {
+      await Navigator.push(context, MaterialPageRoute(
+        builder: (_) => const CazeTvScreen()));
+      return;
+    }
     final group = switch (title) {
       'Favoritos' => 'Favoritos', 'Esportes' => 'Esportes',
       'Infantil' => 'Infantil', _ => 'TV aberta',
@@ -111,6 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (widget.onSignOut != null) _NavItem(label: signingOut ? 'Saindo...' :
         (widget.previewOnly ? 'Sair da prévia' : 'Sair da conta'), icon: Icons.logout,
         onTap: _signOut),
+      if (!widget.previewOnly && widget.onDeleteAccount != null)
+        _NavItem(label: signingOut ? 'Aguarde...' : 'Excluir conta',
+          icon: Icons.person_remove_outlined, onTap: _deleteAccount),
       const SizedBox(height: 174, child: Center(child: RochaBrand())),
       _NavItem(label: 'Início', icon: Icons.home_outlined, selected: true,
         onTap: () { if (drawer) Navigator.pop(context); }),
@@ -190,6 +231,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 return _CategoryCard(key: ValueKey('category-${item.$1}'),
                   label: item.$1, icon: item.$2, onTap: () => _open(item.$1));
               })),
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.fromLTRB(22, 14, 22, 4),
+            child: OutlinedButton.icon(
+              key: const ValueKey('cazetv-official-entry'),
+              onPressed: () => _open('CazéTV'),
+              icon: const Icon(Icons.sports_soccer_outlined),
+              label: const Text('CazéTV • player oficial'),
+            ),
+          )),
           if (saved.isNotEmpty) SliverToBoxAdapter(child:
             _row('Minha Lista', saved, () => _open('Favoritos'))),
           SliverToBoxAdapter(child: _row('Canais ao vivo', live, () => _open('TV ao Vivo'))),
