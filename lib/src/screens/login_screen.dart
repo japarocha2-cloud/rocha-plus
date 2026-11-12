@@ -50,12 +50,14 @@ class LoginScreen extends StatelessWidget {
                         ? () => unawaited(controller!.signIn(LoginProvider.google)) : null,
                   ),
                   const SizedBox(height: 14),
-                  _LoginButton(
+                  if (controller?.supports(LoginProvider.apple) == true) _LoginButton(
                     icon: Icons.apple,
                     label: 'Entrar com Apple',
                     onPressed: controller?.supports(LoginProvider.apple) == true && !controller!.busy
                         ? () => unawaited(controller!.signIn(LoginProvider.apple)) : null,
-                  ),
+                  ) else const Text('Apple indisponível nesta versão',
+                    key: ValueKey('apple-unavailable'),
+                    style: TextStyle(color: Colors.white70)),
                   if (onPreviewLayout != null) ...[
                     const SizedBox(height: 20),
                     OutlinedButton.icon(

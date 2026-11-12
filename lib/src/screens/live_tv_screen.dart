@@ -11,7 +11,8 @@ import '../widgets/rocha_channel_card.dart';
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
   final ChannelRepository? repository;
-  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository});
+  final Future<void> Function()? onSignOut;
+  const LiveTvScreen({super.key, this.initialGroup = 'Todos', this.repository, this.onSignOut});
   @override
   State<LiveTvScreen> createState() => _LiveTvScreenState();
 }
@@ -139,6 +140,9 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                       : selectedGroup == 'Notícias' ? 'Notícias' : 'TV ao Vivo',
         ),
         actions: [
+          if (widget.onSignOut != null) IconButton(
+            tooltip: 'Sair da conta', icon: const Icon(Icons.logout),
+            onPressed: widget.onSignOut),
           IconButton(
             tooltip: 'Verificar disponibilidade de até 40 canais',
             onPressed: loading || scanning || visible.isEmpty ? null : () => scan(visible),

@@ -1,0 +1,8 @@
+{
+  "functions": [{
+    "source": "lab-backend",
+    "codebase": "functional-lab",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", "*.test.cjs"]
+  }]
+}

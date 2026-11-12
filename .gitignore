@@ -1,0 +1,8 @@
+.dart_tool/
+.flutter-plugins*
+.metadata
+android/
+build/
+__pycache__/
+.rocha-private-lab/
+.firebaserc

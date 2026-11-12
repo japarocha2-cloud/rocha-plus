@@ -5,6 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
+  final bool requireHomologation;
+  FirebaseAuthRepository({this.requireHomologation = false});
   FirebaseAuth? _auth;
   static const _project = String.fromEnvironment('ROCHA_FIREBASE_PROJECT_ID');
   static const _appId = String.fromEnvironment('ROCHA_FIREBASE_APP_ID');
@@ -27,6 +29,10 @@ class FirebaseAuthRepository implements AuthRepository {
     }
     if (!isConfigured) {
       throw const LoginFailure('O login ainda não foi ativado nesta versão. Aguarde a atualização.');
+    }
+    if (requireHomologation &&
+        (_project != 'rocha-plus-homologacao' || _googleClient.isEmpty || _appleEnabled)) {
+      throw const LoginFailure('Configuração de autenticação LAB inválida.');
     }
     await Firebase.initializeApp(options: const FirebaseOptions(
       apiKey: _apiKey, appId: _appId, messagingSenderId: _sender, projectId: _project,
