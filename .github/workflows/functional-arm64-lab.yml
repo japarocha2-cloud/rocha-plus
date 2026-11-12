@@ -19,6 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: subosito/flutter-action@v2
         with:
@@ -47,18 +48,20 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout authorized LAB branch
+      - name: Checkout exact authorized LAB commit
         uses: actions/checkout@v4
         with:
-          ref: lab/functional-arm64-20261112
+          ref: ${{ github.sha }}
           persist-credentials: false
 
-      - name: Confirm checked out branch
+      - name: Confirm checked out commit
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          test "$(git branch --show-current)" = 'lab/functional-arm64-20261112' || {
-            echo '::error::Checkout did not resolve to the authorized LAB branch.'
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA" || {
+            echo '::error::Checkout did not resolve to the exact workflow commit.'
             exit 1
           }
 
