@@ -23,6 +23,7 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  static const _functionalLab = bool.fromEnvironment('ROCHA_FUNCTIONAL_LAB');
   VideoPlayerController? _controller;
   bool _loading = true;
   bool _failed = false;
@@ -39,6 +40,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool _playbackConfirmed = false;
   bool _isPlaying = false;
   bool _isBuffering = false;
+  Timer? _progressWatchdog;
+  Duration _lastPosition = Duration.zero;
+  int _stalledSeconds = 0;
   int _attempt = 0;
   final _evidence = PlaybackEvidence();
   final ChannelRepository _channelRepository = ChannelRepository();
@@ -51,11 +55,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _initialize() async {
     final attempt = ++_attempt;
+    _progressWatchdog?.cancel();
     final old = _controller;
     _controller = null;
     old?.removeListener(_onPlayerChanged);
     await old?.dispose();
     if (!mounted || attempt != _attempt) return;
+
+    if (_functionalLab && widget.channel.preferredEngine == 'libVlc') {
+      setState(() { _loading = false; _failed = true; });
+      return;
+    }
 
     setState(() { _loading = true; _failed = false; _playbackConfirmed = false; _isPlaying = false; _isBuffering = false; });
 
@@ -67,7 +77,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       // O player recebe diretamente o master HLS da fonte. Não fazemos
       // transcodificação nem redução de resolução no aparelho.
-      await controller.initialize().timeout(const Duration(seconds: 8));
+      await controller.initialize().timeout(Duration(seconds: _functionalLab ? 20 : 8));
       if (!mounted || attempt != _attempt) {
         await controller.dispose();
         return;
@@ -76,14 +86,33 @@ class _PlayerScreenState extends State<PlayerScreen> {
       controller.addListener(_onPlayerChanged);
       // Dispara a reprodução imediatamente após a preparação do decoder.
       // A qualidade continua sendo a original/adaptativa oferecida pelo HLS.
-      await controller.play();
+      await controller.play().timeout(const Duration(seconds: 10));
       if (!mounted || attempt != _attempt) return;
       setState(() => _loading = false);
       _onPlayerChanged();
+      if (_functionalLab) {
+        _lastPosition = controller.value.position;
+        _stalledSeconds = 0;
+        _progressWatchdog = Timer.periodic(const Duration(seconds: 5), (_) {
+          if (!mounted || attempt != _attempt || _failed) return;
+          final value = controller.value;
+          if (value.position > _lastPosition) {
+            _lastPosition = value.position;
+            _stalledSeconds = 0;
+          } else if (value.isPlaying || value.isBuffering) {
+            _stalledSeconds += 5;
+          }
+          if (_stalledSeconds >= 30) {
+            _progressWatchdog?.cancel();
+            unawaited(controller.pause().catchError((Object _) {}));
+            setState(() { _failed = true; _playbackConfirmed = false; });
+          }
+        });
+      }
     } catch (_) {
       if (!mounted || attempt != _attempt) return;
       _channelRepository.reportPlaybackFailure(widget.channel.url);
-      await controller.dispose();
+      unawaited(controller.dispose().catchError((Object _) {}));
       if (_controller == controller) _controller = null;
       if (mounted && attempt == _attempt) {
         setState(() { _loading = false; _failed = true; });
@@ -96,6 +125,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (controller == null || !mounted || _failed) return;
     final value = controller.value;
     if (value.hasError) {
+      _progressWatchdog?.cancel();
       _channelRepository.reportPlaybackFailure(widget.channel.url);
       setState(() { _loading = false; _failed = true; _playbackConfirmed = false; });
       return;
@@ -114,7 +144,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
+  @override
+  void didUpdateWidget(covariant PlayerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.channel.url != widget.channel.url) unawaited(_initialize());
+  }
+
   Future<void> _openCastPicker() async {
+    if (_functionalLab) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Cast indisponível nesta homologação LAB.')));
+      return;
+    }
     final ready = await CastReadiness.ready;
     if (!mounted) return;
     if (!ready) {
@@ -292,6 +333,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _progressWatchdog?.cancel();
     final controller = _controller;
     if (controller != null) {
       controller.removeListener(_onPlayerChanged);
@@ -343,7 +385,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
       body: Center(
         child: _failed
-            ? _FailureState(onRetry: _initialize)
+            ? _FailureState(onRetry: _initialize,
+                message: _functionalLab && widget.channel.preferredEngine == 'libVlc'
+                    ? 'Este canal exige LibVLC, ainda indisponível nesta versão LAB.'
+                    : 'Este sinal está indisponível no momento.')
             : _loading || controller == null || !controller.value.isInitialized
                 ? const CircularProgressIndicator(color: RochaColors.ruby)
                 : _fullscreen
@@ -448,7 +493,8 @@ class _VideoSurface extends StatelessWidget {
 
 class _FailureState extends StatelessWidget {
   final VoidCallback onRetry;
-  const _FailureState({required this.onRetry});
+  final String message;
+  const _FailureState({required this.onRetry, required this.message});
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -458,7 +504,7 @@ class _FailureState extends StatelessWidget {
           children: [
             const Icon(Icons.signal_wifi_connected_no_internet_4, size: 48, color: RochaColors.ruby),
             const SizedBox(height: 16),
-            const Text('Este sinal está indisponível no momento.', textAlign: TextAlign.center),
+            Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton.icon(
               autofocus: true,

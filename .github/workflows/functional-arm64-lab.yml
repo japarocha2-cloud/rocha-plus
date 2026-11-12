@@ -28,7 +28,7 @@ jobs:
           cache: true
       - run: flutter pub get --enforce-lockfile
       - run: flutter analyze --no-pub
-      - run: flutter test --no-pub --dart-define=ROCHA_FUNCTIONAL_LAB=true test/functional_lab_test.dart test/auth_test.dart
+      - run: flutter test --no-pub --dart-define=ROCHA_FUNCTIONAL_LAB=true test/functional_lab_test.dart test/auth_test.dart test/functional_player_test.dart
       - run: python3 -B -m unittest discover -s tools/lab -p test_prepare_functional.py -v
       - run: node --test lab-backend/handler.test.cjs
   build:
@@ -102,6 +102,8 @@ jobs:
         run: |
           set -euo pipefail
           flutter create --platforms=android --empty --no-pub .
+          # flutter create regenerates the lockfile even with --no-pub.
+          git show "${GITHUB_SHA}:pubspec.lock" > pubspec.lock
           python3 tools/configure_android.py
           python3 - <<'PY'
           from pathlib import Path
