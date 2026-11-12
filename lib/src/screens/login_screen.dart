@@ -8,7 +8,13 @@ import 'intro_screen.dart';
 class LoginScreen extends StatelessWidget {
   final AuthController? controller;
   final VoidCallback? onPreviewLayout;
-  const LoginScreen({super.key, this.controller, this.onPreviewLayout});
+  final bool diagnosticMode;
+  const LoginScreen({
+    super.key,
+    this.controller,
+    this.onPreviewLayout,
+    this.diagnosticMode = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,31 @@ class LoginScreen extends StatelessWidget {
                     style: TextStyle(color: Colors.white70, fontSize: 17),
                     textAlign: TextAlign.center,
                   ),
+                  if (diagnosticMode) ...[
+                    const SizedBox(height: 20),
+                    Container(
+                      key: const ValueKey('lab-diagnostic-banner'),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.amber.shade700),
+                      ),
+                      child: const Column(
+                        children: [
+                          Text('ROCHA+ - LAB DE DIAGNÓSTICO',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          SizedBox(height: 6),
+                          Text(
+                            'Catálogo definitivo pendente. Reprodução de canais desativada.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 42),
                   _LoginButton(
                     icon: Icons.g_mobiledata,

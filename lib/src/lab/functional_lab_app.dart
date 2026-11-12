@@ -6,18 +6,23 @@ import '../screens/live_tv_screen.dart';
 import '../screens/login_screen.dart';
 import '../theme/rocha_theme.dart';
 import 'approved_catalog_repository.dart';
+import 'diagnostic_home_screen.dart';
 import 'lab_access_gate.dart';
 import 'lab_entitlement.dart';
+
+const _diagnosticLabBuild = bool.fromEnvironment('ROCHA_LAB_DIAGNOSTIC');
 
 class FunctionalLabApp extends StatefulWidget {
   final AuthController? authController;
   final LabVerifier verify;
   final WidgetBuilder? homeBuilder;
+  final bool diagnosticMode;
   const FunctionalLabApp(
       {super.key,
       this.authController,
       this.verify = LabEntitlement.check,
-      this.homeBuilder});
+      this.homeBuilder,
+      this.diagnosticMode = _diagnosticLabBuild});
   @override
   State<FunctionalLabApp> createState() => _FunctionalLabAppState();
 }
@@ -50,14 +55,21 @@ class _FunctionalLabAppState extends State<FunctionalLabApp> {
                 ? const Scaffold(
                     body: Center(child: CircularProgressIndicator()))
                 : _auth.account == null
-                    ? LoginScreen(controller: _auth)
+                    ? LoginScreen(
+                        controller: _auth,
+                        diagnosticMode: widget.diagnosticMode)
                     : LabAccessGate(
                         uid: _auth.account!.uid,
                         verify: widget.verify,
                         onSignOut: () => unawaited(_auth.signOut()),
                         homeBuilder: widget.homeBuilder ??
-                            (_) => LiveTvScreen(
-                                repository: _catalog, onSignOut: _auth.signOut),
+                            (_) => widget.diagnosticMode
+                                ? DiagnosticHomeScreen(
+                                    accountName: _auth.account?.displayName,
+                                    onSignOut: () => unawaited(_auth.signOut()))
+                                : LiveTvScreen(
+                                    repository: _catalog,
+                                    onSignOut: _auth.signOut),
                       ),
           ));
 }

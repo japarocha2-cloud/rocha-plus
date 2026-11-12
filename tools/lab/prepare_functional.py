@@ -52,9 +52,13 @@ def configuration(source):
     }
 
 
-def verify_catalog(path):
+def verify_catalog(path, diagnostic_mode=False):
     data = path.read_bytes()
     rows = json.loads(data)
+    if diagnostic_mode:
+        if rows != []:
+            raise ValueError('Diagnostic mode requires the approved snapshot to remain empty')
+        return 'diagnostic-catalog-disabled'
     if not isinstance(rows, list) or not rows:
         raise ValueError('Approved LAB snapshot is empty; no candidate fallback allowed')
     for row in rows:
@@ -108,7 +112,9 @@ def main():
         if not isinstance(source, dict):
             raise ValueError('LAB Firebase JSON must be an object')
         config = configuration(source)
-        digest = verify_catalog(root / 'branding/lab_approved.json')
+        diagnostic_mode = os.environ.get('ROCHA_LAB_DIAGNOSTIC_MODE') == 'true'
+        digest = verify_catalog(
+            root / 'branding/lab_approved.json', diagnostic_mode=diagnostic_mode)
         verify_signer(root / '.rocha-private-lab/lab.keystore', dict(os.environ))
         verify_backend()
         private = root / '.rocha-private-lab'
@@ -117,7 +123,10 @@ def main():
         target.write_text(json.dumps(config), encoding='utf-8')
         target.chmod(0o600)
         print('LAB configuration validated; credentials suppressed')
-        print('Approved catalog SHA-256: ' + digest)
+        if diagnostic_mode:
+            print('Diagnostic mode enabled; catalog and channel playback remain disabled')
+        else:
+            print('Approved catalog SHA-256: ' + digest)
     except (ValueError, OSError) as error:
         # All validation messages above are static; never dump raw JSON or keytool logs.
         if isinstance(error, OSError):

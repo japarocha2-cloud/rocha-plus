@@ -2,6 +2,15 @@ name: Rocha+ Functional ARM64 LAB
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Build mode for the isolated LAB APK
+        type: choice
+        required: true
+        default: functional
+        options:
+          - functional
+          - diagnostic
   push:
     branches:
       - lab/functional-arm64-20261112
@@ -28,13 +37,19 @@ jobs:
           cache: true
       - run: flutter pub get --enforce-lockfile
       - run: flutter analyze --no-pub
-      - run: flutter test --no-pub --dart-define=ROCHA_FUNCTIONAL_LAB=true test/functional_lab_test.dart test/auth_test.dart test/functional_player_test.dart
+      - name: Test the diagnostic authentication and route guards
+        if: ${{ inputs.mode == 'diagnostic' }}
+        run: flutter test --no-pub test/diagnostic_lab_test.dart
+      - name: Run the established functional suite
+        if: ${{ inputs.mode != 'diagnostic' && github.event_name == 'workflow_dispatch' }}
+        run: flutter test --no-pub --dart-define=ROCHA_FUNCTIONAL_LAB=true test/functional_lab_test.dart test/auth_test.dart test/functional_player_test.dart
       - run: python3 -B -m unittest discover -s tools/lab -p test_prepare_functional.py -v
       - run: node --test lab-backend/handler.test.cjs
+        if: ${{ inputs.mode != 'diagnostic' }}
   build:
     if: github.event_name == 'workflow_dispatch'
     needs: verify
-    name: Build authenticated ARM64 LAB APK
+    name: Build ${{ inputs.mode || 'functional' }} ARM64 LAB APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -218,17 +233,30 @@ jobs:
           ROCHA_LAB_GOOGLE_SERVICES_JSON: ${{ secrets.ROCHA_LAB_GOOGLE_SERVICES_JSON }}
           LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
           LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+          ROCHA_LAB_DIAGNOSTIC_MODE: ${{ inputs.mode == 'diagnostic' }}
         run: python3 tools/lab/prepare_functional.py
 
       - name: Build the ARM64 authenticated LAB APK
-        run: >-
-          flutter build apk --debug --target-platform android-arm64 --no-pub --split-per-abi
-          --target lib/main_functional_lab.dart
-          --dart-define-from-file=.rocha-private-lab/firebase.json
-          --build-number=2002 --build-name=0.1.0-lab-functional
+        shell: bash
+        env:
+          LAB_BUILD_MODE: ${{ inputs.mode || 'functional' }}
+        run: |
+          set -euo pipefail
+          args=(apk --debug --target-platform android-arm64 --no-pub --split-per-abi
+            --target lib/main_functional_lab.dart
+            --dart-define-from-file=.rocha-private-lab/firebase.json)
+          if [[ "$LAB_BUILD_MODE" == diagnostic ]]; then
+            args+=(--dart-define=ROCHA_LAB_DIAGNOSTIC=true
+              --build-number=2003 --build-name=0.1.0-lab-diagnostic)
+          else
+            args+=(--build-number=2002 --build-name=0.1.0-lab-functional)
+          fi
+          flutter build "${args[@]}"
 
       - name: Verify APK package, ABI, and LAB certificate
         shell: bash
+        env:
+          LAB_BUILD_MODE: ${{ inputs.mode || 'functional' }}
         run: |
           set -euo pipefail
           apk='build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk'
@@ -285,10 +313,16 @@ jobs:
           {
             echo '# Rocha+ Functional ARM64 LAB APK evidence'
             echo 'Target: second Android phone only; do not install on historical Moto G56'
+            echo "Build mode: ${LAB_BUILD_MODE:-functional}"
             echo 'Physical login and real-stream A/V remain to be tested'
             echo "Source commit: $GITHUB_SHA"
             echo "APK size bytes: $(stat -c %s "$apk")"
-            echo "Approved snapshot SHA-256: $(sha256sum branding/lab_approved.json | cut -d ' ' -f 1)"
+            if [[ "${LAB_BUILD_MODE:-functional}" == diagnostic ]]; then
+              echo 'Catalog: disabled; definitive C6 approval is pending'
+              echo 'Playback: disabled in diagnostic mode'
+            else
+              echo "Approved snapshot SHA-256: $(sha256sum branding/lab_approved.json | cut -d ' ' -f 1)"
+            fi
             echo "Branch: $GITHUB_REF_NAME"
             echo "Application ID: com.rochaplus.app.lab"
             echo "${version_line}"
@@ -303,7 +337,7 @@ jobs:
       - name: Upload signed ARM64 LAB APK and evidence
         uses: actions/upload-artifact@v4
         with:
-          name: rocha-plus-functional-arm64-lab-apk-${{ github.run_id }}
+          name: rocha-plus-${{ inputs.mode || 'functional' }}-arm64-lab-apk-${{ github.run_id }}
           path: |
             build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk
             build/qa/arm64-lab-apk-evidence.md

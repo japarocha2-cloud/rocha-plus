@@ -1,8 +1,7 @@
 import copy
 import json
-from pathlib import Path
-import tempfile
 import unittest
+from unittest.mock import Mock
 from prepare_functional import configuration, verify_catalog, SHA1
 
 
@@ -33,11 +32,21 @@ class PreflightTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError): configuration(value)
 
     def test_catalog_empty_or_pending_stops_build(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / 'catalog.json'
-            for rows in ([], {}, [{'eligible': True, 'status': 'pending'}]):
-                path.write_text(json.dumps(rows))
-                with self.assertRaises(ValueError): verify_catalog(path)
+        path = Mock()
+        for rows in ([], {}, [{'eligible': True, 'status': 'pending'}]):
+            path.read_bytes.return_value = json.dumps(rows).encode()
+            with self.assertRaises(ValueError): verify_catalog(path)
+
+    def test_diagnostic_mode_requires_empty_snapshot_and_disables_catalog(self):
+        path = Mock()
+        path.read_bytes.return_value = b'[]'
+        self.assertEqual(
+            verify_catalog(path, diagnostic_mode=True),
+            'diagnostic-catalog-disabled')
+        path.read_bytes.return_value = json.dumps(
+            [{'status': 'candidate'}]).encode()
+        with self.assertRaises(ValueError):
+            verify_catalog(path, diagnostic_mode=True)
 
 
 if __name__ == '__main__': unittest.main()
