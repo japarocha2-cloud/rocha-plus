@@ -236,6 +236,19 @@ jobs:
           ROCHA_LAB_DIAGNOSTIC_MODE: ${{ inputs.mode == 'diagnostic' }}
         run: python3 tools/lab/prepare_functional.py
 
+      - name: Resolve Kotlin dependencies from Maven Central
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/rocha-lab-plugin-repositories.gradle <<'GRADLE'
+          gradle.beforeSettings { settings ->
+              settings.pluginManagement.repositories {
+                  mavenCentral {
+                      content { includeGroupByRegex('org[.]jetbrains[.]kotlin([.].*)?') }
+                  }
+                  gradlePluginPortal()
+              }
+          }
+          GRADLE
       - name: Build the ARM64 authenticated LAB APK
         shell: bash
         env:
