@@ -32,7 +32,9 @@ class _LabAccessGateState extends State<LabAccessGate>
   Future<void> _createCheckout() async {
     final auth = FirebaseAuth.instance;
     if (_creating || widget.uid != _testUid ||
-        auth.currentUser?.uid != _testUid) return;
+        auth.currentUser?.uid != _testUid) {
+      return;
+    }
     setState(() {
       _creating = true;
       _checkoutResult = null;
@@ -61,7 +63,24 @@ class _LabAccessGateState extends State<LabAccessGate>
         final data = jsonDecode(response.body);
         if (data is! Map || data['sandbox'] != true ||
             data['orderId'] is! String ||
-            !RegExp(r'^[0-9a-f-]{36} = true;
+            !RegExp(r'^[0-9a-f-]{36}$').hasMatch(data['orderId'] as String)) {
+          throw const FormatException('Resposta sandbox inválida');
+        }
+        setState(() => _checkoutResult = 'Pedido sandbox: ${data['orderId']}');
+      } finally {
+        client.close();
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _checkoutResult =
+            'Não foi possível confirmar a criação do pedido.');
+      }
+    } finally {
+      if (mounted) setState(() => _creating = false);
+    }
+  }
+
+  bool _checking = true;
   bool _allowed = false;
   int _generation = 0;
   Timer? _expiry;
