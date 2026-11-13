@@ -57,8 +57,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected='refs/heads/lab/functional-arm64-20261112'
-          if [[ "$GITHUB_REF" != "$expected" ]]; then
+          expected='refs/heads/lab/diagnostic-sandbox-checkout'
+          if [[ "$GITHUB_REF" != "$expected" || "${{ inputs.mode }}" != "diagnostic" ]]; then
             echo "::error::This workflow is restricted to $expected. No build was started."
             exit 1
           fi
