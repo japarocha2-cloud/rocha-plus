@@ -45,3 +45,5 @@ Comandos ECC úteis: `/ecc:flutter-review`, `/ecc:flutter-test`, `/ecc:flutter-b
 Merge, deploy, publicação em loja, `workflow_dispatch`, cobrança real, alteração financeira,
 exclusão destrutiva (inclusive de branches), uso de APIs pagas e ferramentas MCP de escrita
 (Firebase deploy, anúncios, redes sociais, e-mail).
+
+Checkpoint de retomada: `CHECKPOINT-CENTRAL-20261113.md`. Roteamento de modelos: branch `lab/roteamento-modelos-sim-20261113`, `docs/lab/roteamento-modelos.md`.
