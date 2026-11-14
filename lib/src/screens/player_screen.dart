@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:video_player/video_player.dart';
 
+import '../auth/device_limits.dart';
 import '../live/channel.dart';
 import '../live/playback_evidence.dart';
 import '../live/playback_failure.dart';
@@ -29,6 +30,8 @@ class PlayerScreen extends StatefulWidget {
   final bool initiallyFullscreen;
   final VoidCallback? onTryOtherPlayer;
   final VideoPlayerController Function(Uri)? controllerFactory;
+  /// Server playback lease (device limits). Null keeps the previous behavior.
+  final StreamLease? streamLease;
   const PlayerScreen({
     super.key,
     required this.channel,
@@ -36,6 +39,7 @@ class PlayerScreen extends StatefulWidget {
     this.initiallyFullscreen = false,
     this.onTryOtherPlayer,
     this.controllerFactory,
+    this.streamLease,
   });
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -54,6 +58,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Timer? _controlsTimer;
   bool _fullscreen = false;
   bool? _portraitOnExit;
+  late final StreamLease? _lease = widget.streamLease ?? StreamLease.production();
+  String? _limitMessage;
 
   @override
   void didChangeDependencies() {
@@ -71,6 +77,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
+    _lease?.onLost = _onLeaseLost;
     if (!_remotePlayback) _initialize();
     if (widget.initiallyFullscreen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -103,10 +110,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
       _loading = true;
       _failed = false;
       _failure = PlaybackFailure.unknown;
+      _limitMessage = null;
       _playbackConfirmed = false;
       _isPlaying = false;
       _isBuffering = false;
     });
+
+    // The server must grant a playback slot before any media is opened.
+    final lease = _lease;
+    if (lease != null && !lease.active) {
+      final kind = deviceKindFor(MediaQuery.sizeOf(context).shortestSide);
+      final outcome = await lease.start(kind);
+      if (!mounted || attempt != _attempt) return;
+      if (!outcome.granted) {
+        setState(() {
+          _loading = false;
+          _limitMessage = outcome.message;
+        });
+        return;
+      }
+    }
 
     final controller = widget.controllerFactory?.call(Uri.parse(widget.channel.url)) ??
         VideoPlayerController.networkUrl(
@@ -143,6 +166,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
         });
       }
     }
+  }
+
+  /// The server refused or did not renew the lease: stop local playback now.
+  void _onLeaseLost(String message) {
+    if (!mounted) return;
+    _attempt++;
+    final controller = _controller;
+    _controller = null;
+    controller?.removeListener(_onPlayerChanged);
+    unawaited(controller?.dispose());
+    setState(() {
+      _loading = false;
+      _limitMessage = message;
+      _playbackConfirmed = false;
+      _isPlaying = false;
+    });
   }
 
   void _onPlayerChanged() {
@@ -386,6 +425,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void dispose() {
     _attempt++;
+    _lease?.onLost = null;
+    unawaited(_lease?.stop());
     _controlsTimer?.cancel();
     _castConnectionObserver?.dispose();
     _castConnectionObserver = null;
@@ -455,6 +496,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
         body: Center(
           child: _remotePlayback
               ? const Text('Reprodução na TV')
+              : _limitMessage != null
+              ? _LimitState(message: _limitMessage!, onRetry: _initialize)
               : _failed
               ? _FailureState(
                   onRetry: _initialize,
@@ -617,6 +660,32 @@ class _FailureState extends StatelessWidget {
             onPressed: onTryOtherPlayer,
             child: const Text('Tentar outro player'),
           ),
+      ],
+    ),
+  );
+}
+
+class _LimitState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  const _LimitState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.devices_other, size: 48, color: RochaColors.ruby),
+        const SizedBox(height: 16),
+        Text(message, textAlign: TextAlign.center),
+        const SizedBox(height: 16),
+        FilledButton.icon(
+          autofocus: true,
+          onPressed: onRetry,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Tentar novamente'),
+        ),
       ],
     ),
   );

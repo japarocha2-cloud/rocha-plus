@@ -103,14 +103,16 @@ export function handleDeviceRoute({ path, body, nowMs, allowed, state, limits })
     return save({ streamId: stream.id, expiresAt: new Date(expiresAtMs).toISOString() });
   }
 
-  // /v1/streams/start — one lease per device; restarting on the same device reuses it.
-  let stream = sessions.streams.find(s => s.deviceId === id);
-  if (!stream) {
-    if (sessions.streams.length >= limits.streams) fail(409, 'Concurrent stream limit reached');
-    stream = { id: randomUUID(), deviceId: id, startedAtMs: nowMs, expiresAtMs };
-    sessions.streams.push(stream);
+  // /v1/streams/start — one lease per device. Restarting on the same device keeps
+  // the slot but issues a new id, so a late stop/heartbeat from the previous
+  // player screen cannot end the new playback.
+  const previous = sessions.streams.findIndex(s => s.deviceId === id);
+  if (previous === -1 && sessions.streams.length >= limits.streams) {
+    fail(409, 'Concurrent stream limit reached');
   }
-  stream.expiresAtMs = expiresAtMs;
+  if (previous !== -1) sessions.streams.splice(previous, 1);
+  const stream = { id: randomUUID(), deviceId: id, startedAtMs: nowMs, expiresAtMs };
+  sessions.streams.push(stream);
   return save({ streamId: stream.id, expiresAt: new Date(expiresAtMs).toISOString(),
     leaseSeconds: limits.leaseMs / 1000 });
 }

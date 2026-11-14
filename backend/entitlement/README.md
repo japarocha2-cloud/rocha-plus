@@ -56,4 +56,15 @@ inícios simultâneos → exatamente 2). **Não validado:** Firestore real/emula
 - Número de trocas por 30 dias (3) e duração da concessão (90 s) aguardam confirmação comercial.
 - `deviceId` é falsificável sem atestação (Play Integrity / App Check). A concessão é consultiva
   enquanto a URL de mídia não exigir o `streamId` (CDN/DRM). Falta rate limit por UID no gateway.
-- Integração no app (registro no login, start/heartbeat/stop no player) ainda não feita.
+- Reiniciar no mesmo aparelho mantém a vaga e gera novo `streamId` (encerramento tardio da tela
+  anterior não derruba a nova).
+
+### Cliente Flutter (`lib/src/auth/device_limits.dart`)
+- Desligado por padrão. Ativar só em build LAB: `--dart-define=ROCHA_DEVICE_LIMITS=true` junto com
+  `ROCHA_ENTITLEMENT_URL=https://…/v1/entitlement` (outro formato desativa e avisa em debug).
+- O player pede a concessão antes de abrir a mídia; renova a cada 30 s; recusa explícita
+  (401/403/409) para na hora; 3 renovações sem resposta/erro temporário seguidas param a reprodução;
+  sair do player libera a vaga (inclusive se a concessão chegar depois do fechamento).
+- Celular × TV por tamanho de tela (lado menor ≥ 480 = TV; tablets contam como TV) até haver
+  verificação nativa de Android TV.
+- **Lacuna:** transmissão por Cast não ocupa vaga nem é limitada ainda.

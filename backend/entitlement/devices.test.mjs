@@ -102,14 +102,26 @@ test('playback requires a registered device', async () => {
   await rejects(start(f, 7), 403, /not registered/);
 });
 
-test('two simultaneous streams; the third is refused; restart on a device reuses its lease', async () => {
+test('two simultaneous streams; the third is refused; restart on a device keeps one slot', async () => {
   const f = fixture();
   await f.entitle();
   await reg(f, 1, 'phone'); await reg(f, 2, 'tv'); await reg(f, 3, 'tv');
   const first = await start(f, 1);
   await start(f, 2);
-  assert.equal((await start(f, 1)).streamId, first.streamId);
+  const again = await start(f, 1);
+  assert.notEqual(again.streamId, first.streamId);
   await rejects(start(f, 3), 409, /Concurrent stream limit/);
+});
+
+test('a late stop or heartbeat from the previous screen cannot end the new stream', async () => {
+  const f = fixture();
+  await f.entitle();
+  await reg(f, 1, 'phone');
+  const old = await start(f, 1);
+  const current = await start(f, 1); // channel change: new screen, same device
+  await f.call('/v1/streams/stop', { streamId: old.streamId });
+  await rejects(f.call('/v1/streams/heartbeat', { deviceId: dev(1), streamId: old.streamId }), 409);
+  await f.call('/v1/streams/heartbeat', { deviceId: dev(1), streamId: current.streamId });
 });
 
 test('an abandoned stream frees its slot when the lease expires', async () => {
