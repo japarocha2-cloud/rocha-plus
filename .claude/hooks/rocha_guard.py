@@ -122,14 +122,26 @@ def clean(p):
     return p
 
 
+def glob_hits_prot(c):
+    """Padrão com curinga: protegido se o prefixo literal puder alcançar um caminho/diretório protegido."""
+    i = min((c.find(ch) for ch in '*?[' if ch in c), default=-1)
+    if i < 0:
+        return False
+    prefix = c[:i]
+    if not prefix:
+        return False
+    return any(a.startswith(prefix) for a in ANCHORS) or \
+        any(prefix.startswith(d + '/') for d in PROT_DIRS if d != 'lib/src/live') or prefix.startswith('lib/src/live/')
+
+
 def is_prot(p):
     c = clean(p)
-    return any(r.search(c) for r in PROTECTED)
+    return any(r.search(c) for r in PROTECTED) or glob_hits_prot(c)
 
 
 def touches_prot(p):
     c = clean(p)
-    if any(r.search(c) for r in PROTECTED):
+    if any(r.search(c) for r in PROTECTED) or glob_hits_prot(c):
         return True
     c = c.rstrip('/')
     if c in ('.', '', '..', '/'):
@@ -230,6 +242,22 @@ def check_git(args, cwd):
         return
     if any('::' in a for a in rest):
         raise Block('git com transporte ext::/remoto helper bloqueado.')
+    for j, a in enumerate(rest):
+        tgt = None
+        nxt = rest[j + 1] if j + 1 < len(rest) else ''
+        if a.startswith(('--output', '--output-directory')):
+            tgt = a.split('=', 1)[1] if '=' in a else nxt
+        elif sub in ('archive', 'format-patch') and a == '-o':
+            tgt = nxt
+        elif sub in ('archive', 'format-patch') and re.match(r'^-o.+', a):
+            tgt = a[2:]
+        if tgt is not None and not clean(tgt).startswith(('/tmp/', '/var/tmp/')):
+            raise Block('git %s gravando em %r bloqueado: saída de arquivo só em /tmp.' % (sub, tgt[:60]))
+    if sub == 'bundle' and len(rest) > 1 and rest[0].lower() == 'create' and \
+            not clean(rest[1]).startswith(('/tmp/', '/var/tmp/')):
+        raise Block('git bundle create só em /tmp.')
+    if sub == 'switch' and any(re.match(r'^-[a-zA-Z]*[fC]', x) or x in ('--force', '--discard-changes') for x in rest):
+        raise Block('git switch -f/-C/--discard-changes é destrutivo.')
     if sub in GIT_BLOCK:
         raise Block('git %s bloqueado (push/merge/pull/rebase/cherry-pick e afins exigem autorização do Japa).' % sub)
     if sub == 'remote' and rest and rest[0].lower() not in ('-v', 'show', 'get-url'):
@@ -399,6 +427,17 @@ def analyze_segment(seg, cwd):
     if first == 'find' and any(x in toks for x in ('-delete', '-exec', '-execdir', '-ok', '-okdir',
                                                    '-fprint', '-fprintf', '-fls')):
         reader = False
+        roots = []
+        for t in toks[1:]:
+            if t.startswith('-') or t == '!':
+                break
+            roots.append(clean(t))
+        in_tmp = bool(roots) and all(r == '/tmp' or r.startswith(('/tmp/', '/var/tmp/')) for r in roots)
+        actions = [i for i, x in enumerate(toks) if x in ('-exec', '-execdir', '-ok', '-okdir')]
+        harmless = bool(actions) and all(base(toks[i + 1]) in PURE_READERS for i in actions if i + 1 < len(toks)) \
+            and not any(x in toks for x in ('-delete', '-fprint', '-fprintf', '-fls'))
+        if not in_tmp and not harmless:
+            raise Block('find com -delete/-exec/-fprint fora de /tmp só é permitido executando leitores (cat/grep/...).')
     if first == 'sed':
         if any(re.match(r'^-[a-z]*i|^--in-place', x) for x in toks[1:]):
             reader = False
@@ -443,8 +482,6 @@ def analyze_segment(seg, cwd):
                     raise Block('%s %s bloqueado (publicação/deploy/login).' % (n, a))
         elif n in RM_NAMES:
             check_rm(args)
-        elif n == 'find' and '-delete' in args:
-            raise Block('find -delete bloqueado.')
         elif n in ('awk', 'gawk', 'mawk', 'nawk') and re.search(r'system|popen|getline|print[^;]*>', ' '.join(args)):
             raise Block('awk com system/getline/redirecionamento bloqueado.')
         elif n in ('dd', 'mkfs', 'mke2fs', 'fdisk', 'wipefs', 'mount', 'crontab', 'at', 'ln', 'chown'):
@@ -462,7 +499,7 @@ def analyze_segment(seg, cwd):
                     raise Block('%s em caminho protegido (ou diretório que o contém): %s' % (n, a[:70]))
     if first != 'git' and not runner:
         for t in toks:
-            if not t.startswith('-') and is_prot(t):
+            if not t.startswith('-') and any(c in t for c in './\\*?') and is_prot(t):
                 raise Block('comando de escrita/execução toca área protegida: %s' % t[:70])
 
 

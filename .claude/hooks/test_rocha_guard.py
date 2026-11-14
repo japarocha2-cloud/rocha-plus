@@ -110,6 +110,14 @@ class BashBlocked(Base):
         'git fetch origin lab/x:refs/heads/main', 'git fetch origin +a:main', 'git restore --staged .claude/settings.json',
         'git rm .claude/hooks/rocha_guard.py', 'python3 -m json.tool .claude/settings.json /tmp/o.json',
         'git reset HEAD~1', 'git reset abc1234',
+        # --- 3ª rodada (reauditoria)
+        'find /home -exec rm -rf {} +', 'find . -exec sh -c x {} ;', 'find lib -delete',
+        'echo x > lib/src/live/channel_r*.dart', 'echo x | tee lib/src/live/channel_r*.dart',
+        'sed -i s/a/b/ lib/src/live/channel_r*.dart', 'echo x > .github/workf*/ci.yml', 'cp /tmp/x .github/*/ci.yml',
+        'git diff --output=lib/src/live/channel_repository.dart', 'git log --output=.github/workflows/ci.yml',
+        'git show --output=lib/src/live/channel_repository.dart HEAD', 'git archive -o .github/workflows/a.tar HEAD',
+        'git format-patch -o .github/workflows HEAD~1', 'git bundle create lib/x.bundle HEAD',
+        'git switch -f main', 'git switch -C main', 'git switch --discard-changes lab/x',
     ]
 
     def test_blocked(self):
@@ -145,6 +153,9 @@ class BashAllowed(Base):
         'git apply --check x.patch', 'echo $HOME', 'cd lib && ls', 'mkdir -p lib/src/novo',
         'git fetch --depth=20 origin lab/x:refs/remotes/origin/ecc', 'git add .claude/settings.json CLAUDE.md',
         'python3 -m json.tool .claude/settings.json', 'git reset', 'git reset -- lib/main.dart',
+        'find . -name "*.dart" -exec grep -l payment {} ;', 'find /tmp/x -delete', 'ls lib/src/live/channel_r*',
+        'cat lib/src/live/channel_r*.dart', 'git diff --output=/tmp/d.patch', 'git archive -o /tmp/a.tar HEAD',
+        'git format-patch -o /tmp/p HEAD~1', 'git bundle create /tmp/b.bundle HEAD', 'echo x > /tmp/out.txt',
         "git add CLAUDE.md && git -c user.name=Claude -c user.email=n@a.b commit -q -F - <<'E2'\nmsg com git push\nE2",
     ]
 
