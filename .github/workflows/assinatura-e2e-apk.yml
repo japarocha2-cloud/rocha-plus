@@ -1,7 +1,11 @@
-name: Rocha+ E2E subscription APK (homologation, manual only)
+name: Rocha+ E2E subscription APK (homologation, LAB branch only)
 # Builds com.rochaplus.app.e2e ("Rocha+ E2E") pointed at rocha-plus-homologacao.
 # Installs beside the app in use and the Candidate 6 '.lab' build. Never publishes.
 on:
+  # workflow_dispatch only works once the file is on the default branch, so the
+  # LAB build runs on push to this single LAB branch (owner-approved option A).
+  push:
+    branches: [lab/assinatura-e2e-20261114]
   workflow_dispatch:
 permissions:
   contents: read
