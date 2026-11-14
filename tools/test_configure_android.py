@@ -2,6 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 import xml.etree.ElementTree as ET
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from configure_android import configure, attr
 
 class AndroidConfigurationTest(unittest.TestCase):
