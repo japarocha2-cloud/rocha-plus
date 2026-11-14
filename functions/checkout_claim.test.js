@@ -77,3 +77,16 @@ test('unsupported price rejected even if provider agrees',async()=>{
   try {await assert.rejects(f.run);assert.equal(f.writes.length,0);}
   finally {f.restore();}
 });
+
+test('missing entitlement on claim reuses the Spark trial start instead of 7 new days',async()=>{
+  const started=new Date(Date.now()-5*86400000);
+  const f=fixture({order:{googleSubject:'g-subject-1'}});
+  f.rows.delete('entitlements/user1');
+  f.rows.set('rochaSparkAccounts/g-subject-1',{trialStartedAt:started});
+  try {await f.run();
+    const ent=f.writes.find(w=>w.ref==='entitlements/user1');
+    assert.equal(ent.data.trialStartedAt.getTime(),started.getTime());
+    assert.equal(ent.data.trialUntil.getTime(),started.getTime()+7*86400000);
+    assert.ok(f.writes.some(w=>w.ref==='trialAnchors/g-subject-1'));
+  } finally {f.restore();}
+});

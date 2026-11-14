@@ -8,7 +8,7 @@ const START = Date.parse('2026-10-27T12:00:00Z');
 
 // Execute the actual HTTP export with isolated SDK boundaries. No credentials,
 // remote Firebase, account mutation or payment provider are used.
-function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}) {
+function harness({uid = 'lab-user', rejectToken = false, failStore = false, subject} = {}) {
   let now = START;
   const records = new Map();
   const verified = [];
@@ -16,8 +16,9 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
   const timestamp = ms => ({toMillis: () => ms});
   const firestore = () => ({
     collection: name => {
-      assert.equal(name, 'entitlements');
-      return {doc: key => ({key})};
+      assert.ok(['entitlements', 'rochaSparkAccounts', 'trialAnchors'].includes(name));
+      // Entitlement keys stay bare for legacy assertions; other collections are prefixed.
+      return {doc: key => ({key: name === 'entitlements' ? key : name + '/' + key})};
     },
     runTransaction: async callback => {
       if (failStore) throw Object.assign(new Error('unavailable'), {code: 'unavailable'});
@@ -38,14 +39,14 @@ function harness({uid = 'lab-user', rejectToken = false, failStore = false} = {}
     auth: () => ({verifyIdToken: async (token, revoked) => {
       verified.push({token, revoked});
       if (rejectToken) throw new Error('invalid token');
-      return {uid};
+      return subject ? {uid, firebase: {identities: {'google.com': [subject]}}} : {uid};
     }}),
   };
   const exported = {};
   vm.runInNewContext(fs.readFileSync(require.resolve('./index.js'), 'utf8'), {
     exports: exported,
     require: name => {
-      if (name === './checkout' || name === './checkout_claim') return require(name);
+      if (name === './checkout' || name === './checkout_claim' || name === './trial_anchor') return require(name);
       if (name === 'firebase-admin') return admin;
       if (name === 'firebase-functions/params') {
         return {defineSecret: secretName => ({value: () => 'fixture-' + secretName})};
@@ -183,3 +184,18 @@ test('actual endpoint rejects mutations and fails closed on storage errors', asy
   assert.equal(failed.writes(), 0);
 });
 
+
+test('endpoint migrating a Spark user keeps the original trial start (2 days left, not 7)', async () => {
+  const h = harness({subject: 'g-subject-1'});
+  h.records.set('rochaSparkAccounts/g-subject-1', {trialStartedAt: h.timestamp(START - 5 * DAY)});
+  const r = await h.request();
+  assert.deepEqual(r.body, {uid: 'lab-user', allowed: true, reason: 'trial'});
+  assert.equal(h.records.get('lab-user').trialUntil.toMillis(), START + 2 * DAY);
+  assert.equal(h.records.get('trialAnchors/g-subject-1').trialStartedAt.toMillis(), START - 5 * DAY);
+});
+
+test('endpoint denies a Spark user whose trial already ended instead of granting 7 new days', async () => {
+  const h = harness({subject: 'g-subject-2'});
+  h.records.set('rochaSparkAccounts/g-subject-2', {trialStartedAt: h.timestamp(START - 9 * DAY)});
+  assert.equal((await h.request()).body.reason, 'expired');
+});

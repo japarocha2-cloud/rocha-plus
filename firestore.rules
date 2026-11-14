@@ -12,5 +12,9 @@ service cloud.firestore {
     match /payment_claims/{paymentId} {
       allow read, write: if false;
     }
+    // Trial start anchored to the stable Google subject (server-owned).
+    match /trialAnchors/{subject} {
+      allow read, write: if false;
+    }
   }
 }

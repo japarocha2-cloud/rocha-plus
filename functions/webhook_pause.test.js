@@ -21,6 +21,7 @@ function load(env) {
       if (name === './reconcile_and_grant') return {reconcileAndGrant: forbidden};
       if (name === './checkout') return {createCheckoutHandler: forbidden};
       if (name === './checkout_claim') return {bindCheckoutClaim: forbidden};
+      if (name === './trial_anchor') return require(name);
       throw Error('unexpected dependency');
     },
   });

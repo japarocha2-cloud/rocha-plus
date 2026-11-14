@@ -5,7 +5,8 @@ const {createCheckoutHandler, officialUrl} = require('./checkout');
 const good = 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=p1';
 function fixture(overrides = {}) {
   const writes = []; const calls = [];
-  const deps = {verifyToken: async () => ({uid:'firebase-user'}),
+  const deps = {verifyToken: async () => ({uid:'firebase-user',
+      firebase:{identities:{'google.com':['g-subject-1']}}}),
     token: () => 'fixture', config: () => ({enabled:true, merchantId:'123', mode:'one_time',
       notificationUrl:'https://example.com/webhook'}),
     createOrder: async (id, data) => writes.push({id, data}),
@@ -26,6 +27,8 @@ function fixture(overrides = {}) {
 test('authenticated checkout fixes price and UID on server',async()=>{
   const f=fixture();await f.run();assert.equal(f.res.code,200);
   assert.equal(f.writes[0].data.uid,'firebase-user');
+  // Server-derived Google subject lets a later claim anchor the trial.
+  assert.equal(f.writes[0].data.googleSubject,'g-subject-1');
   assert.equal(f.writes[0].data.amountCents,790);
   assert.equal(JSON.parse(f.calls[1].opts.body).items[0].unit_price,7.9);
 });

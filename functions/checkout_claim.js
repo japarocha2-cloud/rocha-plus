@@ -1,6 +1,7 @@
 'use strict';
 const {fetchVerifiedPayment} = require('./mercadopago_reconciliation');
 const {PLANS} = require('./checkout');
+const {initializeTrial} = require('./trial_anchor');
 // Keep previously created checkout orders valid at their original server-set amount.
 const LEGACY_PLANS = Object.freeze({monthly: 450, annual: 4950});
 function validOrderAmount(plan, cents) {
@@ -25,11 +26,11 @@ async function bindCheckoutClaim({db, paymentId, accessToken}) {
         (o.paymentId && o.paymentId !== p.id)) throw Error('checkout order mismatch');
     const entitlementRef = db.collection('entitlements').doc(o.uid);
     const entitlement = await tx.get(entitlementRef);
-    // Initialize a missing trial once; never reset an existing trial or paid license.
+    // Initialize a missing trial once, anchored to the Google subject saved on the
+    // order (older orders have none: per-UID as before). Never reset existing access.
     if (!entitlement.exists) {
-      const now = new Date();
-      tx.create(entitlementRef, {trialStartedAt: now,
-        trialUntil: new Date(now.getTime() + 7 * 86400000), createdAt: now});
+      await initializeTrial({db, tx, entitlementRef, uid: o.uid,
+        subject: o.googleSubject ?? null, nowMs: Date.now(), toTimestamp: ms => new Date(ms)});
     }
     tx.create(claimRef, {uid: o.uid, plan: o.plan, amountCents: o.amountCents,
       currency: 'BRL', merchantId: o.merchantId, reviewed: true,

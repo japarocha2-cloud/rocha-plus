@@ -11,10 +11,9 @@ const {createMercadoPagoWebhookHandler, createFirestoreWebhookInbox} = require('
 const {reconcileAndGrant} = require('./reconcile_and_grant');
 const {createCheckoutHandler} = require('./checkout');
 const {bindCheckoutClaim} = require('./checkout_claim');
+const {initializeTrial, googleSubjectOf} = require('./trial_anchor');
 const mpReceivingToken = defineSecret('MP_RECEIVING_ACCESS_TOKEN');
 const mpWebhookSecret = defineSecret('MP_WEBHOOK_SECRET');
-
-const TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
 
 exports.entitlement = onRequest({region: 'southamerica-east1', cors: false,
   maxInstances: 10, invoker: 'public'}, async (req, res) => {
@@ -35,10 +34,12 @@ exports.entitlement = onRequest({region: 'southamerica-east1', cors: false,
     const data = await db.runTransaction(async tx => {
       const snapshot = await tx.get(doc);
       if (snapshot.exists) return snapshot.data();
+      // Anchor the trial to the stable Google subject so Spark users and recreated
+      // UIDs do not receive a fresh 7 days. No Google identity: per-UID, as before.
       const now = admin.firestore.Timestamp.now();
-      const trialUntil = admin.firestore.Timestamp.fromMillis(now.toMillis() + TRIAL_MS);
-      const initial = {trialStartedAt: now, trialUntil, createdAt: now};
-      tx.create(doc, initial);
+      const initial = await initializeTrial({db, tx, entitlementRef: doc, uid,
+        subject: googleSubjectOf(decoded), nowMs: now.toMillis(),
+        toTimestamp: admin.firestore.Timestamp.fromMillis});
       return initial;
     });
     const nowMs = Date.now();

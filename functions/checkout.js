@@ -1,5 +1,6 @@
 'use strict';
 const {randomUUID} = require('node:crypto');
+const {googleSubjectOf} = require('./trial_anchor');
 const PLANS = Object.freeze({monthly: 790, annual: 8690});
 function officialUrl(raw) {
   const u = new URL(raw);
@@ -40,7 +41,9 @@ function createCheckoutHandler({verifyToken, createOrder, savePreference, token,
         throw Error('merchant identity');
       const orderId = randomUUID();
       // Identity, amount and purchase reference are server-owned, before provider call.
-      await createOrder(orderId, {uid: user.uid, plan, amountCents: PLANS[plan],
+      // googleSubject lets a later claim anchor the trial like /entitlement does.
+      await createOrder(orderId, {uid: user.uid, googleSubject: googleSubjectOf(user),
+        plan, amountCents: PLANS[plan],
         merchantId: c.merchantId, currency: 'BRL', mode: 'one_time',
         createdAt: new Date().toISOString(), preferenceId: null});
       const response = await request('https://api.mercadopago.com/checkout/preferences', {
