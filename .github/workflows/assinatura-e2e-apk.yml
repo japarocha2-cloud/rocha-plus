@@ -1,0 +1,64 @@
+name: Rocha+ E2E subscription APK (homologation, manual only)
+# Builds com.rochaplus.app.e2e ("Rocha+ E2E") pointed at rocha-plus-homologacao.
+# Installs beside the app in use and the Candidate 6 '.lab' build. Never publishes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e-apk:
+    if: github.ref == 'refs/heads/lab/assinatura-e2e-20261114'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Test isolated configuration guards
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Generate isolated Android scaffold
+        run: |
+          flutter create --platforms=android .
+          rm -f test/widget_test.dart
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' android/app/build.gradle.kts
+          python3 tools/configure_android.py
+      - name: Prepare E2E homologation configuration
+        env:
+          ROCHA_HOMOLOGATION_TARGET: e2e
+          ROCHA_LAB_BUNDLE_JSON: ${{ secrets.ROCHA_LAB_BUNDLE_JSON }}
+          LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
+          LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
+          LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
+          # google-services.json of the separate Android app com.rochaplus.app.e2e.
+          ROCHA_E2E_GOOGLE_SERVICES_JSON: ${{ secrets.ROCHA_E2E_GOOGLE_SERVICES_JSON }}
+          ROCHA_SUBSCRIPTION_LAB: 'true'
+          ROCHA_ENTITLEMENT_URL: https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/entitlement
+        run: python3 tools/prepare_homologation.py prepare --private "$RUNNER_TEMP/rocha-homologation"
+      - name: Analyze and test application
+        run: |
+          flutter pub get
+          python3 tools/lab/patch_vlc_lifecycle.py
+          flutter pub get
+          python3 tools/lab/verify_vlc_protocol.py
+          flutter analyze
+          flutter test
+      - name: Build E2E APK
+        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
+      - name: Verify package and OAuth certificate before upload
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          python3 tools/prepare_homologation.py verify --private "$RUNNER_TEMP/rocha-homologation" --build-tools "$BUILD_TOOLS"
+      - name: Upload E2E APK (private workflow artifact, not a release)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocha-plus-e2e-homologacao
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/qa/homologation.json
+          retention-days: 7
+      - name: Remove private homologation inputs
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/rocha-homologation"

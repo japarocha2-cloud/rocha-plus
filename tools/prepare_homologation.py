@@ -18,6 +18,23 @@ PACKAGE = 'com.rochaplus.app.lab'
 BRANCH = 'refs/heads/feat/dual-player-lab-20261020'
 BRANCHES = (BRANCH, 'refs/heads/fix/subscription-access-20261026')
 ENTITLEMENT_ENDPOINT = f'https://southamerica-east1-{PROJECT}.cloudfunctions.net/entitlement'
+CHECKOUT_ENDPOINT = f'https://southamerica-east1-{PROJECT}.cloudfunctions.net/checkout'
+E2E_BRANCH = 'refs/heads/lab/assinatura-e2e-20261114'
+# 'lab' is the original homologation build (unchanged default). 'e2e' is a separate
+# subscription test app that installs beside the Candidate 6 / '.lab' builds.
+TARGETS = {
+    'lab': {'package': PACKAGE, 'suffix': '.lab', 'label': 'Rocha+ Homologação',
+            'branches': BRANCHES, 'services': 'ROCHA_LAB_GOOGLE_SERVICES_JSON'},
+    'e2e': {'package': 'com.rochaplus.app.e2e', 'suffix': '.e2e', 'label': 'Rocha+ E2E',
+            'branches': (E2E_BRANCH,), 'services': 'ROCHA_E2E_GOOGLE_SERVICES_JSON'},
+}
+
+
+def target(env):
+    name = env.get('ROCHA_HOMOLOGATION_TARGET', 'lab')
+    if name not in TARGETS:
+        raise ValueError('Alvo de homologacao invalido')
+    return TARGETS[name]
 
 
 def subscription_config(env):
@@ -26,24 +43,29 @@ def subscription_config(env):
     enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
     if enabled not in ('true', 'false'):
         raise ValueError('Opcao experimental invalida')
+    e2e = target(env) is TARGETS['e2e']
+    if e2e and enabled != 'true':
+        raise ValueError('E2E exige o teste de assinatura ativo')
     result = {'ROCHA_EXPERIMENTAL_SUBSCRIPTIONS': enabled,
               'ROCHA_LAB_ONLY': 'false', 'ROCHA_LAYOUT_PREVIEW': 'false',
-              'ROCHA_ENTITLEMENT_URL': ''}
+              'ROCHA_ENTITLEMENT_URL': '', 'ROCHA_CHECKOUT_URL': ''}
     if enabled == 'true':
-        if env.get('GITHUB_REF') not in BRANCHES:
+        if env.get('GITHUB_REF') not in target(env)['branches']:
             raise ValueError('Bloqueio permitido apenas nas branches de homologacao')
         if env.get('ROCHA_ENTITLEMENT_URL') != ENTITLEMENT_ENDPOINT:
             raise ValueError('Homologacao exige o endpoint verificado do proprio projeto')
         result['ROCHA_ENTITLEMENT_URL'] = ENTITLEMENT_ENDPOINT
+        if e2e:
+            result['ROCHA_CHECKOUT_URL'] = CHECKOUT_ENDPOINT
     return result
 
 
-def firebase_configuration(source):
+def firebase_configuration(source, package=PACKAGE):
     info = source.get('project_info', {})
     if info.get('project_id') != PROJECT:
         raise ValueError('Homologacao exige o projeto experimental correto')
     clients = [c for c in source.get('client', [])
-               if c.get('client_info', {}).get('android_client_info', {}).get('package_name') == PACKAGE]
+               if c.get('client_info', {}).get('android_client_info', {}).get('package_name') == package]
     if len(clients) != 1:
         raise ValueError('Exige um unico app Android com pacote .lab')
     client = clients[0]
@@ -53,7 +75,7 @@ def firebase_configuration(source):
         raise ValueError('Cliente OAuth web ausente ou ambiguo')
     fingerprints = sorted({o.get('android_info', {}).get('certificate_hash', '').lower()
                            for o in oauth if o.get('client_type') == 1 and
-                           o.get('android_info', {}).get('package_name') == PACKAGE})
+                           o.get('android_info', {}).get('package_name') == package})
     if not fingerprints or any(not re.fullmatch('[0-9a-f]{40}', v) for v in fingerprints):
         raise ValueError('Cadastre SHA-1 da chave LAB no Firebase e baixe novamente google-services.json')
     keys = client.get('api_key', [])
@@ -72,14 +94,15 @@ def firebase_configuration(source):
 
 
 def prepare(root, private, env):
-    if env.get('GITHUB_REF') not in BRANCHES or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
+    t = target(env)
+    if env.get('GITHUB_REF') not in t['branches'] or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
         raise ValueError('Homologacao assinada exige disparo manual na branch experimental')
     env = lab_environment(env)
-    names = ['ROCHA_LAB_GOOGLE_SERVICES_JSON', 'LAB_KEYSTORE_BASE64',
+    names = [t['services'], 'LAB_KEYSTORE_BASE64',
              'LAB_KEYSTORE_PASSWORD', 'LAB_KEY_ALIAS']
     if any(not env.get(k) for k in names):
         raise ValueError('Secrets de homologacao ausentes; nenhum fallback para producao')
-    config, fingerprints = firebase_configuration(json.loads(env[names[0]]))
+    config, fingerprints = firebase_configuration(json.loads(env[names[0]]), t['package'])
     config.update(subscription_config(env))
     key_bytes = base64.b64decode(env['LAB_KEYSTORE_BASE64'], validate=True)
     if not key_bytes:
@@ -98,7 +121,7 @@ def prepare(root, private, env):
     private.chmod(0o700)
     for name, value in [('lab.keystore', key_bytes),
                         ('firebase.json', json.dumps(config).encode()),
-                        ('expected.json', json.dumps({'project': PROJECT, 'package': PACKAGE,
+                        ('expected.json', json.dumps({'project': PROJECT, 'package': t['package'],
                                                      'certificateSha1': fingerprints,
                                                      'subscriptionEnforcementConfigured':
                                                          config['ROCHA_EXPERIMENTAL_SUBSCRIPTIONS'] == 'true',
@@ -122,14 +145,14 @@ android {
     }
     buildTypes {
         getByName("release") {
-            applicationIdSuffix = ".lab"
+            applicationIdSuffix = "%s"
             signingConfig = signingConfigs.getByName("rochaHomologation")
         }
     }
 }
-'''
+''' % t['suffix']
     gradle.write_text(text)
-    app.set('{http://schemas.android.com/apk/res/android}label', 'Rocha+ Homologação')
+    app.set('{http://schemas.android.com/apk/res/android}label', t['label'])
     ET.register_namespace('android', 'http://schemas.android.com/apk/res/android')
     tree.write(manifest, encoding='utf-8', xml_declaration=True)
     return private / 'firebase.json', private / 'lab.keystore'
@@ -137,7 +160,8 @@ android {
 
 def verify(apk, build_tools, expected_file, summary, output):
     expected = json.loads(Path(expected_file).read_text())
-    if expected.get('project') != PROJECT or expected.get('package') != PACKAGE:
+    package = expected.get('package')
+    if expected.get('project') != PROJECT or package not in {t['package'] for t in TARGETS.values()}:
         raise ValueError('Metadados fora da homologacao')
     enforcement = expected.get('subscriptionEnforcementConfigured')
     endpoint_configured = expected.get('entitlementEndpointConfigured')
@@ -147,12 +171,12 @@ def verify(apk, build_tools, expected_file, summary, output):
     badging = subprocess.run([str(Path(build_tools) / 'aapt'), 'dump', 'badging', str(apk)],
                              capture_output=True, text=True, check=True, timeout=90).stdout
     match = re.search(r"^package: name='([^']+)'", badging, re.MULTILINE)
-    if not match or match[1] != PACKAGE:
+    if not match or match[1] != package:
         raise ValueError('APK nao possui pacote .lab; upload bloqueado')
     digests = report_certificate(Path(apk), Path(build_tools) / 'apksigner', Path(summary))
     if not set(d.lower() for d in digests).issubset(set(expected.get('certificateSha1', []))):
         raise ValueError('Certificado do APK nao cadastrado no OAuth Android enviado; upload bloqueado')
-    result = {'project': PROJECT, 'package': PACKAGE, 'certificateMatchesConfiguration': True,
+    result = {'project': PROJECT, 'package': package, 'certificateMatchesConfiguration': True,
               'apkSha256': hashlib.sha256(Path(apk).read_bytes()).hexdigest(),
               'productionApproved': False, 'physicalLoginValidation': 'pending',
               'cloudAccessValidated': False,

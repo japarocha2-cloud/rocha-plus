@@ -1,4 +1,5 @@
 'use strict';
+const {acceptedPaymentMode} = require('./payment_mode');
 const {codedError} = require('./payment_errors');
 
 // Privileged back-office operation only. NEVER expose as an unauthenticated HTTP
@@ -24,7 +25,7 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
         claim.amountCents <= 0 ||
         !/^\d+$/.test(claim.merchantId || '') ||
         payment.merchantId !== claim.merchantId ||
-        payment.liveMode !== true ||
+        !acceptedPaymentMode(payment.liveMode) ||
         !Number.isFinite(payment.amount) ||
         Math.abs(payment.amount * 100 - Math.round(payment.amount * 100)) > 1e-6 ||
         Math.round(payment.amount * 100) !== claim.amountCents ||

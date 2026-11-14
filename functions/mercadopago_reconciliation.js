@@ -1,4 +1,5 @@
 'use strict';
+const {acceptedPaymentMode} = require('./payment_mode');
 const {codedError} = require('./payment_errors');
 
 // Deliberately server-only: no mobile-provided payment status is authoritative.
@@ -37,7 +38,7 @@ async function fetchVerifiedPayment(paymentId, accessToken) {
 }
 
 function eligiblePayment(payment) {
-  return payment.liveMode === true && payment.status === 'approved' &&
+  return acceptedPaymentMode(payment.liveMode) && payment.status === 'approved' &&
     payment.statusDetail === 'accredited' && payment.refundedAmount === 0 &&
     payment.currency === 'BRL' && Number.isFinite(payment.amount) &&
     payment.amount > 0 && !!payment.dateApproved;

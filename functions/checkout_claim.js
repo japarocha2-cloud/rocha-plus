@@ -1,4 +1,5 @@
 'use strict';
+const {acceptedPaymentMode} = require('./payment_mode');
 const {fetchVerifiedPayment} = require('./mercadopago_reconciliation');
 const {PLANS} = require('./checkout');
 const {initializeTrial} = require('./trial_anchor');
@@ -21,7 +22,7 @@ async function bindCheckoutClaim({db, paymentId, accessToken}) {
     if (!orderSnap.exists || !o?.preferenceId || !o.uid || o.uid.includes('/') ||
         !Object.hasOwn(PLANS, o.plan || '') || !validOrderAmount(o.plan, o.amountCents) ||
         o.mode !== 'one_time' || o.currency !== 'BRL' || p.currency !== 'BRL' ||
-        o.merchantId !== p.merchantId || p.liveMode !== true ||
+        o.merchantId !== p.merchantId || !acceptedPaymentMode(p.liveMode) ||
         !Number.isFinite(p.amount) || Math.abs(p.amount * 100 - o.amountCents) > 1e-6 ||
         (o.paymentId && o.paymentId !== p.id)) throw Error('checkout order mismatch');
     const entitlementRef = db.collection('entitlements').doc(o.uid);

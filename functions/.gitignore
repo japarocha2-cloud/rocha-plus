@@ -3,3 +3,5 @@ node_modules/
 .env.*
 firebase-debug.log
 firebase-debug.*.log
+# Homologation-only switches (no secrets; guarded by payment_mode.test.js).
+!.env.rocha-plus-homologacao

@@ -179,3 +179,47 @@ class HomologationTest(unittest.TestCase):
                           'entitlementEndpointConfigured': False}):
             with self.subTest(metadata=metadata), self.assertRaises(ValueError):
                 self.check_apk(metadata=metadata)
+
+
+class E2ETargetTest(unittest.TestCase):
+    """The E2E subscription build is a separate package; the 'lab' default is unchanged."""
+
+    def env(self, **extra):
+        base = {'ROCHA_HOMOLOGATION_TARGET': 'e2e', 'ROCHA_SUBSCRIPTION_LAB': 'true',
+                'GITHUB_REF': 'refs/heads/lab/assinatura-e2e-20261114',
+                'ROCHA_ENTITLEMENT_URL':
+                    'https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/entitlement'}
+        base.update(extra)
+        return base
+
+    def test_e2e_points_entitlement_and_checkout_to_homologation_only(self):
+        from prepare_homologation import subscription_config
+        config = subscription_config(self.env())
+        self.assertIn('rocha-plus-homologacao', config['ROCHA_ENTITLEMENT_URL'])
+        self.assertEqual(config['ROCHA_CHECKOUT_URL'],
+                         'https://southamerica-east1-rocha-plus-homologacao.cloudfunctions.net/checkout')
+        self.assertNotIn('rocha-plus.', json.dumps(config))
+
+    def test_e2e_requires_its_branch_and_active_subscription(self):
+        from prepare_homologation import subscription_config
+        with self.assertRaises(ValueError):
+            subscription_config(self.env(GITHUB_REF='refs/heads/main'))
+        with self.assertRaises(ValueError):
+            subscription_config(self.env(ROCHA_SUBSCRIPTION_LAB='false'))
+
+    def test_unknown_target_and_default_lab_target(self):
+        from prepare_homologation import target, TARGETS, subscription_config
+        with self.assertRaises(ValueError):
+            target({'ROCHA_HOMOLOGATION_TARGET': 'prod'})
+        self.assertEqual(target({})['package'], PACKAGE)
+        self.assertEqual(TARGETS['e2e']['package'], 'com.rochaplus.app.e2e')
+        self.assertNotEqual(TARGETS['e2e']['package'], PACKAGE)
+        self.assertEqual(subscription_config({})['ROCHA_CHECKOUT_URL'], '')
+
+    def test_e2e_firebase_configuration_needs_the_e2e_android_app(self):
+        source = {'project_info': {'project_id': PROJECT, 'project_number': '123'},
+                  'client': [{'client_info': {'mobilesdk_app_id': '1:123:android:abc',
+                                              'android_client_info': {'package_name': PACKAGE}},
+                              'oauth_client': [], 'api_key': [{'current_key': 'k'}]}]}
+        with self.assertRaises(ValueError):
+            firebase_configuration(source, 'com.rochaplus.app.e2e')
