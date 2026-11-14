@@ -28,7 +28,7 @@ class E2EClosedCatalogTests(unittest.TestCase):
         screen = (ROOT / 'lib/src/screens/subscription_screen.dart').read_text(encoding='utf-8')
         client = (ROOT / 'lib/src/auth/subscription_checkout.dart').read_text(encoding='utf-8')
         server = (ROOT / 'functions/checkout.js').read_text(encoding='utf-8')
-        for t in ('R\\$ 7,90 por mês', 'R\\$ 86,90 por ano', 'Plano Fundador', 'Teste gratuito de 7 dias'):
+        for t in ('R\\$ 7,90 por mês', 'R\\$ 86,90 por ano', 'Plano Fundador', 'Teste gratuito de até 7 dias'):
             self.assertIn(t, screen)
         self.assertIn("'monthly' ? 790 : 8690", client)
         self.assertRegex(server, r'monthly:\s*790,\s*annual:\s*8690')

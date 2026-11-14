@@ -217,11 +217,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'Teste gratuito de 7 dias para contas elegíveis. O prazo e a elegibilidade são confirmados pelo servidor.',
+                        'Teste gratuito de até 7 dias para contas elegíveis. O prazo e a elegibilidade são confirmados pelo servidor.',
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        'Pagamento único pelo período escolhido, sem renovação automática. A licença depende da confirmação financeira pelo servidor. Não pague novamente para tentar liberar um acesso já contratado.',
+                        'Pagamento único pelo período escolhido, sem renovação automática. A licença depende da confirmação financeira pelo servidor.',
                       ),
                     ],
                   ),
