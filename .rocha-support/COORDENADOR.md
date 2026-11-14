@@ -48,3 +48,6 @@ Quando a direção recebida for genérica, a coordenação escolhe o suporte ade
 
 ## Fluxo final de validação
 Programação/desempenho → Suporte 1 (Qualidade/Limpeza) → Analyze/Testes → Suporte 4 (Testes/Compatibilidade) → Build APK/AAB → teste físico quando necessário.
+
+## Central multiagente ECC
+Mapeamento dos suportes para agentes ECC e áreas protegidas: ver `CENTRAL-AGENTES-ECC.md` (LAB).
