@@ -36,6 +36,12 @@ class QualityGuardHttpTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("URL HTTP insegura", result.stdout)
 
+    def test_lookalike_hosts_are_blocked(self):
+        for host in ("127.0.0.10", "127.0.0.1.evil.com", "localhost.evil.com"):
+            with self.subTest(host=host):
+                result = self.run_guard_with('{"stream": "http://%s/x"}' % host)
+                self.assertEqual(result.returncode, 1, result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
