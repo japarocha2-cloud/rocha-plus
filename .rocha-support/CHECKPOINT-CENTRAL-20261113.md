@@ -70,3 +70,12 @@ escrita). Recuperação por bundle/patch em `recuperacao-lab/` (fora do git, ver
   (concessão órfã, erros temporários, troca de canal via novo streamId, URL validada).
 - Corrigido por teste: TV 1080p (960x540) era classificada como celular; corte agora em 480.
 - Lacunas: Cast não ocupa vaga; tipo de aparelho por tamanho de tela; sem atestação; não testado em aparelho/Firestore.
+
+## Atualização 14/11 — pagamentos (frentes A e B, base impl/commercial-checkout-20261104 5fc2a16)
+- A `lab/pagamento-a-trial-20261114` (c10c358): trial ancorado ao subject Google (Spark + trialAnchors);
+  functions 77/77, backend 82/82; auditoria security-reviewer OK c/ ressalvas (firstUid removido).
+- B `lab/pagamento-b-reconciliacao-20261114` (a20f8f9): claim/trial ausente = retry 503 (máx. 10 / 48 h → revisão);
+  códigos de erro estáveis; functions 76/76, backend 82/82; auditoria OK c/ ressalvas (tratadas).
+- Bloqueante p/ deploy: firestore.rules comercial não tem regras do Spark (substituiria as do app atual).
+- Decisões do responsável: entitlements já reiniciados; mensal+anual (soma × maior data); bind c/ checkout desligado;
+  reconciliação de registros reais; ativação do webhook; deploy.
