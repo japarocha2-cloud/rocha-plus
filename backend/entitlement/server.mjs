@@ -20,13 +20,17 @@ const store = {
     return db.runTransaction(async tx => {
       const accountRef = db.collection('rochaEntitlements').doc(recordKey(uid));
       const paymentRef = paymentId ? db.collection('rochaPayments').doc(paymentId) : null;
+      const sessionsRef = db.collection('rochaDeviceSessions').doc(recordKey(uid));
       // All reads precede writes. Firestore retries contention atomically.
       const account = await tx.get(accountRef);
       const payments = await tx.get(db.collection('rochaPayments').where('uid', '==', uid));
       const payment = paymentRef ? await tx.get(paymentRef) : null;
+      const sessions = await tx.get(sessionsRef);
       return callback({ account: account.exists ? account.data() : null,
         payments: payments.docs.map(doc => doc.data()),
         payment: payment?.exists ? payment.data() : null,
+        sessions: sessions.exists ? sessions.data() : null,
+        setSessions: data => tx.set(sessionsRef, data),
         setAccount: data => tx.create(accountRef, data),
         setPayment: data => tx.set(paymentRef, data),
         audit: (action, data) => tx.create(db.collection('rochaAccessAudit').doc(`${paymentId}-${action}`), data),

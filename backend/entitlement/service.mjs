@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { DEVICE_ROUTES, handleDeviceRoute, validateLimits } from './devices.mjs';
 
 export const DAY = 86_400_000;
 export class AccessError extends Error {
@@ -15,7 +16,8 @@ function paidThrough(payments) {
 }
 
 /** store.transact serializes account + globally unique payment reads/writes. */
-export function createAccessService({ verifyToken, store, plans, now = Date.now }) {
+export function createAccessService({ verifyToken, store, plans, limits, now = Date.now }) {
+  const deviceLimits = validateLimits(limits);
   const configuredPlans = new Map(Object.entries(plans ?? {}));
   for (const [, plan] of configuredPlans) {
     if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents <= 0 ||
@@ -47,6 +49,16 @@ export function createAccessService({ verifyToken, store, plans, now = Date.now 
         const expires = Math.max(account.trialEndsAtMs, paidThrough(state.payments));
         return { uid: actor.uid, allowed: expires > timestamp,
           expiresAt: new Date(expires).toISOString(), serverTime: new Date(timestamp).toISOString() };
+      });
+    }
+    if (method === 'POST' && DEVICE_ROUTES.has(path)) {
+      // Same transaction as the entitlement read: limits and access cannot diverge.
+      // No trial is created here; only GET /v1/entitlement starts the seven days.
+      return store.transact(actor.uid, null, async state => {
+        const expires = state.account
+          ? Math.max(state.account.trialEndsAtMs, paidThrough(state.payments)) : 0;
+        return handleDeviceRoute({ path, body, nowMs: timestamp,
+          allowed: expires > timestamp, state, limits: deviceLimits });
       });
     }
     if (method !== 'POST' || !['/v1/admin/confirm', '/v1/admin/refund'].includes(path)) {

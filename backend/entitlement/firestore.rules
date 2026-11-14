@@ -5,5 +5,6 @@ service cloud.firestore {
     match /rochaEntitlements/{id} { allow read, write: if false; }
     match /rochaPayments/{id} { allow read, write: if false; }
     match /rochaAccessAudit/{id} { allow read, write: if false; }
+    match /rochaDeviceSessions/{id} { allow read, write: if false; }
   }
 }

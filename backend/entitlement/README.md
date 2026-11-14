@@ -31,3 +31,29 @@ Referências primárias consultadas em 22/10/2026: [Firebase ID tokens](https://
 ### Proteção de ambiente experimental (25/10/2026)
 
 A inicialização do servidor exige `GOOGLE_CLOUD_PROJECT=ID_DO_PROJETO_DE_TESTES` e `ROCHA_STAGING_PROJECT_ID=ID_DO_PROJETO_DE_TESTES`; nenhum dos dois pode apontar para o projeto oficial `rocha-plus`. Isto é uma barreira de configuração, não substitui isolamento IAM, regras, HTTPS, logs e testes reais. **Não crie projeto nem implante serviço automaticamente.** O projeto de homologação ainda precisa ser criado/confirmado e ter custos e permissões revisados antes de qualquer integração Firebase real.
+
+## Limites de aparelhos e reproduções (LAB 14/11/2026)
+
+**Não implantado.** Regras do plano: 1 celular, 2 TVs, 2 reproduções simultâneas (`devices.mjs`,
+`DEFAULT_LIMITS`). UID vem só do token; tudo roda na mesma transação do direito de acesso.
+
+| Rota (POST) | Body | Efeito |
+|---|---|---|
+| `/v1/devices/register` | `deviceId`, `kind: phone\|tv` | registra; acima do limite → 409; repetir é idempotente |
+| `/v1/devices/remove` | `deviceId` | libera a vaga e encerra reproduções do aparelho; máx. 3 trocas / 30 dias → 429 |
+| `/v1/streams/start` | `deviceId` | exige acesso válido e aparelho registrado; máx. 2 ativas → 409; concessão de 90 s |
+| `/v1/streams/heartbeat` | `deviceId`, `streamId` | renova; acesso expirado → 403; concessão vencida → 409 (player deve parar) |
+| `/v1/streams/stop` | `streamId` | encerra (idempotente) |
+
+- `deviceId`: ID aleatório de instalação gerado pelo app (16–128 caracteres seguros), salvo só como hash.
+- Firestore: `rochaDeviceSessions/{sha256(uid)}`; regras negam leitura/escrita de clientes.
+- Rotas de reprodução nunca criam trial; só `GET /v1/entitlement` inicia os 7 dias.
+
+**Validado:** 70 testes locais (`npm test`), com dublê em memória serializado (inclui corrida de 3
+inícios simultâneos → exatamente 2). **Não validado:** Firestore real/emulador, app Flutter, aparelho.
+
+**Pendências de decisão / limites conhecidos:**
+- Número de trocas por 30 dias (3) e duração da concessão (90 s) aguardam confirmação comercial.
+- `deviceId` é falsificável sem atestação (Play Integrity / App Check). A concessão é consultiva
+  enquanto a URL de mídia não exigir o `streamId` (CDN/DRM). Falta rate limit por UID no gateway.
+- Integração no app (registro no login, start/heartbeat/stop no player) ainda não feita.
