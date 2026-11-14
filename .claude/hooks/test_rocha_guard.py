@@ -85,6 +85,31 @@ class BashBlocked(Base):
         'echo x > .claude/settings.json', 'sed -i s/a/b/ .claude/hooks/rocha_guard.py',
         'echo x > .git/config', 'cat ~/.ssh/id_rsa', 'cat .env', 'cat key.properties', 'cat ~/.aws/credentials',
         'cat google-services.json', 'echo x > lib/payment_service.dart',
+        # --- bypasses confirmados pela auditoria independente (2ª rodada)
+        'git -calias.p=push p', 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=alias.p GIT_CONFIG_VALUE_0=push git p',
+        'git$IFS$9push', 'git pu${u}sh', 'git pu{s,s}h', 'git pu\\\nsh', '/usr/lib/git-core/git-push origin x',
+        'echo push | xargs git', 'g=git; env $g push', "sed -n '1e git push' f",
+        'awk \'BEGIN{system("gi" "t push")}\'',
+        'curl -XPOST http://x', 'curl -dfoo http://x', 'curl -Ffoo=1 http://x', 'curl -XPUT http://x',
+        'u=https://api.mercadopago.com/x; curl $u', 'echo POST > /dev/tcp/1.2.3.4/80',
+        'python3 -c "import requests;requests.request(\'POST\',\'http://x\')"',
+        'node -e "require(\'https\').request({})"', 'python3 - <<EOF\nimport urllib.request\nEOF',
+        'http POST example.com', 'http example.com a=b',
+        'f=lib/src/live/channel_repository.dart; echo x > $f', 'cp /tmp/x lib/src/./live/channel_repository.dart',
+        'cp /tmp/x lib/src/live/', 'cd .github; cp /tmp/x workflows/ci.yml',
+        'sort -o lib/src/live/channel_repository.dart x', "sed -n '1w lib/src/live/channel_repository.dart' f",
+        'find . -fprint lib/src/live/channel_repository.dart', 'git apply x.patch', 'patch -p1 < x',
+        'git restore .github', 'git checkout -- .', 'mv lib/src/live /tmp/x',
+        'python3 -c "import shutil;shutil.rmtree(\'lib\')"', 'git reset --soft HEAD~3',
+        'git symbolic-ref HEAD refs/heads/x', 'git fetch origin x:main', 'git branch -fd x', 'git checkout -fb x',
+        'make deploy', 'make push', 'npm run ship', 'npm run deploy', 'rm -rf /tmp', 'rm -rf build/../lib',
+        "echo $'\\x70ush'",
+        # PowerShell / Windows
+        'Invoke-RestMethod -Method Post -Uri http://x', 'irm http://x -Body a', 'Remove-Item -Recurse -Force lib',
+        'Set-Content lib\\src\\live\\channel_repository.dart x', 'cp x .github\\workflows\\build.yml',
+        'git fetch origin lab/x:refs/heads/main', 'git fetch origin +a:main', 'git restore --staged .claude/settings.json',
+        'git rm .claude/hooks/rocha_guard.py', 'python3 -m json.tool .claude/settings.json /tmp/o.json',
+        'git reset HEAD~1', 'git reset abc1234',
     ]
 
     def test_blocked(self):
@@ -109,6 +134,18 @@ class BashAllowed(Base):
         'rm -rf /tmp/rocha-teste', 'rm /tmp/x.txt', 'find . -name "*.dart"', 'ls lib | wc -l',
         'echo hello', 'npm test', 'npm install', 'pip install --break-system-packages x',
         'mkdir -p /tmp/x && cp README.md /tmp/x/',
+        # --- falsos positivos apontados pela auditoria
+        'git commit -m "fix ssh bug"', 'git commit -m "mensagem com git push dentro"',
+        "git commit -F - <<'EOF'\nmensagem com git push, ssh e payment\nEOF",
+        'curl -f https://example.com', 'curl -D /tmp/h https://example.com', 'curl -sSL -o /tmp/o https://example.com',
+        'wget -t 3 https://example.com', 'flutter test test/payment_test.dart', 'rm -rf build', 'rm -rf .dart_tool',
+        "awk '{print $1}' README.md", 'python3 -m unittest discover -s .claude/hooks',
+        'gh -R a/b pr view 1', 'git fetch origin lab/x', 'git stash list', 'git tag -l', 'git branch',
+        'git checkout -b lab/novo', 'git switch lab/x', 'git add lib/main.dart', 'git restore --staged lib/main.dart',
+        'git apply --check x.patch', 'echo $HOME', 'cd lib && ls', 'mkdir -p lib/src/novo',
+        'git fetch --depth=20 origin lab/x:refs/remotes/origin/ecc', 'git add .claude/settings.json CLAUDE.md',
+        'python3 -m json.tool .claude/settings.json', 'git reset', 'git reset -- lib/main.dart',
+        "git add CLAUDE.md && git -c user.name=Claude -c user.email=n@a.b commit -q -F - <<'E2'\nmsg com git push\nE2",
     ]
 
     def test_allowed(self):
@@ -254,10 +291,97 @@ class Delegation(Base):
             json.dump(st, f)
         self.assertEqual(self.pre(4)[0], 0)
 
+    def test_parallel_hooks_never_exceed_limit(self):
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=8) as ex:
+            rcs = list(ex.map(lambda i: self.pre(i)[0], range(1, 9)))
+        self.assertEqual(rcs.count(0), 3, rcs)
+        self.assertEqual(rcs.count(2), 5, rcs)
+
     def test_corrupt_state_fails_open_for_consumption_only(self):
         with open(os.path.join(self.tmp.name, 'agents.json'), 'w') as f:
             f.write('{lixo')
         self.assertEqual(self.pre(1)[0], 0)
+
+
+class Hardening(Base):
+    def raw(self, mode, text, **env):
+        r = subprocess.run([sys.executable, GUARD, mode], input=text, capture_output=True, text=True,
+                           env=dict(self.env, **env), timeout=30)
+        return r.returncode
+
+    def test_fail_closed_on_bad_input(self):
+        for mode in ('bash', 'write', 'read', 'mcp'):
+            for txt in ('', 'não é json', '[]', '{}', '{"tool_input": {}}', '{"tool_input": "x"}'):
+                if mode == 'read' and txt in ('{}', '{"tool_input": {}}', '{"tool_input": "x"}'):
+                    continue  # Read sem caminho: tool_name ausente também falha fechada (ver abaixo)
+                self.assertEqual(self.raw(mode, txt), 2, (mode, txt))
+
+    def test_grep_glob_without_path_ok_but_credential_glob_blocked(self):
+        ok = {'tool_name': 'Grep', 'tool_input': {'pattern': 'abc'}}
+        self.assertEqual(self.run_guard('read', ok)[0], 0)
+        bad = {'tool_name': 'Glob', 'tool_input': {'pattern': '**/.env*'}}
+        self.assertEqual(self.run_guard('read', bad)[0], 2)
+        bad2 = {'tool_name': 'Grep', 'tool_input': {'pattern': 'x', 'glob': '**/key.properties'}}
+        self.assertEqual(self.run_guard('read', bad2)[0], 2)
+
+    def test_dotdot_and_lookalike_prefix(self):
+        self.assertEqual(self.write('docs/../lib/src/live/channel_repository.dart'), 2)
+        self.assertEqual(self.write('.claude-x/nota.md'), 0)
+
+    def test_navigation_from_main_allowed_but_not_writing(self):
+        for c in ('git checkout -b lab/novo', 'git switch lab/x', 'git branch', 'git stash list', 'git tag -l',
+                  'git log --oneline -3', 'git fetch origin lab/x'):
+            self.assertEqual(self.bash(c, ROCHA_GUARD_BRANCH='main'), 0, c)
+        for c in ('git commit -m x', 'git stash', 'git tag v1', 'git reset --soft HEAD~1', 'git add .'):
+            self.assertEqual(self.bash(c, ROCHA_GUARD_BRANCH='main'), 2, c)
+
+    def test_mcp_claude_ai_and_browser(self):
+        self.assertEqual(self.run_guard('mcp', {'tool_name': 'mcp__claude_ai__current_time'})[0], 0)
+        for t in ('mcp__claude_ai__end_conversation', 'mcp__claude_ai__launch_extended_search_task',
+                  'mcp__remote-browser__browser_click', 'mcp__remote-browser__browser_navigate',
+                  'mcp__remote-browser__browser_type'):
+            self.assertEqual(self.run_guard('mcp', {'tool_name': t})[0], 2, t)
+
+    def test_background_agent_post_neither_caches_nor_releases(self):
+        self.run_guard('agent-pre', {'tool_use_id': 'b1', 'tool_input': {'subagent_type': 'x', 'prompt': 'bg'}})
+        self.run_guard('agent-post', {'tool_use_id': 'b1', 'tool_response': 'lançado',
+                                      'tool_input': {'subagent_type': 'x', 'prompt': 'bg', 'run_in_background': True}})
+        with open(os.path.join(self.tmp.name, 'agents.json')) as f:
+            st = json.load(f)
+        self.assertEqual(len(st['active']), 1)
+        self.assertEqual(st['cache'], {})
+
+    def test_state_corruption_variants_recover(self):
+        for content in ('[]', '{"active": 1}', '{"active": [], "cache": []}', '{"cache": {}}'):
+            with open(os.path.join(self.tmp.name, 'agents.json'), 'w') as f:
+                f.write(content)
+            self.assertEqual(self.run_guard('agent-pre', {'tool_use_id': 'c', 'tool_input': {'prompt': content}})[0], 0)
+            with open(os.path.join(self.tmp.name, 'agents.json')) as f:
+                st = json.load(f)
+            self.assertEqual(len(st['active']), 1, content)
+
+    def test_invalid_max_agents_falls_back_to_three(self):
+        rcs = [self.pre(i, ROCHA_MAX_AGENTS='abc')[0] for i in range(1, 5)]
+        self.assertEqual(rcs, [0, 0, 0, 2])
+
+    def test_no_head_means_no_reuse(self):
+        self.pre(1, prompt='p', ROCHA_GUARD_HEAD='')
+        self.run_guard('agent-stop', {'agent_type': 'ecc:code-reviewer', 'last_assistant_message': 'x'},
+                       ROCHA_GUARD_HEAD='')
+        self.assertEqual(self.pre(2, prompt='p', ROCHA_GUARD_HEAD='')[0], 0)
+
+    def pre(self, n, atype='ecc:code-reviewer', prompt=None, **env):
+        return self.run_guard('agent-pre', {'tool_name': 'Agent', 'tool_use_id': 'tu%d' % n,
+                                            'tool_input': {'subagent_type': atype,
+                                                           'prompt': prompt or 'tarefa %d' % n}}, **env)
+
+    def test_stop_with_short_agent_type_matches(self):
+        self.pre(1, atype='ecc:code-reviewer', prompt='q')
+        self.run_guard('agent-stop', {'agent_type': 'code-reviewer', 'last_assistant_message': 'resultado-curto'})
+        rc, err = self.pre(2, atype='ecc:code-reviewer', prompt='q')
+        self.assertEqual(rc, 2)
+        self.assertIn('resultado-curto', err)
 
 
 class AdminBypass(Base):
