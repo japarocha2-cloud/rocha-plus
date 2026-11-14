@@ -31,3 +31,12 @@ test('only the homologation env file enables checkout, webhook and sandbox', () 
   assert.ok(!/rocha-plus\.|-rocha-plus\.cloudfunctions/.test(text), 'no production URL');
   assert.ok(!/^ROCHA_CHECKOUT_MERCHANT_ID=/m.test(text), 'seller ID is not committed');
 });
+
+test('functions and homologation rules use the (default) Firestore database only', () => {
+  const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'firebase.homologacao.json'), 'utf8'));
+  assert.deepEqual(config.firestore, [{database: '(default)', rules: 'firestore.rules'}]);
+  for (const f of fs.readdirSync(__dirname).filter(n => n.endsWith('.js') && !n.endsWith('.test.js'))) {
+    const src = fs.readFileSync(path.join(__dirname, f), 'utf8');
+    assert.ok(!/databaseId|getFirestore\([^)]|rocha-payments-test/.test(src), f + ' must not pick a named database');
+  }
+});

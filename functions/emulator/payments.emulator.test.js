@@ -130,7 +130,7 @@ test('approved before the claim: 503 (provider retries), then recognised on rede
   assert.equal(iso((await db.doc('entitlements/u1').get()).data().paidUntil), '2026-12-01T10:00:00.000Z');
 });
 
-test('monthly + annual in both orders give the same result (current policy: latest end)', async () => {
+test('monthly + annual in both orders give 13 months (stacked policy)', async () => {
   const results = [];
   for (const order of [['6001', '6002'], ['6002', '6001']]) {
     await reset();
@@ -142,7 +142,7 @@ test('monthly + annual in both orders give the same result (current policy: late
     for (const id of order) assert.equal((await deliver(id, id + '0')).statusCode, 200);
     results.push(iso((await db.doc('entitlements/u2').get()).data().paidUntil));
   }
-  assert.deepEqual(results, ['2027-02-10T10:00:00.000Z', '2027-02-10T10:00:00.000Z']);
+  assert.deepEqual(results, ['2027-02-20T10:00:00.000Z', '2027-02-20T10:00:00.000Z']);
 });
 
 test('duplicate notification does not extend access', async () => {

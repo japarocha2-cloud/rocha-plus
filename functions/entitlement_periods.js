@@ -6,11 +6,12 @@ const PERIODS = Object.freeze({monthly: 1, annual: 12});
 
 // Commercial rule for a customer holding monthly AND annual payments.
 // PENDING OWNER DECISION — change only this constant:
-//   'latest_end' (current): periods do not add up; the latest end date wins.
-//   'stacked': each approved payment extends from max(its approval, current end),
+//   'latest_end': periods do not add up; the latest end date wins.
+//   'stacked' (active): each approved payment extends from max(its approval, current end),
 //              in approval order (1 + 12 months = 13 months of access).
 const MONTHLY_ANNUAL_POLICIES = Object.freeze(['latest_end', 'stacked']);
-const MONTHLY_ANNUAL_POLICY = 'latest_end';
+// Owner decision (LAB 2026-11-14): monthly + annual add up (13 months).
+const MONTHLY_ANNUAL_POLICY = 'stacked';
 function addUtcMonths(iso, months) {
   const date = new Date(iso);
   if (!Number.isFinite(date.getTime()) || !Number.isInteger(months) || months < 1) {

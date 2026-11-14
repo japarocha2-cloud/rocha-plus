@@ -79,8 +79,8 @@ test('monthly + annual of the same customer are both recognised, in any order', 
     for (const id of order) assert.equal((await w.deliver(id)).statusCode, 200);
     assert.equal(w.rows.get('payment_events/' + MONTHLY).eligibleForReview, true);
     assert.equal(w.rows.get('payment_events/' + ANNUAL).eligibleForReview, true);
-    // Current policy: latest end date wins (not summed). Needs owner approval.
-    assert.equal(w.rows.get('entitlements/u1').paidUntil, '2027-02-10T10:00:00.000Z');
+    // Stacked policy: 1 + 12 months from the first approval.
+    assert.equal(w.rows.get('entitlements/u1').paidUntil, '2027-02-20T10:00:00.000Z');
     assert.equal(w.rows.get('entitlements/u1').trialUntil, 'kept');
   }
 });

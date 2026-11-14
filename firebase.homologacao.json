@@ -9,8 +9,15 @@
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log",
-        "*.test.js"
+        "*.test.js",
+        "emulator/**"
       ]
+    }
+  ],
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.rules"
     }
   ]
 }

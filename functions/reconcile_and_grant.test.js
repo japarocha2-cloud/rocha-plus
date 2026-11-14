@@ -178,7 +178,7 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     assert.equal(rows.get('payment_events/123').status, 'refunded');
     payment.status = 'approved';
   });
-  await t.test('different valid plans choose the latest end without stacking', async () => {
+  await t.test('different valid plans stack (monthly + annual = 13 months)', async () => {
     rows = initial();
     rows.set('payment_events/456', {
       uid: 'account-1', paymentId: '456', provider: 'mercadopago',
@@ -187,7 +187,8 @@ test('privileged reconciliation rejects unsafe payments and recalculates refunds
     });
     const first = await run();
     const second = await run();
-    assert.equal(first.paidUntil, '2027-01-15T10:00:00.000Z');
+    // annual 2026-01-15 + monthly 2026-01-20 stacked = 13 months from 2026-01-15
+    assert.equal(first.paidUntil, '2027-02-15T10:00:00.000Z');
     assert.equal(second.paidUntil, first.paidUntil);
     assert.equal(rows.get('payment_events/456').plan, 'annual');
   });
