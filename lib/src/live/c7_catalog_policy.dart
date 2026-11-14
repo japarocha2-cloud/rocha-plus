@@ -3,7 +3,11 @@ import 'channel_identity.dart';
 
 /// Operator's C7-only physical decisions. Never edits source snapshots.
 class C7CatalogPolicy {
-  static const enabled = bool.fromEnvironment('ROCHA_FULL_UI_LAB');
+  /// Closed catalog is active in the full C7 LAB UI, or in any build that sets
+  /// ROCHA_CLOSED_CATALOG (e.g. the E2E subscription APK, which keeps the real
+  /// app entry/auth but must never import public br/sports playlists).
+  static const enabled = bool.fromEnvironment('ROCHA_FULL_UI_LAB') ||
+      bool.fromEnvironment('ROCHA_CLOSED_CATALOG');
   static String identity(String name) => channelIdentity(name)
       .replaceAll(RegExp(r'[\u0300-\u036f]'), '')
       .replaceAll(RegExp(r'\s*\[geo-blocked\]'), '')

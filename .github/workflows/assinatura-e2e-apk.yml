@@ -48,8 +48,9 @@ jobs:
           python3 tools/lab/verify_vlc_protocol.py
           flutter analyze
           flutter test
+          flutter test test/official_catalog_test.dart test/c7_selected_catalog_test.dart test/c7_effective_catalog_test.dart test/c7_category_navigation_test.dart --dart-define=ROCHA_CLOSED_CATALOG=true
       - name: Build E2E APK
-        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
+        run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_CLOSED_CATALOG=true --dart-define-from-file="$ROCHA_HOMOLOGATION_CONFIG"
       - name: Verify package and OAuth certificate before upload
         run: |
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
