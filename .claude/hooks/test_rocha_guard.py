@@ -43,6 +43,10 @@ class Base(unittest.TestCase):
 class BashBlocked(Base):
     CASES = [
         # push e variações apontadas pelo security-reviewer
+        'git branch -C main lab/x', 'git branch -c main lab/x',
+        'git clone --upload-pack=/tmp/x.sh https://github.com/a/b', 'git fetch --upload-pack /tmp/x.sh origin',
+        'git ls-remote --upload-pack=/tmp/x.sh origin',
+        'sort --output=lib/src/live/channel_repository.dart /tmp/x',
         'git push', 'git push origin main', 'git -C . push', 'git -c x=y push', '/usr/bin/git push',
         'env git push', 'sudo git push', 'timeout 5 git push', 'nohup git push &',
         'bash -c "git push"', "sh -c 'git push origin'", "sh -c 'g''it pu''sh'", 'echo origin | xargs git push',
@@ -402,6 +406,31 @@ class AdminBypass(Base):
     def test_prefix_env_in_command_does_not_bypass(self):
         self.assertEqual(self.bash('ROCHA_GUARD_ADMIN=1 git push'), 2)
         self.assertEqual(self.bash('export ROCHA_GUARD_ADMIN=1; git push'), 2)
+
+
+class AgentsRound2(Base):
+    """Correções da rodada de 14/11 (achados de silent-failure-hunter, python-reviewer, security-reviewer)."""
+
+    def test_malformed_mcp_name_blocked(self):
+        self.assertEqual(self.run_guard('mcp', {'tool_name': 'mcpx', 'tool_input': {}})[0], 2)
+
+    def test_fatal_error_outside_main_fails_closed(self):
+        r = subprocess.run([sys.executable, GUARD, 'bash'], input=b'\xff\xfe nao-json', capture_output=True,
+                           env=self.env, timeout=30)
+        self.assertEqual(r.returncode, 2)
+
+    def test_agent_mode_bad_stdin_stays_open(self):
+        r = subprocess.run([sys.executable, GUARD, 'agent-pre'], input='nao-json', capture_output=True,
+                           text=True, env=self.env, timeout=30)
+        self.assertEqual(r.returncode, 0)
+
+    def test_big_script_blocked(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 'big.py')
+            with open(f, 'w') as fh:
+                fh.write('#' * 250000)
+            self.assertEqual(self.run_guard('bash', {'tool_name': 'Bash', 'tool_input': {'command': 'python3 big.py'},
+                                                     'cwd': d})[0], 2)
 
 
 if __name__ == '__main__':

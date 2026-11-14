@@ -16,6 +16,7 @@ import fnmatch
 import hashlib
 import json
 import os
+import posixpath
 import re
 import subprocess
 import sys
@@ -118,7 +119,7 @@ def clean(p):
     if p.startswith(root + '/'):
         p = p[len(root) + 1:]
     if p and not p.startswith('/'):
-        p = os.path.normpath(p)
+        p = posixpath.normpath(p)
     return p
 
 
@@ -135,6 +136,8 @@ def glob_hits_prot(c):
 
 
 def is_prot(p):
+    if p.startswith('-') and '=' in p:  # --opção=caminho
+        p = p.split('=', 1)[1]
     c = clean(p)
     return any(r.search(c) for r in PROTECTED) or glob_hits_prot(c)
 
@@ -198,7 +201,7 @@ def script_text_scan(tokens, cwd):
         path = t if os.path.isabs(t) else os.path.join(cwd or '.', t)
         try:
             if os.path.getsize(path) > 200000:
-                continue
+                raise Block('script %s grande demais para inspeção (>200 KB)' % t)
             with open(path, encoding='utf-8', errors='ignore') as f:
                 txt = f.read()
         except OSError:
@@ -240,6 +243,9 @@ def check_git(args, cwd):
             raise Block('git --git-dir não é permitido (pode apontar para outro repositório).')
     if sub is None:
         return
+    if any(a.split('=', 1)[0] in ('--upload-pack', '--receive-pack', '--exec', '-u') and sub in ('clone', 'fetch', 'ls-remote', 'pull')
+           for a in rest):
+        raise Block('git --upload-pack/--receive-pack/--exec bloqueado (executa programa externo).')
     if any('::' in a for a in rest):
         raise Block('git com transporte ext::/remoto helper bloqueado.')
     for j, a in enumerate(rest):
@@ -289,7 +295,7 @@ def check_git(args, cwd):
         raise Block('git apply só com --check/--stat/--numstat/--summary (patch pode tocar área protegida).')
     if sub == 'am':
         raise Block('git am bloqueado (aplica patches/commits).')
-    if sub == 'branch' and any((x.startswith('-') and not x.startswith('--') and re.search(r'[dDmMfF]', x[1:]))
+    if sub == 'branch' and any((x.startswith('-') and not x.startswith('--') and re.search(r'[dDmMfFcC]', x[1:]))
                                or x in ('--delete', '--move', '--force', '--copy') for x in rest):
         raise Block('git branch -d/-D/-m/-f bloqueado (exclusão/renomeação de branch).')
     if sub == 'tag' and any(x in ('-d', '--delete', '-f', '--force') for x in rest):
@@ -582,7 +588,7 @@ CLAUDE_AI_READ = {'current_time', 'approximate_location', 'image_search', 'read_
 def check_mcp(name):
     m = re.match(r'^mcp__(.+?)__(.+)$', name)
     if not m:
-        return
+        raise Block('nome de ferramenta MCP fora do padrão: %r' % name)
     server, tool = m.group(1).lower(), m.group(2).lower()
     if server in MCP_EXEMPT_SERVERS or (server == 'claude_ai' and tool in CLAUDE_AI_READ):
         return
@@ -613,8 +619,12 @@ class Lock:
         try:
             import fcntl
             fcntl.flock(self.f, fcntl.LOCK_EX)
-        except ImportError:  # Windows: sem flock; proteção de concorrência indisponível
-            pass
+        except ImportError:  # Windows: usa msvcrt
+            try:
+                import msvcrt
+                msvcrt.locking(self.f.fileno(), msvcrt.LK_LOCK, 1)
+            except Exception as e:
+                log('lock', 'error-open', 'sem exclusão mútua: %r' % e)
         return self
 
     def __exit__(self, *a):
@@ -649,7 +659,10 @@ def log(event, decision, reason, extra=''):
             f.write(json.dumps({'t': int(time.time()), 'event': event, 'decision': decision,
                                 'reason': reason[:200], 'what': extra[:160]}, ensure_ascii=False) + '\n')
     except Exception:
-        pass
+        try:
+            sys.stderr.write('[rocha-guard] (log indisponível) %s %s %s\n' % (event, decision, reason[:120]))
+        except Exception:
+            pass
 
 
 def head_sha(cwd):
@@ -807,6 +820,7 @@ def main():
         return 2
     except Exception as e:
         if mode in ('agent-post', 'agent-stop'):
+            log(mode, 'error-open', repr(e), what)
             return 0
         log(mode, 'error-closed', repr(e), what)
         sys.stderr.write('[rocha-guard] erro interno (falha fechada): %r\n' % e)
@@ -815,5 +829,25 @@ def main():
     return 0
 
 
+def _entry():
+    """Qualquer falha fora do main() bloqueia (exit 2), exceto nos modos de consumo de agentes."""
+    mode = sys.argv[1] if len(sys.argv) > 1 else ''
+    for stream, kw in ((sys.stdin, {'encoding': 'utf-8'}), (sys.stderr, {'encoding': 'utf-8', 'errors': 'replace'})):
+        try:
+            stream.reconfigure(**kw)
+        except Exception:
+            pass
+    try:
+        return main()
+    except BaseException as e:  # noqa: BLE001
+        if mode.startswith('agent-'):
+            return 0
+        try:
+            sys.stderr.write('[rocha-guard] erro fatal (falha fechada): %r\n' % (e,))
+        except Exception:
+            pass
+        return 2
+
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(_entry())
