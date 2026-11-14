@@ -1,4 +1,5 @@
 'use strict';
+const {codedError} = require('./payment_errors');
 
 // Deliberately server-only: no mobile-provided payment status is authoritative.
 // A verified Mercado Pago API response must match an existing, independently
@@ -66,7 +67,7 @@ async function recordVerifiedPayment({db, paymentId, accessToken}) {
     const [claim, existing] = await Promise.all([tx.get(ref), tx.get(eventRef)]);
     if (!claim.exists || claim.data().reviewed !== true ||
         typeof claim.data().uid !== 'string' || !claim.data().uid ||
-        claim.data().uid.includes('/')) throw new Error('unverified account association');
+        claim.data().uid.includes('/')) throw codedError('CLAIM_MISSING', 'unverified account association');
     const uid = claim.data().uid;
     if (existing.exists && existing.data().uid !== uid) {
       throw new Error('payment already associated with another account');

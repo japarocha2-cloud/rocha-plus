@@ -1,4 +1,5 @@
 'use strict';
+const {WAIT_FOR_ASSOCIATION, NEEDS_REVIEW} = require('./payment_errors');
 
 const {createHmac, timingSafeEqual, randomUUID} = require('node:crypto');
 
@@ -40,15 +41,14 @@ function verifyWebhookSignature({signature, requestId, dataId, secret}) {
   return supplied.length === expected.length && timingSafeEqual(supplied, expected);
 }
 
+// Conflicts are parked for human review (200). A claim/trial that may still land
+// after the webhook (approved before claim) stays retryable (503): acknowledging
+// it would stop provider retries and strand a paid customer.
 function associationPending(error) {
-  return [
-    'independently reviewed UID and plan required',
-    'unverified account association',
-    'payment does not match reviewed claim',
-    'payment ownership conflict',
-    'payment ledger document identity mismatch',
-    'account trial must be initialized first',
-  ].includes(error?.message);
+  return NEEDS_REVIEW.has(error?.code);
+}
+function waitingForAssociation(error) {
+  return WAIT_FOR_ASSOCIATION.has(error?.code);
 }
 
 function reply(res, status, body) {
@@ -60,7 +60,10 @@ function reply(res, status, body) {
  * must re-fetch the canonical payment from Mercado Pago and use server-owned claims.
  * The inbox dependency persists event state; no client-provided status grants access.
  */
-function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox}) {
+// Bounded waiting: after maxAttempts deliveries or maxWaitMs since first seen, a
+// still-missing claim/trial is parked for review instead of retrying forever.
+function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox,
+  maxAssociationAttempts = 10, maxAssociationWaitMs = 48 * 3600000, now = Date.now}) {
   if (!reconcilePayment || typeof inbox?.begin !== 'function' ||
       typeof inbox?.finish !== 'function') throw new Error('webhook-dependencies-required');
 
@@ -107,10 +110,14 @@ function createMercadoPagoWebhookHandler({secret, reconcilePayment, inbox}) {
       await inbox.finish({notificationId, paymentId: dataId, status: 'processed', reason: null, token: receipt?.token});
       return reply(res, 200, {received: true, processed: true});
     } catch (error) {
-      if (associationPending(error)) {
+      const waitedTooLong = waitingForAssociation(error) &&
+        ((receipt?.attempts ?? 1) >= maxAssociationAttempts ||
+          (Number.isFinite(receipt?.firstSeenAtMs) && now() - receipt.firstSeenAtMs >= maxAssociationWaitMs));
+      if (associationPending(error) || waitedTooLong) {
         try {
           await inbox.finish({notificationId, paymentId: dataId, status: 'review_required',
-            reason: 'payment_account_association_required', token: receipt?.token});
+            reason: waitedTooLong ? 'payment_association_timeout' : 'payment_account_association_required',
+            token: receipt?.token});
         } catch (_) {
           return reply(res, 503, {received: false});
         }
@@ -150,10 +157,13 @@ function createFirestoreWebhookInbox({db, admin, leaseMs = 120000}) {
       }
       const token = randomUUID();
       const leaseUntil = admin.firestore.Timestamp.fromMillis(now.toMillis() + leaseMs);
+      const attempts = (Number.isSafeInteger(event?.attempts) ? event.attempts : 0) + 1;
+      const firstSeenAt = event?.firstSeenAt ?? now;
       tx.set(eventRef, {provider: 'mercadopago', paymentId, action, status: 'processing',
-        token, startedAt: now, leaseUntil}, {merge: true});
+        token, startedAt: now, leaseUntil, attempts, firstSeenAt}, {merge: true});
       tx.set(lockRef, {paymentId, notificationId, token, leaseUntil});
-      return {status: 'processing', token};
+      return {status: 'processing', token, attempts,
+        firstSeenAtMs: firstSeenAt.toMillis?.() ?? now.toMillis()};
     }),
     finish: ({notificationId, paymentId, status, reason, token}) => db.runTransaction(async tx => {
       const eventRef = collection.doc(notificationId);
