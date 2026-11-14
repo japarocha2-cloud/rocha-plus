@@ -1,8 +1,6 @@
 name: Rocha+ Single Account Sync (preview by default)
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/spark-single-account-sync.yml']
+  # Manual only: editing this file on main must not run production access.
   workflow_dispatch:
     inputs:
       apply:
@@ -25,9 +23,29 @@ concurrency:
 jobs:
   pilot:
     if: github.repository == 'japarocha2-cloud/rocha-plus'
+    # Production writes wait for a required reviewer configured in
+    # Settings > Environments > producao-contas-escrita (see docs/lab).
+    environment: producao-contas-escrita
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Validate operator input before any production access
+        env:
+          APPLY: ${{ github.event_name == 'workflow_dispatch' && inputs.apply && 'true' || 'false' }}
+          TARGET_UID: ${{ inputs.target_uid }}
+          CONFIRM_UID: ${{ inputs.confirm_uid }}
+        run: |
+          if [ "$APPLY" = 'true' ]; then
+            uid_re='^[a-zA-Z0-9_-]{1,128}$'
+            if [[ ! "$TARGET_UID" =~ $uid_re || ! "$CONFIRM_UID" =~ $uid_re ]]; then
+              echo 'Invalid Firebase UID format'
+              exit 1
+            fi
+            if [ "$TARGET_UID" != "$CONFIRM_UID" ]; then
+              echo 'target_uid and confirm_uid differ'
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
         with:
           ref: 86bdabe25cf53f74d59c1061d95e500ee9fb4f6b

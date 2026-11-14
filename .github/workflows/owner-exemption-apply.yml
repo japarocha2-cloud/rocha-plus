@@ -18,6 +18,9 @@ concurrency:
 jobs:
   owner-grant:
     if: github.repository == 'japarocha2-cloud/rocha-plus' && github.ref == 'refs/heads/feat/spark-payment-confirmation-20261015' && inputs.confirmation == 'APPLY-OWNER-EXEMPTION'
+    # Production writes wait for a required reviewer configured in
+    # Settings > Environments > producao-contas-escrita (see docs/lab).
+    environment: producao-contas-escrita
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

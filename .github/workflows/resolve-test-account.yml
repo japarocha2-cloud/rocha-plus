@@ -22,15 +22,19 @@ jobs:
         working-directory: billing
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          # Kept as a secret so no personal e-mail is stored in the repository.
+          ROCHA_TEST_ACCOUNT_EMAIL: ${{ secrets.ROCHA_TEST_ACCOUNT_EMAIL }}
         run: |
           node --input-type=module <<'JS'
           import {initializeApp,cert} from 'firebase-admin/app';
           import {getAuth} from 'firebase-admin/auth';
           import {getFirestore} from 'firebase-admin/firestore';
+          const email=process.env.ROCHA_TEST_ACCOUNT_EMAIL;
+          if(!email) throw Error('missing-test-account-email-secret');
           const k=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
           if(k.project_id!=='rocha-plus'||k.type!=='service_account') throw Error('invalid-project');
           initializeApp({credential:cert(k),projectId:'rocha-plus'});
-          const u=await getAuth().getUserByEmail('andressarocha9706@gmail.com');
+          const u=await getAuth().getUserByEmail(email);
           const g=u.providerData.filter(p=>p.providerId==='google.com');
           if(u.disabled||!u.emailVerified||g.length!==1) throw Error('test-identity-not-ready');
           const snap=await getFirestore().doc('rochaSparkAccounts/'+g[0].uid).get();

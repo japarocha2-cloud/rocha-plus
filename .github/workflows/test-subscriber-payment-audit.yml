@@ -1,8 +1,6 @@
 name: Rocha+ Test Subscriber Payment Audit
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/test-subscriber-payment-audit.yml']
+  # Manual only: editing this file on main must not run production access.
   workflow_dispatch:
 permissions:
   contents: read
