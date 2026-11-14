@@ -36,3 +36,14 @@ escrita). Recuperação por bundle/patch em `recuperacao-lab/` (fora do git, ver
 1. Corrigir acesso de escrita do Claude GitHub App e enviar as 3 branches.
 2. Decidir correções nos workflows de pagamento (áreas protegidas).
 3. Implementar limites de dispositivos no backend de homologação, com testes.
+
+## Atualização 14/11 — push liberado e frente C7
+- Claude GitHub App instalado (conta pessoal, só rocha-plus). Push das 3 branches LAB OK; SHAs remotos = locais.
+- Nova branch `lab/candidata7-diagnostico-erros-20261114` (base 92451ea, commit 9f3cb28):
+  falha de verificação ≠ "sem assinatura"; mensagem própria quando só a parada da TV bloqueia;
+  códigos de erro Google/Firebase só em debug; tela LAB explica configuração ausente e botão desabilitado.
+  Fail-closed preservado (auditoria flutter-reviewer: nenhum caminho concede acesso novo).
+- Testes C7 (Flutter 3.50.0 local): 245 aprovados, 3 pulados; analyze 53 infos `deprecated_member_use`, 0 warnings/erros.
+  Testes novos falham sem a correção.
+- Pendente (não feito): workflow do build físico C7 continua sem `ROCHA_C7_SUBSCRIPTION_QUERY`
+  (mudar ativa login no APK físico; decidir com o responsável). versionCode = 738 + run_number.
