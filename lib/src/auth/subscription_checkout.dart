@@ -23,7 +23,7 @@ class SubscriptionCheckout {
     }
     final body = jsonDecode(response.body) as Map<String, dynamic>;
     final url = Uri.parse(body['url'] as String);
-    final cents = plan == 'monthly' ? 450 : 4950;
+    final cents = plan == 'monthly' ? 790 : 8690;
     if (body['plan'] != plan || body['amountCents'] != cents ||
         body['mode'] != 'one_time' || url.scheme != 'https' ||
         url.host != 'www.mercadopago.com.br' || url.userInfo.isNotEmpty ||

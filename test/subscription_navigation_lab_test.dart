@@ -21,8 +21,8 @@ void main() {
     await tester.tap(subscription);
     await tester.pumpAndSettle();
     expect(find.text('Sua assinatura Rocha+'), findsOneWidget);
-    expect(find.text('R\$ 4,50 por mês'), findsOneWidget);
-    expect(find.text('R\$ 49,50 por ano'), findsOneWidget);
+    expect(find.text('R\$ 7,90 por mês'), findsOneWidget);
+    expect(find.text('R\$ 86,90 por ano'), findsOneWidget);
     expect(find.textContaining('Não pague novamente'), findsOneWidget);
     expect(find.textContaining('sem renovação automática'), findsOneWidget);
     expect(find.textContaining('7 dias por conta'), findsOneWidget);
