@@ -1,0 +1,5 @@
+# Estado local do guard/delegação ECC (não versionar)
+.claude/state/
+.claude/settings.local.json
+__pycache__/
+*.pyc

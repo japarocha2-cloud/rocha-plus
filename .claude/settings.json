@@ -2,15 +2,111 @@
   "permissions": {
     "deny": [
       "Bash(git push:*)",
-      "Bash(git merge:*)",
-      "Bash(git push --force:*)",
-      "Bash(git branch -D:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(gh pr merge:*)",
-      "Bash(gh workflow run:*)",
-      "Bash(gh release:*)",
-      "Bash(firebase deploy:*)",
-      "Bash(rm -rf:*)"
+      "Bash(*git*push*)",
+      "Bash(*git*merge*)",
+      "Bash(*git*pull*)",
+      "Bash(*git*rebase*)",
+      "Bash(*git*cherry-pick*)",
+      "Bash(*git*reset --hard*)",
+      "Bash(*git*clean*)",
+      "Bash(*git*branch -D*)",
+      "Bash(*git*remote add*)",
+      "Bash(*git*remote set-url*)",
+      "Bash(*gh api*)",
+      "Bash(*gh pr merge*)",
+      "Bash(*gh pr create*)",
+      "Bash(*gh workflow*)",
+      "Bash(*gh release*)",
+      "Bash(*gh secret*)",
+      "Bash(*gh auth login*)",
+      "Bash(*gh run rerun*)",
+      "Bash(*curl*-X POST*)",
+      "Bash(*curl*--data*)",
+      "Bash(*wget*--post*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)",
+      "Bash(firebase:*)",
+      "Bash(gcloud:*)",
+      "Bash(gsutil:*)",
+      "Bash(bq:*)",
+      "Bash(aws:*)",
+      "Bash(fastlane:*)",
+      "Bash(vercel:*)",
+      "Bash(kubectl:*)",
+      "Bash(terraform:*)",
+      "Bash(stripe:*)",
+      "Bash(*npm publish*)",
+      "Bash(*yarn publish*)",
+      "Bash(*pub publish*)",
+      "Bash(*docker push*)",
+      "Bash(*twine upload*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Bash(rm -r:*)",
+      "Bash(*| sh*)",
+      "Bash(*| bash*)",
+      "Bash(eval:*)",
+      "Edit(lib/src/live/channel_repository.dart)",
+      "Edit(lib/src/live/open_tv_channels.dart)",
+      "Edit(lib/src/live/channel_blocks.dart)",
+      "Edit(.github/workflows/**)",
+      "Edit(tools/prepare_signed_build.py)",
+      "Edit(.claude/settings*.json)",
+      "Edit(.claude/hooks/**)",
+      "Read(**/.env*)",
+      "Read(**/key.properties)",
+      "Read(**/google-services.json)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "mcp__Gmail__send_message",
+      "mcp__Gmail__forward",
+      "mcp__Gmail__reply",
+      "mcp__Google_Drive__share_file",
+      "mcp__Metricool_Social_Media_Management__createScheduledPost",
+      "mcp__Metricool_Social_Media_Management__updateScheduledPost",
+      "mcp__TikTok_for_Business__smart_plus_campaign_create",
+      "mcp__TikTok_for_Business__smart_plus_ad_status_update",
+      "mcp__TikTok_for_Business__tool_execute",
+      "mcp__Windsor_ai__execute_action",
+      "mcp__claude-code-remote__create_trigger",
+      "mcp__claude-code-remote__send_later",
+      "mcp__claude-code-remote__add_repo"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" bash"}]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" write"}]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" read"}]
+      },
+      {
+        "matcher": "^mcp__",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" mcp"}]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" agent-pre"}]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent|Task",
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" agent-post"}]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [{"type": "command", "timeout": 15, "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/rocha_guard.py\" agent-stop"}]
+      }
     ]
   }
 }
