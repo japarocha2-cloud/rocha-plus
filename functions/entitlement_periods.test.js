@@ -25,3 +25,17 @@ test('month-end date is clamped', () => {
   assert.equal(addUtcMonths('2026-01-31T09:00:00Z',1).toISOString(),
     '2026-02-28T09:00:00.000Z');
 });
+
+test('monthly+annual policy constant keeps current behavior until the owner decides', () => {
+  const {MONTHLY_ANNUAL_POLICY} = require('./entitlement_periods');
+  assert.equal(MONTHLY_ANNUAL_POLICY, 'latest_end');
+  const rows = [row('1','monthly'), row('2','annual')];
+  const latest = entitlementFromLedger('user-1', rows);
+  assert.equal(latest, entitlementFromLedger('user-1', [...rows].reverse()), 'order-independent');
+  assert.equal(entitlementFromLedger('user-1', rows, 'latest_end'), latest);
+  // 'stacked' is implemented but off: 1 + 12 months from the first approval.
+  const stacked = entitlementFromLedger('user-1', rows, 'stacked');
+  assert.ok(Date.parse(stacked) > Date.parse(latest));
+  assert.equal(stacked, entitlementFromLedger('user-1', [...rows].reverse(), 'stacked'));
+  assert.throws(() => entitlementFromLedger('user-1', rows, 'sum'), /invalid period policy/);
+});
