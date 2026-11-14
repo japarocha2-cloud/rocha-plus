@@ -4,6 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'auth_repository.dart';
 
+/// Logs only the provider error code (never tokens, e-mail or UID), and only
+/// in debug builds, so DEVELOPER_ERROR / SHA-1 / client-id issues are visible.
+void _logAuthCode(String provider, Object code) {
+  if (kDebugMode) debugPrint('Rocha+ auth [$provider] code=$code');
+}
+
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuth? _auth;
   static const _project = String.fromEnvironment('ROCHA_FIREBASE_PROJECT_ID');
@@ -67,11 +73,13 @@ class FirebaseAuthRepository implements AuthRepository {
         await _auth!.signInWithCredential(GoogleAuthProvider.credential(idToken: idToken));
       }
     } on GoogleSignInException catch (failure) {
+      _logAuthCode('google', failure.code.name);
       if (failure.code == GoogleSignInExceptionCode.canceled) {
         throw const LoginFailure('', cancelled: true);
       }
       throw const LoginFailure('Não foi possível entrar com Google. Confira a conexão e tente novamente.');
     } on FirebaseAuthException catch (failure) {
+      _logAuthCode('firebase', failure.code);
       if (['web-context-cancelled', 'canceled', 'popup-closed-by-user'].contains(failure.code)) {
         throw const LoginFailure('', cancelled: true);
       }
@@ -87,7 +95,12 @@ class FirebaseAuthRepository implements AuthRepository {
     // Revoke local Firebase access first, even if Google cleanup fails.
     await _auth!.signOut();
     if (_googleReady) {
-      try { await GoogleSignIn.instance.signOut(); } catch (_) { /* Firebase session is closed. */ }
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (failure) {
+        // Firebase session is already closed; keep the Google cleanup visible in debug.
+        _logAuthCode('google-signout', failure.runtimeType);
+      }
     }
   }
 }

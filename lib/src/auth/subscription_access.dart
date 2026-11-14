@@ -56,12 +56,25 @@ class SubscriptionAccessResult {
   };
 }
 
+/// The server could not be asked or did not answer validly (network, timeout,
+/// HTTP error, malformed payload, missing session). Access stays closed.
+class SubscriptionUnavailable implements Exception {
+  const SubscriptionUnavailable();
+  @override
+  String toString() => 'SubscriptionUnavailable';
+}
+
 /// Authorization remains server-owned; reason and dates are presentation only.
 class SubscriptionAccess {
   static const endpoint = String.fromEnvironment('ROCHA_ENTITLEMENT_URL');
 
-  static Future<bool> isAllowed(String uid) async =>
-      (await check(uid))?.allowed == true;
+  /// `false` only when the server explicitly denied access. Any failure to
+  /// verify throws [SubscriptionUnavailable] so the UI can tell them apart.
+  static Future<bool> isAllowed(String uid) async {
+    final result = await check(uid);
+    if (result == null) throw const SubscriptionUnavailable();
+    return result.allowed;
+  }
 
   static Future<SubscriptionAccessResult?> check(String uid, {
     http.Client? client,

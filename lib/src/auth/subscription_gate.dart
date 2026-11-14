@@ -45,6 +45,8 @@ class _SubscriptionGateState extends State<SubscriptionGate>
   int _generation = 0;
   bool _allowed = false;
   bool _checking = true;
+  bool _unavailable = false;
+  bool _blockedByCast = false;
   bool _remoteCleanupFailed = false;
   late final PlaybackPermission _permission;
   late final Object _playbackOwner;
@@ -83,18 +85,26 @@ class _SubscriptionGateState extends State<SubscriptionGate>
       }
     });
     bool allowed;
+    var unavailable = false;
     try {
       allowed = await widget.verifyAccess(uid).timeout(widget.verificationTimeout);
     } catch (_) {
+      // Fail closed, but do not tell the user the subscription is missing.
       allowed = false;
+      unavailable = true;
     }
+    var blockedByCast = false;
     if (allowed) {
       if (_remoteCleanupFailed) _remoteCleanup = _stopRemote();
       allowed = await _remoteCleanup;
+      // The server granted access; only the TV stop is unconfirmed.
+      blockedByCast = !allowed;
     }
     if (!mounted || generation != _generation || uid != widget.uid) return;
     setState(() {
       _checking = false;
+      _unavailable = unavailable;
+      _blockedByCast = blockedByCast;
       if (!allowed) {
         _permission.revoke(_playbackOwner);
         if (_allowed) _remoteCleanup = _stopRemote();
@@ -186,7 +196,12 @@ class _SubscriptionGateState extends State<SubscriptionGate>
             const SizedBox(height: 18),
             Text(_checking
                 ? 'Verificando sua assinatura...'
-                : 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.',
+                : _blockedByCast
+                    ? 'Acesso não liberado até confirmar a parada da transmissão na TV.'
+                    : _unavailable
+                    ? 'Acesso não liberado: não foi possível verificar sua assinatura agora. '
+                        'Confira a conexão e tente novamente.'
+                    : 'Acesso não liberado. Confira sua assinatura ou aguarde a confirmação do pagamento.',
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             if (_remoteCleanupFailed)

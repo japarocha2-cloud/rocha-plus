@@ -19,8 +19,13 @@ class LabSubscriptionScreen extends StatefulWidget {
 class _LabSubscriptionScreenState extends State<LabSubscriptionScreen> {
   static const queryConfigured = bool.fromEnvironment('ROCHA_C7_SUBSCRIPTION_QUERY');
   late final controller = widget.authController ?? AuthController(FirebaseAuthRepository());
-  bool get configured => widget.authController != null ||
-      (queryConfigured && FirebaseAuthRepository.isConfigured && SubscriptionAccess.endpoint.isNotEmpty);
+  bool get configured => widget.authController != null || missingConfiguration.isEmpty;
+  /// Build-time switches that are absent; names only, values are never shown.
+  static List<String> get missingConfiguration => [
+    if (!queryConfigured) 'consulta C7',
+    if (!FirebaseAuthRepository.isConfigured) 'Firebase',
+    if (SubscriptionAccess.endpoint.isEmpty) 'endereço de verificação',
+  ];
   @override
   void initState() {
     super.initState();
@@ -41,14 +46,19 @@ class _LabSubscriptionScreenState extends State<LabSubscriptionScreen> {
       accountActions: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Consulta LAB • nenhuma cobrança é iniciada nesta tela.'),
         if (!configured)
-          const Text('Configuração de autenticação e consulta LAB ausente. Os planos continuam disponíveis para leitura.')
+          Text('Configuração de autenticação e consulta LAB ausente '
+              '(${missingConfiguration.join(', ')}). Os planos continuam disponíveis para leitura.')
         else if (controller.initializing || controller.busy)
           const LinearProgressIndicator()
-        else if (controller.account == null)
+        else if (controller.account == null) ...[
           OutlinedButton.icon(
             onPressed: controller.supports(LoginProvider.google)
                 ? () => unawaited(controller.signIn(LoginProvider.google)) : null,
-            icon: const Icon(Icons.login), label: const Text('Entrar para consultar assinatura'))
+            icon: const Icon(Icons.login), label: const Text('Entrar para consultar assinatura')),
+          // A disabled button must say why (e.g. Google client id missing).
+          if (controller.error == null && !controller.supports(LoginProvider.google))
+            const Text('Login com Google não habilitado nesta versão.'),
+        ]
         else ...[
           const Text('Conta autenticada. A situação será informada pelo servidor.'),
           TextButton(onPressed: () => unawaited(controller.signOut()), child: const Text('Trocar conta')),

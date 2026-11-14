@@ -119,4 +119,10 @@ void main() {
       'expiresAt': '2026-11-01T12:00:00-03:00',
     }, 'A')!.expiresAt, DateTime.utc(2026, 11, 1, 15));
   });
+
+  test('isAllowed reports an unverifiable check as unavailable, not as denied', () async {
+    // No endpoint is configured in tests, so the server cannot be asked.
+    await expectLater(SubscriptionAccess.isAllowed('A'),
+        throwsA(isA<SubscriptionUnavailable>()));
+  });
 }

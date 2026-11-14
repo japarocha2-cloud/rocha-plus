@@ -213,6 +213,8 @@ void main() {
     await flush(tester);
     expect(find.text('Abrir player one'), findsNothing);
     expect(find.textContaining('Acesso não liberado'), findsOneWidget);
+    // An explicit server denial is not presented as a connection problem.
+    expect(find.textContaining('não foi possível verificar'), findsNothing);
     expect(video.nextId, 0);
     await tester.pumpWidget(const SizedBox());
   });
@@ -259,6 +261,8 @@ void main() {
     expect(video.disposed, contains(0));
     expect(video.playing, isEmpty);
     expect(find.textContaining('Acesso não liberado'), findsOneWidget);
+    expect(find.textContaining('não foi possível verificar'), findsOneWidget);
+    expect(find.textContaining('aguarde a confirmação do pagamento'), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
@@ -358,6 +362,9 @@ void main() {
     expect(find.text('Abrir player one'), findsNothing);
     expect(permission.acquire, throwsStateError);
     expect(find.textContaining('Não foi possível confirmar a parada da TV'), findsOneWidget);
+    // Server granted access: the user is not told to check payment.
+    expect(find.textContaining('até confirmar a parada da transmissão'), findsOneWidget);
+    expect(find.textContaining('aguarde a confirmação do pagamento'), findsNothing);
     expect(video.nextId, 0);
     await tester.pumpWidget(const SizedBox());
   });
