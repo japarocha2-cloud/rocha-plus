@@ -1,4 +1,5 @@
 'use strict';
+const {codedError} = require('./payment_errors');
 
 // Privileged back-office operation only. NEVER expose as an unauthenticated HTTP
 // endpoint. Claims must already have been approved by a verified administrator.
@@ -14,7 +15,7 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
     if (!claimSnap.exists || claim?.reviewed !== true ||
         !claim?.uid || typeof claim.uid !== 'string' ||
         claim.uid.includes('/') || !['monthly','annual'].includes(claim.plan)) {
-      throw new Error('independently reviewed UID and plan required');
+      throw codedError('CLAIM_MISSING', 'independently reviewed UID and plan required');
     }
     // Verify the expected amount from the independently approved claim. Never
     // derive plan from a client-provided amount or a mutable payment link.
@@ -27,7 +28,7 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
         !Number.isFinite(payment.amount) ||
         Math.abs(payment.amount * 100 - Math.round(payment.amount * 100)) > 1e-6 ||
         Math.round(payment.amount * 100) !== claim.amountCents ||
-        payment.currency !== 'BRL') throw new Error('payment does not match reviewed claim');
+        payment.currency !== 'BRL') throw codedError('CLAIM_MISMATCH', 'payment does not match reviewed claim');
 
     const eventRef = db.collection('payment_events').doc(payment.id);
     const entitlementRef = db.collection('entitlements').doc(claim.uid);
@@ -37,12 +38,12 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
       tx.get(eventRef), tx.get(entitlementRef), tx.get(q),
     ]);
     if (existing.exists && existing.data().uid !== claim.uid) {
-      throw new Error('payment ownership conflict');
+      throw codedError('OWNERSHIP_CONFLICT', 'payment ownership conflict');
     }
     if (existing.exists && String(existing.data().paymentId) !== payment.id) {
-      throw new Error('payment ledger document identity mismatch');
+      throw codedError('LEDGER_MISMATCH', 'payment ledger document identity mismatch');
     }
-    if (!entitlement.exists) throw new Error('account trial must be initialized first');
+    if (!entitlement.exists) throw codedError('TRIAL_MISSING', 'account trial must be initialized first');
     const approved = eligiblePayment(payment);
     const updated = {
       uid: claim.uid, provider: 'mercadopago', paymentId: payment.id,
@@ -59,7 +60,7 @@ async function reconcileAndGrant({db, admin, paymentId, accessToken}) {
       .map(doc => {
         const row = doc.data();
         if (String(row.paymentId) !== doc.id) {
-          throw new Error('payment ledger document identity mismatch');
+          throw codedError('LEDGER_MISMATCH', 'payment ledger document identity mismatch');
         }
         return row;
       });

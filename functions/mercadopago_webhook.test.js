@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {createHmac} = require('node:crypto');
 const {createMercadoPagoWebhookHandler} = require('./mercadopago_webhook');
+const {codedError} = require('./payment_errors');
 
 const secret = 'fixture-webhook-secret-2026';
 const requestId = 'req-fixture-001';
@@ -104,7 +105,7 @@ test('already processed notification is idempotent', async () => {
   assert.equal(f.calls.length, 0);
 });
 
-test('missing reviewed association is durably parked without granting access', async () => {
+test('missing reviewed association is retryable (claim may land later) without granting access', async () => {
   const rows = new Map();
   const inbox = {
     async begin({notificationId, paymentId}) {
@@ -120,9 +121,8 @@ test('missing reviewed association is durably parked without granting access', a
     inbox, reconcilePayment: async () => { throw new Error('independently reviewed UID and plan required'); }});
   const res = response();
   await handler(request(), res);
-  assert.equal(res.statusCode, 200);
-  assert.equal(res.body.reviewRequired, true);
-  assert.equal(rows.get('99887766').status, 'review_required');
+  assert.equal(res.statusCode, 503);
+  assert.equal(rows.get('99887766').status, 'retryable_failure');
 });
 
 test('provider/storage failure returns 503 and remains retryable', async () => {
@@ -157,7 +157,7 @@ test('non-POST method is rejected', async () => {
 test('payment mismatch is parked for review instead of provider retry loop', async () => {
   const rows = new Map();
   const inbox = {async begin({notificationId,paymentId}) { const row={paymentId,status:'received'}; rows.set(notificationId,row); return row; }, async finish({notificationId,status,reason}) { rows.set(notificationId,{...rows.get(notificationId),status,reason}); }};
-  const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async()=>{throw new Error('payment does not match reviewed claim');}});
+  const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async()=>{throw codedError('CLAIM_MISMATCH','payment does not match reviewed claim');}});
   const res=response(); await handler(request(),res);
   assert.equal(res.statusCode,200); assert.equal(res.body.reviewRequired,true);
   assert.equal(rows.get('99887766').status,'review_required');
@@ -199,4 +199,35 @@ test('retryable provider failure releases its lease for a later delivery', async
   const handler=createMercadoPagoWebhookHandler({secret,inbox,reconcilePayment:async()=>{if(attempts===1)throw Error('provider timeout');}});
   const first=response(); await handler(request(),first); assert.equal(first.statusCode,503); assert.equal(rows.get('99887766').status,'retryable_failure');
   const second=response(); await handler(request(),second); assert.equal(second.statusCode,200); assert.equal(rows.get('99887766').status,'processed');
+});
+
+// Bounded waiting for a missing claim/trial (approved before the checkout claim).
+function waitingInbox(receipt) {
+  const rows = new Map();
+  return {rows, async begin({notificationId, paymentId}) {
+    rows.set(notificationId, {paymentId, status: 'processing'}); return {status: 'processing', token: 't', ...receipt};
+  }, async finish({notificationId, status, reason}) { rows.set(notificationId, {status, reason}); }};
+}
+for (const [label, receipt, nowMs, expected] of [
+  ['first deliveries keep retrying', {attempts: 1, firstSeenAtMs: 1000}, 2000, 503],
+  ['after max attempts it is parked for review', {attempts: 10, firstSeenAtMs: 1000}, 2000, 200],
+  ['after 48 hours it is parked for review', {attempts: 2, firstSeenAtMs: 1000}, 1000 + 48 * 3600000, 200],
+]) {
+  test(`missing trial: ${label}`, async () => {
+    const inbox = waitingInbox(receipt);
+    const handler = createMercadoPagoWebhookHandler({secret, inbox, now: () => nowMs,
+      reconcilePayment: async () => { throw codedError('TRIAL_MISSING', 'account trial must be initialized first'); }});
+    const res = response(); await handler(request(), res);
+    assert.equal(res.statusCode, expected);
+    const row = [...inbox.rows.values()][0];
+    assert.equal(row.status, expected === 200 ? 'review_required' : 'retryable_failure');
+    if (expected === 200) assert.equal(row.reason, 'payment_association_timeout');
+  });
+}
+test('an error without a code is never acknowledged (safe default is retry)', async () => {
+  const inbox = waitingInbox({attempts: 50, firstSeenAtMs: 0});
+  const handler = createMercadoPagoWebhookHandler({secret, inbox,
+    reconcilePayment: async () => { throw new Error('payment does not match reviewed claim'); }});
+  const res = response(); await handler(request(), res);
+  assert.equal(res.statusCode, 503);
 });
