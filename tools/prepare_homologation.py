@@ -31,6 +31,49 @@ TARGETS = {
             # Owner-approved: the E2E build runs on push to its single LAB branch.
             'events': ('workflow_dispatch', 'push')},
 }
+# Fixed, developer-authored diagnostics that may be echoed to the operator.
+# Messages built with f-strings or data are intentionally absent, and a
+# ValueError subclass is not accepted: type(error) must be ValueError exactly.
+SAFE_VALUE_ERROR_MESSAGES = frozenset({
+    'Alvo de homologacao invalido',
+    'Opcao experimental invalida',
+    'E2E exige o teste de assinatura ativo',
+    'Bloqueio permitido apenas nas branches de homologacao',
+    'Homologacao exige o endpoint verificado do proprio projeto',
+    'Homologacao exige o projeto experimental correto',
+    'Exige um unico app Android com pacote .lab',
+    'Cliente OAuth web ausente ou ambiguo',
+    'Cadastre SHA-1 da chave LAB no Firebase e baixe novamente google-services.json',
+    'Configuracao Firebase incompleta',
+    'App ID e numero do projeto inconsistentes',
+    'Homologacao assinada exige disparo manual na branch experimental',
+    'Secrets de homologacao ausentes; nenhum fallback para producao',
+    'Chave LAB vazia',
+    'Scaffold Android inesperado',
+    'Application Android ausente',
+    'Metadados fora da homologacao',
+    'Metadados de assinatura ausentes ou inconsistentes',
+    'APK nao possui pacote .lab; upload bloqueado',
+    'Certificado do APK nao cadastrado no OAuth Android enviado; upload bloqueado',
+    'Bundle restrito ao projeto e pacote de homologacao',
+    'Bundle exige exatamente os quatro campos LAB',
+    'Campo LAB invalido',
+    'Secrets individuais e bundle LAB inconsistentes',
+    'Credencial LAB nao pode conter controles de linha',
+    'Alias LAB invalido',
+    'Chave LAB excede limite',
+    'Credenciais LAB incompletas',
+})
+
+
+def blocked_message(error):
+    """Generic failure line, plus a reason only for known literal ValueErrors."""
+    message = ('Homologacao bloqueada: confira projeto .lab, OAuth Android/SHA-1, '
+               'chave LAB e scaffold. '
+               f'Tipo de falha: {type(error).__name__}.')
+    if type(error) is ValueError and str(error) in SAFE_VALUE_ERROR_MESSAGES:
+        message += f' Motivo: {error}.'
+    return message
 
 
 def target(env):
@@ -215,6 +258,5 @@ if __name__ == '__main__':
         sys.exit(1)
     except Exception as error:
         # Do not print parser/subprocess errors that could include JSON secrets.
-        print('Homologacao bloqueada: confira projeto .lab, OAuth Android/SHA-1, chave LAB e scaffold. '
-              f'Tipo de falha: {type(error).__name__}.', file=sys.stderr)
+        print(blocked_message(error), file=sys.stderr)
         sys.exit(1)
