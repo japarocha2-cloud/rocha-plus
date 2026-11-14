@@ -32,7 +32,6 @@ jobs:
       - name: Prepare E2E homologation configuration
         env:
           ROCHA_HOMOLOGATION_TARGET: e2e
-          ROCHA_LAB_BUNDLE_JSON: ${{ secrets.ROCHA_LAB_BUNDLE_JSON }}
           LAB_KEYSTORE_BASE64: ${{ secrets.ROCHA_LAB_KEYSTORE_BASE64 }}
           LAB_KEYSTORE_PASSWORD: ${{ secrets.ROCHA_LAB_KEYSTORE_PASSWORD }}
           LAB_KEY_ALIAS: ${{ secrets.ROCHA_LAB_KEY_ALIAS }}
