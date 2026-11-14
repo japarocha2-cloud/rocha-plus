@@ -47,3 +47,11 @@ escrita). Recuperação por bundle/patch em `recuperacao-lab/` (fora do git, ver
   Testes novos falham sem a correção.
 - Pendente (não feito): workflow do build físico C7 continua sem `ROCHA_C7_SUBSCRIPTION_QUERY`
   (mudar ativa login no APK físico; decidir com o responsável). versionCode = 738 + run_number.
+
+## Atualização 14/11 — workflows de pagamento (autorizado pelo responsável)
+- Branch `lab/seguranca-workflows-pagamento-20261114` (base d18478c, commit 85c08ae). Só edição; nada executado.
+- environment `producao-contas-escrita` em owner-exemption-apply e spark-single-account-sync;
+  push removido de workflows com segredos de produção; UID validado no 1º passo; e-mail → segredo.
+- Contrato `tools/test_workflow_safety.py` (6 OK; original falha); actionlint OK; auditoria security-reviewer aprovada c/ ressalvas (tratadas).
+- Antes do merge: criar environment com revisor obrigatório, mover segredos para o environment,
+  criar segredo ROCHA_TEST_ACCOUNT_EMAIL. Cópia em feat/spark-payment-confirmation-20261015 segue sem aprovação.
