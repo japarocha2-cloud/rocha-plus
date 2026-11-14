@@ -223,3 +223,16 @@ class E2ETargetTest(unittest.TestCase):
                               'oauth_client': [], 'api_key': [{'current_key': 'k'}]}]}
         with self.assertRaises(ValueError):
             firebase_configuration(source, 'com.rochaplus.app.e2e')
+
+    def test_e2e_accepts_push_on_its_branch_but_lab_still_requires_manual_dispatch(self):
+        from prepare_homologation import prepare
+        e2e = {'ROCHA_HOMOLOGATION_TARGET': 'e2e', 'GITHUB_EVENT_NAME': 'push',
+               'GITHUB_REF': 'refs/heads/lab/assinatura-e2e-20261114'}
+        # Passes the event/branch gate and stops only at the missing secrets.
+        with self.assertRaisesRegex(ValueError, 'Secrets de homologacao ausentes'):
+            prepare('.', '/nonexistent', e2e)
+        with self.assertRaisesRegex(ValueError, 'disparo manual'):
+            prepare('.', '/nonexistent', {**e2e, 'GITHUB_REF': 'refs/heads/main'})
+        with self.assertRaisesRegex(ValueError, 'disparo manual'):
+            prepare('.', '/nonexistent', {'GITHUB_EVENT_NAME': 'push', 'GITHUB_REF': BRANCH})
+

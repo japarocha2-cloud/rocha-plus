@@ -24,9 +24,12 @@ E2E_BRANCH = 'refs/heads/lab/assinatura-e2e-20261114'
 # subscription test app that installs beside the Candidate 6 / '.lab' builds.
 TARGETS = {
     'lab': {'package': PACKAGE, 'suffix': '.lab', 'label': 'Rocha+ Homologação',
-            'branches': BRANCHES, 'services': 'ROCHA_LAB_GOOGLE_SERVICES_JSON'},
+            'branches': BRANCHES, 'services': 'ROCHA_LAB_GOOGLE_SERVICES_JSON',
+            'events': ('workflow_dispatch',)},
     'e2e': {'package': 'com.rochaplus.app.e2e', 'suffix': '.e2e', 'label': 'Rocha+ E2E',
-            'branches': (E2E_BRANCH,), 'services': 'ROCHA_E2E_GOOGLE_SERVICES_JSON'},
+            'branches': (E2E_BRANCH,), 'services': 'ROCHA_E2E_GOOGLE_SERVICES_JSON',
+            # Owner-approved: the E2E build runs on push to its single LAB branch.
+            'events': ('workflow_dispatch', 'push')},
 }
 
 
@@ -95,7 +98,7 @@ def firebase_configuration(source, package=PACKAGE):
 
 def prepare(root, private, env):
     t = target(env)
-    if env.get('GITHUB_REF') not in t['branches'] or env.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
+    if env.get('GITHUB_REF') not in t['branches'] or env.get('GITHUB_EVENT_NAME') not in t['events']:
         raise ValueError('Homologacao assinada exige disparo manual na branch experimental')
     env = lab_environment(env)
     names = [t['services'], 'LAB_KEYSTORE_BASE64',
