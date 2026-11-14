@@ -55,3 +55,10 @@ escrita). Recuperação por bundle/patch em `recuperacao-lab/` (fora do git, ver
 - Contrato `tools/test_workflow_safety.py` (6 OK; original falha); actionlint OK; auditoria security-reviewer aprovada c/ ressalvas (tratadas).
 - Antes do merge: criar environment com revisor obrigatório, mover segredos para o environment,
   criar segredo ROCHA_TEST_ACCOUNT_EMAIL. Cópia em feat/spark-payment-confirmation-20261015 segue sem aprovação.
+
+## Atualização 14/11 — limites de aparelhos (backend LAB)
+- Branch `lab/limites-dispositivos-20261114` (base 92451ea, commit 0c1a26b). Não implantado.
+- 1 celular / 2 TVs / 2 reproduções no serviço de direitos; concessão 90 s + heartbeat; 3 trocas/30 dias.
+- `npm test` 70/70 (53 antigos + 17 novos); auditoria security-reviewer aprovada c/ ressalvas (cooldown de trocas incorporado).
+- Pendente: integração no app Flutter; teste com emulador/Firestore de homologação; atestação (Play Integrity);
+  confirmar números de trocas e lease; rate limit no gateway.
