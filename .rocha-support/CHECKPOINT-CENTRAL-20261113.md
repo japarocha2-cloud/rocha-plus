@@ -62,3 +62,11 @@ escrita). Recuperação por bundle/patch em `recuperacao-lab/` (fora do git, ver
 - `npm test` 70/70 (53 antigos + 17 novos); auditoria security-reviewer aprovada c/ ressalvas (cooldown de trocas incorporado).
 - Pendente: integração no app Flutter; teste com emulador/Firestore de homologação; atestação (Play Integrity);
   confirmar números de trocas e lease; rate limit no gateway.
+
+## Atualização 14/11 — cliente de limites no app (mesma branch)
+- `lab/limites-dispositivos-20261114` commit 551116b: `lib/src/auth/device_limits.dart` + PlayerScreen.
+  Desligado por padrão (`ROCHA_DEVICE_LIMITS=true` para ativar em build LAB).
+- Flutter 259 OK / 3 skip (15 novos); backend 71/71; auditoria flutter-reviewer: ressalvas corrigidas
+  (concessão órfã, erros temporários, troca de canal via novo streamId, URL validada).
+- Corrigido por teste: TV 1080p (960x540) era classificada como celular; corte agora em 480.
+- Lacunas: Cast não ocupa vaga; tipo de aparelho por tamanho de tela; sem atestação; não testado em aparelho/Firestore.
