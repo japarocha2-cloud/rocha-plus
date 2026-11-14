@@ -79,3 +79,8 @@ Nenhum APK ou ZIP foi gerado nesta tarefa. Assinatura, certificado, instalação
 O fiscal de qualidade também foi executado: a exceção HTTP desta branch fica restrita aos originais/adaptadores verificados e inventários Roku com hash idêntico ao baseline. Corrigido falso positivo de segredo quando `token=` vazio no fim de URL fazia a expressão atravessar a quebra de linha do JSON. Demais arquivos e branches continuam fiscalizados. Cinco regressões do fiscal cobrem segredo fixo, HTTP fora da exceção, bibliotecas de terceiros e o parâmetro vazio, incluindo rejeição do caminho C7 em main.
 
 Workflow: `.github/workflows/official-catalog-lab.yml`. Resultado remoto e commit final devem acompanhar a entrega; não presumir CI aprovado antes da execução.
+
+
+## Nota de exibição (LAB E2E, 14/11/2026)
+
+A adição declarada `Telecine Action` tem o mesmo nome (sem sufixo de resolução), grupo e URL do registro base `Telecine Action (1080p)`. O arquivo fixado (483 registros, SHA-256 inalterado) e o congelado permanecem intactos como evidência; o carregador C7 não exibe o cartão repetido, mantendo a entrada base (com capa e status histórico). Resultado exibido: 482 cartões.

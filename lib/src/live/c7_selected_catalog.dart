@@ -87,6 +87,12 @@ class C7SelectedCatalog {
             throw const FormatException('Removed channel reinclusion');
           }
         }
+        // Declared additions that repeat a base card (same identity AND same URL)
+        // are not shown twice. The pinned file and frozen source stay unchanged.
+        if (row['sourceLayer'] == 'addition' &&
+            channels.any((c) => C7CatalogPolicy.identity(c.name) == key && c.url == url)) {
+          continue;
+        }
         final genres = row['genres'] == null ? const <String>[] : List<String>.from(row['genres'] as List);
         channels.add(Channel(name:name, url:url, group:group, logo:row['logo'] as String?,
             genres:genres, preferredEngine:row['preferredEngine'] as String?,
