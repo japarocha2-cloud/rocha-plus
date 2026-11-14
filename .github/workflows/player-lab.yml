@@ -109,7 +109,7 @@ jobs:
       offset: ${{ matrix.offset }}
       count: ${{ matrix.count }}
   aggregate:
-    if: always()
+    if: ${{ always() && needs.build.result == 'success' }}
     needs: [build, smoke, audio-compatibility, batch10, batch25, remaining]
     runs-on: ubuntu-latest
     steps:

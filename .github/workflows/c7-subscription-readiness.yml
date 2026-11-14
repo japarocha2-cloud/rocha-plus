@@ -1,0 +1,67 @@
+name: C7 subscription query readiness
+on:
+  push:
+    branches: [lab/candidata7-assinatura-consulta-20261108]
+permissions:
+  contents: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Verify protected application and financial sources
+        run: git diff --exit-code a063074 -- branding platforms lib/src/live backend functions firestore.rules tools/configure_android.py tools/lab
+      - name: Inspect existing configuration bindings without exposing values
+        env:
+          ROCHA_LAB_BUNDLE_JSON: ${{ secrets.ROCHA_LAB_BUNDLE_JSON }}
+          ROCHA_LAB_GOOGLE_SERVICES_JSON: ${{ secrets.ROCHA_LAB_GOOGLE_SERVICES_JSON }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MP_RECEIVING_ACCESS_TOKEN: ${{ secrets.MP_RECEIVING_ACCESS_TOKEN }}
+          MP_TEST_ACCESS_TOKEN: ${{ secrets.MP_TEST_ACCESS_TOKEN }}
+        run: python3 tools/c7_subscription_preflight.py
+      - name: Existing server, payment and trial regressions
+        run: |
+          npm ci --prefix backend/entitlement --ignore-scripts --no-audit --no-fund
+          node --test functions/*.test.js
+          node --test backend/entitlement/*.test.mjs
+          node --test tools/tests/c7_annual_policy.test.cjs
+          python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Reuse existing sandbox checkout fixtures without provider requests
+        run: |
+          git fetch --no-tags origin 86bdabe25cf53f74d59c1061d95e500ee9fb4f6b
+          mkdir -p /tmp/c7-sandbox-fixture
+          git archive 86bdabe25cf53f74d59c1061d95e500ee9fb4f6b backend/mercadopago_sandbox_checkout.js backend/mercadopago_sandbox_checkout.test.js backend/mercadopago_sandbox_check.js backend/mercadopago_sandbox_check.test.js | tar -x -C /tmp/c7-sandbox-fixture
+          node --test /tmp/c7-sandbox-fixture/backend/*.test.js
+      - name: Verify Flutter authentication and subscription UI
+        run: |
+          flutter pub get
+          check() {
+            if "$@" > /tmp/c7-query-check.log 2>&1; then cat /tmp/c7-query-check.log; else
+              cat /tmp/c7-query-check.log
+              python3 - <<'PYDIAG'
+          from pathlib import Path
+          text=Path('/tmp/c7-query-check.log').read_text(errors='replace')
+          start=text.find('EXCEPTION CAUGHT')
+          text=text[max(0,start-100):start+4800]+'\n'+text[-900:] if start>=0 else text[-6000:]
+          print('::error title=C7 query regression::'+text.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
+          PYDIAG
+              return 1
+            fi
+          }
+          check flutter analyze
+          check flutter test test/c7_subscription_auth_route_test.dart
+          check flutter test
+      # No binary pretending to support real queries is produced here.
+      # Authenticated query, C7 OAuth registration and compatible server binding
+      # must be proven before enabling ROCHA_C7_SUBSCRIPTION_QUERY and building.

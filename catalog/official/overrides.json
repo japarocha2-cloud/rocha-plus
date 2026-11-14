@@ -1,0 +1,16 @@
+{
+  "schema": "rocha.catalog.overrides.v1",
+  "sourceSha256": "ce8a82a5e5cf637759f75f2dcf063fc6aff67b0832336860b82b6346cd10a2e9",
+  "authority": "Owner order 2026-11-08 and docs/lab/CANDIDATA6_LINKS_APROVADOS_20261106.md",
+  "byName": {
+    "TV Rá-Tim-Bum HD": {
+      "urls": [
+        "http://45.162.64.114/RA_TIM_BUM/index.m3u8",
+        "http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8",
+        "http://186.219.52.187/ratimbum/index.m3u8"
+      ],
+      "preferredUrlIndex": 1
+    }
+  },
+  "policy": "All 479 base rows and four declared additions retained. Historical pending/removal labels never exclude these owner-selected records. No financial or production changes."
+}

@@ -1,0 +1,6 @@
+{
+  "rokuCommit": "6ccbf96bc301589372ebc82940d05193157c19b1",
+  "rokuPath": "platforms/roku-lab-visual",
+  "androidCommit": "92451ea",
+  "note": "Existing Roku LAB source and artwork retained; original branch untouched."
+}

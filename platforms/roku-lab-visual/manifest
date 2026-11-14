@@ -1,0 +1,14 @@
+title=Rocha+
+subtitle=LAB P0 — catálogo preservado — sem cobrança
+major_version=0
+minor_version=6
+build_version=11
+ui_resolutions=fhd
+splash_screen_color=#080713
+
+mm_icon_focus_hd=pkg:/images/channel-icon-hd-v2.jpg
+mm_icon_focus_fhd=pkg:/images/channel-icon-fhd-v2.jpg
+
+splash_screen_hd=pkg:/images/splash-hd-fullscreen.jpg
+splash_screen_fhd=pkg:/images/splash-fhd-fullscreen.jpg
+

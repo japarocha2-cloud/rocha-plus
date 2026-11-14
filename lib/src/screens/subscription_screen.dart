@@ -8,9 +8,10 @@ import '../theme/rocha_theme.dart';
 /// Account access is checked by the backend, never inferred from a plan card.
 class SubscriptionScreen extends StatefulWidget {
   final String? accountUid;
+  final Widget? accountActions;
   final Future<SubscriptionAccessResult?> Function(String)? verifyAccess;
 
-  const SubscriptionScreen({super.key, this.accountUid, this.verifyAccess});
+  const SubscriptionScreen({super.key, this.accountUid, this.verifyAccess, this.accountActions});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -129,8 +130,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Assinatura')),
+        appBar: AppBar(title: const Text('Rocha+ • Assinaturas'), backgroundColor: const Color(0xFF130924)),
         body: SafeArea(
+          child: Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF130924), Color(0xFF080611)])),
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
@@ -140,7 +143,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Sua assinatura Rocha+',
+                      if (widget.accountActions != null) widget.accountActions!,
+                      Text('Rocha+ • Assinaturas',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
                       Card(
@@ -183,9 +187,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                                 ),
                               ] else ...[
                                 const SizedBox(height: 12),
-                                const Text(
-                                  'A consulta da assinatura ainda não está disponível nesta versão.',
-                                ),
+                                Text(widget.accountUid == null
+                                    ? 'Entre com sua conta para consultar sua assinatura.'
+                                    : 'O serviço de consulta não está configurado neste aplicativo.'),
                               ],
                             ],
                           ),
@@ -217,13 +221,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        'Pagamento único pelo período escolhido, sem renovação automática. A licença depende da confirmação financeira pelo servidor.',
+                        'Pagamento único pelo período escolhido, sem renovação automática. A licença depende da confirmação financeira pelo servidor. Não pague novamente para tentar liberar um acesso já contratado.',
                       ),
                     ],
                   ),
                 ),
               ),
             ],
+          ),
           ),
         ),
       );
@@ -237,20 +242,30 @@ class _PlanCard extends StatelessWidget {
   const _PlanCard({required this.name, required this.price, this.onSubscribe});
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF381064), Color(0xFF170B31)]),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFB445F4), width: 1.5),
+          boxShadow: const [BoxShadow(color: Color(0x553F0A80), blurRadius: 14)],
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          child: Row(children: [
+            Icon(name.contains('Anual') ? Icons.calendar_month_outlined : Icons.live_tv_outlined,
+                color: RochaColors.gold, size: 32),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(name, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
+              Text(price, style: const TextStyle(color: RochaColors.gold, fontWeight: FontWeight.bold, fontSize: 24)),
+              const SizedBox(height: 6),
+              const Text('Preço de lançamento • benefício fundador', style: TextStyle(fontSize: 12, color: Color(0xFFE4D7F2))),
+              const SizedBox(height: 10),
               FilledButton(onPressed: onSubscribe, child: const Text('Assinar com Mercado Pago')),
-              Text(price,
-                  style: const TextStyle(
-                      color: RochaColors.gold, fontWeight: FontWeight.bold)),
-            ],
-          ),
+            ])),
+          ]),
         ),
       );
 }

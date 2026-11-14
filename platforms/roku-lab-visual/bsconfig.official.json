@@ -1,0 +1,6 @@
+{
+  "rootDir": ".",
+  "files": ["source/**/*", "components/**/*"],
+  "createPackage": false,
+  "copyToStaging": false
+}

@@ -1,4 +1,5 @@
 """Verify an APK and report certificate fingerprints without depending on signer labels."""
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -34,6 +35,9 @@ def report(apk, signer, summary):
         stream.write('### Certificado do APK experimental\n')
         for fingerprint in fingerprints:
             stream.write(f'SHA-1 do certificado do APK: `{fingerprint}`\n')
+        for digest in re.findall(r'^.*certificate SHA-256 digest: ([0-9a-fA-F]{64})[ \t]*\r?$', result.stdout, re.MULTILINE):
+            stream.write(f'SHA-256 do certificado: `{digest}`\n')
+        stream.write(f'SHA-256 do APK: `{hashlib.sha256(apk.read_bytes()).hexdigest()}`\n')
         stream.write('Diagnóstico de assinatura LAB; não comprova login Firebase. '
                      'Sem chave LAB estável, a assinatura debug pode mudar entre execuções.\n')
     return fingerprints

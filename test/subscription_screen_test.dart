@@ -11,7 +11,7 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(MaterialApp(
         theme: RochaTheme.dark,
-        home: const HomeScreen(previewOnly: true),
+        home: const HomeScreen(previewOnly: true, accountUid: 'test-account'),
       ));
       if (size.width < 900) {
         tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
@@ -44,7 +44,7 @@ void main() {
     await tester.scrollUntilVisible(find.text('R\$ 86,90 por ano'), 200);
     expect(find.text('R\$ 7,90 por mês'), findsOneWidget);
     expect(find.text('R\$ 86,90 por ano'), findsOneWidget);
-    expect(find.textContaining('bloqueio ainda está em homologação'), findsOneWidget);
+    expect(find.textContaining('prazo e a elegibilidade são confirmados pelo servidor'), findsOneWidget);
     expect(find.byType(FilledButton), findsNWidgets(2));
     expect(find.textContaining('sem renovação automática'), findsOneWidget);
     expect(find.byType(AlertDialog), findsNothing);

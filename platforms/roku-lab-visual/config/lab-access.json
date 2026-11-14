@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "environment": "roku-lab",
+  "scope": "homologation",
+  "endpoint": "",
+  "reason": "Prepared only; requires verified account and isolated HTTPS service"
+}

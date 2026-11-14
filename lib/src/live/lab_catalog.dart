@@ -1,3 +1,5 @@
+import 'c7_selected_catalog.dart';
+import 'c7_catalog_policy.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'channel_repository.dart';
 
 /// A generated, auditable candidate snapshot. Never imported by production.
 Future<List<Channel>> loadLabCatalog() async {
+  if (C7CatalogPolicy.enabled) return C7SelectedCatalog().load();
   final config = await LabRuntime.configuration();
   if (config['fixture'] == true) {
     return const [
@@ -47,12 +50,17 @@ Future<List<Channel>> loadLabCatalog() async {
       group: row['group'] as String? ?? 'Outros',
       logo: row['logo'] as String?,
     );
-    if (repo.isBlocked(channel) || !seen.add(channel.url)) continue;
+    final corrected = ChannelRepository.applyPhysicalTestStream(channel);
+    // Different channels may legitimately share a stream URL. Only remove
+    // identical card identities; preserve distinct names and categories.
+    final cardKey = '${channelIdentity(corrected.name)}\u0000${corrected.url.trim()}';
+    if (repo.isBlocked(corrected) || !seen.add(cardKey)) continue;
     // Persistent blocks are normally loaded by ChannelRepository's remote path.
     // This loader does not use that path, so honor them explicitly.
     if (userBlocked.contains(channelIdentity(channel.name))) continue;
-    channels.add(channel);
+    channels.add(corrected);
   }
   final selected = channels.skip(offset);
-  return (limit > 0 ? selected.take(limit) : selected).toList();
+  final result = (limit > 0 ? selected.take(limit) : selected).toList();
+  return result;
 }

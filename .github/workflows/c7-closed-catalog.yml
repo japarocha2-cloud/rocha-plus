@@ -1,0 +1,56 @@
+name: C7 closed catalog integrity - no APK
+on:
+  push:
+    branches: [lab/candidata7-catalogo-fechado-20261108]
+permissions:
+  contents: read
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - name: Preserve frozen sources, pending inventory and unrelated applications
+        run: |
+          git diff --exit-code 1cd674e -- branding/lab_candidates.json branding/lab_approved.json platforms backend functions firestore.rules lib/src/auth lib/src/screens/subscription_screen.dart lib/src/screens/lab_subscription_screen.dart
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          r=json.loads(Path('catalog/c7/pending-inventory-reference.json').read_text())
+          assert hashlib.sha256(Path(r['path']).read_bytes()).hexdigest()==r['sha256']
+          assert r['approvalTransferred'] is False
+          PY
+      - name: Offline import/export, SHA, backup and tombstone regressions
+        run: |
+          python3 -m pip install pillow numpy
+          python3 -m unittest discover -s tools/c7_catalog -p 'test_*.py'
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s tools/lab -p 'test_*.py'
+          python3 tools/rocha_quality_guard.py
+      - name: Flutter analysis and default plus actual C7 selection tests
+        run: |
+          flutter pub get
+          check() {
+            if "$@" > /tmp/c7-catalog-check.log 2>&1; then cat /tmp/c7-catalog-check.log; else
+              cat /tmp/c7-catalog-check.log
+              python3 - <<'PYDIAG'
+          from pathlib import Path
+          text=Path('/tmp/c7-catalog-check.log').read_text(errors='replace')
+          start=text.find('EXCEPTION CAUGHT')
+          text=text[max(0,start-100):start+4800]+'\n'+text[-900:] if start>=0 else text[-6000:]
+          print('::error title=C7 catalog regression::'+text.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
+          PYDIAG
+              return 1
+            fi
+          }
+          check flutter analyze
+          check flutter test
+          check flutter test test/c7_selected_catalog_test.dart test/c7_effective_catalog_test.dart test/c7_category_navigation_test.dart --dart-define=ROCHA_FULL_UI_LAB=true
+      # Deliberately no build, signing, secrets, provider calls or deployment.

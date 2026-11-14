@@ -1,3 +1,6 @@
+import '../live/c7_selected_catalog.dart';
+import '../live/c7_catalog_policy.dart';
+import 'lab_subscription_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -58,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Set<String> favorites = {};
   bool loading = true;
   bool failed = false;
+  String? catalogIssue;
   bool signingOut = false;
   List<(String, IconData)> get sections => widget.laboratoryFeatures
       ? [
@@ -125,12 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
           favorites = result[1] as Set<String>;
           loading = false;
           failed = false;
+          catalogIssue = null;
         });
       }
-    } catch (_) {
+    } catch (error) {
       if (mounted && identical(owner, favoritesRepository)) {
         setState(() {
           loading = false;
+          catalogIssue = error is C7CatalogUnavailable ? error.message : null;
           failed = true;
         });
       }
@@ -169,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       return;
     }
-    final group = title == 'TV ao Vivo' ? 'TV aberta' : title;
+    final group = C7CatalogPolicy.enabled ? title : (title == 'TV ao Vivo' ? 'TV aberta' : title);
     final accountUid = widget.accountUid;
     await Navigator.push(
       context,
@@ -205,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.logout,
             onTap: _signOut,
           ),
-        const SizedBox(height: 174, child: Center(child: RochaBrand())),
+        SizedBox(height: widget.laboratoryFeatures ? 104 : 174, child: const Center(child: RochaBrand())),
         _NavItem(
           label: 'Início',
           icon: Icons.home_outlined,
@@ -214,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (drawer) Navigator.pop(context);
           },
         ),
-        ...sections.map(
+        ...sections.where((item) => !widget.laboratoryFeatures || HomeScreen.sections.contains(item)).map(
           (item) => _NavItem(
             label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1,
             icon: item.$2,
@@ -224,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+        if (widget.accountUid != null || widget.laboratoryFeatures)
         _NavItem(
           label: 'Assinatura',
           icon: Icons.workspace_premium_outlined,
@@ -232,7 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => SubscriptionScreen(accountUid: widget.accountUid),
+                builder: (_) => widget.laboratoryFeatures
+                    ? const LabSubscriptionScreen()
+                    : SubscriptionScreen(accountUid: widget.accountUid),
               ),
             );
           },
@@ -454,11 +463,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.all(24),
-                          child: OutlinedButton.icon(
-                            onPressed: _load,
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Carregar canais'),
-                          ),
+                          child: Column(children: [
+                            if (catalogIssue != null) Text(catalogIssue!),
+                            OutlinedButton.icon(
+                              onPressed: _load,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Carregar canais'),
+                            ),
+                          ]),
                         ),
                       ),
                     if (!widget.previewOnly &&

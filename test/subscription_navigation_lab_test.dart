@@ -8,7 +8,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     // Preview mode avoids loading live channels and all network requests.
     await tester.pumpWidget(const MaterialApp(
-      home: HomeScreen(previewOnly: true, accountUid: 'test-only-uid'),
+      home: HomeScreen(previewOnly: true, laboratoryFeatures: true),
     ));
     await tester.pumpAndSettle();
     if (size.width < 900) {
@@ -25,7 +25,7 @@ void main() {
     expect(find.text('R\$ 86,90 por ano'), findsOneWidget);
     expect(find.textContaining('Não pague novamente'), findsOneWidget);
     expect(find.textContaining('sem renovação automática'), findsOneWidget);
-    expect(find.textContaining('7 dias por conta'), findsOneWidget);
+    expect(find.textContaining('Teste gratuito de 7 dias'), findsOneWidget);
     expect(find.text('Verificar acesso'), findsNothing);
   }
 

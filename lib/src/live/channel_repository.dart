@@ -1,3 +1,5 @@
+import 'c7_selected_catalog.dart';
+import 'c7_catalog_policy.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'channel.dart';
@@ -11,11 +13,37 @@ class ChannelRepository {
   static final http.Client _defaultClient = http.Client();
   final http.Client _client;
   Future<List<Channel>>? _pendingLoad;
-  ChannelRepository({http.Client? client}) : _client = client ?? _defaultClient;
+  final C7SelectedCatalog _c7Selection;
+  ChannelRepository({http.Client? client, C7SelectedCatalog? c7Selection})
+      : _client = client ?? _defaultClient,
+        _c7Selection = c7Selection ?? C7SelectedCatalog();
   static final Uri developmentPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/countries/br.m3u');
   static final Uri sportsPlaylist =
       Uri.parse('https://iptv-org.github.io/iptv/categories/sports.m3u');
+
+  // One shared stream correction for existing cards in remote and LAB catalogs.
+  // Never adds channels or changes their identity, artwork or category.
+  static Channel applyPhysicalTestStream(Channel channel) {
+    final identity = channelIdentity(channel.name);
+    const streams = <String, String>{
+      'cazetv': 'http://138.204.86.4:8080/CAZE_TV/playlist.m3u8',
+      'globo': 'http://79.127.238.228:14173/',
+      'history (brazil)': 'http://170.83.16.50/HISTORY/index.m3u8',
+      'tv ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
+      'ra-tim-bum': 'http://170.83.49.66:8083/TVRATIMBUMHD/index.m3u8',
+    };
+    final url = streams[identity];
+    if (url == null || url == channel.url) return channel;
+    return Channel(
+      name: channel.name,
+      url: url,
+      logo: channel.logo,
+      group: channel.group,
+      genres: channel.genres,
+      preferredEngine: channel.preferredEngine,
+    );
+  }
 
   static Set<String> _userBlockedNames = {};
   final ChannelBlocks _blocks = ChannelBlocks();
@@ -68,7 +96,7 @@ class ChannelRepository {
         .where((channel) => channel.group == 'Esportes')
         .where((channel) => !_isPermanentlyBlocked(channel))
         .toList(growable: false);
-    return _orderSportsFirst(filtered);
+    return C7CatalogPolicy.enabled ? filtered : _orderSportsFirst(filtered);
   }
 
   static void resetSessionHealthForTests() {
@@ -85,8 +113,19 @@ class ChannelRepository {
           .toList(growable: false);
 
   Future<List<Channel>> loadBrazilPublicDirectory({bool forceRefresh = false}) {
+    if (C7CatalogPolicy.enabled) {
+      // Before all remote/last-known-good caches: C7 never imports br/sports.
+      return _loadC7Selection();
+    }
     return _pendingLoad ??= _loadDirectory(forceRefresh: forceRefresh)
         .whenComplete(() => _pendingLoad = null);
+  }
+
+  Future<List<Channel>> _loadC7Selection() async {
+    final selected = await _c7Selection.load();
+    // Owner-frozen records are never filtered by legacy pending/removal caches.
+    // Historical device decisions remain stored for evidence, without exclusion.
+    return selected;
   }
 
   Future<List<Channel>> _loadDirectory({required bool forceRefresh}) async {
@@ -140,9 +179,16 @@ class ChannelRepository {
     // canais antes de a interface aparecer. Falhas do player são registradas
     // para diagnóstico, sem esconder um canal após um erro transitório.
     // Cache source data before local hiding so restore also works offline.
-    final ordered = _orderSportsFirst(
-      merged.values.toList(),
-    );
+    // When multiple source URLs describe the same corrected card, show it
+    // once. Source records are retained; other channels and regional variants
+    // remain untouched. Never deduplicate by stream URL alone.
+    final correctedCards = <(String, String), Channel>{};
+    for (final original in merged.values) {
+      final channel = applyPhysicalTestStream(original);
+      final key = (channelIdentity(channel.name), channel.url.trim());
+      correctedCards.putIfAbsent(key, () => channel);
+    }
+    final ordered = _orderSportsFirst(correctedCards.values.toList());
     if (ordered.isNotEmpty) {
       _memoryCache = List.unmodifiable(ordered);
       _lastKnownGoodCache = _memoryCache;

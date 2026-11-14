@@ -1,5 +1,7 @@
+import re
 from pathlib import Path
 import shutil
+import os
 import xml.etree.ElementTree as ET
 
 ANDROID = "http://schemas.android.com/apk/res/android"
@@ -81,8 +83,18 @@ def configure(root):
             text += "\n dependencies { " + dependency + " }\n"
         # Debug laboratory installs alongside production instead of replacing it.
         lab_suffix = 'applicationIdSuffix = ".lab"'
-        if lab_suffix not in text:
+        if not re.search(r'applicationIdSuffix = "\.lab(?:cazetv|c7)?"', text):
             text += '\nandroid { buildTypes { getByName("debug") { ' + lab_suffix + ' } } }\n'
+        branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
+        suffix = None
+        if branch == "lab/cazetv-link-only-20261106":
+            suffix = ".labcazetv"
+        elif (branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")) or branch == "lab/catalogo-unico-oficial-20261108"):
+            suffix = ".labc7"
+        if suffix:
+            # Replace the debug suffix; never stack overrides on repeated setup.
+            text = re.sub(r'applicationIdSuffix = "\.lab(?:cazetv|c7)?"',
+                          'applicationIdSuffix = "' + suffix + '"', text)
         gradle.write_text(text, encoding="utf-8")
     debug_manifest = root / "android/app/src/debug/AndroidManifest.xml"
     debug_manifest.parent.mkdir(parents=True, exist_ok=True)
@@ -95,6 +107,32 @@ def configure(root):
     activity = root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt"
     activity.parent.mkdir(parents=True, exist_ok=True)
     activity.write_text((root / "tools/MainActivity.kt").read_text(encoding="utf-8"), encoding="utf-8")
+    branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
+    if (branch.startswith(("lab/candidata7-", "lab/p0-candidata7-")) or branch == "lab/catalogo-unico-oficial-20261108"):
+        res = root / "android/app/src/main/res"
+        launch = res / "drawable/launch_background.xml"
+        launch.parent.mkdir(parents=True, exist_ok=True)
+        launch.write_text('<layer-list xmlns:android="http://schemas.android.com/apk/res/android">'
+                          '<item android:drawable="@android:color/black" />'
+                          '<item android:width="200dp" android:height="200dp" android:gravity="center">'
+                          '<bitmap android:src="@drawable/rocha_plus_icon" android:gravity="fill" />'
+                          '</item></layer-list>', encoding="utf-8")
+        # Flutter's v21 drawable overrides the base resource on modern Android.
+        v21 = res / "drawable-v21/launch_background.xml"
+        v21.parent.mkdir(parents=True, exist_ok=True)
+        v21.write_text(launch.read_text(), encoding="utf-8")
+        for styles in [res / "values/styles.xml", res / "values-night/styles.xml"]:
+            if styles.exists():
+                style_tree = ET.parse(styles)
+                launch_style = style_tree.getroot().find("style[@name='LaunchTheme']")
+                if launch_style is not None:
+                    for key, value in [("android:windowSplashScreenBackground", "#05040A"),
+                                       ("android:windowSplashScreenAnimatedIcon", "@drawable/rocha_plus_icon")]:
+                        item = launch_style.find("item[@name='" + key + "']")
+                        if item is None:
+                            item = ET.SubElement(launch_style, "item", {"name": key})
+                        item.text = value
+                    style_tree.write(styles, encoding="utf-8", xml_declaration=True)
     drawable = root / "android/app/src/main/res/drawable"
     drawable.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "branding/rocha_plus_icon.webp",

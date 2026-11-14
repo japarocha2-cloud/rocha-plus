@@ -1,3 +1,4 @@
+import 'c7_catalog_policy.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -29,6 +30,7 @@ class ValidatedLabRepository extends ChannelRepository {
   Future<List<Channel>> loadBrazilPublicDirectory({
     bool forceRefresh = false,
   }) async {
+    if (C7CatalogPolicy.enabled) return super.loadBrazilPublicDirectory(forceRefresh: forceRefresh);
     final raw = jsonDecode(await _read()) as List;
     final userBlocks = await ChannelBlocks().load();
     final channels = <String, Channel>{};
@@ -82,6 +84,7 @@ class ValidatedLabRepository extends ChannelRepository {
         continue;
       }
     }
-    return popularChannelsFirst(channels.values);
+    final result = popularChannelsFirst(channels.values);
+    return result;
   }
 }

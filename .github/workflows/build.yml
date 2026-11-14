@@ -59,7 +59,7 @@ jobs:
       - name: Test authoritative entitlement rules and HTTP integration
         run: node --test backend/entitlement/*.test.mjs
   android:
-    if: ${{ github.ref != 'refs/heads/impl/commercial-checkout-20261104' && !(github.event_name == 'workflow_dispatch' && (inputs.homologation_login || (inputs.signed_login && (github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026')))) }}
+    if: ${{ github.ref != 'refs/heads/impl/commercial-checkout-20261104' && github.ref != 'refs/heads/lab/catalogo-unico-oficial-20261108' && github.head_ref != 'lab/catalogo-unico-oficial-20261108' && github.ref != 'refs/heads/lab/candidata7-catalogo-fechado-20261108' && github.head_ref != 'lab/candidata7-catalogo-fechado-20261108' && !(github.event_name == 'workflow_dispatch' && (inputs.homologation_login || (inputs.signed_login && (github.ref == 'refs/heads/feat/dual-player-lab-20261020' || github.ref == 'refs/heads/fix/subscription-access-20261026')))) }}
     runs-on: ubuntu-latest
     env:
       ROCHA_KEYSTORE_PASSWORD: ${{ github.event_name == 'workflow_dispatch' && inputs.signed_login && secrets.ROCHA_KEYSTORE_PASSWORD || '' }}
@@ -97,12 +97,12 @@ jobs:
       - name: Configure Android phone and TV
         run: python3 tools/configure_android.py
       - name: Configure debug laboratory bridge
-        if: contains(github.head_ref, 'dual-player-lab')
+        if: github.event_name == 'pull_request'
         run: python3 tools/lab/configure.py
       - name: Test Android configuration
         run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Test Windows PC catalogue importer safety
-        if: contains(github.head_ref, 'dual-player-lab')
+        if: github.event_name == 'pull_request'
         run: python3 -m unittest tools/lab/test_import_pc_report.py
       - name: Prepare signed Firebase build
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
@@ -115,12 +115,12 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
       - name: Isolate VLC surface lifecycle fix for LAB
-        if: contains(github.head_ref, 'dual-player-lab')
+        if: github.event_name == 'pull_request'
         run: |
           python3 tools/lab/patch_vlc_lifecycle.py
           flutter pub get
       - name: Verify LAB native/Dart player protocol
-        if: contains(github.head_ref, 'dual-player-lab')
+        if: github.event_name == 'pull_request'
         run: python3 tools/lab/verify_vlc_protocol.py
       - name: Rocha+ Quality Guard
         run: python3 tools/rocha_quality_guard.py
@@ -174,10 +174,10 @@ jobs:
           if-no-files-found: error
       # Generated only for visual QA. No Firebase credentials or access to streams.
       - name: Build visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && !contains(github.head_ref, 'dual-player-lab') }}
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && github.event_name != 'pull_request' }}
         run: flutter build apk --release --build-number=${{ github.run_number }} --dart-define=ROCHA_LAYOUT_PREVIEW=true
       - name: Upload visual-only layout preview APK
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && !contains(github.head_ref, 'dual-player-lab') }}
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.signed_login) && github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-layout-preview-no-channels
@@ -196,20 +196,28 @@ jobs:
           python3 tools/lab/configure_stable_signing.py
       - name: Build experimental player lab APK
         if: github.event_name == 'pull_request'
-        run: flutter build apk --debug --dart-define=ROCHA_LAB_ONLY=true
+        run: flutter build apk --debug --build-number=${{ github.run_number }} --dart-define=ROCHA_FULL_UI_LAB=true
       - name: Report exact experimental APK signing certificate (diagnostic only)
         if: github.event_name == 'pull_request'
         run: |
           set -euo pipefail
           APK="build/app/outputs/flutter-apk/app-debug.apk"
           BUILD_TOOLS="$(find "${ANDROID_HOME}/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
-          python3 tools/report_apk_certificate.py "$APK" "$BUILD_TOOLS/apksigner"
+          mkdir -p build/qa
+          GITHUB_STEP_SUMMARY=build/qa/lab-apk-evidence.md python3 tools/report_apk_certificate.py "$APK" "$BUILD_TOOLS/apksigner"
+          sha256sum "$APK" >> build/qa/lab-apk-evidence.md
+          git rev-parse HEAD >> build/qa/lab-apk-evidence.md
+          "$BUILD_TOOLS/aapt" dump badging "$APK" > build/qa/lab-apk-badging.txt
+          head -1 build/qa/lab-apk-badging.txt >> build/qa/lab-apk-evidence.md
+          cat build/qa/lab-apk-evidence.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload experimental player lab APK
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: rocha-plus-player-lab-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/qa/lab-apk-evidence.md
           if-no-files-found: error
       - name: Enable KVM for feature UI evidence
         if: github.event_name == 'pull_request' && contains(github.head_ref, 'dual-player-lab')
@@ -252,7 +260,7 @@ jobs:
             fi
             echo "A conexao ao Google ainda exige teste no aparelho e SHA da assinatura registrado no Firebase." >> "$GITHUB_STEP_SUMMARY"
             echo "Se houver falha em Prepare signed Firebase build, confira os Secrets no GitHub; nunca os publique." >> "$GITHUB_STEP_SUMMARY"
-          elif [[ "${{ github.head_ref }}" == *dual-player-lab* ]]; then
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "### Rocha+ LAB experimental" >> "$GITHUB_STEP_SUMMARY"
             echo "Artefato: rocha-plus-player-lab-debug. Sem homologacao audiovisual automatica." >> "$GITHUB_STEP_SUMMARY"
           else

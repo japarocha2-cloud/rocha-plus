@@ -1,0 +1,29 @@
+name: LAB catalog corrections validation
+
+on:
+  push:
+    branches:
+      - lab/cazetv-link-only-20261106
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze source
+        run: flutter analyze
+      - name: Run catalog correction tests
+        run: flutter test test/live/shared_stream_corrections_test.dart
+      - name: Run all tests
+        run: flutter test
