@@ -5,6 +5,7 @@ import os
 from urllib.parse import urlsplit
 import ipaddress
 from pathlib import Path
+from commercial_release_config import commercial_config
 
 def subscription_config(env):
     enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
@@ -50,8 +51,16 @@ def prepare(root, private, env):
         raise ValueError('Projeto Firebase inesperado')
     if config['ROCHA_FIREBASE_APP_ID'] != '1:977269532083:android:7f7b15eff64a6a443f97c6':
         raise ValueError('App Firebase inesperado')
-    # Controlled build modes cannot be injected through the Firebase JSON.
+    # Controlled build modes cannot be injected through the Firebase JSON: keep only
+    # Firebase identity values from it and set every build mode explicitly here.
+    config = {k: config[k] for k in (*required, 'ROCHA_APPLE_ENABLED') if k in config}
+    config.update({'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
+                   'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'})
     config.update(subscription_config(env))
+    # Paid commercial release (owner-authorized): production entitlement/checkout,
+    # closed C7 catalog pinned by SHA-256. Refuses incomplete or non-production setups.
+    if env.get('ROCHA_COMMERCIAL_RELEASE', 'false') == 'true':
+        config.update(commercial_config(env, root))
     private = Path(private)
     private.mkdir(parents=True, exist_ok=True)
     key = private / 'release.p12'

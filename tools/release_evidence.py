@@ -49,6 +49,7 @@ if signed_release != firebase_release:
 
 build_config = json.loads(Path(os.environ['ROCHA_FIREBASE_FILE']).read_text()) if firebase_release else {}
 subscription_lab = build_config.get('ROCHA_EXPERIMENTAL_SUBSCRIPTIONS') == 'true'
+commercial_release = build_config.get('ROCHA_COMMERCIAL_RELEASE') == 'true'
 
 report = {
     "commit": os.environ["GITHUB_SHA"],
@@ -61,7 +62,10 @@ report = {
     "firebase_auth_configured": firebase_release,
     "physical_validation": "pending",
     "experimental_subscription_enforcement": subscription_lab,
+    "commercial_paid_release": commercial_release,
     "entitlement_endpoint": build_config.get('ROCHA_ENTITLEMENT_URL', ''),
+    "checkout_endpoint": build_config.get('ROCHA_CHECKOUT_URL', ''),
+    "closed_catalog_sha256": build_config.get('ROCHA_C7_CATALOG_SHA256', ''),
     "subscription_validation": "pending; build configuration is not cloud or payment validation",
     "branding_blob": "587481a95f41f7811884dbd3e15ea987d0ae463e",
     "outputs": outputs,
