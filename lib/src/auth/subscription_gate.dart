@@ -5,11 +5,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'subscription_access.dart';
+import 'trial_welcome_store.dart';
+import '../screens/trial_welcome_dialog.dart';
 import 'playback_permission.dart';
 import '../screens/subscription_screen.dart';
 import '../cast/revoke_cast_playback.dart';
 
 typedef AccessVerifier = Future<bool> Function(String uid);
+typedef AccessChecker = Future<SubscriptionAccessResult?> Function(String uid);
 
 /// Owns every protected route, so revocation disposes active local players too.
 /// Cast stop is requested too; an offline receiver cannot be proven stopped here.
@@ -18,6 +21,10 @@ class SubscriptionGate extends StatefulWidget {
   final Future<void> Function() onSignOut;
   final WidgetBuilder homeBuilder;
   final AccessVerifier verifyAccess;
+  /// When set, replaces [verifyAccess] and also exposes the server reason,
+  /// so a server-confirmed trial can show the one-time welcome on Home.
+  final AccessChecker? checkAccess;
+  final TrialWelcomeStore? welcomeStore;
   final Duration recheckInterval;
   final Duration verificationTimeout;
   final Future<void> Function()? stopRemotePlayback;
@@ -29,6 +36,8 @@ class SubscriptionGate extends StatefulWidget {
     required this.onSignOut,
     required this.homeBuilder,
     this.verifyAccess = SubscriptionAccess.isAllowed,
+    this.checkAccess,
+    this.welcomeStore,
     this.recheckInterval = const Duration(minutes: 1),
     this.verificationTimeout = const Duration(seconds: 12),
     this.stopRemotePlayback,
@@ -52,6 +61,9 @@ class _SubscriptionGateState extends State<SubscriptionGate>
   late final Object _playbackOwner;
   Future<bool> _remoteCleanup = Future<bool>.value(true);
   int _cleanupRevision = 0;
+  String? _reason;
+  bool _welcomeInFlight = false;
+  late final TrialWelcomeStore _welcomeStore = widget.welcomeStore ?? TrialWelcomeStore();
 
   @override
   void initState() {
@@ -85,8 +97,16 @@ class _SubscriptionGateState extends State<SubscriptionGate>
       }
     });
     bool allowed;
+    String? reason;
     try {
-      allowed = await widget.verifyAccess(uid).timeout(widget.verificationTimeout);
+      final checker = widget.checkAccess;
+      if (checker != null) {
+        final result = await checker(uid).timeout(widget.verificationTimeout);
+        allowed = result != null && result.uid == uid && result.allowed;
+        reason = allowed ? result.reason : null;
+      } else {
+        allowed = await widget.verifyAccess(uid).timeout(widget.verificationTimeout);
+      }
     } catch (_) {
       allowed = false;
     }
@@ -103,7 +123,34 @@ class _SubscriptionGateState extends State<SubscriptionGate>
         _resetProtectedRoutes();
       }
       _allowed = allowed && _permission.grant(_playbackOwner);
+      _reason = _allowed ? reason : null;
     });
+    if (_allowed && _reason == 'trial') _maybeShowWelcome(uid);
+  }
+
+  /// One-time "7 dias grátis" welcome, only for a server-confirmed active trial.
+  /// Expired, paid or unknown states never show it; it never alters access.
+  Future<void> _maybeShowWelcome(String uid) async {
+    if (_welcomeInFlight) return;
+    _welcomeInFlight = true;
+    try {
+      if (await _welcomeStore.wasShown(uid)) return;
+      await WidgetsBinding.instance.endOfFrame;
+      // The route lives on the protected navigator, so a revocation or UID
+      // change (which swaps that navigator) disposes the welcome with it.
+      final navigator = _protectedNavigator.currentState;
+      if (!mounted || navigator == null || !navigator.mounted ||
+          uid != widget.uid || !_allowed || _reason != 'trial') {
+        return;
+      }
+      // Recorded only once it is actually presented; never awaited, so a
+      // disposed route cannot leave this guard stuck.
+      await _welcomeStore.markShown(uid);
+      if (!mounted || !navigator.mounted || uid != widget.uid || !_allowed) return;
+      unawaited(navigator.push(TrialWelcomeDialog.route(navigator.context)));
+    } finally {
+      _welcomeInFlight = false;
+    }
   }
 
   Future<bool> _stopRemote() async {
@@ -202,11 +249,14 @@ class _SubscriptionGateState extends State<SubscriptionGate>
               child: const Text('Verificar novamente'),
             ),
             TextButton.icon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => SubscriptionScreen(accountUid: widget.uid),
-                ),
-              ),
+              // Returning from "Minha assinatura" (e.g. after paying and
+              // "Verificar acesso") rechecks the server at once, instead of
+              // waiting for the periodic timer or "Verificar novamente".
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute<void>(
+                    builder: (_) => SubscriptionScreen(accountUid: widget.uid),
+                  ))
+                  .then((_) => _refresh()),
               icon: const Icon(Icons.workspace_premium_outlined),
               label: const Text('Minha assinatura'),
             ),

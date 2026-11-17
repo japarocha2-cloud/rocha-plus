@@ -90,7 +90,8 @@ test('actual endpoint creates exactly seven days and repeated access never reset
   const h = harness();
   const first = await h.request();
   assert.equal(first.statusCode, 200);
-  assert.deepEqual(first.body, {uid: 'lab-user', allowed: true, reason: 'trial'});
+  assert.deepEqual(first.body, {uid: 'lab-user', allowed: true, reason: 'trial',
+    expiresAtMs: START + 7 * DAY, serverTimeMs: START});
   const record = h.records.get('lab-user');
   assert.equal(record.trialStartedAt.toMillis(), START);
   assert.equal(record.trialUntil.toMillis(), START + 7 * DAY);
@@ -110,7 +111,8 @@ test('actual endpoint denies exactly at trial expiry and does not recreate expir
   assert.equal((await h.request()).body.allowed, true);
   h.setNow(START + 7 * DAY);
   assert.deepEqual((await h.request()).body,
-    {uid: 'lab-user', allowed: false, reason: 'expired'});
+    {uid: 'lab-user', allowed: false, reason: 'expired',
+      expiresAtMs: START + 7 * DAY, serverTimeMs: START + 7 * DAY});
   h.setNow(START + 8 * DAY);
   assert.equal((await h.request()).body.allowed, false);
   assert.equal(h.writes(), 1);
@@ -137,7 +139,8 @@ test('actual endpoint preserves valid paid access after trial expiry and denies 
     paidUntil: h.timestamp(START + DAY),
   });
   assert.deepEqual((await h.request()).body,
-    {uid: 'lab-user', allowed: true, reason: 'paid'});
+    {uid: 'lab-user', allowed: true, reason: 'paid',
+      expiresAtMs: START + DAY, serverTimeMs: START});
   h.setNow(START + DAY);
   assert.equal((await h.request()).body.allowed, false);
 });
@@ -149,7 +152,8 @@ test('actual endpoint uses verified UID and ignores client-supplied payment or i
     body: {uid: 'other', allowed: true, paidUntil: '2099-01-01', reason: 'paid'},
     query: {uid: 'other', paid: 'true'},
   });
-  assert.deepEqual(response.body, {uid: 'lab-user', allowed: false, reason: 'expired'});
+  assert.deepEqual(response.body, {uid: 'lab-user', allowed: false, reason: 'expired',
+    expiresAtMs: START, serverTimeMs: START});
   assert.equal(h.records.has('other'), false);
   assert.equal(h.writes(), 0);
 });
@@ -189,7 +193,8 @@ test('endpoint migrating a Spark user keeps the original trial start (2 days lef
   const h = harness({subject: 'g-subject-1'});
   h.records.set('rochaSparkAccounts/g-subject-1', {trialStartedAt: h.timestamp(START - 5 * DAY)});
   const r = await h.request();
-  assert.deepEqual(r.body, {uid: 'lab-user', allowed: true, reason: 'trial'});
+  assert.deepEqual(r.body, {uid: 'lab-user', allowed: true, reason: 'trial',
+    expiresAtMs: START + 2 * DAY, serverTimeMs: START});
   assert.equal(h.records.get('lab-user').trialUntil.toMillis(), START + 2 * DAY);
   assert.equal(h.records.get('trialAnchors/g-subject-1').trialStartedAt.toMillis(), START - 5 * DAY);
 });
@@ -198,4 +203,16 @@ test('endpoint denies a Spark user whose trial already ended instead of granting
   const h = harness({subject: 'g-subject-2'});
   h.records.set('rochaSparkAccounts/g-subject-2', {trialStartedAt: h.timestamp(START - 9 * DAY)});
   assert.equal((await h.request()).body.reason, 'expired');
+});
+
+test('expiry contract never changes across repeated reads, re-logins or clock movement', async () => {
+  const h = harness();
+  const first = (await h.request()).body;
+  for (const later of [START + 1000, START + 3 * DAY, START + 7 * DAY - 1]) {
+    h.setNow(later);
+    const body = (await h.request()).body;
+    assert.equal(body.expiresAtMs, first.expiresAtMs);
+    assert.equal(body.serverTimeMs, later);
+  }
+  assert.equal(h.writes(), 1);
 });

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth/auth_controller.dart';
 import 'auth/firebase_auth_repository.dart';
+import 'auth/subscription_access.dart';
 import 'auth/subscription_gate.dart';
 import 'app_release_policy.dart';
 import 'screens/home_screen.dart';
@@ -61,6 +62,7 @@ class _RochaPlusAppState extends State<RochaPlusApp> {
                     })
                   : SubscriptionGate(
                       uid: controller.account!.uid,
+                      checkAccess: SubscriptionAccess.check,
                       homeBuilder: (_) => HomeScreen(
                         accountUid: controller.account!.uid,
                         onSignOut: () async {

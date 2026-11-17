@@ -16,6 +16,7 @@ import 'live_tv_screen.dart';
 import 'adaptive_player_screen.dart';
 import 'channel_preview_screen.dart';
 import 'subscription_screen.dart';
+import '../ads/external_shortcuts.dart';
 
 class HomeScreen extends StatefulWidget {
   final ChannelRepository? repository;
@@ -253,15 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final wide = constraints.maxWidth >= 900;
-      final live = channels
-          .where(
-            (c) =>
-                isFeaturedLiveChannel(c) &&
-                !repository.isBlocked(c) &&
-                !repository.isQuarantined(c.url),
-          )
-          .take(10)
-          .toList();
+      final live = homeHighlights(channels.where(
+        (c) => !repository.isBlocked(c) && !repository.isQuarantined(c.url),
+      ));
       final saved = channels
           .where(
             (c) =>
@@ -447,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     SliverToBoxAdapter(
                       child: _row(
-                        'SBT em destaque',
+                        'Em destaque',
                         live,
                         () => _open('TV ao Vivo'),
                       ),
@@ -580,13 +575,15 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
     with WidgetsBindingObserver {
   static const autoAdvanceInterval = Duration(seconds: 6);
   static const transitionDuration = Duration(milliseconds: 400);
-  static const initialPage =
-      3001; // Middle item (Home), with room for backward swipes.
+  // Owner order (16/11/2026): Amambai, Ganhe BR, Rocha+ hero, then the existing
+  // banners in their original sequence. Starts on Amambai, with room to swipe back.
+  static const itemCount = 5;
+  static const initialPage = 3000;
 
   late final PageController controller;
   Timer? _autoTimer;
   int currentPage = initialPage;
-  int selected = 1;
+  int selected = 0;
   bool _dragging = false;
   bool _appActive = true;
 
@@ -688,32 +685,34 @@ class _FeaturedCarouselState extends State<_FeaturedCarousel>
             controller: controller,
             onPageChanged: (value) => setState(() {
               currentPage = value;
-              selected = value % 3;
+              selected = value % itemCount;
             }),
             itemBuilder: (context, page) => AnimatedPadding(
               duration: const Duration(milliseconds: 180),
               padding: EdgeInsets.fromLTRB(
                 5,
-                selected == page % 3 ? 0 : 20,
+                selected == page % itemCount ? 0 : 20,
                 5,
-                selected == page % 3 ? 0 : 20,
+                selected == page % itemCount ? 0 : 20,
               ),
-              child: switch (page % 3) {
-                0 => _FeatureCategory(
-                  key: const ValueKey('feature-sports'),
-                  icon: Icons.sports_soccer_outlined,
-                  label: 'Esportes ao vivo',
-                  onTap: () => widget.onOpen('Esportes'),
-                ),
-                1 => _OfficialHero(
+              child: switch (page % itemCount) {
+                0 => ExternalShortcutBanner(shortcut: externalShortcuts[0]),
+                1 => ExternalShortcutBanner(shortcut: externalShortcuts[1]),
+                2 => _OfficialHero(
                   wide: widget.wide,
                   onWatch: () => widget.onOpen('TV ao Vivo'),
                 ),
-                _ => _FeatureCategory(
+                3 => _FeatureCategory(
                   key: const ValueKey('feature-kids'),
                   icon: Icons.toys_outlined,
                   label: 'Espaço infantil',
                   onTap: () => widget.onOpen('Infantil'),
+                ),
+                _ => _FeatureCategory(
+                  key: const ValueKey('feature-sports'),
+                  icon: Icons.sports_soccer_outlined,
+                  label: 'Esportes ao vivo',
+                  onTap: () => widget.onOpen('Esportes'),
                 ),
               },
             ),

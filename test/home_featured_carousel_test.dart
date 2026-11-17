@@ -28,24 +28,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('home-featured-carousel')), findsOneWidget);
-      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tv-galaxy-background')),
-        size.width >= 900 ? findsOneWidget : findsNothing);
+      // Owner order: Amambai first, Ganhe BR second, then the official Rocha+ hero.
+      expect(find.byKey(const ValueKey('shortcut-amambai-noticias')), findsOneWidget);
       expect(find.text('Explore o Rocha+'), findsWidgets);
+      // Moved, not duplicated: the old 'Atalhos' row is gone from Home.
+      expect(find.text('Atalhos', skipOffstage: false), findsNothing);
       expect(tester.takeException(), isNull);
 
       // Rotates without input every six seconds, including the last-to-first loop.
-      await tester.pump(const Duration(seconds: 6));
-      await tester.pumpAndSettle();
-      expect(find.text('Espaço infantil'), findsOneWidget);
-
-      await tester.pump(const Duration(seconds: 6));
-      await tester.pumpAndSettle();
-      expect(find.text('Esportes ao vivo'), findsOneWidget);
-
-      await tester.pump(const Duration(seconds: 6));
-      await tester.pumpAndSettle();
+      Future<void> next() async {
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+      }
+      await next();
+      expect(find.byKey(const ValueKey('shortcut-ganhe-br')), findsOneWidget);
+      await next();
       expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+      expect(find.byKey(const ValueKey('tv-galaxy-background')),
+        size.width >= 900 ? findsOneWidget : findsNothing);
+      await next();
+      expect(find.text('Espaço infantil'), findsOneWidget);
+      await next();
+      expect(find.text('Esportes ao vivo'), findsOneWidget);
+      await next();
+      expect(find.byKey(const ValueKey('shortcut-amambai-noticias')), findsOneWidget);
 
       // Manual arrows continue working at every position and restart the interval.
       await tester.tap(find.byTooltip('Destaque anterior'));
@@ -53,7 +59,7 @@ void main() {
       expect(find.text('Esportes ao vivo'), findsOneWidget);
       await tester.tap(find.byTooltip('Próximo destaque'));
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+      expect(find.byKey(const ValueKey('shortcut-amambai-noticias')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

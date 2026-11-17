@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -343,5 +344,46 @@ void main() {
         remoteClient: receiver, delay: (_) async {}),
         throwsA(isA<CastConfirmationTimeout>()));
     expect(receiver.plays, 0);
+  });
+
+  group('resolveContentType', () {
+    final globoLike = Uri.parse('http://203.0.113.10:14173/');
+    test('continuous MPEG-TS without extension is not declared as HLS', () async {
+      expect(await CastChannelLoader.resolveContentType(globoLike,
+          probe: (_) async => 'video/mp2t'), 'video/mp2t');
+    });
+    test('probe failure or unknown type keeps HLS', () async {
+      expect(await CastChannelLoader.resolveContentType(globoLike,
+          probe: (_) async => throw StateError('offline')),
+          'application/x-mpegURL');
+      expect(await CastChannelLoader.resolveContentType(globoLike,
+          probe: (_) async => null), 'application/x-mpegURL');
+      expect(await CastChannelLoader.resolveContentType(globoLike,
+          probe: (_) async => 'application/vnd.apple.mpegurl'),
+          'application/x-mpegURL');
+    });
+    test('real probe reads headers of an endless TS stream and returns', () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      server.listen((request) {
+        request.response.headers.contentType = ContentType('video', 'mp2t');
+        final packet = List<int>.filled(188, 0xff)..[0] = 0x47;
+        Timer.periodic(const Duration(milliseconds: 5), (t) {
+          try { request.response.add(packet); } catch (_) { t.cancel(); }
+        });
+      });
+      final live = Uri.parse('http://127.0.0.1:${server.port}/');
+      expect(await CastChannelLoader.resolveContentType(live)
+          .timeout(const Duration(seconds: 3)), 'video/mp2t');
+    });
+    test('known extensions are never probed', () async {
+      var probed = false;
+      Future<String?> probe(Uri _) async { probed = true; return 'video/mp2t'; }
+      expect(await CastChannelLoader.resolveContentType(uri, probe: probe),
+          'application/x-mpegURL');
+      expect(await CastChannelLoader.resolveContentType(
+          Uri.parse('https://example.test/a.mp4'), probe: probe), 'video/mp4');
+      expect(probed, isFalse);
+    });
   });
 }

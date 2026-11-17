@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
+import 'package:http/http.dart' as http;
 
 import '../live/channel.dart';
 import '../auth/playback_permission.dart';
@@ -22,7 +23,56 @@ class CastChannelLoader {
     return 'application/x-mpegURL';
   }
 
+  static bool _hasKnownExtension(Uri uri) {
+    final path = uri.path.toLowerCase();
+    return const ['.m3u8', '.m3u', '.mpd', '.webm', '.mp4', '.m4v']
+        .any(path.endsWith);
+  }
+
+  /// Extensionless URLs may be a continuous MPEG-TS stream (e.g. the Globo
+  /// card, `video/mp2t`) rather than HLS. Declaring such a stream as HLS makes
+  /// the receiver reject it, so the server's Content-Type is read first. Any
+  /// probe failure keeps the previous HLS assumption unchanged.
+  static Future<String> resolveContentType(Uri uri,
+      {Future<String?> Function(Uri)? probe}) async {
+    final guessed = contentType(uri);
+    if (_hasKnownExtension(uri) ||
+        (uri.scheme != 'http' && uri.scheme != 'https')) {
+      return guessed;
+    }
+    String? header;
+    try {
+      header = await (probe ?? _probeContentType)(uri)
+          .timeout(const Duration(seconds: 4));
+    } catch (_) {
+      return guessed;
+    }
+    final mime = header?.split(';').first.trim().toLowerCase();
+    if (mime == 'video/mp2t' || mime == 'video/mpeg') return 'video/mp2t';
+    return guessed;
+  }
+
+  static Future<String?> _probeContentType(Uri uri) async {
+    final client = http.Client();
+    // A server that accepts but never sends headers must not keep the socket
+    // open after resolveContentType has given up: closing aborts send().
+    final abort = Timer(const Duration(seconds: 4), client.close);
+    try {
+      final response = await client.send(http.Request('GET', uri));
+      final type = response.headers['content-type'];
+      // Live streams never end: drop the body as soon as headers arrive.
+      unawaited(response.stream.listen((_) {}).cancel());
+      return response.statusCode >= 200 && response.statusCode < 300
+          ? type
+          : null;
+    } finally {
+      abort.cancel();
+      client.close();
+    }
+  }
+
   static Future<void> loadAndConfirm(Channel channel, Uri uri, {
+    String? mediaType,
     PlaybackPermit? permit,
     GoogleCastRemoteMediaClientPlatformInterface? remoteClient,
     Future<void> Function(Duration)? delay,
@@ -35,7 +85,7 @@ class CastChannelLoader {
     final media = GoogleCastMediaInformation(
       contentId: uri.toString(),
       contentUrl: uri,
-      contentType: contentType(uri),
+      contentType: mediaType ?? contentType(uri),
       streamType: CastMediaStreamType.live,
       metadata: GoogleCastMovieMediaMetadata(title: channel.name),
     );
@@ -154,8 +204,10 @@ class CastChannelLoader {
         throw CastFailure(CastFailureKind.disconnected);
       }
     }
+    final mediaType = await resolveContentType(uri);
     try {
-      await loadAndConfirm(channel, uri, permit: permit,
+      ensureCurrent();
+      await loadAndConfirm(channel, uri, mediaType: mediaType, permit: permit,
           ensureCurrent: ensureCurrent);
       return uri.toString();
     } catch (error) {
@@ -163,7 +215,7 @@ class CastChannelLoader {
       // Lack of confirmation is inconclusive: do not interrupt a possibly
       // loading receiver with a second LOAD through the relay.
       if (error is! CastFailure || error.kind != CastFailureKind.receiver ||
-          contentType(uri) != 'application/x-mpegURL' ||
+          mediaType != 'application/x-mpegURL' ||
           !device.isOnLocalNetwork) {
         rethrow;
       }

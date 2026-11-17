@@ -13,13 +13,9 @@ void main() {
       await tester.pumpWidget(MaterialApp(home: SubscriptionScreen(
         accountUid: 'A', verifyAccess: (_) async => result)));
       await tester.pumpAndSettle();
-      if (reason == 'trial') {
-        expect(find.byType(AlertDialog), findsOneWidget);
-        await tester.tap(find.text('Continuar'));
-        await tester.pumpAndSettle();
-      } else {
-        expect(find.byType(AlertDialog), findsNothing);
-      }
+      // First-access welcome belongs to Home (SubscriptionGate), never here.
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(Dialog), findsNothing);
       expect(find.text(result.label), findsOneWidget);
       expect(find.textContaining('Validade informada'), findsNothing);
     });

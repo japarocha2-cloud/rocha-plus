@@ -31,7 +31,10 @@ flutter:
   uses-material-design: true
   assets:
     - branding/c7/
+    - branding/lab/
+    - branding/shortcuts/
     - branding/rocha_plus_icon.webp
+    - branding/trial_welcome_art.jpg
     - branding/dashboard-reference.png
     - branding/cast-reference.png
     - branding/home-tv-galaxy.png

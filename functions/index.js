@@ -46,9 +46,14 @@ exports.entitlement = onRequest({region: 'southamerica-east1', cors: false,
     const trialMs = data.trialUntil?.toMillis?.() ?? 0;
     const paidMs = data.paidUntil?.toMillis?.() ?? 0;
     const allowed = trialMs > nowMs || paidMs > nowMs;
+    const reason = paidMs > nowMs ? 'paid' : trialMs > nowMs ? 'trial' : 'expired';
+    // Display-only contract: the stored expiry of the reported state and the
+    // server clock, so clients can count down without trusting the device clock.
+    const expiresAtMs = reason === 'paid' ? paidMs : reason === 'trial' ? trialMs
+      : Math.max(trialMs, paidMs);
     // No payment link, paid status or secrets are accepted from the client.
-    return res.status(200).json({uid, allowed,
-      reason: paidMs > nowMs ? 'paid' : trialMs > nowMs ? 'trial' : 'expired'});
+    return res.status(200).json({uid, allowed, reason,
+      ...(expiresAtMs > 0 ? {expiresAtMs} : {}), serverTimeMs: nowMs});
   } catch (error) {
     console.error('Entitlement query failed', error?.code || 'unknown');
     return res.status(503).json({allowed: false});

@@ -1,0 +1,1478 @@
+{
+ "schema": "rocha.lab.presentation.v1",
+ "baseSelectionSha256": "9ef8d0d50091433d4670f5518924610980a46fc0d4e3eae627e811ad4949da60",
+ "order": [
+  "TV ao Vivo",
+  "Esportes",
+  "Infantil",
+  "Notícias",
+  "Documentários",
+  "Culinária",
+  "Educação",
+  "Comédia",
+  "Filmes/Séries",
+  "PET",
+  "Outros",
+  "Não testados"
+ ],
+ "rows": {
+  "00db2059c2e11146": {
+   "category": "Outros"
+  },
+  "02111c33026c9433": {
+   "category": "Filmes/Séries"
+  },
+  "0235082c84908d20": {
+   "category": "TV ao Vivo"
+  },
+  "0259a3a00a9cbcd7": {
+   "category": "Não testados"
+  },
+  "0292fa571eeddb0c": {
+   "category": "Outros"
+  },
+  "03370c6f40b9a471": {
+   "category": "TV ao Vivo"
+  },
+  "038aa03d4b081342": {
+   "category": "Filmes/Séries"
+  },
+  "04e9c0b6f5171a89": {
+   "category": "Notícias"
+  },
+  "0556e5c7c245c6de": {
+   "category": "Não testados"
+  },
+  "0626466bce3502dd": {
+   "category": "Notícias"
+  },
+  "066135aaa8d4504f": {
+   "category": "Não testados"
+  },
+  "069b8d119e368efe": {
+   "category": "TV ao Vivo"
+  },
+  "06d0174691512ae8": {
+   "category": "TV ao Vivo"
+  },
+  "07aad0a3b7b92106": {
+   "category": "Outros"
+  },
+  "07f61cf5c3469338": {
+   "category": "Não testados"
+  },
+  "0820f48eeeab62b9": {
+   "category": "Outros"
+  },
+  "088d5ca185b39a32": {
+   "category": "Outros"
+  },
+  "090eab594dd61365": {
+   "category": "Outros"
+  },
+  "091aa486d70fa7d2": {
+   "category": "Outros"
+  },
+  "0a25394ec724c5e1": {
+   "category": "Não testados"
+  },
+  "0a32f09ce565258a": {
+   "category": "Outros"
+  },
+  "0b65805293e77649": {
+   "category": "Esportes"
+  },
+  "0ca2de5b604c16e1": {
+   "category": "Comédia"
+  },
+  "0cb74e6895eabd2b": {
+   "category": "TV ao Vivo"
+  },
+  "0ccb420a300a49ab": {
+   "category": "Outros"
+  },
+  "0cd339229bb6a41e": {
+   "category": "Outros"
+  },
+  "0cd58cfeb6d6bbdb": {
+   "category": "TV ao Vivo"
+  },
+  "0fa160448d54cd94": {
+   "category": "Esportes"
+  },
+  "0fcb6e3039905d4b": {
+   "category": "Outros"
+  },
+  "105f0789d8aff291": {
+   "category": "Outros"
+  },
+  "106330ce010be4b9": {
+   "category": "Educação"
+  },
+  "113002c998414f10": {
+   "category": "Esportes"
+  },
+  "118dd281fa2f9a9c": {
+   "category": "TV ao Vivo"
+  },
+  "11dbffabbd31e21f": {
+   "category": "Notícias"
+  },
+  "1201faa3be41ce5a": {
+   "category": "Outros"
+  },
+  "122f2474672fa65f": {
+   "category": "Não testados"
+  },
+  "126413e85b6b50c2": {
+   "category": "TV ao Vivo"
+  },
+  "12817064bb9bd5b3": {
+   "category": "Outros"
+  },
+  "129f5e4a3c78ac2c": {
+   "category": "Não testados"
+  },
+  "1362e59e24bdda60": {
+   "category": "TV ao Vivo"
+  },
+  "13e4b22d6cab6a39": {
+   "category": "Não testados"
+  },
+  "14d9157c8ef17829": {
+   "category": "Outros"
+  },
+  "153d6a94888ad19f": {
+   "category": "Notícias"
+  },
+  "15455b9490d67221": {
+   "category": "Outros"
+  },
+  "15d10fc7ca212d73": {
+   "category": "Notícias"
+  },
+  "1622a46480be5701": {
+   "category": "Outros"
+  },
+  "16e8efbd6eefee73": {
+   "category": "Filmes/Séries"
+  },
+  "171e5aed0ae0f2c6": {
+   "category": "Outros"
+  },
+  "17dc8dbe8f49f77f": {
+   "category": "Outros"
+  },
+  "192497f0d59c8aa2": {
+   "category": "TV ao Vivo"
+  },
+  "192a5265a7865caf": {
+   "category": "Outros"
+  },
+  "19e751d183300525": {
+   "category": "Outros"
+  },
+  "1a2ebe3f2bd30f0e": {
+   "category": "Esportes"
+  },
+  "1acc2615c69fbee5": {
+   "category": "TV ao Vivo"
+  },
+  "1af1291f69b7f73f": {
+   "category": "Educação"
+  },
+  "1c455e4bbb0b12a1": {
+   "category": "Outros"
+  },
+  "1c9c8f3b8fad93f4": {
+   "category": "Outros"
+  },
+  "1d72b74714b3aa89": {
+   "category": "TV ao Vivo"
+  },
+  "1e5f7041e17dba33": {
+   "category": "Não testados"
+  },
+  "1f0c78c141d9d600": {
+   "category": "Outros",
+   "hidden": true
+  },
+  "1f53a07901654a83": {
+   "category": "Filmes/Séries"
+  },
+  "1fa57528b46d4d35": {
+   "category": "TV ao Vivo"
+  },
+  "1fbe658f43891694": {
+   "category": "TV ao Vivo"
+  },
+  "2003df644ff5cecb": {
+   "category": "Não testados"
+  },
+  "200d7a95eb7acfb1": {
+   "category": "Outros"
+  },
+  "20da767db322373f": {
+   "category": "TV ao Vivo"
+  },
+  "214c7ff55f51bfc2": {
+   "category": "TV ao Vivo"
+  },
+  "218414e715392440": {
+   "category": "TV ao Vivo"
+  },
+  "21c496719dc10ec8": {
+   "category": "Não testados"
+  },
+  "21debcac585e6209": {
+   "category": "TV ao Vivo"
+  },
+  "21e7fcd262db4dc7": {
+   "category": "Filmes/Séries"
+  },
+  "2224e819bd8fbee7": {
+   "category": "Filmes/Séries"
+  },
+  "22f401f9f99436e1": {
+   "category": "TV ao Vivo"
+  },
+  "234129f5fff04bf0": {
+   "category": "Notícias"
+  },
+  "269995e886adbe63": {
+   "category": "TV ao Vivo"
+  },
+  "26f34869a8ee67dc": {
+   "category": "Outros"
+  },
+  "271ede56ea454b5f": {
+   "category": "Outros"
+  },
+  "2753c87b53e5faea": {
+   "category": "Outros"
+  },
+  "27675dcd97034e3a": {
+   "category": "Outros"
+  },
+  "27d017cf26fd0a5e": {
+   "category": "Infantil"
+  },
+  "27ebc29d7fdc639d": {
+   "category": "Filmes/Séries"
+  },
+  "2925ce53c3b34f41": {
+   "category": "Outros"
+  },
+  "29397b75e56ed6b3": {
+   "category": "Comédia"
+  },
+  "293f9d6938d54a1a": {
+   "category": "Filmes/Séries"
+  },
+  "29a267b6d27364cf": {
+   "category": "Documentários"
+  },
+  "2ab4da707f6e7185": {
+   "category": "Não testados"
+  },
+  "2ac4a329bccb79f6": {
+   "category": "Outros"
+  },
+  "2c23308faf76abce": {
+   "category": "TV ao Vivo"
+  },
+  "2c53b607e4239c51": {
+   "category": "Outros"
+  },
+  "2cb2b9506e145147": {
+   "category": "Outros"
+  },
+  "2cedc5160bf0db62": {
+   "category": "Não testados"
+  },
+  "2dfa5e358572d1f6": {
+   "category": "Outros"
+  },
+  "2ead6f4d63d3665c": {
+   "category": "Infantil"
+  },
+  "2f3666e4a3d1dd6d": {
+   "category": "Comédia"
+  },
+  "2fe5147c222ca433": {
+   "category": "Notícias"
+  },
+  "302efb65c52bb517": {
+   "category": "TV ao Vivo"
+  },
+  "3153a531fcb2b000": {
+   "category": "Outros"
+  },
+  "315e3adaa6422470": {
+   "category": "Educação"
+  },
+  "31b23e2e8e5dd63b": {
+   "category": "Educação"
+  },
+  "323a17152dab9fbb": {
+   "category": "TV ao Vivo"
+  },
+  "324310696404960e": {
+   "category": "Notícias"
+  },
+  "327e8e2357b99930": {
+   "category": "Educação"
+  },
+  "32ad65ece6d4626e": {
+   "category": "Educação"
+  },
+  "32ed11638ed60d19": {
+   "category": "Educação"
+  },
+  "3350144ec3d77ec9": {
+   "category": "Esportes"
+  },
+  "33edb9bad3a95f7a": {
+   "category": "TV ao Vivo"
+  },
+  "34ee5787c5b6ca8f": {
+   "category": "Outros"
+  },
+  "3568b990d2d26ced": {
+   "category": "TV ao Vivo"
+  },
+  "356b6f14a33f2938": {
+   "category": "Não testados"
+  },
+  "35bb2641dcb7a824": {
+   "category": "Outros"
+  },
+  "35c30e1c7ad7b9a0": {
+   "category": "Infantil"
+  },
+  "363ee7cf7b8b9558": {
+   "category": "Outros"
+  },
+  "37274945cfb97177": {
+   "category": "Não testados"
+  },
+  "38560fc16082546a": {
+   "category": "TV ao Vivo"
+  },
+  "39fa80eca987ff38": {
+   "category": "PET"
+  },
+  "3a1fc7d52261d56a": {
+   "category": "Outros"
+  },
+  "3a36cf05bdfd156c": {
+   "category": "Não testados"
+  },
+  "3b287c1f6ed0c840": {
+   "category": "Educação"
+  },
+  "3c49ce1c4c3ce38a": {
+   "category": "Filmes/Séries"
+  },
+  "3cc70e5dc395a3e3": {
+   "category": "Filmes/Séries"
+  },
+  "3d2b2372b53ec491": {
+   "category": "TV ao Vivo"
+  },
+  "3d70c7a9730a7211": {
+   "category": "TV ao Vivo"
+  },
+  "3f577e3b51a653f4": {
+   "category": "TV ao Vivo"
+  },
+  "400887943258681d": {
+   "category": "Outros"
+  },
+  "405b3c85d12dc542": {
+   "category": "TV ao Vivo"
+  },
+  "40cc4ddcebbd3302": {
+   "category": "TV ao Vivo"
+  },
+  "4174659cfe6918e7": {
+   "category": "Outros"
+  },
+  "419a3ac60143ecec": {
+   "category": "Documentários"
+  },
+  "42798ca0861f8133": {
+   "category": "TV ao Vivo"
+  },
+  "4285bd9f9f362469": {
+   "category": "Esportes"
+  },
+  "42d127b8da8e7dd8": {
+   "category": "TV ao Vivo"
+  },
+  "42fde7926e21d236": {
+   "category": "Esportes"
+  },
+  "4373232f36205501": {
+   "category": "Esportes"
+  },
+  "43fa467766eda6c4": {
+   "category": "Outros"
+  },
+  "44411e266ff9e0c4": {
+   "category": "TV ao Vivo"
+  },
+  "44535735d4686826": {
+   "category": "Não testados"
+  },
+  "469d4312ff4f66ef": {
+   "category": "Outros"
+  },
+  "46dbeee74c7b110a": {
+   "category": "Outros"
+  },
+  "4728d49bfe1a78eb": {
+   "category": "Notícias"
+  },
+  "4730288c6f7f3ea9": {
+   "category": "Notícias"
+  },
+  "47e64a9d395256ee": {
+   "category": "Outros"
+  },
+  "48526dd66e304c62": {
+   "category": "Não testados"
+  },
+  "48e1ff2c11875f93": {
+   "category": "Não testados"
+  },
+  "48e5a033d5e51441": {
+   "category": "Outros"
+  },
+  "497fb17d8a984e7c": {
+   "category": "Notícias"
+  },
+  "49cbfdf69c75279e": {
+   "category": "TV ao Vivo"
+  },
+  "4aab8ee45cf73591": {
+   "category": "Outros"
+  },
+  "4c8b7058d7050f27": {
+   "category": "TV ao Vivo"
+  },
+  "4c910fe544708aec": {
+   "category": "Esportes"
+  },
+  "4caa1a884a08d7a6": {
+   "category": "Outros"
+  },
+  "4e2e69d5264beb85": {
+   "category": "Comédia"
+  },
+  "4e3388f6f78d5add": {
+   "category": "Outros"
+  },
+  "4e8bfd4392e16e5c": {
+   "category": "TV ao Vivo"
+  },
+  "4f8094731caff5dc": {
+   "category": "Outros"
+  },
+  "5163c846c16866b1": {
+   "category": "TV ao Vivo"
+  },
+  "51ae6e35870aa2bc": {
+   "category": "Outros"
+  },
+  "5251da9de0e21dcf": {
+   "category": "Outros"
+  },
+  "52528e141fe7d9e3": {
+   "category": "TV ao Vivo"
+  },
+  "53857d84808c48e9": {
+   "category": "Não testados"
+  },
+  "53c282ef6910b381": {
+   "category": "Educação"
+  },
+  "54531c576de019f6": {
+   "category": "Filmes/Séries"
+  },
+  "548f575ee3020f4c": {
+   "category": "Não testados"
+  },
+  "556030d1c1d48c0c": {
+   "category": "Educação"
+  },
+  "55d7f9f82658eced": {
+   "category": "Esportes"
+  },
+  "55da9a801a5b897c": {
+   "category": "Outros"
+  },
+  "5696e010fb7a16eb": {
+   "category": "Filmes/Séries"
+  },
+  "56de325908eb3f7d": {
+   "category": "Outros"
+  },
+  "58a412d5563b03c5": {
+   "category": "Outros"
+  },
+  "58ef6442dd1593ee": {
+   "category": "PET"
+  },
+  "596ea11ae651d6f0": {
+   "category": "Infantil"
+  },
+  "59befa1f870fd8b5": {
+   "category": "Educação"
+  },
+  "5b117305063fc69b": {
+   "category": "Outros"
+  },
+  "5b2bf8255ca98e3c": {
+   "category": "Não testados"
+  },
+  "5bbaf4b7bc37fe97": {
+   "category": "Não testados"
+  },
+  "5bfbf59d3827e02d": {
+   "category": "TV ao Vivo"
+  },
+  "5c79a0c383f27423": {
+   "category": "TV ao Vivo"
+  },
+  "5cdb8efa4452789b": {
+   "category": "Outros"
+  },
+  "5d92bf44d8cd8dbb": {
+   "category": "Não testados"
+  },
+  "5e018afa96c529a3": {
+   "category": "Educação"
+  },
+  "5e739d8fe41d841e": {
+   "category": "Notícias"
+  },
+  "5f7f19ffd00a27df": {
+   "category": "Outros"
+  },
+  "604cf0f59fcfcf54": {
+   "category": "Esportes"
+  },
+  "608a04088e25c5e7": {
+   "category": "Outros"
+  },
+  "60e9c6c1ecb18d65": {
+   "category": "Outros"
+  },
+  "613fa4a8bb6e5515": {
+   "category": "Outros"
+  },
+  "621ebb5d40548bc8": {
+   "category": "TV ao Vivo"
+  },
+  "627b4e3b8725d308": {
+   "category": "Esportes"
+  },
+  "649b18c024205cc5": {
+   "category": "Filmes/Séries"
+  },
+  "6522c41891583f27": {
+   "category": "Outros"
+  },
+  "65285975a5ae7b7d": {
+   "category": "Não testados"
+  },
+  "65a6b9611234a01b": {
+   "category": "Outros"
+  },
+  "676d816667e3dbc7": {
+   "category": "Educação"
+  },
+  "67d55869ae6706c7": {
+   "category": "Infantil"
+  },
+  "68925252a915dfcb": {
+   "category": "Educação"
+  },
+  "6918b39fd7d674af": {
+   "category": "Outros"
+  },
+  "6945c28f8a5b5a7a": {
+   "category": "Outros",
+   "url": "https://stmv1.video.brstream.com.br/retrotv/retrotv/playlist.m3u8",
+   "urlSource": "catalog/rl_positives_experimental.json (origin/checkpoint/rl-login6001-approved-20261018): owner confirmed (user_confirmed) 2026-10-18; a URL atual é chunklist de sessão"
+  },
+  "69559ec800695c57": {
+   "category": "TV ao Vivo"
+  },
+  "69b28bfade27311d": {
+   "category": "Outros"
+  },
+  "69b4e4f0111a5755": {
+   "category": "Não testados"
+  },
+  "6a5d393a7b32a2b8": {
+   "category": "Filmes/Séries"
+  },
+  "6a5fb8caec5bf346": {
+   "category": "TV ao Vivo"
+  },
+  "6ad5b4cf37bed8a1": {
+   "category": "Não testados"
+  },
+  "6ae65b51180be295": {
+   "category": "Não testados"
+  },
+  "6bc10a404d9369dd": {
+   "category": "Filmes/Séries"
+  },
+  "6c042c9797a962fc": {
+   "category": "Outros"
+  },
+  "6d184034600e86ad": {
+   "category": "Não testados"
+  },
+  "6e19f305723f59d1": {
+   "category": "Filmes/Séries"
+  },
+  "6e50c639b4494da9": {
+   "category": "Outros"
+  },
+  "6f009b88ae70f618": {
+   "category": "Filmes/Séries"
+  },
+  "6f0e2db739934403": {
+   "category": "TV ao Vivo"
+  },
+  "6f7bfb2854c4aab7": {
+   "category": "Esportes"
+  },
+  "70567c9279af683d": {
+   "category": "Filmes/Séries"
+  },
+  "7159773204e91f92": {
+   "category": "Outros"
+  },
+  "71895ee2dca83d08": {
+   "category": "Outros"
+  },
+  "71ce2b52d480e12d": {
+   "category": "Outros"
+  },
+  "7208c31d7829b70c": {
+   "category": "Não testados"
+  },
+  "729c16cdb5653e84": {
+   "category": "TV ao Vivo"
+  },
+  "735ddadf1f02813c": {
+   "category": "Outros"
+  },
+  "740b60bcc3229815": {
+   "category": "TV ao Vivo"
+  },
+  "74cc925cbdcbe891": {
+   "category": "Outros"
+  },
+  "7677ae2c4aae7677": {
+   "category": "Não testados"
+  },
+  "76a7edc0259161f1": {
+   "category": "Esportes"
+  },
+  "7785b22c82b7a844": {
+   "category": "Não testados"
+  },
+  "77a6d2bdc77c5d75": {
+   "category": "Infantil"
+  },
+  "77b07a6513df30a5": {
+   "category": "Não testados"
+  },
+  "7a5a1dad511142df": {
+   "category": "Não testados"
+  },
+  "7a7a6d5684e6cdba": {
+   "category": "Notícias"
+  },
+  "7a96fb2e61d40f76": {
+   "category": "Filmes/Séries"
+  },
+  "7aa1e71b504e4087": {
+   "category": "Infantil"
+  },
+  "7af666eaa4adc2ba": {
+   "category": "Comédia"
+  },
+  "7b1c9c1e9f05e711": {
+   "category": "Filmes/Séries"
+  },
+  "7c079bf1e761b88e": {
+   "category": "Outros"
+  },
+  "7caabebfdf8723a0": {
+   "category": "Outros"
+  },
+  "7d6514c5b6b3006a": {
+   "category": "Esportes"
+  },
+  "7d7615defcd6b600": {
+   "category": "Esportes"
+  },
+  "7f967ce4779d7f40": {
+   "category": "Esportes"
+  },
+  "7fe07ddf3846d20f": {
+   "category": "Não testados"
+  },
+  "802fafd2af212d4d": {
+   "category": "Não testados"
+  },
+  "8068dfa80fed3353": {
+   "category": "Outros"
+  },
+  "8076b6649f8b4ee7": {
+   "category": "Não testados"
+  },
+  "8115eaf1d20ae07b": {
+   "category": "Não testados"
+  },
+  "8147123cc0e4e60a": {
+   "category": "Outros"
+  },
+  "8166592165159a28": {
+   "category": "Outros"
+  },
+  "82b15c897f2566f4": {
+   "category": "Filmes/Séries"
+  },
+  "8310b66f2ddd0e54": {
+   "category": "Outros"
+  },
+  "832175223c508de3": {
+   "category": "TV ao Vivo"
+  },
+  "84dc21f2e727eee0": {
+   "category": "Notícias"
+  },
+  "850a4e03d4e7c730": {
+   "category": "Infantil"
+  },
+  "850cf61c47be00ea": {
+   "category": "Educação"
+  },
+  "85e6f89abf392ead": {
+   "category": "Outros"
+  },
+  "878885c619802425": {
+   "category": "Não testados"
+  },
+  "8788bc42b944eb7e": {
+   "category": "TV ao Vivo"
+  },
+  "87ccdde74b9fcb19": {
+   "category": "Não testados"
+  },
+  "87e1c771343b248a": {
+   "category": "Infantil"
+  },
+  "8928f13f6e491817": {
+   "category": "Não testados"
+  },
+  "892ddda1a8d09618": {
+   "category": "TV ao Vivo"
+  },
+  "895b647fb91b0134": {
+   "category": "TV ao Vivo"
+  },
+  "8961c4890527a850": {
+   "category": "TV ao Vivo"
+  },
+  "896dac10b8feb1b3": {
+   "category": "TV ao Vivo"
+  },
+  "89863d95cc191b7d": {
+   "category": "Documentários"
+  },
+  "8a3340a7babfe282": {
+   "category": "Educação"
+  },
+  "8a669fc6df65eb4c": {
+   "category": "TV ao Vivo"
+  },
+  "8a9720e47e6f60a6": {
+   "category": "Notícias"
+  },
+  "8b1db8ab3bb8e8f4": {
+   "category": "Outros"
+  },
+  "8b733a6f3013b46a": {
+   "category": "TV ao Vivo"
+  },
+  "8ba09786771f6cea": {
+   "category": "TV ao Vivo"
+  },
+  "8d3488bac8ec3b8d": {
+   "category": "Outros"
+  },
+  "8d3f250b194756b0": {
+   "category": "Outros"
+  },
+  "8fefc2008bf5b999": {
+   "category": "Não testados"
+  },
+  "90715d88e5196d95": {
+   "category": "Outros"
+  },
+  "9113123753ca4610": {
+   "category": "Não testados"
+  },
+  "916f2f91a6e30bc9": {
+   "category": "Não testados"
+  },
+  "91be4bdb46df7305": {
+   "category": "Filmes/Séries"
+  },
+  "91bfce4067fff615": {
+   "category": "Infantil"
+  },
+  "92146c9948770127": {
+   "category": "Filmes/Séries"
+  },
+  "921a984c1234c540": {
+   "category": "Filmes/Séries"
+  },
+  "923f244561aaf807": {
+   "category": "TV ao Vivo"
+  },
+  "9266c9dd3f63e18f": {
+   "category": "Não testados"
+  },
+  "929342d00767cefc": {
+   "category": "TV ao Vivo"
+  },
+  "9334fb0df5dc9b37": {
+   "category": "Outros"
+  },
+  "9342187cda0eb6e0": {
+   "category": "Não testados"
+  },
+  "93c75da1e37ab9d9": {
+   "category": "Infantil"
+  },
+  "944b19c9877f6d7e": {
+   "category": "Outros"
+  },
+  "94ad9d7a2b279d8e": {
+   "category": "TV ao Vivo"
+  },
+  "95ff1bf253e4fbcb": {
+   "category": "TV ao Vivo"
+  },
+  "96ca5805970271e3": {
+   "category": "Não testados"
+  },
+  "97460b9422c5ed3a": {
+   "category": "Outros"
+  },
+  "97494615aecb2a2c": {
+   "category": "Notícias"
+  },
+  "978541fa2e1990cd": {
+   "category": "Outros"
+  },
+  "97a3bcdf35db0e01": {
+   "category": "TV ao Vivo"
+  },
+  "98e550e38bbdba76": {
+   "category": "Outros"
+  },
+  "98fd39a12412cadb": {
+   "category": "Não testados"
+  },
+  "99606a23b67c122b": {
+   "category": "Filmes/Séries"
+  },
+  "99a95615de405d7c": {
+   "category": "TV ao Vivo"
+  },
+  "9a68a4d0c3241f71": {
+   "category": "Não testados"
+  },
+  "9bb2cf266ee0b722": {
+   "category": "TV ao Vivo"
+  },
+  "9cd1797af93cf99a": {
+   "category": "TV ao Vivo"
+  },
+  "9cd9d8badcc83f51": {
+   "category": "Infantil"
+  },
+  "9d3fd29e1e1ca219": {
+   "category": "TV ao Vivo"
+  },
+  "9d9665cdab77f13b": {
+   "category": "Não testados"
+  },
+  "9e547855c190baef": {
+   "category": "Notícias"
+  },
+  "9edace3a72467d6c": {
+   "category": "Outros"
+  },
+  "9ee5b7cb8990cb41": {
+   "category": "Esportes"
+  },
+  "a04e853e69ff2a29": {
+   "category": "Notícias"
+  },
+  "a0ddcd1b54363c15": {
+   "category": "Outros"
+  },
+  "a1212e6bbf4533be": {
+   "category": "Outros"
+  },
+  "a14720527b74081d": {
+   "category": "Infantil"
+  },
+  "a15ba0bbf0d0f4df": {
+   "category": "Outros"
+  },
+  "a212f365c3aeea31": {
+   "category": "Não testados"
+  },
+  "a2e9511bf882d045": {
+   "category": "Infantil"
+  },
+  "a333a67093a88cdd": {
+   "category": "TV ao Vivo"
+  },
+  "a4859819c590481f": {
+   "category": "Educação"
+  },
+  "a50b07d29f7b9921": {
+   "category": "Esportes"
+  },
+  "a514536762265873": {
+   "category": "Outros"
+  },
+  "a57f4dd4373a6cec": {
+   "category": "Não testados"
+  },
+  "a688a7aea800e069": {
+   "category": "Infantil"
+  },
+  "a69790f34f657d12": {
+   "category": "Filmes/Séries"
+  },
+  "a70b83a4607752f2": {
+   "category": "TV ao Vivo"
+  },
+  "a746fae33d6541c2": {
+   "category": "Filmes/Séries"
+  },
+  "a86d923ded374ae9": {
+   "category": "Infantil"
+  },
+  "a98bd22a0d3b22c3": {
+   "category": "Filmes/Séries"
+  },
+  "ab2d8b0e7f3b1d46": {
+   "category": "Outros"
+  },
+  "abddd7c939523e1e": {
+   "category": "Outros"
+  },
+  "ac4fe816d0a710c8": {
+   "category": "Infantil"
+  },
+  "ace64c90926ef92b": {
+   "category": "TV ao Vivo"
+  },
+  "ad0bbe09eb33d488": {
+   "category": "Filmes/Séries"
+  },
+  "afa458c41544bb5c": {
+   "category": "Outros"
+  },
+  "affff0baff856ccf": {
+   "category": "Notícias"
+  },
+  "b0141e3f39b8c5cb": {
+   "category": "Outros"
+  },
+  "b0f7e2d15d85a844": {
+   "category": "Outros"
+  },
+  "b129a4c1401bcf54": {
+   "category": "Outros"
+  },
+  "b190cdfa810b20bd": {
+   "category": "Documentários"
+  },
+  "b26938e979295365": {
+   "category": "TV ao Vivo"
+  },
+  "b39fa90be52325f2": {
+   "category": "TV ao Vivo"
+  },
+  "b3a704c743a238ce": {
+   "category": "Não testados"
+  },
+  "b4d9bd3bdb49292e": {
+   "category": "Outros"
+  },
+  "b5a00c62f11ad0a0": {
+   "category": "Outros"
+  },
+  "b5ec3a16c7c32ec7": {
+   "category": "Outros"
+  },
+  "b64379c6339f3113": {
+   "category": "Filmes/Séries"
+  },
+  "b7995d6a347cad09": {
+   "category": "Não testados"
+  },
+  "b8a7c8ce86525363": {
+   "category": "Não testados"
+  },
+  "b9a393c00653427c": {
+   "category": "Outros"
+  },
+  "b9d01f0fa171a254": {
+   "category": "Filmes/Séries"
+  },
+  "b9dcdd67fbaa6962": {
+   "category": "TV ao Vivo"
+  },
+  "ba130ad3ee6cd886": {
+   "category": "TV ao Vivo"
+  },
+  "ba61ba7c45f6e87c": {
+   "category": "Outros"
+  },
+  "bbcd85cfe695af1d": {
+   "category": "Outros"
+  },
+  "bd1d4419f06d944d": {
+   "category": "Outros"
+  },
+  "bdca25b47ef1583f": {
+   "category": "TV ao Vivo"
+  },
+  "be1384e015d5a620": {
+   "category": "TV ao Vivo"
+  },
+  "be9efc69d6fd9bcd": {
+   "category": "Outros"
+  },
+  "c080e6f47119d331": {
+   "category": "TV ao Vivo"
+  },
+  "c0df50dac2863c21": {
+   "category": "TV ao Vivo"
+  },
+  "c0e0a21fcb9cead2": {
+   "category": "TV ao Vivo"
+  },
+  "c0eb017b1725ba9f": {
+   "category": "Outros"
+  },
+  "c158d9e0af3fd93e": {
+   "category": "TV ao Vivo"
+  },
+  "c17c2ee54259789f": {
+   "category": "PET"
+  },
+  "c1dc7183d16075f1": {
+   "category": "Outros"
+  },
+  "c23ec785498c2334": {
+   "category": "Outros"
+  },
+  "c25ef0320bdddc6a": {
+   "category": "TV ao Vivo"
+  },
+  "c346ff6233f860f1": {
+   "category": "TV ao Vivo"
+  },
+  "c4ba4a2eefaddd01": {
+   "category": "Notícias"
+  },
+  "c514131cd725cf29": {
+   "category": "Outros"
+  },
+  "c62056587a3cd74e": {
+   "category": "Outros"
+  },
+  "c7786e542e0bd7a0": {
+   "category": "Outros"
+  },
+  "c7f978d9f41dbba6": {
+   "category": "TV ao Vivo"
+  },
+  "c8c6441900987a71": {
+   "category": "Não testados"
+  },
+  "c9076b11d7ac7b7c": {
+   "category": "Outros"
+  },
+  "c91b2518ee63d958": {
+   "category": "Filmes/Séries"
+  },
+  "ca06b9a2cf7ca113": {
+   "category": "Outros"
+  },
+  "cb303556afdca1cb": {
+   "category": "TV ao Vivo"
+  },
+  "cc7719acc1ccc79e": {
+   "category": "TV ao Vivo"
+  },
+  "cc9abdddaae1662a": {
+   "category": "Notícias"
+  },
+  "ccd6902b8907623f": {
+   "category": "Outros"
+  },
+  "cd15f828b76fee17": {
+   "category": "TV ao Vivo"
+  },
+  "cdae1c8fb7fe3cc7": {
+   "category": "Notícias"
+  },
+  "ce8a07ab8b2d7174": {
+   "category": "Não testados"
+  },
+  "cea5a18cd1bc08a7": {
+   "category": "Outros"
+  },
+  "cf6d2b9617754b99": {
+   "category": "Outros"
+  },
+  "d01b0e04bafa873d": {
+   "category": "TV ao Vivo"
+  },
+  "d0f420aeb38af30b": {
+   "category": "Outros"
+  },
+  "d11bcd6102852864": {
+   "category": "Filmes/Séries"
+  },
+  "d135cc08226138d4": {
+   "category": "Notícias"
+  },
+  "d18a5478f4039cf1": {
+   "category": "TV ao Vivo"
+  },
+  "d285e2c644fa7715": {
+   "category": "TV ao Vivo"
+  },
+  "d286a5aa9b1fd4af": {
+   "category": "Outros"
+  },
+  "d2e5ea95041d4c80": {
+   "category": "Infantil"
+  },
+  "d3884e33377c97f0": {
+   "category": "Outros"
+  },
+  "d3ac8d1b88b637af": {
+   "category": "Educação"
+  },
+  "d3ec19071405843a": {
+   "category": "Não testados"
+  },
+  "d3ed1656bcfd9d62": {
+   "category": "Outros"
+  },
+  "d3fc94d8cb0653f6": {
+   "category": "Outros"
+  },
+  "d57dae87560cea35": {
+   "category": "Outros"
+  },
+  "d62ba8170c699d5d": {
+   "category": "Não testados"
+  },
+  "d692edd111fce07a": {
+   "category": "Esportes"
+  },
+  "d6cec5ab263393ce": {
+   "category": "Infantil"
+  },
+  "d6e02fc37f5b2855": {
+   "category": "Outros"
+  },
+  "d81a5bdcbc25aabc": {
+   "category": "Não testados"
+  },
+  "d8df038a84adf32a": {
+   "category": "TV ao Vivo"
+  },
+  "d9025b79a323c374": {
+   "category": "Outros"
+  },
+  "d954596c2e2b1162": {
+   "category": "Outros"
+  },
+  "d9d74d0851d72964": {
+   "category": "Culinária"
+  },
+  "d9ee7499251de18c": {
+   "category": "Não testados"
+  },
+  "da4d9e4156aa2afd": {
+   "category": "Outros"
+  },
+  "db32ebb36a130c63": {
+   "category": "Esportes"
+  },
+  "dc8b61647c208089": {
+   "category": "Filmes/Séries"
+  },
+  "de8339b635cf0bf2": {
+   "category": "Outros"
+  },
+  "deb50377b34cf4ab": {
+   "category": "Outros"
+  },
+  "deba9580c76b1125": {
+   "category": "Comédia"
+  },
+  "df65af5350aee3bb": {
+   "category": "Esportes"
+  },
+  "df959aec16bb346f": {
+   "category": "Notícias"
+  },
+  "df9a524fb9488726": {
+   "category": "Não testados"
+  },
+  "e07c956ab9e95424": {
+   "category": "Outros"
+  },
+  "e22123327d19dcaf": {
+   "category": "Outros"
+  },
+  "e2830bb45d7a92b4": {
+   "category": "Filmes/Séries"
+  },
+  "e2903bc7c76244dd": {
+   "category": "TV ao Vivo"
+  },
+  "e3031e49ca680fc6": {
+   "category": "Outros"
+  },
+  "e30ae6da0bc3afc0": {
+   "category": "Notícias"
+  },
+  "e34677bb779ab534": {
+   "category": "Filmes/Séries"
+  },
+  "e3556f89ac84ce8e": {
+   "category": "Outros"
+  },
+  "e5eebd6a25b149b8": {
+   "category": "Notícias"
+  },
+  "e5f4be8f4627d1fd": {
+   "category": "Infantil"
+  },
+  "e5faf87fa23bff8f": {
+   "category": "Outros"
+  },
+  "e652dca60fd1f410": {
+   "category": "Outros"
+  },
+  "e727591f44f18110": {
+   "category": "Esportes"
+  },
+  "e7748eeb2bdb9e50": {
+   "category": "Não testados"
+  },
+  "e778999dc8239684": {
+   "category": "Outros"
+  },
+  "e803d8e3864a7c37": {
+   "category": "Notícias"
+  },
+  "e815a5f42b39a80c": {
+   "category": "Não testados"
+  },
+  "e9369b37b9bdc649": {
+   "category": "TV ao Vivo"
+  },
+  "e94661589159bd2c": {
+   "category": "Esportes"
+  },
+  "e95bbb2ba9c61493": {
+   "category": "Notícias"
+  },
+  "e9ddd73847ddbe44": {
+   "category": "Outros"
+  },
+  "ec75e935a2bdafa4": {
+   "category": "Infantil"
+  },
+  "ed1a45fa7d88c9e8": {
+   "category": "Outros"
+  },
+  "ed3db5c154971539": {
+   "category": "Outros"
+  },
+  "ede258d08b40916d": {
+   "category": "TV ao Vivo"
+  },
+  "ee400df2ebbc1742": {
+   "category": "TV ao Vivo"
+  },
+  "ee55f1810a4b9a81": {
+   "category": "TV ao Vivo"
+  },
+  "eeda3428256cb98b": {
+   "category": "Outros"
+  },
+  "ef77aba53796725b": {
+   "category": "Outros"
+  },
+  "ef8facdd45ad0831": {
+   "category": "Outros"
+  },
+  "ef9acd7964f9d9f2": {
+   "category": "Não testados"
+  },
+  "f076ad520a4cee91": {
+   "category": "Outros"
+  },
+  "f1325836c63eef7c": {
+   "category": "Outros"
+  },
+  "f1aa14ee3d8bf56f": {
+   "category": "Infantil"
+  },
+  "f20966f15f6b6332": {
+   "category": "Outros"
+  },
+  "f2e886650b6486f4": {
+   "category": "Outros"
+  },
+  "f2fa3a81e2682279": {
+   "category": "Outros"
+  },
+  "f3443a2db2bed710": {
+   "category": "Notícias"
+  },
+  "f4aa3c50dca4de00": {
+   "category": "Outros"
+  },
+  "f4ffb48a7934886a": {
+   "category": "Notícias"
+  },
+  "f533321f0f64a078": {
+   "category": "TV ao Vivo"
+  },
+  "f59814a39f5da3a0": {
+   "category": "Outros"
+  },
+  "f5ac205c6528dc39": {
+   "category": "Outros"
+  },
+  "f69f36912a3f2ca8": {
+   "category": "Documentários"
+  },
+  "f6b4f4273f262145": {
+   "category": "Outros"
+  },
+  "f6df6924d2540ce6": {
+   "category": "Infantil"
+  },
+  "f71ff72e35b572bb": {
+   "category": "Educação"
+  },
+  "f937c5624573691a": {
+   "category": "Filmes/Séries"
+  },
+  "f93b938de84a3fc3": {
+   "category": "Infantil"
+  },
+  "f9b563b62ac9b9db": {
+   "category": "Outros"
+  },
+  "f9f568461ea81963": {
+   "category": "Filmes/Séries"
+  },
+  "fa436348923c0535": {
+   "category": "Educação"
+  },
+  "fad26124a5e5d4bd": {
+   "category": "Outros"
+  },
+  "fb2605860cbbe6cb": {
+   "category": "Esportes"
+  },
+  "fb5d82cee7b0ec50": {
+   "category": "Infantil"
+  },
+  "fb846927a2923a77": {
+   "category": "TV ao Vivo"
+  },
+  "fbb04e161af2e375": {
+   "category": "Notícias"
+  },
+  "fbf4b0c1a6e9bb11": {
+   "category": "Não testados"
+  },
+  "fc32f4c9ad26526a": {
+   "category": "Culinária"
+  },
+  "fd18b171d1fc2bda": {
+   "category": "TV ao Vivo"
+  },
+  "fdd319ac3efbdda5": {
+   "category": "Outros"
+  },
+  "fdee5c7adb0f2f11": {
+   "category": "Educação"
+  },
+  "fe1ca920197fbb10": {
+   "category": "Outros"
+  },
+  "fe59f8b08ff77d1d": {
+   "category": "Não testados"
+  },
+  "fe89b9fc771f32a2": {
+   "category": "Não testados"
+  },
+  "feb935eca0d8fa27": {
+   "category": "Não testados"
+  },
+  "fec1fd856880bdd0": {
+   "category": "Não testados"
+  },
+  "ff41194afbef87f2": {
+   "category": "Outros"
+  },
+  "ff6f64e379cc9d1c": {
+   "category": "Não testados"
+  },
+  "lab-cazetv-20261108": {
+   "category": "Esportes"
+  }
+ },
+ "ownerReview": {
+  "sameNameDifferentUrl": [
+   "Trace Brazuca (1080p) / Trace Brazuca HD (1080p)",
+   "Trace Urban HD (1080p) / Trace Urban (1080p)",
+   "RTP Acores SD (504p) [Not 24/7] / RTP Acores (720p) [Not 24/7]",
+   "RTP Noticias (720p) [Not 24/7] / RTP Noticias SD (504p) [Not 24/7]",
+   "EbS (1080p) / EbS+ (1080p)"
+  ]
+ }
+}

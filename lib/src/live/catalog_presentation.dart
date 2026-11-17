@@ -87,6 +87,15 @@ bool isFeaturedLiveChannel(Channel channel) =>
     const {'sbt', 'sbt nacional', 'sbt interior'}
         .contains(channelIdentity(channel.name));
 
+/// Owner-chosen Home highlights (16/11/2026), exactly in this order. Matches the
+/// exact channel identity only (no regional variants), at most one card each.
+const homeHighlightIdentities = ['cazetv', 'sbt nacional', 'rede globo'];
+
+List<Channel> homeHighlights(Iterable<Channel> channels) => [
+      for (final identity in homeHighlightIdentities)
+        ...channels.where((c) => channelIdentity(c.name) == identity).take(1),
+    ];
+
 int _rank(Channel c) {
   final rules = _priority[displayCategory(c.group)] ?? const <String>[];
   final name = channelIdentity(c.name);

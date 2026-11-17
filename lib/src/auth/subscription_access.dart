@@ -10,12 +10,38 @@ class SubscriptionAccessResult {
   final bool allowed;
   final String? reason;
   final DateTime? expiresAt;
+  /// Server clock when the answer was produced, and the device clock when it
+  /// arrived. Their difference corrects a wrong device clock in countdowns.
+  final DateTime? serverTime;
+  final DateTime? receivedAt;
 
   const SubscriptionAccessResult({
     required this.uid, required this.allowed, this.reason, this.expiresAt,
+    this.serverTime, this.receivedAt,
   });
 
-  static SubscriptionAccessResult? fromPayload(Object? payload, String uid) {
+  // Epoch milliseconds accepted from the server only within a sane window.
+  static DateTime? _epoch(Object? raw) {
+    if (raw is! int) return null;
+    final min = DateTime.utc(2020).millisecondsSinceEpoch;
+    final max = DateTime.utc(2100).millisecondsSinceEpoch;
+    if (raw < min || raw > max) return null;
+    return DateTime.fromMillisecondsSinceEpoch(raw, isUtc: true);
+  }
+
+  /// Server-confirmed time left, measured on the server clock. Null when the
+  /// server did not supply an expiry; never invented locally.
+  Duration? remaining(DateTime deviceNow) {
+    final end = expiresAt;
+    if (end == null) return null;
+    final offset = (serverTime != null && receivedAt != null)
+        ? serverTime!.difference(receivedAt!)
+        : Duration.zero;
+    return end.difference(deviceNow.toUtc().add(offset));
+  }
+
+  static SubscriptionAccessResult? fromPayload(Object? payload, String uid,
+      {DateTime Function()? clock}) {
     if (payload is! Map<String, dynamic> || payload['uid'] != uid ||
         payload['allowed'] is! bool) {
       return null;
@@ -45,8 +71,12 @@ class SubscriptionAccessResult {
         expiresAt = DateTime.tryParse(raw)?.toUtc();
       }
     }
+    // Numeric contract (expiresAtMs/serverTimeMs) wins over the legacy string.
+    if (reason != null) expiresAt = _epoch(payload['expiresAtMs']) ?? expiresAt;
     return SubscriptionAccessResult(
-        uid: uid, allowed: allowed, reason: reason, expiresAt: expiresAt);
+        uid: uid, allowed: allowed, reason: reason, expiresAt: expiresAt,
+        serverTime: _epoch(payload['serverTimeMs']),
+        receivedAt: (clock ?? DateTime.now)().toUtc());
   }
 
   String get label => switch (reason) {
@@ -98,4 +128,17 @@ class SubscriptionAccess {
       return null;
     }
   }
+}
+
+/// "X dias, XX horas e XX minutos restantes" (whole minutes, never rounded up).
+String remainingLabel(Duration left) {
+  if (left <= Duration.zero) return 'Teste gratuito encerrado';
+  if (left < const Duration(minutes: 1)) return 'Menos de 1 minuto restante';
+  final days = left.inDays;
+  final hours = left.inHours % 24;
+  final minutes = left.inMinutes % 60;
+  String two(int v) => v.toString().padLeft(2, '0');
+  return '$days ${days == 1 ? 'dia' : 'dias'}, ${two(hours)} '
+      '${hours == 1 ? 'hora' : 'horas'} e ${two(minutes)} '
+      '${minutes == 1 ? 'minuto' : 'minutos'} restantes';
 }

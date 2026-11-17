@@ -13,6 +13,7 @@ import 'adaptive_player_screen.dart';
 import 'channel_preview_screen.dart';
 import 'player_lab_screen.dart';
 import '../widgets/rocha_channel_card.dart';
+import '../live/lab_presentation_overlay.dart';
 
 class LiveTvScreen extends StatefulWidget {
   final String initialGroup;
@@ -148,7 +149,13 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final preferredGroups = widget.laboratoryFeatures
+    final preferredGroups = LabPresentationOverlay.enabled &&
+            C7SelectedCatalog.selectionAsset == 'branding/c7/selection.json'
+        ? LabPresentationOverlay.agreedOrder
+        // Validated C7 candidate: keep the C7 category order.
+        : C7SelectedCatalog.selectionAsset != 'branding/c7/selection.json'
+        ? labCategories
+        : widget.laboratoryFeatures
         ? (C7CatalogPolicy.enabled ? labCategories : labCategories.map(repositoryCategory).toList())
         : ['TV aberta', 'Esportes', 'Notícias', 'Infantil', 'Geral'];
     final available = channels.map((c) => c.group).toSet();

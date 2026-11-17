@@ -217,6 +217,27 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('expired access keeps "Minha assinatura" and rechecks on return', (tester) async {
+    var allowed = false;
+    var checks = 0;
+    Future<bool> verify(String _) async { checks++; return allowed; }
+    await tester.pumpWidget(gateApp(verify));
+    await flush(tester);
+    expect(find.textContaining('Acesso não liberado'), findsOneWidget);
+    await tester.tap(find.text('Minha assinatura'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Acesso não liberado'), findsNothing);
+    // Renewal confirmed by the server while the subscription screen is open.
+    allowed = true;
+    final before = checks;
+    tester.state<NavigatorState>(find.byType(Navigator).last).pop();
+    await flush(tester);
+    expect(checks, greaterThan(before));
+    expect(find.text('Abrir player one'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('expiration removes fullscreen route and disposes its actual controller', (tester) async {
     var allowed = true;
     Future<bool> verify(String _) async => allowed;
