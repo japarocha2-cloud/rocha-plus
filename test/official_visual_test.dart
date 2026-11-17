@@ -15,6 +15,15 @@ import 'package:rocha_plus/src/screens/cast_control_screen.dart';
 import 'package:rocha_plus/src/screens/live_tv_screen.dart';
 import 'package:rocha_plus/src/theme/rocha_theme.dart';
 
+/// Carousel opens on AMAMBAI NOTÍCIAS; two "next" steps reach the official hero.
+Future<void> showOfficialHero(WidgetTester tester) async {
+  for (var i = 0; i < 2; i++) {
+    await tester.tap(find.byTooltip('Próximo destaque'));
+    await tester.pumpAndSettle();
+  }
+  expect(find.byKey(const ValueKey('official-hero')), findsOneWidget);
+}
+
 void main() {
   setUpAll(() async {
     final root = Platform.environment['FLUTTER_ROOT'];
@@ -70,6 +79,8 @@ void main() {
         await precacheImage(const AssetImage('branding/rocha-wordmark-antennas.webp'), context);
       });
       await tester.pumpAndSettle();
+      // Approved carousel order (16/11/2026): Amambai, Ganhe BR, then the official hero.
+      await showOfficialHero(tester);
       if (size.width == 430 || size.width == 1920) {
         await capture(tester, 'home-${size.width.toInt()}');
       }
@@ -126,6 +137,10 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(MaterialApp(home: HomeScreen(repository: repo())));
     await tester.pumpAndSettle();
+    await showOfficialHero(tester);
+    // The remote lands on the hero's watch button, then presses Enter.
+    Focus.of(tester.element(find.text('ASSISTIR AGORA'))).requestFocus();
+    await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(find.byType(LiveTvScreen), findsOneWidget);

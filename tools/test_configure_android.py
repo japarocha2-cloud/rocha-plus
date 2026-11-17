@@ -32,7 +32,9 @@ class AndroidConfigurationTest(unittest.TestCase):
             allowed.write_text("example.com\n192.0.2.15\n", encoding="utf-8")
             gradle = root / "android/app/build.gradle.kts"
             gradle.write_text('android { namespace = "com.example.rocha_plus"\n'
-                              'defaultConfig { applicationId = "com.example.rocha_plus" } }',
+                              'defaultConfig { applicationId = "com.example.rocha_plus"\n'
+                              '        versionCode = flutter.versionCode\n'
+                              '        versionName = flutter.versionName } }',
                               encoding="utf-8")
             with patch.dict('os.environ', {'GITHUB_HEAD_REF': branch}):
                 configure(root)
@@ -45,6 +47,9 @@ class AndroidConfigurationTest(unittest.TestCase):
             self.assertNotIn('applicationIdSuffix = ".lab"', configured_gradle)
             self.assertNotIn("com.example.rocha_plus", configured_gradle)
             self.assertEqual(configured_gradle.count('"com.rochaplus.app"'), 2)
+            # Above legacy versionCode 2465/3538 for any run number, applied once (idempotent).
+            self.assertEqual(configured_gradle.count('versionCode = flutter.versionCode + 3000'), 1)
+            self.assertNotIn('versionCode = flutter.versionCode\n', configured_gradle)
             self.assertEqual(configured_gradle.count("play-services-cast-framework"), 1)
             self.assertEqual(
                 (root / "android/app/src/main/kotlin/com/example/rocha_plus/MainActivity.kt").read_text(),
@@ -74,6 +79,30 @@ class AndroidConfigurationTest(unittest.TestCase):
                 self.assertEqual(feature.get(attr("required")), "false")
             self.assertEqual((root / "android/app/src/main/res/drawable/rocha_plus_icon.webp").read_bytes(),
                              brand.read_bytes())
+
+    def test_version_offset_handles_crlf_and_refuses_unknown_layout(self):
+        from configure_android import VERSION_CODE_OFFSET
+        self.assertEqual(VERSION_CODE_OFFSET, 3000)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            manifest = root / "android/app/src/main/AndroidManifest.xml"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text('<manifest xmlns:android="http://schemas.android.com/apk/res/android">'
+                                '<application><activity android:name=".MainActivity"><intent-filter>'
+                                '<category android:name="android.intent.category.LAUNCHER"/>'
+                                '</intent-filter></activity></application></manifest>', encoding="utf-8")
+            (root / "branding").mkdir()
+            (root / "branding/rocha_plus_icon.webp").write_bytes(b"x")
+            (root / "tools").mkdir()
+            (root / "tools/MainActivity.kt").write_text("package com.rochaplus.app", encoding="utf-8")
+            (root / "tools/allowed_http_hosts.txt").write_text("example.com\n", encoding="utf-8")
+            gradle = root / "android/app/build.gradle.kts"
+            gradle.write_text('defaultConfig {\r\n        versionCode = flutter.versionCode\r\n}', encoding="utf-8")
+            configure(root)
+            self.assertIn('versionCode = flutter.versionCode + 3000', gradle.read_text(encoding="utf-8"))
+            gradle.write_text('defaultConfig { versionCode = (flutter.versionCode) }', encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                configure(root)
 
 if __name__ == "__main__":
     unittest.main()
