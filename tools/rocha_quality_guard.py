@@ -26,7 +26,19 @@ dart_files = []
 # Historical HTTP stream origins are permitted only in exact, verified LAB data.
 # A modified generated file, source or inventory cannot acquire this exception.
 official_transport_files = set()
-if (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) == "lab/catalogo-unico-oficial-20261108":
+# The release candidate ships the same frozen catalog, so it inherits the same
+# integrity-bound exception (never a blanket one).
+OFFICIAL_CATALOG_BRANCHES = {"lab/catalogo-unico-oficial-20261108", "lab/release-candidate-20261117"}
+# Release selection asset is accepted only byte-for-byte (SHA-256 pinned).
+RELEASE_SELECTION = ("branding/lab/c7_validated_selection.json",
+                     "4e629180b39ca1bd8eace257b935094ea8fcfa317d6be16a5fbe6ce55bfc8ea4")
+current_branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
+if current_branch == "lab/release-candidate-20261117":
+    if hashlib.sha256((ROOT/RELEASE_SELECTION[0]).read_bytes()).hexdigest() == RELEASE_SELECTION[1]:
+        official_transport_files.add(Path(RELEASE_SELECTION[0]))
+    else:
+        issues.append("release selection integrity: SHA-256 mismatch")
+if current_branch in OFFICIAL_CATALOG_BRANCHES:
     from official_catalog.catalog import build, PINS, BASE, SOURCE
     try:
         products = build(ROOT)
@@ -83,7 +95,7 @@ for path in ROOT.rglob("*"):
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
             lab_branch = (
-                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108", "lab/catalogo-unico-oficial-20261108"}
+                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108", "lab/catalogo-unico-oficial-20261108", "lab/release-candidate-20261117"}
                 or (
                     os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
                     and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"
