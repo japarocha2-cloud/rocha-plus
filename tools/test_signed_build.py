@@ -31,7 +31,10 @@ class SignedBuildTest(unittest.TestCase):
                 'ROCHA_KEYSTORE_PASSWORD':'fixture-password', 'ROCHA_KEY_ALIAS':'fixture',
                 'ROCHA_FIREBASE_CONFIG_JSON':json.dumps(config)})
             self.assertEqual(key.read_bytes(), b'fixture')
-            self.assertEqual(json.loads(cfg.read_text()), config | subscription_config({}))
+            identity = {k: v for k, v in config.items() if k.startswith(('ROCHA_FIREBASE_', 'ROCHA_GOOGLE_'))}
+            modes = {'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
+                     'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'}
+            self.assertEqual(json.loads(cfg.read_text()), identity | modes | subscription_config({}))
             self.assertNotIn('getByName("debug")', gradle.read_text())
             self.assertNotIn('fixture-password', gradle.read_text())
 
