@@ -6,6 +6,9 @@ import xml.etree.ElementTree as ET
 
 ANDROID = "http://schemas.android.com/apk/res/android"
 ET.register_namespace("android", ANDROID)
+# Same base as the frozen builds (3000 + run number, e.g. build 538 -> 3538): every new
+# build stays above legacy installations such as versionCode 2465.
+VERSION_CODE_OFFSET = 3000
 
 def attr(name):
     return f"{{{ANDROID}}}{name}"
@@ -78,6 +81,12 @@ def configure(root):
     if gradle.exists():
         text = gradle.read_text(encoding="utf-8")
         text = text.replace('com.example.rocha_plus', 'com.rochaplus.app')
+        # Offset applied in Gradle, so the CI's --build-number (run number) stays untouched.
+        text = re.sub(r'versionCode = flutter\.versionCode[ \t]*(?=\r?\n|$)',
+                      f'versionCode = flutter.versionCode + {VERSION_CODE_OFFSET}', text)
+        if ('flutter.versionCode' in text
+                and f'flutter.versionCode + {VERSION_CODE_OFFSET}' not in text):
+            raise RuntimeError('versionCode offset not applied; legacy installs would reject the update')
         dependency = 'implementation("com.google.android.gms:play-services-cast-framework:21.5.0")'
         if dependency not in text:
             text += "\n dependencies { " + dependency + " }\n"

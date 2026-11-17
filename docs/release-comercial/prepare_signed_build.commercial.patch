@@ -1,0 +1,42 @@
+--- a/tools/prepare_signed_build.py	2026-11-17 14:39:34.081488876 -0300
++++ b/tools/prepare_signed_build.py	2026-11-17 14:39:34.105347869 -0300
+@@ -5,6 +5,7 @@
+ from urllib.parse import urlsplit
+ import ipaddress
+ from pathlib import Path
++from commercial_release_config import commercial_config
+ 
+ def subscription_config(env):
+     enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
+@@ -50,8 +51,16 @@
+         raise ValueError('Projeto Firebase inesperado')
+     if config['ROCHA_FIREBASE_APP_ID'] != '1:977269532083:android:7f7b15eff64a6a443f97c6':
+         raise ValueError('App Firebase inesperado')
+-    # Controlled build modes cannot be injected through the Firebase JSON.
++    # Controlled build modes cannot be injected through the Firebase JSON: keep only
++    # Firebase identity values from it and set every build mode explicitly here.
++    config = {k: config[k] for k in (*required, 'ROCHA_APPLE_ENABLED') if k in config}
++    config.update({'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
++                   'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'})
+     config.update(subscription_config(env))
++    # Paid commercial release (owner-authorized): production entitlement/checkout,
++    # closed C7 catalog pinned by SHA-256. Refuses incomplete or non-production setups.
++    if env.get('ROCHA_COMMERCIAL_RELEASE', 'false') == 'true':
++        config.update(commercial_config(env, root))
+     private = Path(private)
+     private.mkdir(parents=True, exist_ok=True)
+     key = private / 'release.p12'
+--- a/tools/test_signed_build.py	2026-11-17 14:40:31.164637719 -0300
++++ b/tools/test_signed_build.py	2026-11-17 14:40:31.189688712 -0300
+@@ -31,7 +31,10 @@
+                 'ROCHA_KEYSTORE_PASSWORD':'fixture-password', 'ROCHA_KEY_ALIAS':'fixture',
+                 'ROCHA_FIREBASE_CONFIG_JSON':json.dumps(config)})
+             self.assertEqual(key.read_bytes(), b'fixture')
+-            self.assertEqual(json.loads(cfg.read_text()), config | subscription_config({}))
++            identity = {k: v for k, v in config.items() if k.startswith(('ROCHA_FIREBASE_', 'ROCHA_GOOGLE_'))}
++            modes = {'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
++                     'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'}
++            self.assertEqual(json.loads(cfg.read_text()), identity | modes | subscription_config({}))
+             self.assertNotIn('getByName("debug")', gradle.read_text())
+             self.assertNotIn('fixture-password', gradle.read_text())
+ 
