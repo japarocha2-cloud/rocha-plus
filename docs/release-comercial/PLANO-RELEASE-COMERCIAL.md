@@ -37,5 +37,10 @@ LAB Cliente v7 preservados.
    Produção: nenhum teste (exige uma compra real autorizada, de valor mínimo, após o deploy).
 5. **Jurídico/loja.** `docs/launch-checklist.md` todo em aberto (privacidade, termos, direitos das
    transmissões — inclusive a fonte da Rede Globo).
-6. **Testes visuais desatualizados.** 3 falhas conhecidas em `test/official_visual_test.dart`
-   (ordem aprovada dos banners); o CI roda `flutter test` e falharia até o teste ser atualizado.
+6. ~~Testes visuais desatualizados~~ — **resolvido**: `official_visual_test` segue a ordem aprovada
+   do carrossel; suíte Flutter 311/311.
+7. **CI sem job comercial.** O `build.yml` (protegido) precisa repassar `ROCHA_COMMERCIAL_RELEASE`
+   e as duas URLs ao passo de assinatura e rodar `flutter test --dart-define=ROCHA_COMMERCIAL_RELEASE=true`.
+   Sem o patch aplicado, a flag isolada não deve ser usada (o app bloquearia todos por falta de URL).
+8. **`pubspec.lock`.** A cópia local usa o plugin VLC corrigido por caminho (`build/lab-vlc-plugin`)
+   e não foi commitada; o release deve sair do lock do repositório (pacotes com hash verificado).
