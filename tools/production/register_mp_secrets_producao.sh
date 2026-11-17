@@ -40,9 +40,12 @@ read -r -s -p 'MP_WEBHOOK_SECRET da aplicação de produção (entrada oculta): 
 printf '\n'
 read -r -s -p 'Repita o segredo de assinatura (entrada oculta): ' webhook_confirm
 printf '\n'
-[[ -n "$receiving_input" && "$receiving_input" == "$receiving_confirm" ]] || exit 2
-[[ -n "$webhook_input" && "$webhook_input" == "$webhook_confirm" ]] || exit 2
-[[ "$receiving_input" != "$webhook_input" ]] || exit 2
+fail() { printf '%s\n' "$1"; exit 2; }
+receiving_input="${receiving_input//[[:space:]]/}"; receiving_confirm="${receiving_confirm//[[:space:]]/}"
+webhook_input="${webhook_input//[[:space:]]/}"; webhook_confirm="${webhook_confirm//[[:space:]]/}"
+[[ -n "$receiving_input" && "$receiving_input" == "$receiving_confirm" ]] || fail 'Token vazio ou as duas digitações diferem.'
+[[ -n "$webhook_input" && "$webhook_input" == "$webhook_confirm" ]] || fail 'Segredo vazio ou as duas digitações diferem.'
+[[ "$receiving_input" != "$webhook_input" ]] || fail 'Token e segredo de assinatura não podem ser iguais.'
 [[ "$receiving_input" == APP_USR-* ]] || { printf '%s\n' 'Token de produção deve começar com APP_USR-.'; exit 2; }
 unset receiving_confirm webhook_confirm
 
@@ -54,15 +57,24 @@ d = json.load(sys.stdin)
 test = "test_user" in (d.get("tags") or []) or str(d.get("nickname", "")).upper().startswith("TESTUSER")
 print(("TESTE" if test else "REAL") + " " + str(d.get("id", "")))')"
 case "$account" in
-  "REAL "[0-9]*) printf 'Conta recebedora real: %s (use em ROCHA_CHECKOUT_MERCHANT_ID)\n' "${account#REAL }" ;;
+  "REAL "[0-9]*) printf 'Conta recebedora informada pelo Mercado Pago: %s\n' "${account#REAL }" ;;
   *) printf '%s\n' 'Recusado: o token é de usuário de TESTE ou não foi validado no Mercado Pago.'; exit 2 ;;
 esac
 
-gcloud secrets create MP_RECEIVING_ACCESS_TOKEN --project="$TARGET_PROJECT" --replication-policy=automatic --quiet >/dev/null
-gcloud secrets create MP_WEBHOOK_SECRET --project="$TARGET_PROJECT" --replication-policy=automatic --quiet >/dev/null
-printf '%s' "$receiving_input" | gcloud secrets versions add MP_RECEIVING_ACCESS_TOKEN --project="$TARGET_PROJECT" --data-file=- --quiet >/dev/null
+# The test-account heuristic can miss fields: the operator confirms the ID against the
+# Mercado Pago panel (Seu negócio > Dados da conta) before anything is stored.
+read -r -p 'Confira no painel do Mercado Pago e digite o ID da conta recebedora REAL: ' typed_id
+[[ "$typed_id" == "${account#REAL }" ]] || fail 'ID não confere com o token informado. Nada foi gravado.'
+# Idempotent: create only when missing, then add the version right away.
+store() {
+  gcloud secrets describe "$1" --project="$TARGET_PROJECT" >/dev/null 2>&1 \
+    || gcloud secrets create "$1" --project="$TARGET_PROJECT" --replication-policy=automatic --quiet >/dev/null
+  printf '%s' "$2" | gcloud secrets versions add "$1" --project="$TARGET_PROJECT" --data-file=- --quiet >/dev/null
+}
+store MP_RECEIVING_ACCESS_TOKEN "$receiving_input" || fail 'Falha ao gravar MP_RECEIVING_ACCESS_TOKEN; nada mais foi gravado.'
 unset receiving_input
-printf '%s' "$webhook_input" | gcloud secrets versions add MP_WEBHOOK_SECRET --project="$TARGET_PROJECT" --data-file=- --quiet >/dev/null
+store MP_WEBHOOK_SECRET "$webhook_input" || fail 'Falha ao gravar MP_WEBHOOK_SECRET; reexecute para completar (o token já tem versão nova).'
 unset webhook_input
+printf 'Use ROCHA_CHECKOUT_MERCHANT_ID=%s na ativação.\n' "$typed_id"
 printf '%s\n' 'Cadastro concluído. Nenhum IAM, deploy, flag ou registro no Mercado Pago foi alterado.'
 printf '%s\n' 'Checkout e webhook seguem desligados até a ativação autorizada (docs/release-comercial/producao.env.template).'

@@ -1,7 +1,7 @@
 """Build flags for the paid (commercial) official Rocha+ release.
 
-Not wired into CI by itself: the protected tools/prepare_signed_build.py must call
-commercial_config() only after the owner authorizes it (docs/release-comercial/).
+Called by tools/prepare_signed_build.py when the signed CI build is dispatched with
+commercial_release=true (.github/workflows/build.yml).
 It refuses any configuration that would ship an app that blocks every user
 (missing/foreign endpoints) or that carries LAB/experimental switches.
 """

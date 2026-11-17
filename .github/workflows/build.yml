@@ -158,6 +158,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: |
           AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          [ "$(ls build/app/outputs/flutter-apk/*-release.apk | wc -l)" -ge 4 ] || { echo "APKs release ausentes"; exit 1; }
           for apk in build/app/outputs/flutter-apk/*-release.apk; do
             code=$("$AAPT2" dump badging "$apk" | sed -nE "s/^package: name='([^']+)' versionCode='([0-9]+)'.*/\1 \2/p")
             echo "$apk -> $code"
