@@ -5,13 +5,13 @@ test('only infrastructure endpoints are queried and raw response/principal/secre
   const calls=[];
   const r=await probeCredentialPolicy({credentialProject:'rocha-plus',request:async(url,body)=>{
     calls.push({url,body});
-    return {http:200,data:{secret:'FIXTURE_SECRET',principal:'fixture@example.invalid',databaseEdition:'STANDARD',
+    return {http:200,data:{secret:'FIXSEC1',principal:'fixture@example.invalid',databaseEdition:'STANDARD',
       permissions:['datastore.entities.get','datastore.entities.update'],rulesetName:'projects/rocha-plus/rulesets/fixture_rules',
       source:{files:[{content:'FIXTURE_PRIVATE_RULES'}]}}};
   }});
   assert.equal(calls.length,4);assert.equal(r.customerQueries,0);assert.equal(r.documentQueries,0);
   assert.equal(r.iam.writePermissionDetected,true);assert.equal(r.leastPrivilegeConfirmed,false);
-  for(const value of ['FIXTURE_SECRET','fixture@example.invalid','FIXTURE_PRIVATE_RULES'])assert.equal(JSON.stringify(r).includes(value),false);
+  for(const value of ['FIXSEC1','fixture@example.invalid','FIXTURE_PRIVATE_RULES'])assert.equal(JSON.stringify(r).includes(value),false);
   assert(calls.every(c=>!c.url.includes('/documents')&&!c.url.includes('identitytoolkit')&&!c.url.includes('mercadopago')));
 });
 test('unexpected credential project is rejected before any network query',async()=>{

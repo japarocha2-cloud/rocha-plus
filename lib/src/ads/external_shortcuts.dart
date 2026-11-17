@@ -31,7 +31,7 @@ const externalShortcuts = <ExternalShortcut>[
     id: 'ganhe-br',
     title: 'GANHE BR',
     asset: 'branding/shortcuts/ganhe_br.png',
-    url: 'http://www.ganhebr47.com/?r=gml4729',
+    url: 'https://www.ganhebr47.com/?r=gml4729',
   ),
 ];
 

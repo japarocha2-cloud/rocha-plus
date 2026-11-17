@@ -21,9 +21,10 @@ void main() {
   test('order and literal URLs are exactly the owner-approved ones', () {
     expect(externalShortcuts.map((s) => s.title), ['AMAMBAI NOTÍCIAS', 'GANHE BR']);
     expect(externalShortcuts[0].url, 'https://www.amambainoticias.com.br/');
-    expect(externalShortcuts[1].url, 'http://www.ganhebr47.com/?r=gml4729');
+    expect(externalShortcuts[1].url, 'https://www.ganhebr47.com/?r=gml4729');
     expect(externalShortcuts[0].insecure, isFalse);
-    expect(externalShortcuts[1].insecure, isTrue);
+    // Ganhe BR now uses the HTTPS address its own HTTP URL 301-redirects to.
+    expect(externalShortcuts[1].insecure, isFalse);
   });
 
   test('approved art files are vertical 1122x1402 and ratio is preserved', () {
@@ -50,26 +51,15 @@ void main() {
     expect(calls.map((u) => u.toString()), ['https://www.amambainoticias.com.br/']);
   });
 
-  testWidgets('Ganhe BR (HTTP) shows a security warning; Cancel opens nothing', (tester) async {
+  testWidgets('Ganhe BR opens only on user tap, with the literal https URL and no insecure warning', (tester) async {
     final calls = <Uri>[];
     await tester.pumpWidget(host(calls));
+    await tester.pumpAndSettle();
+    expect(calls, isEmpty, reason: 'never opened while building or rendering');
     await tester.tap(find.byKey(const ValueKey('shortcut-ganhe-br')));
     await tester.pumpAndSettle();
-    expect(find.text('Site externo sem criptografia'), findsOneWidget);
-    expect(find.textContaining('HTTP, sem criptografia'), findsOneWidget);
-    await tester.tap(find.text('Cancelar'));
-    await tester.pumpAndSettle();
-    expect(calls, isEmpty);
-  });
-
-  testWidgets('Ganhe BR opens the literal URL only after explicit consent', (tester) async {
-    final calls = <Uri>[];
-    await tester.pumpWidget(host(calls));
-    await tester.tap(find.byKey(const ValueKey('shortcut-ganhe-br')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('shortcut-insecure-continue')));
-    await tester.pumpAndSettle();
-    expect(calls.map((u) => u.toString()), ['http://www.ganhebr47.com/?r=gml4729']);
+    expect(find.text('Site externo sem criptografia'), findsNothing);
+    expect(calls.map((u) => u.toString()), ['https://www.ganhebr47.com/?r=gml4729']);
   });
 
   testWidgets('missing browser / launch failure shows a message', (tester) async {
