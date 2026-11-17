@@ -143,6 +143,11 @@ jobs:
         run: flutter test test/app_release_policy_test.dart --dart-define=ROCHA_EXPERIMENTAL_SUBSCRIPTIONS=true
       - name: Verify commercial (paid) subscription policy
         run: flutter test test/app_release_policy_test.dart test/subscription_gate_test.dart test/subscription_screen_test.dart --dart-define=ROCHA_COMMERCIAL_RELEASE=true
+      - name: Verify app loads only the frozen LAB Cliente catalog (signed-build defines)
+        run: |
+          python3 tools/release_catalog_lock.py
+          SHA=$(python3 -c "import json;print(json.load(open('catalog/official/release-manifest.json'))['sha256'])")
+          flutter test test/release_frozen_catalog_test.dart --dart-define=ROCHA_CLOSED_CATALOG=true --dart-define=ROCHA_C7_SELECTION_ASSET=branding/lab/c7_validated_selection.json --dart-define=ROCHA_C7_CATALOG_SHA256="$SHA"
       - name: Rocha+ Quality Guard (post-tests)
         run: python3 tools/rocha_quality_guard.py
       - name: Build universal APK
@@ -164,6 +169,9 @@ jobs:
             echo "$apk -> $code"
             [ "${code%% *}" = "com.rochaplus.app" ] && [ "${code##* }" -gt 3538 ] || { echo "Pacote ou versionCode invalido"; exit 1; }
           done
+      - name: Verify frozen LAB Cliente catalog in every APK (540, SHA-pinned, no iptv-org import)
+        if: github.event_name == 'workflow_dispatch' && inputs.signed_login
+        run: python3 tools/release_catalog_lock.py build/app/outputs/flutter-apk/*-release.apk
       - name: Verify release evidence
         if: github.event_name == 'workflow_dispatch' && inputs.signed_login
         run: python3 tools/release_evidence.py

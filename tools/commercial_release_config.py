@@ -9,6 +9,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from release_catalog_lock import verify_selection
+
 PRODUCTION_HOST = 'southamerica-east1-rocha-plus.cloudfunctions.net'
 SELECTION_ASSET = 'branding/lab/c7_validated_selection.json'
 # Server-owned prices (functions/checkout.js) and trial (functions/trial_anchor.js).
@@ -33,7 +35,21 @@ def selection_sha256(root):
     data = json.loads(text)
     if data.get('schema') != 'rocha.c7.selection.v1' or not data.get('channels'):
         raise ValueError('seleção C7 do release inválida')
-    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+    digest = hashlib.sha256(text.encode('utf-8')).hexdigest()
+    # Must be byte-identical to the owner-frozen LAB Cliente catalog manifest.
+    manifest = verify_selection(root)
+    if manifest['asset'] != SELECTION_ASSET or manifest['sha256'] != digest:
+        raise ValueError('seleção do release diverge do manifesto congelado')
+    return digest
+
+
+def frozen_catalog_config(root):
+    """Closed, SHA-pinned LAB Cliente catalog for every signed official build."""
+    return {
+        'ROCHA_CLOSED_CATALOG': 'true',
+        'ROCHA_C7_SELECTION_ASSET': SELECTION_ASSET,
+        'ROCHA_C7_CATALOG_SHA256': selection_sha256(root),
+    }
 
 
 def commercial_config(env, root):

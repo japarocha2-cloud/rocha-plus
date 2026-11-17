@@ -19,6 +19,10 @@ class SignedBuildTest(unittest.TestCase):
             gradle = root / 'android/app/build.gradle.kts'
             gradle.parent.mkdir(parents=True)
             gradle.write_text('android {\n    buildTypes {\nrelease { signingConfig = signingConfigs.getByName("debug") }\n}\n}')
+            repo = Path(__file__).resolve().parents[1]
+            for name in ('branding/lab/c7_validated_selection.json', 'catalog/official/release-manifest.json'):
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_bytes((repo / name).read_bytes())
             config = {'ROCHA_FIREBASE_PROJECT_ID':'rocha-plus',
                       'ROCHA_FIREBASE_APP_ID':'1:977269532083:android:7f7b15eff64a6a443f97c6',
                       'ROCHA_FIREBASE_API_KEY':'test', 'ROCHA_FIREBASE_SENDER_ID':'test',
@@ -34,7 +38,11 @@ class SignedBuildTest(unittest.TestCase):
             identity = {k: v for k, v in config.items() if k.startswith(('ROCHA_FIREBASE_', 'ROCHA_GOOGLE_'))}
             modes = {'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
                      'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'}
-            self.assertEqual(json.loads(cfg.read_text()), identity | modes | subscription_config({}))
+            # Every signed build is pinned to the frozen LAB Cliente catalog (never iptv-org).
+            frozen = {'ROCHA_CLOSED_CATALOG': 'true',
+                      'ROCHA_C7_SELECTION_ASSET': 'branding/lab/c7_validated_selection.json',
+                      'ROCHA_C7_CATALOG_SHA256': '4e629180b39ca1bd8eace257b935094ea8fcfa317d6be16a5fbe6ce55bfc8ea4'}
+            self.assertEqual(json.loads(cfg.read_text()), identity | modes | subscription_config({}) | frozen)
             self.assertNotIn('getByName("debug")', gradle.read_text())
             self.assertNotIn('fixture-password', gradle.read_text())
 

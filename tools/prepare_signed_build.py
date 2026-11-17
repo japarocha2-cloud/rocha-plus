@@ -5,7 +5,7 @@ import os
 from urllib.parse import urlsplit
 import ipaddress
 from pathlib import Path
-from commercial_release_config import commercial_config
+from commercial_release_config import commercial_config, frozen_catalog_config
 
 def subscription_config(env):
     enabled = env.get('ROCHA_SUBSCRIPTION_LAB', 'false')
@@ -57,6 +57,10 @@ def prepare(root, private, env):
     config.update({'ROCHA_COMMERCIAL_RELEASE': 'false', 'ROCHA_CENTRAL_RIGHTS': 'false',
                    'ROCHA_FULL_UI_LAB': 'false', 'ROCHA_LAB_PRESENTATION': 'false'})
     config.update(subscription_config(env))
+    # Every signed official build ships the owner-frozen LAB Cliente catalog
+    # (closed, SHA-pinned). Build #744 omitted this outside commercial mode and
+    # imported public iptv-org playlists (912 channels). Never again.
+    config.update(frozen_catalog_config(root))
     # Paid commercial release (owner-authorized): production entitlement/checkout,
     # closed C7 catalog pinned by SHA-256. Refuses incomplete or non-production setups.
     if env.get('ROCHA_COMMERCIAL_RELEASE', 'false') == 'true':

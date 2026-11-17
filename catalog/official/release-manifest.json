@@ -1,0 +1,45 @@
+{
+  "schema": "rocha.release.catalog.lock.v1",
+  "reference": {
+    "package": "com.rochaplus.app.labcliente",
+    "apkSha256": "437eb574c859d62d82b057c4cd4bc23fe03007c2d6be9a3cf450b397389f4cb3",
+    "versionCode": 1,
+    "versionName": "0.1.0",
+    "signerSha256": "76cfdebfa1835af6113c727b6957f8239c9e5ef68c3f8c06daf27e3ab55341c2",
+    "recoveredFrom": "Moto G56 5G (ADB pull), 2026-11-17",
+    "compiledSelectionAsset": "branding/lab/c7_validated_selection.json"
+  },
+  "asset": "branding/lab/c7_validated_selection.json",
+  "sha256": "4e629180b39ca1bd8eace257b935094ea8fcfa317d6be16a5fbe6ce55bfc8ea4",
+  "count": 540,
+  "idsSha256": "5a8e3970d1c9d757cf0db926e0b19cfcbcfccc7a8d112528d8098aeb5a953ca6",
+  "removals": 0,
+  "additionCount": 0,
+  "firstSportsId": "da4d72babc110b20",
+  "protected": [
+    {
+      "id": "da4d72babc110b20",
+      "name": "CazeTV (1080p)",
+      "group": "Esportes",
+      "urlSha256": "0e8be929199d4a295a119c071de99016f695582c83dd620698f53635b374ee77"
+    },
+    {
+      "id": "44e05e609921dc55",
+      "name": "Rede Globo (1080p)",
+      "group": "TV ao Vivo",
+      "urlSha256": "91d1c6d4f2a6f4e0c451ff66587a93cbd386347b3033345b04736238634ab0ca"
+    },
+    {
+      "id": "4fd754a678a3fd5c",
+      "name": "GloboNews (1080p)",
+      "group": "Notícias",
+      "urlSha256": "0280976afa10c1123e64b562d13cf63f9e6ec089dda60ad2470c96b7a7ea2f97"
+    },
+    {
+      "id": "c06293c5c39d4e29",
+      "name": "MasterChef",
+      "group": "Culinária",
+      "urlSha256": "99606a23b67c122be43f4f0aef5624e10e95fdc78ca78ade5ba4d1c672ce72fb"
+    }
+  ]
+}

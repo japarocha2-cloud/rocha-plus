@@ -21,6 +21,10 @@ class C7SelectedCatalog {
   /// SHA-256 must then be supplied too. The official file is never replaced.
   static const selectionAsset = String.fromEnvironment('ROCHA_C7_SELECTION_ASSET',
       defaultValue: 'branding/c7/selection.json');
+  /// Signed official build carrying the owner-frozen LAB Cliente catalog: the
+  /// Home/category presentation follows the approved LAB Cliente layout.
+  static const frozenRelease = bool.fromEnvironment('ROCHA_CLOSED_CATALOG') &&
+      selectionAsset == 'branding/lab/c7_validated_selection.json';
   final Future<String> Function() read;
   final String expectedSha256;
   /// LAB presentation layer source (tests inject it; builds need ROCHA_LAB_PRESENTATION).

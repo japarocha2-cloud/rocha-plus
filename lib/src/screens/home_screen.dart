@@ -64,7 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool failed = false;
   String? catalogIssue;
   bool signingOut = false;
-  List<(String, IconData)> get sections => widget.laboratoryFeatures
+  /// LAB Cliente presentation (approved reference). Auth, subscription and the
+  /// commercial player route stay governed by [HomeScreen.laboratoryFeatures].
+  bool get approvedLayout => widget.laboratoryFeatures || C7SelectedCatalog.frozenRelease;
+  List<(String, IconData)> get sections => approvedLayout
       ? [
           HomeScreen.sections[0],
           HomeScreen.sections[1],
@@ -212,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.logout,
             onTap: _signOut,
           ),
-        SizedBox(height: widget.laboratoryFeatures ? 104 : 174, child: const Center(child: RochaBrand())),
+        SizedBox(height: approvedLayout ? 104 : 174, child: const Center(child: RochaBrand())),
         _NavItem(
           label: 'Início',
           icon: Icons.home_outlined,
@@ -221,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (drawer) Navigator.pop(context);
           },
         ),
-        ...sections.where((item) => !widget.laboratoryFeatures || HomeScreen.sections.contains(item)).map(
+        ...sections.where((item) => !approvedLayout || HomeScreen.sections.contains(item)).map(
           (item) => _NavItem(
             label: item.$1 == 'Favoritos' ? 'Minha Lista' : item.$1,
             icon: item.$2,

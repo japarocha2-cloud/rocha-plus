@@ -28,12 +28,13 @@ dart_files = []
 official_transport_files = set()
 # The release candidate ships the same frozen catalog, so it inherits the same
 # integrity-bound exception (never a blanket one).
-OFFICIAL_CATALOG_BRANCHES = {"lab/catalogo-unico-oficial-20261108", "lab/release-candidate-20261117"}
+RELEASE_BRANCHES = {"lab/release-candidate-20261117", "lab/comercial-labcliente-20261117"}
+OFFICIAL_CATALOG_BRANCHES = {"lab/catalogo-unico-oficial-20261108"} | RELEASE_BRANCHES
 # Release selection asset is accepted only byte-for-byte (SHA-256 pinned).
 RELEASE_SELECTION = ("branding/lab/c7_validated_selection.json",
                      "4e629180b39ca1bd8eace257b935094ea8fcfa317d6be16a5fbe6ce55bfc8ea4")
 current_branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
-if current_branch == "lab/release-candidate-20261117":
+if current_branch in RELEASE_BRANCHES:
     if hashlib.sha256((ROOT/RELEASE_SELECTION[0]).read_bytes()).hexdigest() == RELEASE_SELECTION[1]:
         official_transport_files.add(Path(RELEASE_SELECTION[0]))
     else:
@@ -95,7 +96,7 @@ for path in ROOT.rglob("*"):
             # Main and all other branches continue to reject HTTP runtime URLs.
             import os
             lab_branch = (
-                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108", "lab/catalogo-unico-oficial-20261108", "lab/release-candidate-20261117"}
+                (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")) in {"lab/cazetv-link-only-20261106", "lab/candidata7-teste-fisico-20261107", "lab/p0-candidata7-20261108", "lab/candidata7-correcao-fisica-20261108", "lab/candidata7-catalogo-fechado-20261108", "lab/catalogo-unico-oficial-20261108"} | RELEASE_BRANCHES
                 or (
                     os.environ.get("GITHUB_REF", "") == "refs/heads/lab/candidate6-approved-link-patch-20261106"
                     and os.environ.get("GITHUB_EVENT_NAME", "") == "workflow_dispatch"
@@ -113,7 +114,14 @@ for path in ROOT.rglob("*"):
                 lab_branch and physical_test_file
                 and found_http_feeds == approved_http_feeds
             )
-            if rel not in lab_transport_files and not physical_test_exception:
+            # LAB Cliente (owner-approved) GANHE BR banner: exactly this literal,
+            # opened only in the external browser after the in-app HTTP warning.
+            banner_exception = (
+                current_branch in RELEASE_BRANCHES
+                and rel == Path("lib/src/ads/external_shortcuts.dart")
+                and found_http_feeds == {"http://www.ganhebr47.com/?r=gml4729"}
+            )
+            if rel not in lab_transport_files and not physical_test_exception and not banner_exception:
                 issues.append(f"{rel}: URL HTTP insegura de runtime encontrada")
             # These two LAB-only inputs are governed by the debug-only network
             # config emitted by tools/lab/configure.py, never by release policy.

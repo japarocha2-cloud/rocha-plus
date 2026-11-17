@@ -326,7 +326,7 @@ class _LiveTvScreenState extends State<LiveTvScreen> {
                 ],
               ),
             ),
-          if (widget.laboratoryFeatures && selectedGroup == 'Filmes')
+          if ((widget.laboratoryFeatures || C7SelectedCatalog.frozenRelease) && selectedGroup == 'Filmes')
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: DropdownButton<String>(
