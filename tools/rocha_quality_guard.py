@@ -34,6 +34,12 @@ OFFICIAL_CATALOG_BRANCHES = {"lab/catalogo-unico-oficial-20261108"} | RELEASE_BR
 RELEASE_SELECTION = ("branding/lab/c7_validated_selection.json",
                      "4e629180b39ca1bd8eace257b935094ea8fcfa317d6be16a5fbe6ce55bfc8ea4")
 current_branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME", "")
+# Any isolated LAB branch may carry the frozen catalog. The exception stays
+# bound to integrity (SHA-256, generated adapters, inventories), never to a
+# branch name alone; main and non-LAB branches keep rejecting HTTP URLs.
+if current_branch.startswith("lab/"):
+    RELEASE_BRANCHES = RELEASE_BRANCHES | {current_branch}
+    OFFICIAL_CATALOG_BRANCHES = OFFICIAL_CATALOG_BRANCHES | {current_branch}
 if current_branch in RELEASE_BRANCHES:
     if hashlib.sha256((ROOT/RELEASE_SELECTION[0]).read_bytes()).hexdigest() == RELEASE_SELECTION[1]:
         official_transport_files.add(Path(RELEASE_SELECTION[0]))

@@ -51,3 +51,34 @@ class QualityGuardTest(unittest.TestCase):
                                 'const secret = "TEST-NOT-A-REAL-SECRET";')
         self.assertEqual(result.returncode, 1)
         self.assertIn('possível segredo', result.stdout)
+
+    def run_repo_guard(self, branch):
+        script = Path(__file__).with_name('rocha_quality_guard.py')
+        return subprocess.run([sys.executable, str(script)], capture_output=True, text=True,
+                              env={**os.environ, 'GITHUB_HEAD_REF': '', 'GITHUB_REF_NAME': branch})
+
+    def test_frozen_540_catalog_passes_on_any_new_lab_branch(self):
+        result = self.run_repo_guard('lab/nova-branch-isolada-teste')
+        self.assertEqual(result.returncode, 0, result.stdout)
+
+    def test_frozen_catalog_still_blocked_on_main(self):
+        result = self.run_repo_guard('main')
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('URL HTTP insegura', result.stdout)
+
+    def test_tampered_selection_blocked_even_on_lab_branch(self):
+        repo = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = subprocess.run(['git', '-C', str(repo), 'archive', 'HEAD'], capture_output=True, check=True)
+            subprocess.run(['tar', '-x', '-C', str(root)], input=archive.stdout, check=True)
+            shutil.copyfile(Path(__file__).with_name('rocha_quality_guard.py'), root / 'tools/rocha_quality_guard.py')
+            target = root / 'branding/lab/c7_validated_selection.json'
+            raw = target.read_bytes()
+            index = raw.index(b'"url": "') + len(b'"url": "')
+            target.write_bytes(raw[:index] + b'X' + raw[index:])
+            result = subprocess.run([sys.executable, str(root / 'tools/rocha_quality_guard.py')],
+                                    capture_output=True, text=True,
+                                    env={**os.environ, 'GITHUB_HEAD_REF': '', 'GITHUB_REF_NAME': 'lab/qualquer'})
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn('integrity', result.stdout)
